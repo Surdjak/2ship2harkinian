@@ -6,6 +6,7 @@ extern "C" {
 #include "variables.h"
 #include "overlays/gamestates/ovl_file_choose/z_file_select.h"
 #include "overlays/gamestates/ovl_title/z_title.h"
+#include "Harness.h"
 }
 
 #define CVAR_NAME "gEnhancements.Cutscenes.SkipToFileSelect"
@@ -41,7 +42,7 @@ static void RegisterSkipToFileSelect() {
         if (consoleLogoState->exit) {
             // Normally the PRNG seed is set at least once from the title opening running Play_Init
             // We need to call it manually before file select creates RNG values for new saves
-            Rand_Seed(osGetTime());
+            Rand_Seed(Harness_IsActive() ? Harness_Seed() : osGetTime());
             // Normally called on console logo screen
             gSaveContext.seqId = NA_BGM_DISABLED;
             gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;

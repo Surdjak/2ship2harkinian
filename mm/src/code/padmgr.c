@@ -40,6 +40,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "z64voice.h"
+#include "HarnessGame.h"
 // extern FaultMgr gFaultMgr;
 
 #define PADMGR_RETRACE_MSG (1 << 0)
@@ -615,6 +616,8 @@ void PadMgr_HandleRetrace(void) {
     // Wait for controller data
     // osRecvMesg(serialEventQueue, NULL, OS_MESG_BLOCK);
     osContGetReadData(sPadMgrInstance->pads);
+    // 2S2H [Port] Record or replace controller input for the differential testing harness.
+    HarnessGame_OnPadRead(sPadMgrInstance->pads);
 
     // Clear all but controller 1
     memset(&sPadMgrInstance->pads[1], 0, sizeof(*sPadMgrInstance->pads) * (MAXCONTROLLERS - 1));

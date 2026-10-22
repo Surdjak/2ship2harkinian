@@ -21,6 +21,11 @@ void Rand_Seed(u32 seed) {
     sRandInt = seed;
 }
 
+// 2S2H [Port] Exposes the PRNG state to the differential testing harness.
+u32 Rand_GetState(void) {
+    return sRandInt;
+}
+
 /**
  * Returns a pseudo-random float between 0.0f and 1.0f from the internal PRNG.
  *

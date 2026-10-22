@@ -13,6 +13,7 @@
 #include "debug.h"
 
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "Harness.h"
 
 #pragma increment_block_number "n64-us:128"
 
@@ -284,6 +285,12 @@ s32 GameState_GetArenaSize(GameState* gameState) {
 }
 
 s32 func_80173B48(GameState* gameState) {
+    // 2S2H [Port] Frame time comes from the wall clock, so the differential testing harness fixes it, using the
+    // middle of the range gIrqMgrRetraceTime is randomized in.
+    if (Harness_IsActive()) {
+        return OS_CYCLES_TO_NSEC(gameState->framerateDivisor * 775000);
+    }
+
     s32 result = OS_CYCLES_TO_NSEC(gameState->framerateDivisor * gIrqMgrRetraceTime) - OS_CYCLES_TO_NSEC(gRDPTimeTotal);
 
     return result;

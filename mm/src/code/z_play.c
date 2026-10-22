@@ -47,6 +47,7 @@ u8 sMotionBlurStatus;
 #include "2s2h/DeveloperTools/CollisionViewer.h"
 #include "2s2h/framebuffer_effects.h"
 #include <string.h>
+#include "Harness.h"
 
 s32 gDbgCamEnabled = false;
 u8 D_801D0D54 = false;
@@ -2414,7 +2415,8 @@ void Play_Init(GameState* thisx) {
     D_801D0D54 = false;
 
     FrameAdvance_Init(&this->frameAdvCtx);
-    Rand_Seed(osGetTime());
+    // 2S2H [Port] The differential testing harness needs a fixed seed instead of the clock.
+    Rand_Seed(Harness_IsActive() ? Harness_Seed() : osGetTime());
     Matrix_Init(&this->state);
 
     this->state.main = Play_Main;
