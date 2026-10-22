@@ -744,7 +744,9 @@ typedef enum {
     /* 0x6B */ ENTR_SCENE_NORTH_CLOCK_TOWN,
     /* 0x6C */ ENTR_SCENE_SOUTH_CLOCK_TOWN,
     /* 0x6D */ ENTR_SCENE_LAUNDRY_POOL,
-    /* 0x6E */ ENTR_SCENE_MAX
+    // 3Ship [Hyrule] OoT scenes
+    /* 0x6E */ ENTR_SCENE_KOKIRI_FOREST_Oot,
+    /* 0x6F */ ENTR_SCENE_MAX
 } EntranceSceneId;
 
 /*

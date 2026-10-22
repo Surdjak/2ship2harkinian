@@ -2,6 +2,7 @@
 #include "2s2h/resource/type/Scene.h"
 #include <ship/utils/StringHelper.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "HyruleScenes.h"
 #include <ship/resource/ResourceManager.h>
 
 extern "C" {
@@ -44,12 +45,17 @@ extern "C" void OTRPlay_SpawnScene(PlayState* play, s32 sceneId, s32 spawn) {
     play->loadedScene = scene;
     play->sceneId = sceneId;
     play->sceneConfig = scene->drawConfig;
+    // 3Ship [Hyrule] OoT scenes live in oot.o2r under their own paths.
+    const char* ootScenePath = Hyrule_GetScenePath(sceneId);
     std::string scenePath =
-        StringHelper::Sprintf("scenes/nonmq/%s/%s", scene->segment.fileName, scene->segment.fileName);
+        ootScenePath != nullptr
+            ? std::string(ootScenePath)
+            : StringHelper::Sprintf("scenes/nonmq/%s/%s", scene->segment.fileName, scene->segment.fileName);
     play->sceneSegment = OTRPlay_LoadFile(play, scenePath.c_str());
     scene->unk_D = 0;
     gSegments[2] = (uintptr_t)play->sceneSegment;
     OTRPlay_InitScene(play, spawn);
+    Hyrule_AfterSceneCommands(play);
     Room_SetupFirstRoom(play, &play->roomCtx);
 }
 

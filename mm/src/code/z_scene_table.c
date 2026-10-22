@@ -2567,6 +2567,70 @@ static EntranceTableEntry* sCutsceneEntranceTable[] = {
     sCutsceneEntrance5, sCutsceneEntrance6, sCutsceneEntrance7, sCutsceneEntrance8, sCutsceneEntrance9,
 };
 
+// 3Ship [Hyrule] One entrance per Kokiri Forest spawn, child day layer only.
+static EntranceTableEntry sKokiriForestOotEntrance0[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 0, 0x0102 },
+};
+
+static EntranceTableEntry sKokiriForestOotEntrance1[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 1, 0x0102 },
+};
+
+static EntranceTableEntry sKokiriForestOotEntrance2[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 2, 0x0102 },
+};
+
+static EntranceTableEntry sKokiriForestOotEntrance3[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 3, 0x0102 },
+};
+
+static EntranceTableEntry sKokiriForestOotEntrance4[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 4, 0x0102 },
+};
+
+static EntranceTableEntry sKokiriForestOotEntrance5[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 5, 0x0102 },
+};
+
+static EntranceTableEntry sKokiriForestOotEntrance6[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 6, 0x0102 },
+};
+
+static EntranceTableEntry sKokiriForestOotEntrance7[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 7, 0x0102 },
+};
+
+static EntranceTableEntry sKokiriForestOotEntrance8[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 8, 0x0102 },
+};
+
+static EntranceTableEntry sKokiriForestOotEntrance9[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 9, 0x0102 },
+};
+
+static EntranceTableEntry sKokiriForestOotEntrance10[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 10, 0x0102 },
+};
+
+static EntranceTableEntry sKokiriForestOotEntrance11[] = {
+    { SCENE_KOKIRI_FOREST_Oot, 11, 0x0102 },
+};
+
+static EntranceTableEntry* sKokiriForestOotEntranceTable[] = {
+    sKokiriForestOotEntrance0,
+    sKokiriForestOotEntrance1,
+    sKokiriForestOotEntrance2,
+    sKokiriForestOotEntrance3,
+    sKokiriForestOotEntrance4,
+    sKokiriForestOotEntrance5,
+    sKokiriForestOotEntrance6,
+    sKokiriForestOotEntrance7,
+    sKokiriForestOotEntrance8,
+    sKokiriForestOotEntrance9,
+    sKokiriForestOotEntrance10,
+    sKokiriForestOotEntrance11,
+};
+
 #define SCENE_ENTRANCE(entranceTable, name) \
     { ARRAY_COUNT(entranceTable), entranceTable, name }
 
@@ -2685,6 +2749,8 @@ SceneEntranceTableEntry sSceneEntranceTable[] = {
     /* 0x6B */ SCENE_ENTRANCE(sNorthClockTownEntranceTable, "Z2_BACKTOWN"),
     /* 0x6C */ SCENE_ENTRANCE(sSouthClockTownEntranceTable, "Z2_CLOCKTOWER"),
     /* 0x6D */ SCENE_ENTRANCE(sLaundryPoolEntranceTable, "Z2_ALLEY"),
+    // 3Ship [Hyrule]
+    /* 0x6E */ SCENE_ENTRANCE(sKokiriForestOotEntranceTable, "spot04_scene"),
 };
 
 /**

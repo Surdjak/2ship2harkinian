@@ -13,7 +13,7 @@ void BetterMapSelect_LoadFileSelect(MapSelectState* mapSelectState);
     { humanName, BetterMapSelect_LoadGame, ENTRANCE(entranceSceneId, 0) },
 #define DEFINE_SCENE_UNSET(_enumValue)
 
-static SceneSelectEntry sBetterScenes[106] = {
+static SceneSelectEntry sBetterScenes[107] = {
 #include "tables/scene_table.h"
     { "Chest Grottos", BetterMapSelect_LoadGame, ENTRANCE(GROTTOS, 4) },
     { "Cow Grottos", BetterMapSelect_LoadGame, ENTRANCE(GROTTOS, 10) },
@@ -36,7 +36,7 @@ typedef struct {
     s32 index;
 } BetterMapSelectInfoEntry;
 
-static BetterMapSelectInfoEntry sBetterMapSelectInfo[102] = {
+static BetterMapSelectInfoEntry sBetterMapSelectInfo[103] = {
 #include "tables/scene_table.h"
 };
 
@@ -292,9 +292,9 @@ void BetterMapSelect_Update(MapSelectState* mapSelectState) {
         } else if (mapSelectState->opt < 0) {
             mapSelectState->opt = entry.tableCount - 1;
         }
-    } else if (mapSelectState->currentScene == 102 || mapSelectState->currentScene == 103) {
-        // Cheset/Cow special entries
-        s32 count = mapSelectState->currentScene == 102 ? ARRAY_COUNT(sBetterMapSelectChestGrottoInfo)
+    } else if (mapSelectState->currentScene == 103 || mapSelectState->currentScene == 104) {
+        // Cheset/Cow special entries (3Ship: after the OoT scenes)
+        s32 count = mapSelectState->currentScene == 103 ? ARRAY_COUNT(sBetterMapSelectChestGrottoInfo)
                                                         : ARRAY_COUNT(sBetterMapSelectCowGrottoInfo);
         if (mapSelectState->opt >= count) {
             mapSelectState->opt = 0;

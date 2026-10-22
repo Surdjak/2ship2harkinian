@@ -70,6 +70,8 @@ else()
             --portVer ${CMAKE_PROJECT_VERSION}
             -o placeholder
             -osf placeholder
+        # The game loads oot.o2r from its own folder (hyrule/HyruleScenes.cpp).
+        COMMAND ${CMAKE_COMMAND} -E copy oot.o2r $<TARGET_FILE_DIR:2ship>/oot.o2r
         WORKING_DIRECTORY ${OOT_EXTRACT_DIR}
         COMMENT "Extracting OoT assets into ${OOT_EXTRACT_DIR}/oot.o2r"
         VERBATIM

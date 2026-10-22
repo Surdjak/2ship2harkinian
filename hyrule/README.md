@@ -42,3 +42,33 @@ converters live in `OTRExporter/OTRExporter/OotToMm.cpp` and are skeletons:
   types, sound effects and item IDs are not remapped.
 - **Cutscenes:** stub. Each becomes an empty MM cutscene that only runs to its end frame, and the
   skipped OoT commands are reported in the extraction log.
+
+## OoT scenes in game
+
+`ExtractOotAssets` copies `oot.o2r` next to the game, and `HyruleScenes.cpp` loads it. OoT scenes follow
+MM's in the scene table, suffixed `_Oot`. So far there is one:
+
+| Scene | Scene id | Entrance (spawn 0) |
+|-------|----------|--------------------|
+| Kokiri Forest | `SCENE_KOKIRI_FOREST_Oot` (0x71) | `0xDC00` |
+
+To go there:
+
+- start the game with `HYRULE_BOOT_ENTRANCE=0xDC00`, which skips the title screen and starts a debug
+  save there;
+- in the console, run `entrance dc00`;
+- or pick "Kokiri Forest (OoT)" in Better Map Select.
+
+What works: the scene and its first room load, render and collide, and MM's Link spawns at OoT's
+spawn points and can walk around. The room-loading planes (`En_Holl`) are mapped to MM's, but moving
+between rooms has not been tested yet.
+
+Not yet:
+
+- **Actors:** OoT actors are not ported, so rooms are loaded without their actor lists.
+- **Exits:** every exit leads back to the scene's first spawn.
+- **Music:** none plays, since OoT's sequences are not extracted.
+- **Scene effects:** OoT's per-scene animated textures are not drawn.
+- **Cameras:** camera settings in collision are OoT's indexes, which MM reads as its own.
+- **MM-only scene commands:** the actor cutscene list (0x1B) is started empty. The other MM-only
+  commands are left out.
