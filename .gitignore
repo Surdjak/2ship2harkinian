@@ -1,6 +1,9 @@
 *.zip
 *.otr
 *.o2r
+*.z64
+*.n64
+*.v64
 .DS_Store
 .vscode
 .idea
