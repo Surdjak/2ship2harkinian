@@ -4,6 +4,7 @@
 *.z64
 *.n64
 *.v64
+__pycache__/
 .DS_Store
 .vscode
 .idea

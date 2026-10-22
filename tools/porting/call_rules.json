@@ -1,0 +1,35 @@
+{
+  "_comment": "How translate_calls.py rewrites calls from OoT (SoH) signatures to 2Ship's. Argument indexes refer to the OoT call. Functions whose signatures differ but have no rule here are listed in docs/SIGNATURES.md.",
+
+  "Actor_GetFocus": { "kind": "out_param_to_return", "out": 0 },
+  "Actor_GetWorld": { "kind": "out_param_to_return", "out": 0 },
+  "Actor_GetWorldPosShapeRot": { "kind": "out_param_to_return", "out": 0 },
+  "Camera_GetCamDir": { "kind": "out_param_to_return", "out": 0 },
+  "OLib_Vec3fDiffRad": { "kind": "out_param_to_return", "out": 0 },
+  "OLib_Vec3fDistNormalize": { "kind": "out_param_to_return", "out": 0 },
+  "OLib_Vec3fToVecSph": { "kind": "out_param_to_return", "out": 0 },
+
+  "Matrix_ToMtx": { "kind": "drop_args", "args": [1, 2], "note": "OoT passes debug file and line" },
+  "BgCheck_EntityRaycastFloor5": { "kind": "drop_args", "args": [0], "note": "MM does not take PlayState" },
+  "Environment_UpdateSkybox": { "kind": "drop_args", "args": [0], "note": "MM does not take PlayState" },
+  "PadMgr_Init": { "kind": "drop_args", "args": [0], "note": "MM's PadMgr is a single global" },
+  "PadMgr_RumbleSet": { "kind": "drop_args", "args": [0], "note": "MM's PadMgr is a single global" },
+  "PadMgr_RumbleStop": { "kind": "drop_args", "args": [0], "note": "MM's PadMgr is a single global" },
+
+  "Lights_BindAll": { "kind": "append_args", "args": ["play"], "note": "MM also takes PlayState" },
+
+  "Actor_SetDropFlag": { "kind": "manual", "note": "MM takes a ColliderElement and no third argument" },
+  "Actor_SetDropFlagJntSph": { "kind": "manual", "note": "MM has no third argument" },
+  "Audio_PlaySceneSequence": { "kind": "manual", "note": "MM adds a day argument" },
+  "Audio_PlayMorningSceneSequence": { "kind": "manual", "note": "MM adds a day argument" },
+  "Camera_SetCameraData": { "kind": "manual", "note": "MM has no last argument" },
+  "EffectSsDFire_Spawn": { "kind": "manual", "note": "MM adds an s16 before the last argument" },
+  "EffectSsDeadDb_Spawn": { "kind": "manual", "note": "MM takes two Color_RGBA8 pointers instead of separate components" },
+  "EffectSsDeadDd_Spawn": { "kind": "manual", "note": "MM takes two Color_RGBA8 pointers instead of separate components" },
+  "EffectSsSolderSrchBall_Spawn": { "kind": "manual", "note": "MM adds a trailing s16" },
+  "Environment_DrawLensFlare": { "kind": "manual", "note": "argument list changed in MM" },
+  "Environment_DrawSunLensFlare": { "kind": "manual", "note": "MM has no last argument" },
+  "Inventory_ChangeEquipment": { "kind": "manual", "note": "MM takes only the equipment slot" },
+  "Player_PostLimbDrawGameplay": { "kind": "manual", "note": "argument list changed in MM" },
+  "TitleCard_InitBossName": { "kind": "manual", "note": "MM takes GameState and no last argument" }
+}
