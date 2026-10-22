@@ -11,6 +11,7 @@ diverge. It is how OoT ports are checked against SoH (see [docs/PLAN.md](../docs
 | `soh/` | Adapter compiled into SoH when it is configured with `-DHARNESS_DIR=<this directory>`. |
 | `tools/make_inputs.py` | Builds an input file from a short script, for replays without a recording session. |
 | `tools/statediff.py` | Compares two state logs and reports the first divergent frame. |
+| `tools/session.py` | Records and replays sessions together with the saves and settings they started from. |
 
 ## Running
 
@@ -24,16 +25,45 @@ The harness is off unless one of these environment variables is set:
 | `HARNESS_PUPPET=<file>` | Drive Player from another run's state log (see below). |
 | `HARNESS_SEED=<n>` | RNG seed used instead of the clock, default 0. Record and replay with the same seed. |
 
-Run replays under a virtual display. On a desktop, a window that is hidden or unfocused can be
-throttled by the compositor, which slows a run to a few frames per second:
+### Recording and replaying a session
+
+`tools/session.py` keeps everything a replay needs in one session folder: the input, both state logs,
+and a copy of the saves and settings the recording started from. A replay only matches if the game
+starts from those same files, so replay sets your current saves and settings aside, puts the
+session's copies in place, and restores yours afterwards.
+
+Record on the desktop with the window focused, playing with keyboard or controller 1 (only controller
+1 is recorded). Closing the window ends the recording.
 
 ```bash
-HARNESS_REPLAY=session.inputs HARNESS_STATELOG=replay.state xvfb-run -a -s "-screen 0 1280x720x24" ./2s2h.elf
+python3 harness/tools/session.py record sessions/kokiri-walk
 ```
 
 ```bash
-python3 harness/tools/statediff.py record.state replay.state
+python3 harness/tools/session.py replay sessions/kokiri-walk
 ```
+
+Recording uses the SoH build in `../Shipwright/build-cmake/soh` by default; pass
+`--game-dir build-cmake/mm` for this fork. `sessions/` is git-ignored.
+
+Replays run under a virtual display, because on a desktop a hidden or unfocused window can be
+throttled by the compositor to a few frames per second; `--window` shows the game instead. After the
+replay, `statediff.py` compares it with the recording.
+
+If a replay is interrupted, your saves and settings stay in the session's `backup/` folder and the next
+replay refuses to run until you have put them back.
+
+Leave the mouse option, network features and simulated input lag off while recording.
+
+### Reading a diff
+
+`statediff.py` prints the first frame where the runs disagree and the fields that differ there:
+
+- **`flags.*` first:** the runs started from different saves or took a different menu path.
+- **`rng` first:** something consumed random numbers differently; the actors that differ next show what.
+- **`player` or `actors` first:** game logic diverged on that frame.
+
+Later differences usually follow from the first one, so fix the first and compare again.
 
 Use `--align scene` to compare runs whose boot sequences differ, such as SoH against this fork: frames
 are then matched by scene and by frames since that scene was entered. `--ignore` leaves out sections

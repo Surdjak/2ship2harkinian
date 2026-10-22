@@ -5,6 +5,8 @@
 *.n64
 *.v64
 __pycache__/
+# Harness sessions: recordings, state logs and copies of saves (harness/tools/session.py)
+sessions/
 .DS_Store
 .vscode
 .idea
