@@ -100,6 +100,11 @@ extern "C" void Hyrule_AfterSceneCommands(PlayState* play) {
     }
     play->setupExitList = sExitList;
 
+    // Player spawn parameters name a camera. In OoT that indexes the collision's camera list; MM looks
+    // it up in the actor cutscene camera list (command 0x02), which OoT scenes do not have. The two
+    // lists share a layout, so point MM's at OoT's.
+    play->actorCsCamList = (ActorCsCamInfo*)play->colCtx.colHeader->bgCamList;
+
     // MM sets up its cutscene manager from the actor cutscene list (command 0x1B), which OoT scenes do
     // not have. TODO: build one from OoT's camera cutscenes when OoT actors need them.
     CutsceneManager_Init(play, nullptr, 0);

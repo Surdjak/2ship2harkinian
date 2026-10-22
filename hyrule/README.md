@@ -59,9 +59,10 @@ To go there:
 - in the console, run `entrance dc00`;
 - or pick "Kokiri Forest (OoT)" in Better Map Select.
 
-What works: the scene and its first room load, render and collide, and MM's Link spawns at OoT's
-spawn points and can walk around. The room-loading planes (`En_Holl`) are mapped to MM's, but moving
-between rooms has not been tested yet.
+What works: the scene and its rooms load, render and collide; MM's Link spawns at OoT's spawn points
+and walks between rooms through the room-loading planes (`En_Holl`, mapped to MM's). Collision camera
+settings are mapped to MM's (`OotToMm::CameraSetting`), and a spawn's camera index refers to the
+collision camera list as it does in OoT.
 
 Not yet:
 
@@ -69,6 +70,7 @@ Not yet:
 - **Exits:** every exit leads back to the scene's first spawn.
 - **Music:** none plays, since OoT's sequences are not extracted.
 - **Scene effects:** OoT's per-scene animated textures are not drawn.
-- **Cameras:** camera settings in collision are OoT's indexes, which MM reads as its own.
+- **Cameras:** OoT settings with no MM counterpart (crawlspaces, magic beans, fishing, boss arenas,
+  some temple rooms) use a general MM setting.
 - **MM-only scene commands:** the actor cutscene list (0x1B) is started empty. The other MM-only
   commands are left out.
