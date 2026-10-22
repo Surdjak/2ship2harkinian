@@ -66,6 +66,7 @@ else()
             -se OTR
             --otrfile oot.o2r
             --pathRoot oot
+            --convertToMm
             --portVer ${CMAKE_PROJECT_VERSION}
             -o placeholder
             -osf placeholder
