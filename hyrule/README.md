@@ -100,6 +100,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | Wave | Actors |
 |------|--------|
 | 1 | `Obj_Hana` (flowers, rocks, bush), `En_Kusa` (grass), `Obj_Mure2` (grass and rock rings) |
+| 2 | `En_Ishi` (small and silver rocks) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -118,19 +119,26 @@ possible:
 - **SoH additions:** enhancements, cvars, game-interactor hooks, stats and debug prints are dropped.
 - **Gaps:** anything that depends on a system not ported yet is marked with a `PORT:` comment.
 
-Known differences in wave 1:
+Known differences:
 
 - Grass drops come from MM's drop table of the same index, since OoT's tables and Deku seeds are not
   ported. Regrowing grass gives a recovery heart half the time and nothing instead of seeds.
 - The bush that `Obj_Hana` removes once Zelda's letter is obtained always stays, since OoT's event
   flags are not in the save.
-- Rock rings spawn nothing until `En_Ishi` is ported, and bugs from grass wait for `En_Insect`.
+- Bugs from grass and rocks wait for `En_Insect`.
+- MM's Player recognises rocks by actor id, so `ACTOR_EN_ISHI_Oot` was added to its checks: silver
+  rocks use the heavy lift and only Goron Link can lift them, as with MM's rocks.
 
 Wave 1 was checked against the SoH session's second Kokiri Forest visit, with that run's Link
 puppeting this fork's: every wave-1 actor matched in id, parameters, room and position on all 2631
 scene frames, including spawning and despawning on room changes. Rotations differ because grass picks
 a random yaw and the two engines draw different random numbers. Scripted replays with human Link
 cut grass with a slash (dropping a collectible), and lift, throw and break it.
+
+Wave 2 matches SoH the same way, except that `Obj_Mure2` spawns and removes its ring of rocks by its
+distance from the camera, and MM's camera differs from OoT's: the ring appears and goes on different
+frames (3 against 401 on entry), while on every frame both games have it, its rocks match. Human Link
+lifts, throws and breaks a small rock in a scripted replay.
 
 ## Item ids
 

@@ -7405,7 +7405,8 @@ void func_808379C0(PlayState* play, Player* this) {
         Actor* interactRangeActor = this->interactRangeActor;
         PlayerAnimationHeader* anim;
 
-        if ((interactRangeActor->id == ACTOR_EN_ISHI) &&
+        // 3Ship [Hyrule] OoT's rocks keep their size in the same bit.
+        if (((interactRangeActor->id == ACTOR_EN_ISHI) || (interactRangeActor->id == ACTOR_EN_ISHI_Oot)) &&
             (ENISHI_GET_SIZE_FLAG(interactRangeActor) != ISHI_SIZE_SMALL_ROCK)) {
             Player_SetAction(play, this, Player_Action_38, 0);
             anim = &gPlayerAnim_link_silver_carry;
@@ -9682,7 +9683,9 @@ s32 Player_ActionHandler_2(Player* this, PlayState* play) {
 
                             if (((this->transformation != PLAYER_FORM_GORON) &&
                                  (((bomb->actor.id == ACTOR_EN_BOM) && bomb->isPowderKeg) ||
-                                  ((interactRangeActor->id == ACTOR_EN_ISHI) && (interactRangeActor->params & 1)) ||
+                                  (((interactRangeActor->id == ACTOR_EN_ISHI) ||
+                                    (interactRangeActor->id == ACTOR_EN_ISHI_Oot)) && // 3Ship [Hyrule]
+                                   (interactRangeActor->params & 1)) ||
                                   (interactRangeActor->id == ACTOR_EN_MM)))) {
                                 return false;
                             }
