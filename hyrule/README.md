@@ -16,7 +16,7 @@ Re-run the CMake configure step after adding or removing files, because sources 
 
 - `assets/extractor/` has the config, file list, symbol lists and texture pool.
 - `assets/xml/N64_NTSC_11/` has XMLs for Kokiri Forest (`spot04`), the objects its rooms load,
-  `gameplay_keep`, `gameplay_field_keep` and `link_animetion`.
+  `gameplay_keep`, `gameplay_field_keep`, `link_animetion` and the overlays of ported actors.
 
 Only the N64 NTSC 1.1 ROM is supported so far. To extract:
 
@@ -102,6 +102,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 1 | `Obj_Hana` (flowers, rocks, bush), `En_Kusa` (grass), `Obj_Mure2` (grass and rock rings) |
 | 2 | `En_Ishi` (small and silver rocks) |
 | 3 | `En_A_Obj` (signposts, blocks, grass clumps, tree stumps; part of `code` in OoT) |
+| 4 | `En_Kanban` (wooden signs that can be cut apart) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -111,7 +112,7 @@ possible:
 - **Ids:** actors and objects use the `_Oot` ids. OoT's `gameplay_keep` is always loaded in MM as
   `GAMEPLAY_KEEP`, so profiles and effects use that instead.
 - **Assets:** headers come from `assets/oot/` (`tools/porting/gen_oot_asset_headers.py`), whose paths
-  start with `oot/`.
+  start with `oot/`. Data an actor keeps in its own overlay is extracted from `assets/xml/.../overlays/`.
 - **Engine names:** MM's names replace OoT's: `ActorProfile`, `objectSlot` and `Object_GetSlot`,
   `cullingVolume*`, `terminalVelocity`, `speed`, `depthInWater`, `COL_MATERIAL_`, `ELEM_MATERIAL_`,
   `ATELEM_`, `ACELEM_`, and `ACTOR_FLAG_800` for `ACTOR_FLAG_GRASS_DESTROYED`. Sound effects use MM's
@@ -127,6 +128,10 @@ Known differences:
 - The bush that `Obj_Hana` removes once Zelda's letter is obtained always stays, since OoT's event
   flags are not in the save.
 - Bugs from grass and rocks wait for `En_Insect`.
+- Cut signs (`En_Kanban`) are not repaired by Zelda's Lullaby, which MM's ocarina lacks; the pieces
+  go when Link walks away, as in OoT. The cut direction comes from MM's melee animations, with Zora
+  attacks cutting like sword swings and Goron punches like the hammer.
+- OoT's age checks use `HyrulePort.h`, where Link is always a child until adult Link exists.
 - MM's Player recognises rocks by actor id, so `ACTOR_EN_ISHI_Oot` was added to its checks: silver
   rocks use the heavy lift and only Goron Link can lift them, as with MM's rocks.
 
@@ -145,6 +150,9 @@ Wave 3's signposts match SoH's in position and parameters on every frame but one
 MM removes an actor that was drawn that frame one frame later (`func_800BA798`), so the sign in view
 outlives SoH's by a frame. In a scripted replay human Link reads the Know-it-All Brothers' sign: the
 wooden textbox shows OoT's text and closes normally.
+
+Wave 4's signs match SoH on all 2631 frames. A scripted replay reads "LINK's House" and cuts the top
+off the sign with a slash.
 
 ## Text
 
