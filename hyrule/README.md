@@ -107,6 +107,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 4 | `En_Kanban` (wooden signs that can be cut apart) |
 | 5 | `En_Wonder_Talk2` (invisible message spots), `En_Wonder_Item` (invisible item drops and switches) |
 | 6 | `En_Ko` (the Kokiri children; Fado is left out) |
+| 7 | `En_Md` (Mido) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -126,7 +127,9 @@ possible:
 - **OoT code helpers:** the few `z_actor.c` functions MM lacks are in `HyruleActor.c`. MM keeps OoT's
   `Npc_UpdateTalking` and `Npc_TrackPoint`.
 - **Missing state:** `HyrulePort.h` stands in for OoT state 2Ship does not have yet: age checks (Link is
-  a child), quest items and inventory (none).
+  a child), quest items and inventory (none). OoT scenes the table does not have yet are named in
+  `HyruleScenesPending.h` (generated with the tables) with ids no scene uses, so checks for them never
+  match.
 
 `tools/porting/port_actor.py <SoH actor dir>` does the mechanical part of these steps and lists the lines
 to review; the rest is done by hand.
@@ -174,6 +177,11 @@ forest exit aims at Link from about 1500 units away, so the puppet's few units o
 units. Held in front of a Kokiri cutting grass, human Link talks to him ("That meanie, Mido, ..."). The
 Kokiri in the houses, the shop and the Lost Woods, and Fado's trade, wait for those scenes and OoT's
 items; until OoT's quest items exist, every Kokiri acts as at the start of the game.
+
+Wave 7's Mido follows the SoH session within 1 unit on every frame (he shadows Link to block the path).
+Human Link, carrying the debug save's Kokiri Sword and Hero's Shield, shows them to Mido, who sets
+`EVENTCHKINF_SHOWED_MIDO_SWORD_SHIELD_Oot` and steps aside. OoT asks for the Deku Shield, which MM
+lacks, so any shield counts. His Lost Woods scene (Saria's Song) waits for that scene and OoT's songs.
 
 ## Text
 

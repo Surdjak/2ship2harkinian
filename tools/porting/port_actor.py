@@ -11,8 +11,9 @@ What it does (each a plain text rewrite):
   terminalVelocity, speed, depthInWater, objectSlot, attentionRangeType, lockOnArrowOffset...).
 - OoT flags use HyruleFlags.h, OoT text ids in returns, cases and textId assignments get TEXT_OOT, and
   OoT age checks use HyrulePort.h.
-- Debug prints and SoH's game-interactor, cvar and stats additions are removed where they are one-line;
-  anything left is listed at the end for review.
+- Debug prints are removed, SoH's GameInteractor_Should(VB_..., cond) hooks become (cond), and OoT's
+  matrix, allocation, segment and default-sound calls become MM's. SoH's cvars and stats, and anything
+  else that needs a decision, are listed at the end for review.
 - Functions become static.
 
 Data files that the actor #includes (such as z_en_kanban_gfx.c) need renaming by hand, since every .c
@@ -49,7 +50,18 @@ RENAMES = [
     (r"\bisTargeted\b", "isLockedOn"),
     (r"\bTEXT_STATE_DONE_FADING\b", "TEXT_STATE_FADING"),
     (r"\bTEXT_STATE_DONE_HAS_NEXT\b", "TEXT_STATE_NEXT"),
-    (r"\bActor_ProcessTalkRequest\(&this->actor, play\)", "Actor_TalkOfferAccepted(\&this->actor, \&play->state)"),
+    (r"\bActor_ProcessTalkRequest\((&?[\w>.-]+), play\)", r"Actor_TalkOfferAccepted(\1, &play->state)"),
+    (r"\bSEGMENTED_TO_VIRTUAL\(", "Lib_SegmentedToVirtual("),
+    (r"\bVIRTUAL_TO_PHYSICAL\(", "OS_K0_TO_PHYSICAL("),
+    (r"\bGraph_Alloc\(", "GRAPH_ALLOC("),
+    (r"\bMatrix_RotateX\(([^;]*), MTXMODE_APPLY\);", r"Matrix_RotateXFApply(\1);"),
+    (r"\bMatrix_RotateX\(([^;]*), MTXMODE_NEW\);", r"Matrix_RotateXFNew(\1);"),
+    (r"\bMatrix_RotateY\(([^;]*), (MTXMODE_\w+)\);", r"Matrix_RotateYF(\1, \2);"),
+    (r"\bMatrix_RotateZ\(([^;]*), (MTXMODE_\w+)\);", r"Matrix_RotateZF(\1, \2);"),
+    (r"\bgSPMatrix\((POLY_\w+_DISP\+\+), MATRIX_NEWMTX\(([^)]*)\),\s*G_MTX_NOPUSH \| G_MTX_LOAD \| G_MTX_MODELVIEW\);",
+     r"MATRIX_FINALIZE_AND_LOAD(\1, \2);"),
+    (r"\bAudio_PlaySfxGeneral\((\w+), &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,\s*&gSfxDefaultFreqAndVolScale, "
+     r"&gSfxDefaultReverb\);", r"Audio_PlaySfx(\1);"),
     (r"\bObject_GetIndex\(", "Object_GetSlot("),
     (r"\bBgCheck_EntityRaycastFloor4\(", "BgCheck_EntityRaycastFloor5("),
     (r"\bActor_MoveXZGravity\(", "Actor_MoveWithGravity("),
@@ -63,6 +75,7 @@ RENAMES = [
     (r"\bLINK_IS_CHILD\b", "LINK_IS_CHILD_OOT"),
     (r"\bCHECK_QUEST_ITEM\(", "CHECK_QUEST_ITEM_OOT("),
     (r"\bINV_CONTENT\(", "INV_CONTENT_OOT("),
+    (r"\bCUR_EQUIP_VALUE\(", "GET_CUR_EQUIP_VALUE("),
     (r"\bFlags_GetEventChkInf\((\w+)\)", r"GET_EVENTCHKINF_OOT(\1_Oot)"),
     (r"\bFlags_SetEventChkInf\((\w+)\)", r"SET_EVENTCHKINF_OOT(\1_Oot)"),
     (r"\bFlags_UnsetEventChkInf\((\w+)\)", r"CLEAR_EVENTCHKINF_OOT(\1_Oot)"),
@@ -100,6 +113,32 @@ def profile(m):
     return "\n".join(lines)
 
 
+def strip_game_interactor(text):
+    """GameInteractor_Should(VB_X, cond[, ...]) is SoH's hook around vanilla behavior: keep (cond)."""
+    out, i = [], 0
+    while True:
+        j = text.find("GameInteractor_Should(", i)
+        if j < 0:
+            out.append(text[i:])
+            return "".join(out)
+        out.append(text[i:j])
+        k = j + len("GameInteractor_Should(")
+        depth, args, start = 1, [], k
+        while depth:
+            c = text[k]
+            if c in "([{":
+                depth += 1
+            elif c in ")]}":
+                depth -= 1
+            elif c == "," and depth == 1:
+                args.append(text[start:k])
+                start = k + 1
+            k += 1
+        args.append(text[start:k - 1])
+        out.append("(" + args[1].strip() + ")" if len(args) > 1 else text[j:k])
+        i = k
+
+
 def convert(text, header):
     out = []
     for line in text.splitlines():
@@ -117,11 +156,13 @@ def convert(text, header):
     text = re.sub(r"\n[ \t]*osSyncPrintf\((?:[^;]|\n)*?\);", "", text)
     for pattern, repl in RENAMES:
         text = re.sub(pattern, repl, text)
+    text = strip_game_interactor(text)
     if not header:
         text = PROFILE.sub(profile, text)
         text = re.sub(r"^(void|s32|u16|s16|f32|u8|u32) (\w+_\w+\()", r"static \1 \2", text, flags=re.M)
         # After the actor's own header, which comes first.
-        text = re.sub(r'(#include "[^"]+"\n)', r'\1#include "HyruleFlags.h"\n#include "HyrulePort.h"\n', text, count=1)
+        text = re.sub(r'(#include "[^"]+"\n)', r'\1#include "HyruleFlags.h"\n#include "HyrulePort.h"\n#include "HyruleActor.h"\n',
+                      text, count=1)
     else:
         text = text.replace("#include <libultraship/libultra.h>\n", "")
         text = re.sub(r"#ifndef (\w+)_H\n#define \1_H", r"#ifndef \1_OOT_H\n#define \1_OOT_H", text, count=1)
@@ -137,11 +178,12 @@ def main():
     os.makedirs(out, exist_ok=True)
     review = re.compile(r"GameInteractor|CVar|IS_RANDO|Randomizer|gSaveContext\.ship|Sfx_Play|Audio_Play|"
                         r"Player_SetCsAction|func_8002DF54|_Oot\b.*\bSCENE_|DMG|dmgFlags|0x[0-9A-Fa-f]{8}|"
-                        r"Item_Drop|ITEM00_|MATRIX_NEWMTX|Graph_Alloc|SEGMENTED_TO_VIRTUAL|Matrix_Rotate[XYZ]\(")
+                        r"Item_Drop|ITEM00_|MATRIX_NEWMTX|#include \"overlays/")
     for name in sorted(os.listdir(src)):
         if not name.endswith((".c", ".h")):
             continue
-        text = open(os.path.join(src, name)).read()
+        with open(os.path.join(src, name)) as f:
+            text = f.read()
         result = convert(text, name.endswith(".h"))
         with open(os.path.join(out, name), "w") as f:
             f.write(result)

@@ -58,3 +58,24 @@ void func_80034CC4(PlayState* play, SkelAnime* skelAnime, OverrideLimbDraw overr
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
+
+s16 Actor_UpdateAlphaByDistance(Actor* actor, PlayState* play, s16 alpha, f32 radius) {
+    Player* player = GET_PLAYER(play);
+    f32 distance;
+
+    if ((play->csCtx.state != CS_STATE_IDLE) || (gDbgCamEnabled)) {
+        distance = Math_Vec3f_DistXYZ(&actor->world.pos, &play->view.eye) * 0.25f;
+    } else {
+        distance = Math_Vec3f_DistXYZ(&actor->world.pos, &player->actor.world.pos);
+    }
+
+    if (radius < distance) {
+        actor->flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+        Math_SmoothStepToS(&alpha, 0, 6, 0x14, 1);
+    } else {
+        actor->flags |= ACTOR_FLAG_ATTENTION_ENABLED;
+        Math_SmoothStepToS(&alpha, 0xFF, 6, 0x14, 1);
+    }
+
+    return alpha;
+}
