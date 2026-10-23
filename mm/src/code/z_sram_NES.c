@@ -1,4 +1,5 @@
 #include "global.h"
+#include "HyruleInventory.h"
 #include "z64horse.h"
 #include "overlays/gamestates/ovl_file_choose/z_file_select.h"
 #include <string.h>
@@ -531,6 +532,7 @@ void Sram_SaveEndOfCycle(PlayState* play) {
     memset(gSaveContext.save.saveInfo.itemGetInfOot, 0, sizeof(gSaveContext.save.saveInfo.itemGetInfOot));
     memset(gSaveContext.save.saveInfo.infTableOot, 0, sizeof(gSaveContext.save.saveInfo.infTableOot));
     memset(gSaveContext.eventInfOot, 0, sizeof(gSaveContext.eventInfOot));
+    Hyrule_ResetInventoryOotForCycle(play);
 
     for (i = 0; i < ARRAY_COUNT(gSaveContext.eventInf); i++) {
         gSaveContext.eventInf[i] = 0;
@@ -1005,6 +1007,7 @@ void Sram_InitNewSave(void) {
     memcpy(&gSaveContext.save.saveInfo.playerData, &sSaveDefaultPlayerData, sizeof(SavePlayerData));
     memcpy(&gSaveContext.save.saveInfo.equips, &sSaveDefaultItemEquips, sizeof(ItemEquips));
     memcpy(&gSaveContext.save.saveInfo.inventory, &sSaveDefaultInventory, sizeof(Inventory));
+    Hyrule_InitInventoryOot(); // 3Ship [Hyrule]
     memcpy(&gSaveContext.save.saveInfo.checksum, &sSaveDefaultChecksum, sizeof(gSaveContext.save.saveInfo.checksum));
 
     gSaveContext.save.saveInfo.horseData.sceneId = SCENE_F01;
@@ -1223,6 +1226,7 @@ void Sram_InitDebugSave(void) {
     memcpy(&gSaveContext.save.saveInfo.playerData, &sSaveDebugPlayerData, sizeof(SavePlayerData));
     memcpy(&gSaveContext.save.saveInfo.equips, &sSaveDebugItemEquips, sizeof(ItemEquips));
     memcpy(&gSaveContext.save.saveInfo.inventory, &sSaveDebugInventory, sizeof(Inventory));
+    Hyrule_InitInventoryOot(); // 3Ship [Hyrule]
     memcpy(&gSaveContext.save.saveInfo.checksum, &sSaveDebugChecksum, sizeof(gSaveContext.save.saveInfo.checksum));
 
     if (GET_PLAYER_FORM != PLAYER_FORM_HUMAN) {

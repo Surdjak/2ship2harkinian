@@ -105,7 +105,7 @@ RENAMES = [
     (r"\bplay->sceneNum\b", "play->sceneId"),
     (r"\bLINK_IS_ADULT\b", "LINK_IS_ADULT_OOT"),
     (r"\bLINK_IS_CHILD\b", "LINK_IS_CHILD_OOT"),
-    (r"\bCHECK_QUEST_ITEM\(", "CHECK_QUEST_ITEM_OOT("),
+    (r"\bCHECK_QUEST_ITEM\((QUEST_\w+)\)", r"CHECK_QUEST_ITEM_OOT(\1_Oot)"),
     (r"\bINV_CONTENT\(", "INV_CONTENT_OOT("),
     (r"\bActor_GetPlayerExchangeItemId\(", "ACTOR_GET_PLAYER_EXCHANGE_ITEM_ID_OOT("),
     (r"\bCUR_EQUIP_VALUE\(", "GET_CUR_EQUIP_VALUE("),

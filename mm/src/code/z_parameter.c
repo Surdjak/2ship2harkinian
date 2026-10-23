@@ -1,4 +1,5 @@
 #include "global.h"
+#include "HyruleInventory.h"
 #include "PR/gs2dex.h"
 #include "sys_cfb.h"
 #include "z64malloc.h"
@@ -4606,10 +4607,9 @@ u8 Item_GiveImpl(PlayState* play, u8 item) {
 
 // #region 2S2H [Enhancements] This is our wrapper around the original Item_Give function for hooking purposes
 u16 Item_Give(PlayState* play, u16 item) {
-    // 3Ship [Hyrule] OoT items are not given yet; MM's tables below only cover MM's items.
-    // TODO: give OoT items once they and their inventory slots are ported.
+    // 3Ship [Hyrule] OoT items go to the shared inventory, which hands the ones MM has back to MM's.
     if (item >= ITEM_OOT_BASE) {
-        return ITEM_NONE;
+        return Hyrule_ItemGive(play, item);
     }
 
     if (!GameInteractor_ShouldItemGive(item) || item == ITEM_SHIP) {
@@ -4618,6 +4618,8 @@ u16 Item_Give(PlayState* play, u16 item) {
 
     u8 result = Item_GiveImpl(play, item);
     GameInteractor_ExecuteOnItemGive(item);
+    // 3Ship [Hyrule] MM's sword and shield are owned too, alongside OoT's (EQUIP_OWNED_*).
+    Hyrule_SyncEquipmentOwnership();
 
     return result;
 }
@@ -4784,7 +4786,7 @@ u8 Item_CheckObtainabilityImpl(u8 item) {
 u16 Item_CheckObtainability(u16 item) {
     // 3Ship [Hyrule] See Item_Give.
     if (item >= ITEM_OOT_BASE) {
-        return ITEM_NONE;
+        return Hyrule_ItemCheckObtainability(item);
     }
 
     return Item_CheckObtainabilityImpl(item);

@@ -42,6 +42,12 @@ u8 sOotSkyboxId = 0;
 u8 sCameraMovement = 0;
 s16 sViewpoint = 0;
 
+// OoT's scene id for each OoT scene in the table (tools/porting/gen_oot_scenes.py).
+const u8 sOotSceneIds[] = {
+#include "HyruleOotSceneIds.inc"
+};
+static_assert(ARRAY_COUNT(sOotSceneIds) == SCENE_MAX - SCENE_KOKIRI_FOREST_Oot, "one OoT id per OoT scene");
+
 bool IsOotScene(s16 sceneId) {
     return (sceneId >= SCENE_KOKIRI_FOREST_Oot) && (sceneId < SCENE_MAX);
 }
@@ -106,6 +112,10 @@ extern "C" const char* Hyrule_GetScenePath(s16 sceneId) {
     const char* fileName = gSceneTable[sceneId].segment.fileName;
     sPath = std::string("oot/scenes/shared/") + fileName + "/" + fileName;
     return sPath.c_str();
+}
+
+extern "C" s32 Hyrule_GetOotSceneId(s16 sceneId) {
+    return IsOotScene(sceneId) ? sOotSceneIds[sceneId - SCENE_KOKIRI_FOREST_Oot] : -1;
 }
 
 extern "C" u32 Hyrule_EntranceFromOot(u16 ootEntrance) {

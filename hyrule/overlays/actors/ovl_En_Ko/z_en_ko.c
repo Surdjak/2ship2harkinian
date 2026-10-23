@@ -315,7 +315,7 @@ static u16 EnKo_GetTextIdChild(PlayState* play, Actor* thisx) {
             if (GET_EVENTCHKINF_OOT(EVENTCHKINF_OBTAINED_ZELDAS_LETTER_Oot)) {
                 return TEXT_OOT(0x10DA);
             }
-            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
                 return TEXT_OOT(0x10D9);
             }
             return (GET_INFTABLE_OOT(INFTABLE_B7_Oot)) ? TEXT_OOT(0x10D8) : TEXT_OOT(0x10D7);
@@ -323,7 +323,7 @@ static u16 EnKo_GetTextIdChild(PlayState* play, Actor* thisx) {
             if (GET_EVENTCHKINF_OOT(EVENTCHKINF_OBTAINED_ZELDAS_LETTER_Oot)) {
                 return TEXT_OOT(0x1025);
             }
-            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
                 return TEXT_OOT(0x1042);
             }
             return TEXT_OOT(0x1004);
@@ -331,7 +331,7 @@ static u16 EnKo_GetTextIdChild(PlayState* play, Actor* thisx) {
             if (GET_EVENTCHKINF_OOT(EVENTCHKINF_OBTAINED_ZELDAS_LETTER_Oot)) {
                 return TEXT_OOT(0x1023);
             }
-            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
                 return TEXT_OOT(0x1043);
             }
             if (GET_INFTABLE_OOT(INFTABLE_1E_Oot)) {
@@ -347,7 +347,7 @@ static u16 EnKo_GetTextIdChild(PlayState* play, Actor* thisx) {
             if (GET_EVENTCHKINF_OOT(EVENTCHKINF_OBTAINED_ZELDAS_LETTER_Oot)) {
                 return TEXT_OOT(0x1021);
             }
-            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
                 return TEXT_OOT(0x1044);
             }
             if (GET_INFTABLE_OOT(INFTABLE_22_Oot)) {
@@ -358,7 +358,7 @@ static u16 EnKo_GetTextIdChild(PlayState* play, Actor* thisx) {
             if (GET_EVENTCHKINF_OOT(EVENTCHKINF_OBTAINED_ZELDAS_LETTER_Oot)) {
                 return TEXT_OOT(0x1097);
             }
-            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
                 return TEXT_OOT(0x1042);
             }
             if (GET_INFTABLE_OOT(INFTABLE_24_Oot)) {
@@ -369,7 +369,7 @@ static u16 EnKo_GetTextIdChild(PlayState* play, Actor* thisx) {
             if (GET_EVENTCHKINF_OOT(EVENTCHKINF_OBTAINED_ZELDAS_LETTER_Oot)) {
                 return TEXT_OOT(0x10B0);
             }
-            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
                 return TEXT_OOT(0x1043);
             }
             if (GET_INFTABLE_OOT(INFTABLE_26_Oot)) {
@@ -380,7 +380,7 @@ static u16 EnKo_GetTextIdChild(PlayState* play, Actor* thisx) {
             if (GET_EVENTCHKINF_OOT(EVENTCHKINF_OBTAINED_ZELDAS_LETTER_Oot)) {
                 return TEXT_OOT(0x10B5);
             }
-            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
                 return TEXT_OOT(0x1043);
             }
             if (GET_INFTABLE_OOT(INFTABLE_28_Oot)) {
@@ -392,12 +392,12 @@ static u16 EnKo_GetTextIdChild(PlayState* play, Actor* thisx) {
         case ENKO_TYPE_CHILD_8:
             return TEXT_OOT(0x1038);
         case ENKO_TYPE_CHILD_9:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
                 return TEXT_OOT(0x104B);
             }
             return TEXT_OOT(0x103C);
         case ENKO_TYPE_CHILD_10:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
                 return TEXT_OOT(0x104C);
             }
             return TEXT_OOT(0x103D);
@@ -415,7 +415,7 @@ static u16 EnKo_GetTextIdAdult(PlayState* play, Actor* thisx) {
         case ENKO_TYPE_CHILD_FADO:
             return TEXT_OOT(0x10B9);
         case ENKO_TYPE_CHILD_0:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 return TEXT_OOT(0x1072);
             }
             if (GET_INFTABLE_OOT(INFTABLE_41_Oot)) {
@@ -423,12 +423,12 @@ static u16 EnKo_GetTextIdAdult(PlayState* play, Actor* thisx) {
             }
             return TEXT_OOT(0x1055);
         case ENKO_TYPE_CHILD_1:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 return TEXT_OOT(0x1073);
             }
             return TEXT_OOT(0x105A);
         case ENKO_TYPE_CHILD_2:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 return TEXT_OOT(0x1074);
             }
             if (GET_INFTABLE_OOT(INFTABLE_47_Oot)) {
@@ -436,19 +436,19 @@ static u16 EnKo_GetTextIdAdult(PlayState* play, Actor* thisx) {
             }
             return TEXT_OOT(0x105D);
         case ENKO_TYPE_CHILD_3:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 return TEXT_OOT(0x1075);
             }
             return TEXT_OOT(0x105B);
         case ENKO_TYPE_CHILD_4:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 return TEXT_OOT(0x1076);
             }
             return TEXT_OOT(0x105F);
         case ENKO_TYPE_CHILD_5:
             return TEXT_OOT(0x1057);
         case ENKO_TYPE_CHILD_6:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 return TEXT_OOT(0x1077);
             }
             if (GET_INFTABLE_OOT(INFTABLE_51_Oot)) {
@@ -456,12 +456,12 @@ static u16 EnKo_GetTextIdAdult(PlayState* play, Actor* thisx) {
             }
             return TEXT_OOT(0x1058);
         case ENKO_TYPE_CHILD_7:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 return TEXT_OOT(0x1079);
             }
             return TEXT_OOT(0x104E);
         case ENKO_TYPE_CHILD_8:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 return TEXT_OOT(0x107A);
             }
             if (GET_INFTABLE_OOT(INFTABLE_59_Oot)) {
@@ -469,17 +469,17 @@ static u16 EnKo_GetTextIdAdult(PlayState* play, Actor* thisx) {
             }
             return TEXT_OOT(0x104F);
         case ENKO_TYPE_CHILD_9:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 return TEXT_OOT(0x107B);
             }
             return TEXT_OOT(0x1051);
         case ENKO_TYPE_CHILD_10:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 return TEXT_OOT(0x107C);
             }
             return TEXT_OOT(0x1052);
         case ENKO_TYPE_CHILD_11:
-            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 return TEXT_OOT(0x107C);
             }
             if (GET_INFTABLE_OOT(INFTABLE_61_Oot)) {
@@ -612,13 +612,13 @@ static s32 EnKo_GetForestQuestState(EnKo* this) {
         if (GET_EVENTCHKINF_OOT(EVENTCHKINF_OBTAINED_ZELDAS_LETTER_Oot)) {
             return ENKO_FQS_CHILD_SARIA;
         }
-        if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+        if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
             return ENKO_FQS_CHILD_STONE;
         }
         return ENKO_FQS_CHILD_START;
     }
 
-    if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+    if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
         result = ENKO_FQS_ADULT_SAVED;
     } else {
         result = ENKO_FQS_ADULT_ENEMY;
@@ -992,7 +992,7 @@ static s32 EnKo_CanSpawn(EnKo* this, PlayState* play) {
             if (ENKO_TYPE >= ENKO_TYPE_CHILD_7 && ENKO_TYPE != ENKO_TYPE_CHILD_FADO) {
                 return false;
             }
-            if (!CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST) && LINK_IS_ADULT_OOT) {
+            if (!CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot) && LINK_IS_ADULT_OOT) {
                 return false;
             }
             return true;
@@ -1003,7 +1003,7 @@ static s32 EnKo_CanSpawn(EnKo* this, PlayState* play) {
                 return true;
             }
         case SCENE_TWINS_HOUSE_Oot:
-            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 if (ENKO_TYPE != ENKO_TYPE_CHILD_1 && ENKO_TYPE != ENKO_TYPE_CHILD_9) {
                     return false;
                 } else {
@@ -1016,7 +1016,7 @@ static s32 EnKo_CanSpawn(EnKo* this, PlayState* play) {
                 return true;
             }
         case SCENE_MIDOS_HOUSE_Oot:
-            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 if (ENKO_TYPE != ENKO_TYPE_CHILD_0 && ENKO_TYPE != ENKO_TYPE_CHILD_4) {
                     return false;
                 } else {
@@ -1026,7 +1026,7 @@ static s32 EnKo_CanSpawn(EnKo* this, PlayState* play) {
                 return false;
             }
         case SCENE_SARIAS_HOUSE_Oot:
-            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 if (ENKO_TYPE != ENKO_TYPE_CHILD_6) {
                     return false;
                 } else {
@@ -1036,7 +1036,7 @@ static s32 EnKo_CanSpawn(EnKo* this, PlayState* play) {
                 return false;
             }
         case SCENE_KOKIRI_SHOP_Oot:
-            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 if (ENKO_TYPE != ENKO_TYPE_CHILD_5 && ENKO_TYPE != ENKO_TYPE_CHILD_10) {
                     return false;
                 } else {
@@ -1083,9 +1083,9 @@ static void func_80A98CD8(EnKo* this) {
 // Used to fetch actor animation?
 static s32 EnKo_GetForestQuestState2(EnKo* this) {
     if (LINK_IS_ADULT_OOT) {
-        return CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST) ? ENKO_FQS_ADULT_SAVED : ENKO_FQS_ADULT_ENEMY;
+        return CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot) ? ENKO_FQS_ADULT_SAVED : ENKO_FQS_ADULT_ENEMY;
     }
-    if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+    if (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
         return (GET_EVENTCHKINF_OOT(EVENTCHKINF_OBTAINED_ZELDAS_LETTER_Oot)) ? ENKO_FQS_CHILD_SARIA : ENKO_FQS_CHILD_STONE;
     }
     return ENKO_FQS_CHILD_START;
@@ -1163,7 +1163,7 @@ static void func_80A99048(EnKo* this, PlayState* play) {
         Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
         CollisionCheck_SetInfo2(&this->actor.colChkInfo, NULL, &sColChkInfoInit);
         if (ENKO_TYPE == ENKO_TYPE_CHILD_7) {
-            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST_Oot)) {
                 if (this->actor.shape.rot.z != 1) {
                     Actor_Kill(&this->actor);
                     return;
@@ -1185,7 +1185,7 @@ static void func_80A99048(EnKo* this, PlayState* play) {
         Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_EN_ELF_Oot, this->actor.world.pos.x,
                            this->actor.world.pos.y, this->actor.world.pos.z, 0, 0, 0, 3);
         if (ENKO_TYPE == ENKO_TYPE_CHILD_3) {
-            if (!CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) {
+            if (!CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) {
                 this->collider.dim.height += 200;
                 this->actionFunc = func_80A995CC;
                 return;

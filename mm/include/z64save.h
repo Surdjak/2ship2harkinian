@@ -323,6 +323,21 @@ typedef struct SavePlayerData {
     /* 0x26 */ s16 savedSceneId;                      // "scene_data_ID"
 } SavePlayerData; // size = 0x28
 
+// 3Ship [Hyrule] OoT's part of the shared inventory: what MM's Inventory has no room for. See
+// docs/INVENTORY.md, and hyrule/HyruleInventory.h for the slots, bits and accessors.
+typedef struct InventoryOot {
+    u16 items[12];       // slots 0x30 and up (SLOT_OOT_*): OoT's own items and bottles 7 to 10
+    s8 ammo[12];         // by the same slots (the Slingshot's seeds)
+    u16 hookshotAdult;   // adult Link's item in MM's hookshot slot: OoT's Hookshot or Longshot
+    u8 masksOwned;       // OoT's masks, one bit each from ITEM_MASK_KEATON_Oot
+    u32 equipmentOwned;  // a byte per equipment type, a bit per piece (EQUIP_OWNED_*)
+    u32 questItems;      // OoT's quest status bits (QUEST_*_Oot), except the songs MM shares
+    u8 dungeonItems[20]; // OoT's boss key, compass and map bits, by OoT dungeon
+    s8 dungeonKeys[19];  // OoT's small keys, by OoT dungeon
+    u32 gsFlags[6];      // OoT's Gold Skulltula flags, a byte per area
+    s16 gsTokens;        // OoT's Gold Skulltula tokens
+} InventoryOot;
+
 typedef struct SaveInfo {
     /* 0x000 */ SavePlayerData playerData;
     /* 0x028 */ ItemEquips equips;
@@ -363,6 +378,7 @@ typedef struct SaveInfo {
     /*       */ u16 eventChkInfOot[14];
     /*       */ u16 itemGetInfOot[4];
     /*       */ u16 infTableOot[30];
+    /*       */ InventoryOot inventoryOot; // 3Ship [Hyrule]
 } SaveInfo;
 
 // #region 2S2H

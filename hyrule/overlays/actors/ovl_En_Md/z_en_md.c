@@ -375,7 +375,7 @@ static u16 EnMd_GetTextKokiriForest(PlayState* play, EnMd* this) {
     this->messageEntry = 0;
     this->messageState = TEXT_STATE_NONE;
 
-    if ((CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD))) {
+    if ((CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot))) {
         return TEXT_OOT(0x1045);
     }
 
@@ -383,7 +383,8 @@ static u16 EnMd_GetTextKokiriForest(PlayState* play, EnMd* this) {
         return TEXT_OOT(0x1034);
     }
 
-    // PORT: OoT checks for the Deku Shield, which MM lacks; any shield with the Kokiri Sword will do.
+    // PORT: OoT checks that Link wears the Deku Shield (EQUIP_VALUE_SHIELD_DEKU_Oot). It can be owned now, but not
+    // worn until the pause menu's equipment page exists, so any shield with the Kokiri Sword will do.
     if ((GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) != EQUIP_VALUE_SHIELD_NONE) &&
         (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) == EQUIP_VALUE_SWORD_KOKIRI)) {
         return TEXT_OOT(0x1033);
@@ -621,7 +622,7 @@ static void EnMd_UpdateAlphaByDistance(EnMd* this, PlayState* play) {
     f32 radius;
 
     if ((play->sceneId != SCENE_MIDOS_HOUSE_Oot)) {
-        radius = ((CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) &&
+        radius = ((CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) &&
                   !GET_EVENTCHKINF_OOT(EVENTCHKINF_SPOKE_TO_MIDO_AFTER_DEKU_TREES_DEATH_Oot) &&
                   (play->sceneId == SCENE_KOKIRI_FOREST_Oot))
                      ? 100.0f
@@ -658,7 +659,7 @@ static void EnMd_Init(Actor* thisx, PlayState* play) {
 
     if (((play->sceneId == SCENE_KOKIRI_FOREST_Oot) && !GET_EVENTCHKINF_OOT(EVENTCHKINF_SHOWED_MIDO_SWORD_SHIELD_Oot)) ||
         ((play->sceneId == SCENE_KOKIRI_FOREST_Oot) && GET_EVENTCHKINF_OOT(EVENTCHKINF_SHOWED_MIDO_SWORD_SHIELD_Oot) &&
-         (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD))) ||
+         (CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot))) ||
         ((play->sceneId == SCENE_LOST_WOODS_Oot) &&
          !GET_EVENTCHKINF_OOT(EVENTCHKINF_PLAYED_SARIAS_SONG_FOR_MIDO_AS_ADULT_Oot))) {
         this->actor.home.pos = this->actor.world.pos;
@@ -722,7 +723,7 @@ static void EnMd_BlockPath(EnMd* this, PlayState* play) {
     if (((this->interactInfo.talkState == NPC_TALK_STATE_ACTION) &&
          play->sceneId == SCENE_KOKIRI_FOREST_Oot) ||
         this->interactInfo.talkState == NPC_TALK_STATE_ACTION) {
-        if ((CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) &&
+        if ((CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) &&
             !GET_EVENTCHKINF_OOT(EVENTCHKINF_SPOKE_TO_MIDO_AFTER_DEKU_TREES_DEATH_Oot) &&
             (play->sceneId == SCENE_KOKIRI_FOREST_Oot)) {
             play->msgCtx.msgMode = MSGMODE_PAUSED;
@@ -766,7 +767,7 @@ static void EnMd_Walk(EnMd* this, PlayState* play) {
         return;
     }
 
-    if ((CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD)) &&
+    if ((CHECK_QUEST_ITEM_OOT(QUEST_KOKIRI_EMERALD_Oot)) &&
         !GET_EVENTCHKINF_OOT(EVENTCHKINF_SPOKE_TO_MIDO_AFTER_DEKU_TREES_DEATH_Oot) &&
         (play->sceneId == SCENE_KOKIRI_FOREST_Oot)) {
         Message_CloseTextbox(play);

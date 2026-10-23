@@ -26,6 +26,9 @@ void Hyrule_AfterSceneCommands(struct PlayState* play);
 // An OoT entrance into a scene that is not in the scene table yet.
 #define HYRULE_ENTRANCE_NONE 0xFFFFFFFF
 
+// OoT's scene id for an OoT scene, or -1 for MM's.
+s32 Hyrule_GetOotSceneId(s16 sceneId);
+
 // The MM entrance for an OoT entrance index, or HYRULE_ENTRANCE_NONE.
 u32 Hyrule_EntranceFromOot(u16 ootEntrance);
 

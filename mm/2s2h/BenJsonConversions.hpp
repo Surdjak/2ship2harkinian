@@ -209,6 +209,35 @@ inline void from_json(const json& j, Inventory& inventory) {
     }
 }
 
+// 3Ship [Hyrule]
+inline void to_json(json& j, const InventoryOot& inventory) {
+    j = json{
+        { "items", inventory.items },
+        { "ammo", inventory.ammo },
+        { "hookshotAdult", inventory.hookshotAdult },
+        { "masksOwned", inventory.masksOwned },
+        { "equipmentOwned", inventory.equipmentOwned },
+        { "questItems", inventory.questItems },
+        { "dungeonItems", inventory.dungeonItems },
+        { "dungeonKeys", inventory.dungeonKeys },
+        { "gsFlags", inventory.gsFlags },
+        { "gsTokens", inventory.gsTokens },
+    };
+}
+
+inline void from_json(const json& j, InventoryOot& inventory) {
+    j.at("items").get_to(inventory.items);
+    j.at("ammo").get_to(inventory.ammo);
+    j.at("hookshotAdult").get_to(inventory.hookshotAdult);
+    j.at("masksOwned").get_to(inventory.masksOwned);
+    j.at("equipmentOwned").get_to(inventory.equipmentOwned);
+    j.at("questItems").get_to(inventory.questItems);
+    j.at("dungeonItems").get_to(inventory.dungeonItems);
+    j.at("dungeonKeys").get_to(inventory.dungeonKeys);
+    j.at("gsFlags").get_to(inventory.gsFlags);
+    j.at("gsTokens").get_to(inventory.gsTokens);
+}
+
 inline void to_json(json& j, const PermanentSceneFlags& permanentSceneFlags) {
     j = json{
         { "chest", permanentSceneFlags.chest },
@@ -335,6 +364,7 @@ inline void to_json(json& j, const SaveInfo& saveInfo) {
         { "eventChkInfOot", saveInfo.eventChkInfOot }, // 3Ship [Hyrule]
         { "itemGetInfOot", saveInfo.itemGetInfOot },
         { "infTableOot", saveInfo.infTableOot },
+        { "inventoryOot", saveInfo.inventoryOot },
         { "regionsVisited", saveInfo.regionsVisited },
         { "worldMapCloudVisibility", saveInfo.worldMapCloudVisibility },
         { "unk_F40", saveInfo.unk_F40 },
@@ -374,6 +404,7 @@ inline void from_json(const json& j, SaveInfo& saveInfo) {
     j.at("eventChkInfOot").get_to(saveInfo.eventChkInfOot); // 3Ship [Hyrule]
     j.at("itemGetInfOot").get_to(saveInfo.itemGetInfOot);
     j.at("infTableOot").get_to(saveInfo.infTableOot);
+    j.at("inventoryOot").get_to(saveInfo.inventoryOot);
     j.at("regionsVisited").get_to(saveInfo.regionsVisited);
     j.at("worldMapCloudVisibility").get_to(saveInfo.worldMapCloudVisibility);
     j.at("unk_F40").get_to(saveInfo.unk_F40);

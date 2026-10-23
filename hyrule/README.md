@@ -202,8 +202,11 @@ possible:
 - **SoH additions:** enhancements, cvars, game-interactor hooks, stats and debug prints are dropped.
 - **OoT code helpers:** the few `z_actor.c` functions MM lacks are in `HyruleActor.c`. MM keeps OoT's
   `Npc_UpdateTalking` and `Npc_TrackPoint`.
-- **Missing state:** `HyrulePort.h` stands in for OoT state 2Ship does not have yet: age checks (Link is
-  a child), quest items, inventory and Gold Skulltula flags (none). Day and night are MM's. OoT scenes the table does not have yet are named in
+- **OoT state:** OoT's quest status, inventory and Gold Skulltula flags are in the shared inventory
+  ([docs/INVENTORY.md](../docs/INVENTORY.md)), which `HyrulePort.h`'s `CHECK_QUEST_ITEM_OOT` (with
+  `QUEST_*_Oot`), `INV_CONTENT_OOT` and `GET_GS_FLAGS_OOT` read. `HyrulePort.h` still stands in for
+  what 2Ship does not have yet: age checks (Link is a child) and offering OoT trade items (never). Day
+  and night are MM's. OoT scenes the table does not have yet are named in
   `HyruleScenesPending.h` (generated with the tables) with ids no scene uses, so checks for them never
   match.
 
