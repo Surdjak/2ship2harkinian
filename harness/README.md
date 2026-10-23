@@ -25,6 +25,7 @@ The harness is off unless one of these environment variables is set:
 | `HARNESS_STATELOG=<file>` | Write per-frame state as JSON lines. |
 | `HARNESS_PUPPET=<file>` | Drive Player from another run's state log (see below). |
 | `HARNESS_SEED=<n>` | RNG seed used instead of the clock, default 0. Record and replay with the same seed. |
+| `HARNESS_ENTRANCE=<entrance>` | SoH only: start the loaded save at this OoT entrance index, outside any cutscene, to look at a scene the recording does not reach. The run then differs from its recording. |
 | `HARNESS_TIME=<hhmm>` | SoH only: set the time of day whenever a scene is entered, to check night behavior. The run then differs from its recording. This fork boots at a time with `HYRULE_BOOT_TIME` (hyrule/README.md). |
 
 ### Recording and replaying a session

@@ -5,6 +5,7 @@
  */
 
 #include "global.h"
+#include "HyruleScenes.h"
 #include "z64horse.h"
 #include "z64malloc.h"
 #include "z64quake.h"
@@ -8233,6 +8234,8 @@ s32 Player_ActionHandler_0(Player* this, PlayState* play) {
     } else if (GameInteractor_Should(VB_FIRST_PERSON_CAMERA,
                                      (this->tatlTextId == 0) && !Player_CheckHostileLockOn(this) &&
                                          CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_CUP) &&
+                                         // 3Ship [Hyrule] As in OoT, C-up is the viewpoint toggle there.
+                                         !Hyrule_CUpChangesViewpoint() &&
                                          !func_80831814(this, play, PLAYER_UNKAA5_1))) {
         Audio_PlaySfx(NA_SE_SY_ERROR);
     }

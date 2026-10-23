@@ -95,24 +95,39 @@ become fades of the same color and speed.
   Forest Temple, child Hyrule Field with the three spiritual stones) wait for adult Link and OoT's
   quest items. The exit fade and the transition setup use the same layer, and a missing adult night
   layer falls back to adult day.
-- **Skyboxes:** OoT's normal sky and cutscene map use MM's; OoT's other skyboxes are not ported and
-  show nothing (`Hyrule_SkyboxFromOot`).
+- **Skyboxes:** OoT's normal sky and cutscene map use MM's, and the prerendered rooms' panoramas are
+  drawn by `HyrulePanorama.c` (below). OoT's bazaar, market and overcast skies are not ported and show
+  nothing (`Hyrule_SkyboxFromOot`).
 
 ### Prerendered rooms
 
-The houses and the shop are OoT's prerendered rooms: a JPEG background drawn behind the room's depth
-geometry, from the scene camera it was rendered with (`CAM_SET_PREREND_FIXED`). MM kept that camera
-setting and the room drawing code but never used them, so 3Ship ports OoT's `Camera_Fixed3`, draws
-the background when that camera is active (`z_room.c`), and decodes the JPEG on first use
-(`HyrulePrerender.cpp`, as SoH does).
+The houses and the shop are OoT's prerendered rooms. Each has two scene cameras, which OoT calls
+viewpoints:
 
-Not yet:
+- **Fixed (viewpoint 1):** `CAM_SET_PREREND_FIXED`. A JPEG background is drawn behind the room's depth
+  geometry, from the camera it was rendered with.
+- **Pivot (viewpoint 2):** `CAM_SET_PREREND_PIVOT`. The camera stays at one point and turns to follow
+  Link, and a prerendered panorama of two to four 256x256 faces is drawn around it.
 
-- OoT draws a prerendered panorama through its skybox system (`SKYBOX_HOUSE_MIDO` and the like) when
-  the camera in such a room is not the fixed one: always in Mido's House, whose spawn has no camera
-  (so it shows the bare depth geometry for now), and in first-person view in all of them. The pivot
-  camera (`Camera_Unique7`) is not ported either.
-- The backgrounds are 4:3; in a wider window the sides show the depth geometry.
+OoT's scene camera type (misc settings, 0x19) picks the viewpoint: houses (0x20) start on the pivot and
+C-up toggles, while the shop (0x10) starts fixed and its shopkeeper switches. MM kept both camera
+settings and the room drawing code but never used them, so 3Ship ports:
+
+- `Camera_Fixed3` and `Camera_Unique7` (`z_camera.c`);
+- the background draw under the fixed camera, decoding the JPEG on first use (`z_room.c`,
+  `HyrulePrerender.cpp`, as SoH does);
+- the panoramas, built and drawn as OoT's skybox code does (`HyrulePanorama.c`; the textures are in
+  `assets/xml/N64_NTSC_11/textures/backgrounds.xml`);
+- the viewpoints (`Hyrule_InitViewpoint`, `Hyrule_UpdateViewpoint`). In these rooms C-up is the toggle
+  instead of first-person view, as in OoT. A prerendered room's camera otherwise holds still and does
+  not change by floor (FREE0, as OoT's `func_80057FC4`).
+
+The scene camera type travels in the 0x19 command: the converter writes it and 2Ship reads it for scenes
+under `oot/` (`SetCameraSettingsFactory`). Checked against SoH booted at each house's entrance
+(`HARNESS_ENTRANCE`): same camera, framing and panorama.
+
+Not yet: the shopkeeper's browsing viewpoint (`En_Ossan` is not ported), and the 4:3 fixed backgrounds
+leave the sides of a wider window to the depth geometry.
 
 Not yet:
 

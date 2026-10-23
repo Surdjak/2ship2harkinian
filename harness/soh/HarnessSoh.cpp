@@ -119,6 +119,17 @@ void RegisterHarness() {
             [time](int16_t sceneNum) { gSaveContext.dayTime = CLOCK_TIME(time / 100, time % 100); });
     }
 
+    // HARNESS_ENTRANCE=<OoT entrance> starts the loaded save there instead, outside any cutscene, to look at a
+    // scene the recording does not reach. The run then differs from its recording.
+    const char* entranceValue = std::getenv("HARNESS_ENTRANCE");
+    if (entranceValue != nullptr && entranceValue[0] != '\0') {
+        int32_t entrance = (int32_t)std::strtol(entranceValue, nullptr, 0);
+        GameInteractor::Instance->RegisterGameHook<GameInteractor::OnLoadGame>([entrance](int32_t fileNum) {
+            gSaveContext.entranceIndex = entrance;
+            gSaveContext.cutsceneIndex = 0;
+        });
+    }
+
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnGameFrameUpdate>([]() {
         HarnessFrameState state;
         CaptureState(state);

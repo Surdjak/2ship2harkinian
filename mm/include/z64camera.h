@@ -1254,6 +1254,21 @@ typedef struct {
     { fov,      CAM_DATA_FOV }, \
     { interfaceFlags, CAM_DATA_INTERFACE_FLAGS }
 
+// 3Ship [Hyrule] Camera_Unique7 is ported from OoT for its prerendered rooms.
+typedef struct {
+    /* 0x0 */ f32 fov;
+    /* 0x4 */ s16 interfaceFlags;
+} Unique7ReadOnlyData; // size = 0x8
+
+typedef struct {
+    /* 0x0 */ s16 yaw; // unused, as in OoT
+} Unique7ReadWriteData; // size = 0x2
+
+typedef struct {
+    /* 0x0 */ Unique7ReadOnlyData roData;
+    /* 0x8 */ Unique7ReadWriteData rwData;
+} Unique7; // size = 0xC
+
 
 /*================================
  *   Camera_Demo1() Data
@@ -1546,6 +1561,7 @@ typedef union {
     Unique2 uniq2;
     Unique0 uniq0;
     Unique6 uniq6;
+    Unique7 uniq7; // 3Ship [Hyrule]
     Demo1 demo1;
     Demo2 demo2;
     Demo3 demo3;

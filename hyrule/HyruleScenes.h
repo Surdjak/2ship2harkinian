@@ -33,6 +33,18 @@ u32 Hyrule_EntranceFromOot(u16 ootEntrance);
 // Link came in at.
 u32 Hyrule_ExitFromOot(u16 ootEntrance);
 
+// OoT's scene camera type (cameraMovement in OoT's misc settings command), read for OoT scenes.
+void Hyrule_SetCameraMovement(u8 cameraMovement);
+
+// OoT's prerendered rooms show one of two scene cameras, the "viewpoint": 1 is the fixed camera the
+// background was rendered from, 2 the pivoting one that shows the panorama, and 0 means the scene has
+// none. Houses start on 2 and C-up toggles; shops start on 1 and their shopkeepers switch.
+void Hyrule_InitViewpoint(struct PlayState* play);
+void Hyrule_UpdateViewpoint(struct PlayState* play, struct Input* input);
+void Hyrule_SetViewpoint(struct PlayState* play, s16 viewpoint);
+// Whether C-up is the scene's viewpoint toggle (or disabled, in shops) rather than first-person view.
+s32 Hyrule_CUpChangesViewpoint(void);
+
 // MM's skybox for an OoT skybox id.
 u8 Hyrule_SkyboxFromOot(u8 ootSkyboxId);
 

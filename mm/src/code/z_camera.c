@@ -5721,7 +5721,57 @@ s32 Camera_Unique6(Camera* camera) {
  * Used by the unused PREREND_PIVOT Camera Setting. Remnant of OoT
  */
 s32 Camera_Unique7(Camera* camera) {
-    return Camera_Noop(camera);
+    // 3Ship [Hyrule] Ported from OoT for its prerendered rooms: the eye stays at the scene camera's position
+    // and turns to follow the focal actor, so the room's panorama can be drawn around it.
+    Vec3f* eye = &camera->eye;
+    Vec3f* at = &camera->at;
+    Vec3f* eyeNext = &camera->eyeNext;
+    PosRot* focalActorPosRot = &camera->focalActorPosRot;
+    VecGeo focalActorOffset;
+    s16 fov;
+    BgCamFuncData* bgCamFuncData;
+    Unique7ReadOnlyData* roData = &camera->paramData.uniq7.roData;
+    Unique7ReadWriteData* rwData = &camera->paramData.uniq7.rwData;
+
+    if (RELOAD_PARAMS(camera)) {
+        CameraModeValue* values = sCameraSettings[camera->setting].cameraModes[camera->mode].values;
+
+        roData->fov = GET_NEXT_RO_DATA(values);
+        roData->interfaceFlags = GET_NEXT_RO_DATA(values);
+    }
+
+    bgCamFuncData = (BgCamFuncData*)Camera_GetBgCamOrActorCsCamFuncData(camera, camera->bgCamIndex);
+    *eyeNext = Camera_Vec3sToVec3f(&bgCamFuncData->pos);
+    *eye = *eyeNext;
+    focalActorOffset = OLib_Vec3fDiffToVecGeo(eye, &focalActorPosRot->pos);
+
+    // As in OoT, the scene's fov is overridden below.
+    fov = bgCamFuncData->fov;
+    if (fov == -1) {
+        fov = roData->fov * 100.0f;
+    }
+    if (fov < 361) {
+        fov *= 100;
+    }
+
+    sCameraInterfaceFlags = roData->interfaceFlags;
+
+    if (camera->animState == 0) {
+        camera->animState++;
+        camera->fov = fov * 0.01f;
+        camera->atLerpStepScale = 0.0f;
+        camera->roll = 0;
+        rwData->yaw = focalActorOffset.yaw;
+    }
+
+    camera->fov = 60.0f;
+
+    rwData->yaw = Camera_ScaledStepToFloorS(focalActorOffset.yaw, rwData->yaw, 0.4f, 0x7D0);
+    focalActorOffset.pitch = -bgCamFuncData->rot.x * Math_CosS(focalActorOffset.yaw - bgCamFuncData->rot.y);
+    *at = OLib_AddVecGeoToVec3f(eye, &focalActorOffset);
+    Camera_SetStateFlag(camera, CAM_STATE_10);
+
+    return true;
 }
 
 s32 Camera_Unique8(Camera* camera) {
@@ -7126,6 +7176,11 @@ void func_800DDFE0(Camera* camera) {
     if (camera != &camera->play->mainCamera) {
         camera->prevSetting = camera->setting = CAM_SET_FREE0;
         Camera_UnsetStateFlag(camera, CAM_STATE_2);
+    } else if (camera->play->roomCtx.curRoom.roomShape->base.type == ROOM_SHAPE_TYPE_IMAGE) {
+        // 3Ship [Hyrule] As in OoT, a prerendered room holds the camera still until its spawn's camera index
+        // or its viewpoint (Hyrule_InitViewpoint) picks one of its scene cameras. MM has no such rooms.
+        camera->prevSetting = camera->setting = CAM_SET_FREE0;
+        Camera_UnsetStateFlag(camera, CAM_STATE_2);
     } else {
         switch (camera->play->roomCtx.curRoom.type) {
             case ROOM_TYPE_DUNGEON:
@@ -7215,6 +7270,10 @@ void Camera_InitFocalActorSettings(Camera* camera, Actor* focalActor) {
     }
 
     Camera_SetStateFlag(camera, CAM_STATE_2);
+    // 3Ship [Hyrule] OoT's prerendered rooms do not change cameras by floor (func_800DDFE0).
+    if (camera->play->roomCtx.curRoom.roomShape->base.type == ROOM_SHAPE_TYPE_IMAGE) {
+        Camera_UnsetStateFlag(camera, CAM_STATE_2);
+    }
 
     camera->viewFlags = 0;
     camera->nextCamSceneDataId = -1;

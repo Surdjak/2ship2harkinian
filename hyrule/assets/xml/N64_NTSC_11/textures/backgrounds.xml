@@ -1,0 +1,64 @@
+<Root>
+    <File Name="vr_K3VR_static">
+        <Texture Name="gHouseOfTwinsBgTex" OutName="house_of_twins" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_K3VR_pal_static" ExternalTlutOffset="0x0"/>
+        <Texture Name="gHouseOfTwins2BgTex" OutName="house_of_twins2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_K3VR_pal_static" ExternalTlutOffset="0x200"/>
+        <Texture Name="gHouseOfTwins3BgTex" OutName="house_of_twins3" Format="ci8" Width="256" Height="256" Offset="0x20000" ExternalTlut="vr_K3VR_pal_static" ExternalTlutOffset="0x400"/>
+    </File>
+    <File Name="vr_K3VR_pal_static">
+        <Texture Name="gHouseOfTwinsBgTLUT" OutName="house_of_twins_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gHouseOfTwinsBg2TLUT" OutName="house_of_twins2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+        <Texture Name="gHouseOfTwinsBg3TLUT" OutName="house_of_twins3_tlut" Format="rgba16" Width="16" Height="16" Offset="0x400"/>
+    </File>
+    <File Name="vr_K4VR_static">
+        <Texture Name="gMidosHouseBgTex" OutName="midos_house" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_K4VR_pal_static" ExternalTlutOffset="0x0"/>
+        <Texture Name="gMidosHouse2BgTex" OutName="midos_house2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_K4VR_pal_static" ExternalTlutOffset="0x200"/>
+        <Texture Name="gMidosHouse3BgTex" OutName="midos_house3" Format="ci8" Width="256" Height="256" Offset="0x20000" ExternalTlut="vr_K4VR_pal_static" ExternalTlutOffset="0x400"/>
+    </File>
+    <File Name="vr_K4VR_pal_static">
+        <Texture Name="gMidosHouseBgTLUT" OutName="midos_house_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gMidosHouseBg2TLUT" OutName="midos_house2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+        <Texture Name="gMidosHouseBg3TLUT" OutName="midos_house3_tlut" Format="rgba16" Width="16" Height="16" Offset="0x400"/>
+    </File>
+    <File Name="vr_K5VR_static">
+        <Texture Name="gSariasHouseBgTex" OutName="sarias_house" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_K5VR_pal_static" ExternalTlutOffset="0x0"/>
+        <Texture Name="gSariasHouse2BgTex" OutName="sarias_house2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_K5VR_pal_static" ExternalTlutOffset="0x200"/>
+        <Texture Name="gSariasHouse3BgTex" OutName="sarias_house3" Format="ci8" Width="256" Height="256" Offset="0x20000" ExternalTlut="vr_K5VR_pal_static" ExternalTlutOffset="0x400"/>
+    </File>
+    <File Name="vr_K5VR_pal_static">
+        <Texture Name="gSariasHouseBgTLUT" OutName="sarias_house_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gSariasHouseBg2TLUT" OutName="sarias_house2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+        <Texture Name="gSariasHouseBg3TLUT" OutName="sarias_house3_tlut" Format="rgba16" Width="16" Height="16" Offset="0x400"/>
+    </File>
+    <File Name="vr_KHVR_static">
+        <Texture Name="gKnowItAllBrosHouseBgTex" OutName="know_it_all_bros_house" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_KHVR_pal_static" ExternalTlutOffset="0x000"/>
+        <Texture Name="gKnowItAllBrosHouse2BgTex" OutName="know_it_all_bros_house2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_KHVR_pal_static" ExternalTlutOffset="0x200"/>
+        <Texture Name="gKnowItAllBrosHouse3BgTex" OutName="know_it_all_bros_house3" Format="ci8" Width="256" Height="256" Offset="0x20000" ExternalTlut="vr_KHVR_pal_static" ExternalTlutOffset="0x400"/>
+        <Texture Name="gKnowItAllBrosHouse4BgTex" OutName="know_it_all_bros_house4" Format="ci8" Width="256" Height="256" Offset="0x30000" ExternalTlut="vr_KHVR_pal_static" ExternalTlutOffset="0x600"/>
+    </File>
+    <File Name="vr_KHVR_pal_static">
+        <Texture Name="gKnowItAllBrosHouseBgTLUT" OutName="know_it_all_bros_house_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gKnowItAllBrosHouseBg2TLUT" OutName="know_it_all_bros_house2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+        <Texture Name="gKnowItAllBrosHouseBg3TLUT" OutName="know_it_all_bros_house3_tlut" Format="rgba16" Width="16" Height="16" Offset="0x400"/>
+        <Texture Name="gKnowItAllBrosHouseBg4TLUT" OutName="know_it_all_bros_house4_tlut" Format="rgba16" Width="16" Height="16" Offset="0x600"/>
+    </File>
+    <File Name="vr_KSVR_static">
+        <Texture Name="gKokiriShopBgTex" OutName="kokiri_shop" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_KSVR_pal_static" ExternalTlutOffset="0x000"/>
+        <Texture Name="gKokiriShop2BgTex" OutName="kokiri_shop2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_KSVR_pal_static" ExternalTlutOffset="0x200"/>
+    </File>
+    <File Name="vr_KSVR_pal_static">
+        <Texture Name="gKokiriShopBgTLUT" OutName="kokiri_shop_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gKokiriShopBg2TLUT" OutName="kokiri_shop2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+    </File>
+    <File Name="vr_LHVR_static">
+        <Texture Name="gLinksHouseBgTex" OutName="links_house" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_LHVR_pal_static" ExternalTlutOffset="0x000"/>
+        <Texture Name="gLinksHouse2BgTex" OutName="links_house2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_LHVR_pal_static" ExternalTlutOffset="0x200"/>
+        <Texture Name="gLinksHouse3BgTex" OutName="links_house3" Format="ci8" Width="256" Height="256" Offset="0x20000" ExternalTlut="vr_LHVR_pal_static" ExternalTlutOffset="0x400"/>
+        <Texture Name="gLinksHouse4BgTex" OutName="links_house4" Format="ci8" Width="256" Height="256" Offset="0x30000" ExternalTlut="vr_LHVR_pal_static" ExternalTlutOffset="0x600"/>
+    </File>
+    <File Name="vr_LHVR_pal_static">
+        <Texture Name="gLinksHouseBgTLUT" OutName="links_house_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gLinksHouseBg2TLUT" OutName="links_house2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+        <Texture Name="gLinksHouseBg3TLUT" OutName="links_house3_tlut" Format="rgba16" Width="16" Height="16" Offset="0x400"/>
+        <Texture Name="gLinksHouseBg4TLUT" OutName="links_house4_tlut" Format="rgba16" Width="16" Height="16" Offset="0x600"/>
+    </File>
+</Root>

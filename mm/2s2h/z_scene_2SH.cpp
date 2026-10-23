@@ -407,6 +407,11 @@ void Scene_CommandSetRegionVisitedFlag(PlayState* play, SOH::ISceneCommand* cmd)
     s16 j = 0;
     s16 i = 0;
 
+    // 3Ship [Hyrule] OoT's version of this command holds the scene's camera type (no OoT scene is in a region).
+    if (Hyrule_GetScenePath(play->sceneId) != nullptr) {
+        Hyrule_SetCameraMovement(((SOH::SetCameraSettings*)cmd)->settings.cameraMovement);
+    }
+
     while (true) {
         if (gSceneIdsPerRegion[i][j] == 0xFFFF) {
             i++;

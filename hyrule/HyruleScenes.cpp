@@ -1,6 +1,7 @@
 #include "HyruleScenes.h"
 #include "HyruleIds.h"
 #include "HyrulePort.h"
+#include "HyrulePanorama.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -31,6 +32,15 @@ namespace {
 const u32 sOotEntrances[] = {
 #include "HyruleOotEntrances.inc"
 };
+
+// The scene's OoT skybox id, kept for its panorama (Hyrule_SkyboxFromOot).
+u8 sOotSkyboxId = 0;
+
+// OoT's scene camera type and prerendered room viewpoint (YREG(15) and play->unk_1242B in OoT).
+#define CAMERA_MOVEMENT_SHOP 0x10
+#define CAMERA_MOVEMENT_HOUSE 0x20
+u8 sCameraMovement = 0;
+s16 sViewpoint = 0;
 
 bool IsOotScene(s16 sceneId) {
     return (sceneId >= SCENE_KOKIRI_FOREST_Oot) && (sceneId < SCENE_MAX);
@@ -126,20 +136,65 @@ extern "C" s32 Hyrule_GetSceneLayer(u32 entrance, s32 mmSceneLayer) {
 }
 
 extern "C" u8 Hyrule_SkyboxFromOot(u8 ootSkyboxId) {
+    sOotSkyboxId = ootSkyboxId;
     switch (ootSkyboxId) {
         case 0x01: // SKYBOX_NORMAL_SKY
             return SKYBOX_NORMAL_SKY;
         case 0x05: // SKYBOX_CUTSCENE_MAP
             return SKYBOX_CUTSCENE_MAP;
         default:
-            // TODO: OoT's other skyboxes are not ported: the bazaar, market and overcast skies, and the
-            // prerendered rooms' panoramas (SKYBOX_HOUSE_LINK...), drawn when their camera is not fixed.
+            // The prerendered rooms' panoramas (SKYBOX_HOUSE_LINK...) are drawn by HyrulePanorama.c.
+            // TODO: OoT's bazaar, market and overcast skies are not ported.
             return SKYBOX_NONE;
     }
 }
 
+extern "C" void Hyrule_SetCameraMovement(u8 cameraMovement) {
+    sCameraMovement = cameraMovement;
+}
+
+extern "C" void Hyrule_InitViewpoint(PlayState* play) {
+    if (sCameraMovement == CAMERA_MOVEMENT_HOUSE) {
+        sViewpoint = 2;
+    } else if (sCameraMovement == CAMERA_MOVEMENT_SHOP) {
+        sViewpoint = 1;
+    } else {
+        sViewpoint = 0;
+    }
+}
+
+extern "C" void Hyrule_SetViewpoint(PlayState* play, s16 viewpoint) {
+    sViewpoint = viewpoint;
+    if ((sCameraMovement != CAMERA_MOVEMENT_SHOP) && (gSaveContext.save.cutsceneIndex < 0xFFF0)) {
+        Audio_PlaySfx((viewpoint == 1) ? NA_SE_SY_CAMERA_ZOOM_DOWN : NA_SE_SY_CAMERA_ZOOM_UP);
+    }
+    Camera_ChangeActorCsCamIndex(GET_ACTIVE_CAM(play), sViewpoint - 1);
+}
+
+// Play_Update in OoT, after the rooms update.
+extern "C" void Hyrule_UpdateViewpoint(PlayState* play, Input* input) {
+    if (sViewpoint == 0) {
+        return;
+    }
+    if (CHECK_BTN_ALL(input->press.button, BTN_CUP) && !IS_PAUSED(&play->pauseCtx) && !Player_InCsMode(play)) {
+        if (sCameraMovement == CAMERA_MOVEMENT_SHOP) {
+            Audio_PlaySfx(NA_SE_SY_ERROR);
+        } else {
+            Hyrule_SetViewpoint(play, sViewpoint ^ 3);
+        }
+    }
+    Camera_ChangeActorCsCamIndex(GET_ACTIVE_CAM(play), sViewpoint - 1);
+}
+
+extern "C" s32 Hyrule_CUpChangesViewpoint(void) {
+    return (sCameraMovement == CAMERA_MOVEMENT_SHOP) || (sCameraMovement == CAMERA_MOVEMENT_HOUSE);
+}
+
 extern "C" void Hyrule_AfterSceneCommands(PlayState* play) {
+    Hyrule_InitPanorama(IsOotScene(play->sceneId) ? sOotSkyboxId : 0);
+    sOotSkyboxId = 0;
     if (!IsOotScene(play->sceneId)) {
+        sCameraMovement = 0;
         return;
     }
 

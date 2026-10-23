@@ -49,6 +49,7 @@ u8 sMotionBlurStatus;
 #include <string.h>
 #include "Harness.h"
 #include "HyruleScenes.h"
+#include "HyrulePanorama.h"
 
 s32 gDbgCamEnabled = false;
 u8 D_801D0D54 = false;
@@ -1068,6 +1069,8 @@ void Play_UpdateMain(PlayState* this) {
 
             Room_Noop(this, &this->roomCtx.curRoom, &input[1], 0);
             Room_Noop(this, &this->roomCtx.prevRoom, &input[1], 1);
+            // 3Ship [Hyrule] C-up switches between OoT's prerendered room viewpoints.
+            Hyrule_UpdateViewpoint(this, &input[0]);
             Skybox_Update(&this->skyboxCtx);
 
             if (IS_PAUSED(&this->pauseCtx)) {
@@ -1426,6 +1429,14 @@ void Play_DrawMain(PlayState* this) {
                         Skybox_Draw(&this->skyboxCtx, gfxCtx, this->skyboxId, 0, this->view.eye.x + quakeOffset.x,
                                     this->view.eye.y + quakeOffset.y, this->view.eye.z + quakeOffset.z);
                     }
+                }
+
+                // 3Ship [Hyrule] OoT's prerendered rooms draw a panorama here when their camera is not fixed.
+                {
+                    Vec3f quakeOffset = Camera_GetQuakeOffset(GET_ACTIVE_CAM(this));
+
+                    Hyrule_DrawPanorama(this, this->view.eye.x + quakeOffset.x, this->view.eye.y + quakeOffset.y,
+                                        this->view.eye.z + quakeOffset.z);
                 }
 
                 if (this->envCtx.precipitation[PRECIP_RAIN_CUR] != 0) {
@@ -2490,6 +2501,8 @@ void Play_Init(GameState* thisx) {
     if (PLAYER_GET_BG_CAM_INDEX(&player->actor) != 0xFF) {
         Camera_ChangeActorCsCamIndex(&this->mainCamera, PLAYER_GET_BG_CAM_INDEX(&player->actor));
     }
+    // 3Ship [Hyrule] OoT's prerendered rooms start on the scene's viewpoint.
+    Hyrule_InitViewpoint(this);
 
     CutsceneManager_StoreCamera(&this->mainCamera);
     Interface_SetSceneRestrictions(this);
