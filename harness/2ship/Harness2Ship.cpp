@@ -98,6 +98,9 @@ void ApplyPuppet(Actor* actor) {
     player->actor.world.rot.y = p.rot[1];
     player->speedXZ = p.speedXZ;
     player->yaw = p.yaw;
+    // Player placed its hurtbox during its update; move it too, since collisions are checked after all
+    // actors update.
+    Collider_UpdateCylinder(&player->actor, &player->cylinder);
 }
 
 void RegisterHarness() {

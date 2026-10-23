@@ -52,6 +52,18 @@ RENAMES = [
     (r"\bTEXT_STATE_DONE_HAS_NEXT\b", "TEXT_STATE_NEXT"),
     (r"\bActor_ProcessTalkRequest\((&?[\w>.-]+), play\)", r"Actor_TalkOfferAccepted(\1, &play->state)"),
     (r"\bSEGMENTED_TO_VIRTUAL\(", "Lib_SegmentedToVirtual("),
+    (r"\bQuake_Add\(([^,]+), (\d)\)", r"Quake_Request(\1, QUAKE_TYPE_\2)"),
+    (r"\bQuake_SetQuakeValues\(", "Quake_SetPerturbations("),
+    (r"\bWaterBox_GetSurfaceImpl\(", "BgCheck_GetWaterSurfaceNoBgId("),
+    (r"\bActor_UpdateVelocityXZGravity\(", "Actor_UpdateVelocityWithGravity("),
+    (r"\bMatrix_RotateAxis\(", "Matrix_RotateAxisF("),
+    (r"\bMatrix_MtxFToYXZRotS\(", "Matrix_MtxFToYXZRot("),
+    (r"\bQuake_SetCountdown\(", "Quake_SetDuration("),
+    (r"\bfunc_80033480\(", "func_800BBFB0("),
+    (r"\bActor_SetPlayerKnockbackLarge\(", "func_800B8D50("),
+    (r"\bPlayer_PlaySfx\(&GET_PLAYER\(play\)->actor, ", "Player_PlaySfx(GET_PLAYER(play), "),
+    (r"\bPLAYER_STATE1_IN_ITEM_CS\b", "PLAYER_STATE1_10000000"),
+    (r"\bPLAYER_STATE1_IN_CUTSCENE\b", "PLAYER_STATE1_20000000"),
     (r"\bVIRTUAL_TO_PHYSICAL\(", "OS_K0_TO_PHYSICAL("),
     (r"\bGraph_Alloc\(", "GRAPH_ALLOC("),
     (r"\bMatrix_RotateX\(([^;]*), MTXMODE_APPLY\);", r"Matrix_RotateXFApply(\1);"),
@@ -63,6 +75,8 @@ RENAMES = [
     (r"\bAudio_PlaySfxGeneral\((\w+), &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,\s*&gSfxDefaultFreqAndVolScale, "
      r"&gSfxDefaultReverb\);", r"Audio_PlaySfx(\1);"),
     (r"\bObject_GetIndex\(", "Object_GetSlot("),
+    # OoT's Floor5 (with play) is MM's Floor5_2, and OoT's Floor4 is MM's Floor5; in that order.
+    (r"\bBgCheck_EntityRaycastFloor5\(", "BgCheck_EntityRaycastFloor5_2("),
     (r"\bBgCheck_EntityRaycastFloor4\(", "BgCheck_EntityRaycastFloor5("),
     (r"\bActor_MoveXZGravity\(", "Actor_MoveWithGravity("),
     (r"\bAudio_PlayActorSound2\(", "Actor_PlaySfx("),
@@ -157,12 +171,18 @@ def convert(text, header):
     for pattern, repl in RENAMES:
         text = re.sub(pattern, repl, text)
     text = strip_game_interactor(text)
+    # Collider damage masks (the first field of an element's AT and AC info) take MM's bits too.
+    text = re.sub(r"\{ (0x[0-9A-Fa-f]{8}), (0x[0-9A-Fa-f]{2}), (0x[0-9A-Fa-f]{2}) \}",
+                  lambda m: m.group(0) if int(m.group(1), 16) == 0 else
+                  f"{{ DMG_FROM_OOT({m.group(1)}), {m.group(2)}, {m.group(3)} }}", text)
     if not header:
         text = PROFILE.sub(profile, text)
         text = re.sub(r"^(void|s32|u16|s16|f32|u8|u32) (\w+_\w+\()", r"static \1 \2", text, flags=re.M)
         # After the actor's own header, which comes first.
-        text = re.sub(r'(#include "[^"]+"\n)', r'\1#include "HyruleFlags.h"\n#include "HyrulePort.h"\n#include "HyruleActor.h"\n',
-                      text, count=1)
+        extra = '#include "HyruleFlags.h"\n#include "HyrulePort.h"\n#include "HyruleActor.h"\n'
+        extra += '#include "z64quake.h"\n' if "Quake_" in text else ""
+        extra += '#include "z64rumble.h"\n' if "Rumble_" in text else ""
+        text = re.sub(r'(#include "[^"]+"\n)', lambda m: m.group(1) + extra, text, count=1)
     else:
         text = text.replace("#include <libultraship/libultra.h>\n", "")
         text = re.sub(r"#ifndef (\w+)_H\n#define \1_H", r"#ifndef \1_OOT_H\n#define \1_OOT_H", text, count=1)
@@ -177,7 +197,7 @@ def main():
     out = os.path.join(OUT_ROOT, os.path.basename(src))
     os.makedirs(out, exist_ok=True)
     review = re.compile(r"GameInteractor|CVar|IS_RANDO|Randomizer|gSaveContext\.ship|Sfx_Play|Audio_Play|"
-                        r"Player_SetCsAction|func_8002DF54|_Oot\b.*\bSCENE_|DMG|dmgFlags|0x[0-9A-Fa-f]{8}|"
+                        r"Player_SetCsAction|func_8002DF54|dmgFlags|"
                         r"Item_Drop|ITEM00_|MATRIX_NEWMTX|#include \"overlays/")
     for name in sorted(os.listdir(src)):
         if not name.endswith((".c", ".h")):

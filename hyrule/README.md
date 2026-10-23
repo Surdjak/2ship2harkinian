@@ -108,6 +108,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 5 | `En_Wonder_Talk2` (invisible message spots), `En_Wonder_Item` (invisible item drops and switches) |
 | 6 | `En_Ko` (the Kokiri children; Fado is left out) |
 | 7 | `En_Md` (Mido) |
+| 8 | `En_Goroiwa` (rolling boulder) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -182,6 +183,12 @@ Wave 7's Mido follows the SoH session within 1 unit on every frame (he shadows L
 Human Link, carrying the debug save's Kokiri Sword and Hero's Shield, shows them to Mido, who sets
 `EVENTCHKINF_SHOWED_MIDO_SWORD_SHIELD_Oot` and steps aside. OoT asks for the Deku Shield, which MM
 lacks, so any shield counts. His Lost Woods scene (Saria's Song) waits for that scene and OoT's songs.
+
+Wave 8's boulder rolls its path in step with SoH's until SoH's Link crawls into the tunnel (scene frame
+1416): the boulder stops while Link is in a cutscene state, and the puppet copies Player's position but
+not its state. Its attack mask uses `DMG_FROM_OOT` so that MM's Player, whose damage checks read only
+MM's bits, registers it: with Link held on its path, the boulder knocks him down, bounces back, waits
+and rolls on, as in OoT.
 
 ## Text
 

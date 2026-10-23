@@ -79,3 +79,10 @@ s16 Actor_UpdateAlphaByDistance(Actor* actor, PlayState* play, s16 alpha, f32 ra
 
     return alpha;
 }
+
+static Color_RGBA8 sDustBrownPrim = { 170, 130, 90, 255 };
+static Color_RGBA8 sDustBrownEnv = { 100, 60, 20, 255 };
+
+void func_800286CC(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, s16 scaleStep) {
+    EffectSsDust_Spawn(play, 5, pos, velocity, accel, &sDustBrownPrim, &sDustBrownEnv, scale, scaleStep, 10, 0);
+}

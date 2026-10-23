@@ -94,6 +94,9 @@ ported actors only and leave out rotations that come from random numbers and fla
 the camera. The puppet moves Player but cannot attack, so check attacks with a scripted replay in this
 fork (`make_inputs.py`).
 
+The puppet does not copy Player's state flags, so actors that react to Player's state (such as pausing
+while Link is in a cutscene) can part from the recording at that point.
+
 A puppet log can also be written by hand to hold Player in one place, such as in front of an NPC,
 while `HARNESS_REPLAY` presses buttons: one line per scene frame with `gs`, `scene`, `sf` and a
 `player` object (`pos`, `rot`, `speedXZ`, `yaw`).
@@ -137,7 +140,7 @@ sources of divergence that remain:
 ## Puppet mode
 
 With `HARNESS_PUPPET`, after Player updates on a scene frame that the log also has, Player's position,
-rotation, speed and yaw are replaced with the logged ones. Actors that update afterwards see the
+rotation, speed and yaw are replaced with the logged ones, and Player's body collider follows them. Actors that update afterwards see the
 recorded Player, so a ported actor can be tested against SoH's Player behavior. Collision and
 cutscenes later in the frame can still move Player, so the end-of-frame position can differ slightly.
 Frames are matched by scene id, so a SoH log needs `ootlog.py` first. When a log visits a scene more
