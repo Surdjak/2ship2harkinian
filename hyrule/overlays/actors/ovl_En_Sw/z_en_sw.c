@@ -645,7 +645,7 @@ static void func_80B0DB00(EnSw* this, PlayState* play) {
     Actor_MoveWithGravity(&this->actor);
     this->actor.shape.rot.x += 0x1000;
     this->actor.shape.rot.z += 0x1000;
-    Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 0.0f, 5);
+    Actor_UpdateBgCheckInfo(play, &this->actor, 20.0f, 20.0f, 0.0f, 0x405);
 
     if ((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && (!(0.0f <= this->actor.velocity.y))) {
         if (this->actor.floorHeight <= BGCHECK_Y_MIN || this->actor.floorHeight >= 32000.0f) {

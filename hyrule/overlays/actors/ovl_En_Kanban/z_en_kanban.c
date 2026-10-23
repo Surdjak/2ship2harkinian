@@ -222,7 +222,7 @@ static void EnKanban_Init(Actor* thisx, PlayState* play) {
         }
         this->bounceX = 1;
         this->partFlags = 0xFFFF;
-        Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 10.0f, 50.0f, 4);
+        Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 10.0f, 50.0f, 0x404);
         EnKanban_SetFloorRot(this);
         if (LINK_IS_CHILD_OOT) {
             this->actor.world.pos.y -= 15.0f;
@@ -437,7 +437,7 @@ static void EnKanban_Update(Actor* thisx, PlayState* play2) {
             u8 onGround;
 
             Actor_MoveWithGravity(&this->actor);
-            Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, 30.0f, 50.0f, 5);
+            Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, 30.0f, 50.0f, 0x405);
 
             tempX = this->actor.world.pos.x;
             tempY = this->actor.world.pos.y;
@@ -446,7 +446,7 @@ static void EnKanban_Update(Actor* thisx, PlayState* play2) {
             tempYDistToWater = this->actor.depthInWater;
 
             this->actor.world.pos.z += ((this->actor.world.pos.y - this->actor.floorHeight) * -50.0f) / 100.0f;
-            Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 10.0f, 50.0f, 4);
+            Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 10.0f, 50.0f, 0x404);
             EnKanban_SetFloorRot(this);
 
             this->actor.world.pos.x = tempX;
@@ -606,7 +606,7 @@ static void EnKanban_Update(Actor* thisx, PlayState* play2) {
                 }
                 Actor_MoveWithGravity(&this->actor);
                 if (this->actor.speed != 0.0f) {
-                    Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 10.0f, 50.0f, 5);
+                    Actor_UpdateBgCheckInfo(play, &this->actor, 10.0f, 10.0f, 50.0f, 0x405);
                     if (this->actor.bgCheckFlags & BGCHECKFLAG_WALL) {
                         this->actor.speed *= -0.5f;
                         if (this->spinVel.y > 0) {

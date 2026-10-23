@@ -124,3 +124,17 @@ void func_8002EBCC(Actor* actor, PlayState* play, s32 flag) {
         CLOSE_DISPS(play->state.gfxCtx);
     }
 }
+
+s16 Item00_FromOot(s16 ootType) {
+    static const u8 sMmItem00[ITEM00_MAX_OOT + 1] = {
+        /* RUPEE_GREEN */ 0x00,  /* RUPEE_BLUE */ 0x01,    /* RUPEE_RED */ 0x02,       /* HEART */ 0x03,
+        /* BOMBS_A */ 0x04,      /* ARROWS_SINGLE */ 0x05, /* HEART_PIECE */ 0x06,     /* HEART_CONTAINER */ 0x07,
+        /* ARROWS_SMALL */ 0x05, /* ARROWS_MEDIUM */ 0x05, /* ARROWS_LARGE */ 0x08,    /* BOMBS_B */ 0x0B,
+        /* NUTS */ 0x0C,         /* STICK */ 0x0D,         /* MAGIC_LARGE */ 0x0E,     /* MAGIC_SMALL */ 0x0F,
+        /* SEEDS */ 0x18,        /* SMALL_KEY */ 0x11,     /* FLEXIBLE */ 0x12,        /* RUPEE_ORANGE */ 0x13,
+        /* RUPEE_PURPLE */ 0x14, /* SHIELD_DEKU */ 0x16,   /* SHIELD_HYLIAN */ 0x16,   /* TUNIC_ZORA */ 0x18,
+        /* TUNIC_GORON */ 0x18,  /* BOMBS_SPECIAL */ 0x04,
+    };
+
+    return ((ootType >= 0) && (ootType <= ITEM00_MAX_OOT)) ? sMmItem00[ootType] : ITEM00_NOTHING;
+}

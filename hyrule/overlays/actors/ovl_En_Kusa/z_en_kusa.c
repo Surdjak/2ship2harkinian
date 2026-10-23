@@ -347,7 +347,7 @@ static void EnKusa_LiftedUp(EnKusa* this, PlayState* play) {
         EnKusa_UpdateVelY(this);
         EnKusa_RandScaleVecToZero(&this->actor.velocity, 0.005f);
         Actor_UpdatePos(&this->actor);
-        Actor_UpdateBgCheckInfo(play, &this->actor, 7.5f, 35.0f, 0.0f, 0xC5);
+        Actor_UpdateBgCheckInfo(play, &this->actor, 7.5f, 35.0f, 0.0f, 0x4C5);
         this->actor.gravity = -3.2f;
     }
 }
@@ -407,7 +407,7 @@ static void EnKusa_Fall(EnKusa* this, PlayState* play) {
     this->actor.shape.rot.y += rotSpeedY;
     EnKusa_RandScaleVecToZero(&this->actor.velocity, 0.05f);
     Actor_UpdatePos(&this->actor);
-    Actor_UpdateBgCheckInfo(play, &this->actor, 7.5f, 35.0f, 0.0f, 0xC5);
+    Actor_UpdateBgCheckInfo(play, &this->actor, 7.5f, 35.0f, 0.0f, 0x4C5);
     Collider_UpdateCylinder(&this->actor, &this->collider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
 }

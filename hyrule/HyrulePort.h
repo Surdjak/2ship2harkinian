@@ -11,6 +11,8 @@
 // OoT's quest items and inventory are not in the save yet: ported checks see none of them.
 #define CHECK_QUEST_ITEM_OOT(item) false
 #define INV_CONTENT_OOT(slotItem) ITEM_NONE
+// Nor are OoT's trade items, so Link never offers one (EXCH_ITEM_NONE).
+#define ACTOR_GET_PLAYER_EXCHANGE_ITEM_ID_OOT(play) 0
 
 // OoT's day and night are MM's.
 #define IS_DAY_OOT (!gSaveContext.save.isNight)

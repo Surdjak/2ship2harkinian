@@ -81,11 +81,12 @@ bool PlayerFromJson(const nlohmann::json& j, HarnessPlayer* p) {
         for (int i = 0; i < 3; i++) {
             p->pos[i] = j.at("pos").at(i).get<float>();
             p->rot[i] = j.at("rot").at(i).get<int16_t>();
-            p->stateFlags[i] = j.at("stateFlags").at(i).get<uint32_t>();
+            // State flags and form are logged but not applied, so hand-written puppet logs can leave them out.
+            p->stateFlags[i] = j.contains("stateFlags") ? j.at("stateFlags").at(i).get<uint32_t>() : 0;
         }
         p->speedXZ = j.at("speedXZ").get<float>();
         p->yaw = j.at("yaw").get<int16_t>();
-        p->form = j.at("form").get<int32_t>();
+        p->form = j.value("form", 0);
         return true;
     } catch (const nlohmann::json::exception&) {
         return false;

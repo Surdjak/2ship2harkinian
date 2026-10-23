@@ -7,6 +7,7 @@ What it does (each a plain text rewrite):
 - ActorInit becomes an ActorProfile named <Name>_Oot_Profile, with _Oot actor and object ids; OoT's
   gameplay_keep becomes MM's GAMEPLAY_KEEP, which is always loaded.
 - Actor and object ids elsewhere get the _Oot suffix, and SoH asset includes point at assets/oot/.
+- Actor_UpdateBgCheckInfo flags with OoT's floor-and-water check (4) gain MM's water check (0x400).
 - Collider, init chain and actor field names change to MM's (COL_MATERIAL_, ATELEM_, cullingVolume*,
   terminalVelocity, speed, depthInWater, objectSlot, attentionRangeType, lockOnArrowOffset...).
 - OoT flags use HyruleFlags.h, OoT text ids in returns, cases and textId assignments get TEXT_OOT, and
@@ -106,6 +107,7 @@ RENAMES = [
     (r"\bLINK_IS_CHILD\b", "LINK_IS_CHILD_OOT"),
     (r"\bCHECK_QUEST_ITEM\(", "CHECK_QUEST_ITEM_OOT("),
     (r"\bINV_CONTENT\(", "INV_CONTENT_OOT("),
+    (r"\bActor_GetPlayerExchangeItemId\(", "ACTOR_GET_PLAYER_EXCHANGE_ITEM_ID_OOT("),
     (r"\bCUR_EQUIP_VALUE\(", "GET_CUR_EQUIP_VALUE("),
     (r"\bFlags_GetEventChkInf\((\w+)\)", r"GET_EVENTCHKINF_OOT(\1_Oot)"),
     (r"\bFlags_SetEventChkInf\((\w+)\)", r"SET_EVENTCHKINF_OOT(\1_Oot)"),
@@ -188,6 +190,10 @@ def convert(text, header):
     for pattern, repl in RENAMES:
         text = re.sub(pattern, repl, text)
     text = strip_game_interactor(text)
+    # OoT's background check flag 4 covers floor and water; MM checks water only with 0x400.
+    text = re.sub(r"(Actor_UpdateBgCheckInfo\((?:[^;()]|\([^()]*\))*, )(0x[0-9A-Fa-f]+|\d+)\)",
+                  lambda m: m.group(0) if not (int(m.group(2), 0) & 4) else
+                  f"{m.group(1)}0x{int(m.group(2), 0) | 0x400:X})", text)
     # Collider damage masks (the first field of an element's AT and AC info) take MM's bits too.
     text = re.sub(r"\{ (0x[0-9A-Fa-f]{8}), (0x[0-9A-Fa-f]{2}), (0x[0-9A-Fa-f]{2}) \}",
                   lambda m: m.group(0) if int(m.group(1), 16) == 0 else

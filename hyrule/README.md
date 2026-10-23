@@ -152,7 +152,16 @@ nothing. To port an actor, regenerate the tables with its OoT enum in `--ported`
 into a `DEFINE_ACTOR` entry named `<Name>_Oot`. Player, the room-loading planes and collectibles
 (`En_Item00`) still map to MM's own actors: the converter turns OoT's collectible types into MM's
 (`OotToMm::ActorParams`) and gives these actors MM's spawn rotations. In Kokiri Forest every placed and
-dropped collectible matches the SoH session.
+dropped collectible matches the SoH session. Ported actors that drop a collectible of a given OoT type
+convert it the same way (`Item00_FromOot` in `HyruleActor.c`).
+
+Chests (`En_Box`) map to MM's `En_Box` when MM has the item they hold: rupees, hearts, heart pieces and
+containers, bombs, Bombchus, Deku nuts and sticks, arrows, magic, keys, map, compass and ice traps
+(`OotToMm::MmGetItem`). The two games' chests share their parameter layout and chest types, so only the
+get-item id changes; the chest's switch flag (its Z rotation) stays raw through MM's raw-rotation id
+flags, and OoT's `object_box` becomes MM's. Chests holding anything else stay OoT actors, which are not
+ported, until OoT's items are in the save. Mido's House's four chests sit where SoH's do with the same
+flags, and one held in front of gives "You got a Blue Rupee!" with MM's chest and text.
 
 Room actor lists keep OoT's rotations, since some OoT actors read parameters from them. MM keeps a
 cutscene id and half-day bits in its rotations instead, so `Actor_SpawnEntry` spawns OoT ids with the
@@ -174,6 +183,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 7 | `En_Md` (Mido) |
 | 8 | `En_Goroiwa` (rolling boulder) |
 | 9 | `En_Sw` (Skulltulas and Gold Skulltulas) |
+| 10 | `Obj_Tsubo` (pots); chests (`En_Box`) map to MM's own, see Actor and object ids |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -210,6 +220,8 @@ Known differences:
   go when Link walks away, as in OoT. The cut direction comes from MM's melee animations, with Zora
   attacks cutting like sword swings and Goron punches like the hammer.
 - OoT's age checks use `HyrulePort.h`, where Link is always a child until adult Link exists.
+- OoT's background check flag 4 covers floor and water, while MM checks water only with 0x400, so
+  ported `Actor_UpdateBgCheckInfo` calls with flag 4 also pass 0x400 (`port_actor.py` adds it).
 - MM's Player recognises rocks by actor id, so `ACTOR_EN_ISHI_Oot` was added to its checks: silver
   rocks use the heavy lift and only Goron Link can lift them, as with MM's rocks.
 
@@ -241,8 +253,9 @@ bundles of 10 and 30).
 Wave 6's eight Kokiri spawn, animate and despawn with SoH's on all 2631 frames. The one guarding the
 forest exit aims at Link from about 1500 units away, so the puppet's few units of error move it by 1-3
 units. Held in front of a Kokiri cutting grass, human Link talks to him ("That meanie, Mido, ..."). The
-Kokiri in the houses, the shop and the Lost Woods, and Fado's trade, wait for those scenes and OoT's
-items; until OoT's quest items exist, every Kokiri acts as at the start of the game.
+Kokiri also appear in the houses and the shop as in OoT (the Know-It-All Brothers, the twin, the shop's
+Kokiri); Fado waits in the Lost Woods for the Odd Potion, which, like OoT's other items, is not in the
+save yet. Until OoT's quest items exist, every Kokiri acts as at the start of the game.
 
 Wave 7's Mido follows the SoH session within 1 unit on every frame (he shadows Link to block the path).
 Human Link, carrying the debug save's Kokiri Sword and Hero's Shield, shows them to Mido, who sets
@@ -259,6 +272,11 @@ Wave 9's Gold Skulltula on the Know-it-All Brothers' house matches SoH on all 26
 boot is at night). Held level with it, human Link kills it with sword slashes through its converted
 OoT damage table. Its token (`En_Si`) is not ported yet, and OoT's Gold Skulltula flags are not in the
 save, so it returns. OoT sound effects MM lacks use the nearest MM ones, marked `PORT:`.
+
+Wave 10's pots, and the Kokiri, collectibles, message spots and item spots in the houses and the shop,
+match SoH booted at each entrance (`HARNESS_ENTRANCE`) on every frame of the run, about 340 each. Held
+next to a pot in the Know-It-All Brothers' house, human Link lifts it, throws it, and it breaks and drops
+its green rupee. Pots use `object_tsubo`, or `gameplay_dangeon_keep` in dungeons.
 
 ## Text
 

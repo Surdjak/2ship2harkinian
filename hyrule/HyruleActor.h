@@ -10,6 +10,13 @@ s16 Actor_UpdateAlphaByDistance(Actor* actor, PlayState* play, s16 alpha, f32 ra
 // OoT's brown dust puffs (z_effect_soft_sprite_old_init.c).
 void func_800286CC(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, s16 scaleStep);
 
+// OoT's last collectible type (ITEM00_BOMBS_SPECIAL in OoT).
+#define ITEM00_MAX_OOT 0x19
+
+// MM's collectible type (En_Item00) for one of OoT's, the same mapping the converter gives room
+// collectibles (OotToMm::ActorParams). MM has no Deku seeds, tunics or Deku shield (ITEM00_NOTHING).
+s16 Item00_FromOot(s16 ootType);
+
 // One of OoT's 23 preset damage tables (HyruleDamage.c), or NULL.
 DamageTable* DamageTable_Get_Oot(s32 index);
 

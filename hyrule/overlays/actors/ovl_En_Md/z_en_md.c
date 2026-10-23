@@ -794,7 +794,7 @@ static void EnMd_Update(Actor* thisx, PlayState* play) {
     EnMd_UpdateAlphaByDistance(this, play);
     Actor_MoveWithGravity(&this->actor);
     EnMd_UpdateTalking(this, play);
-    Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, 4);
+    Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, 0x404);
     this->actionFunc(this, play);
 }
 

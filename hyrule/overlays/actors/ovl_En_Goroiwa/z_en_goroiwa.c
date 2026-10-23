@@ -724,7 +724,7 @@ static void EnGoroiwa_Update(Actor* thisx, PlayState* play) {
         this->actionFunc(this, play);
         switch ((this->actor.params >> 10) & 1) {
             case 1:
-                Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, 0x1C);
+                Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, 0x41C);
                 break;
             case 0:
                 this->actor.floorHeight = BgCheck_EntityRaycastFloor5(&play->colCtx, &this->actor.floorPoly, &sp30,

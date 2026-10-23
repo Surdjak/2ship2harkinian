@@ -18,9 +18,7 @@
 #define ENKO_TYPE (this->actor.params & 0xFF)
 #define ENKO_PATH ((this->actor.params & 0xFF00) >> 8)
 
-// PORT: the Lost Woods and the Kokiri houses and shop are not in this fork yet, so the Kokiri that live
-// there, and Fado's trade, are left out.
-#define IN_LOST_WOODS(play) false
+#define IN_LOST_WOODS(play) ((play)->sceneId == SCENE_LOST_WOODS_Oot)
 
 static void EnKo_Init(Actor* thisx, PlayState* play);
 static void EnKo_Destroy(Actor* thisx, PlayState* play);
@@ -979,7 +977,7 @@ static void func_80A9877C(EnKo* this, PlayState* play) {
         ENKO_TYPE == ENKO_TYPE_CHILD_FADO && IN_LOST_WOODS(play)) {
         this->actor.textId = INV_CONTENT_OOT(ITEM_TRADE_ADULT_Oot) > ITEM_ODD_POTION_Oot ? TEXT_OOT(0x10B9) : TEXT_OOT(0x10DF);
 
-        if (Actor_GetPlayerExchangeItemId(play) == ENKO_TYPE_CHILD_9) {
+        if (ACTOR_GET_PLAYER_EXCHANGE_ITEM_ID_OOT(play) == ENKO_TYPE_CHILD_9) {
             this->actor.textId = (GET_INFTABLE_OOT(INFTABLE_BC_Oot)) ? TEXT_OOT(0x10B8) : TEXT_OOT(0x10B7);
             this->unk_210 = 0;
         }
@@ -998,7 +996,60 @@ static s32 EnKo_CanSpawn(EnKo* this, PlayState* play) {
                 return false;
             }
             return true;
-        // PORT: the Kokiri houses, the shop and the Lost Woods (see IN_LOST_WOODS).
+        case SCENE_KNOW_IT_ALL_BROS_HOUSE_Oot:
+            if (ENKO_TYPE != ENKO_TYPE_CHILD_7 && ENKO_TYPE != ENKO_TYPE_CHILD_8 && ENKO_TYPE != ENKO_TYPE_CHILD_11) {
+                return false;
+            } else {
+                return true;
+            }
+        case SCENE_TWINS_HOUSE_Oot:
+            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+                if (ENKO_TYPE != ENKO_TYPE_CHILD_1 && ENKO_TYPE != ENKO_TYPE_CHILD_9) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            if (ENKO_TYPE != ENKO_TYPE_CHILD_9) {
+                return false;
+            } else {
+                return true;
+            }
+        case SCENE_MIDOS_HOUSE_Oot:
+            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+                if (ENKO_TYPE != ENKO_TYPE_CHILD_0 && ENKO_TYPE != ENKO_TYPE_CHILD_4) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        case SCENE_SARIAS_HOUSE_Oot:
+            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+                if (ENKO_TYPE != ENKO_TYPE_CHILD_6) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        case SCENE_KOKIRI_SHOP_Oot:
+            if (LINK_IS_ADULT_OOT && !CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_FOREST)) {
+                if (ENKO_TYPE != ENKO_TYPE_CHILD_5 && ENKO_TYPE != ENKO_TYPE_CHILD_10) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else if (ENKO_TYPE != ENKO_TYPE_CHILD_10) {
+                return false;
+            } else {
+                return true;
+            }
+        case SCENE_LOST_WOODS_Oot:
+            // PORT: Fado waits here for the Odd Potion; OoT's trade items are not in the save yet.
+            return INV_CONTENT_OOT(ITEM_TRADE_ADULT_Oot) == ITEM_ODD_POTION_Oot;
         default:
             return false;
     }
@@ -1043,8 +1094,7 @@ static s32 EnKo_GetForestQuestState2(EnKo* this) {
 static void func_80A98DB4(EnKo* this, PlayState* play) {
     f32 dist;
 
-    // PORT: OoT also fades Kokiri in the Lost Woods, which is not in this fork yet.
-    if (play->sceneId != SCENE_KOKIRI_FOREST_Oot) {
+    if (play->sceneId != SCENE_LOST_WOODS_Oot && play->sceneId != SCENE_KOKIRI_FOREST_Oot) {
         this->modelAlpha = 255.0f;
         return;
     }
@@ -1231,7 +1281,7 @@ static void EnKo_Update(Actor* thisx, PlayState* play) {
         Actor_MoveWithGravity(&this->actor);
     }
     if (func_80A97C7C(this)) {
-        Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, 4);
+        Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, 0x404);
         this->actor.gravity = -1.0f;
     } else {
         this->actor.gravity = 0.0f;
