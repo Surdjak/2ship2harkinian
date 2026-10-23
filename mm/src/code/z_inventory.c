@@ -542,6 +542,8 @@ s32 Inventory_IsMapVisible(s16 sceneId) {
             index = 5;
         } else if (sceneId < 0xE0) {
             index = 6;
+        } else if (sceneId < 0x100) { // 3Ship [Hyrule] scenesVisible grew to 8 words
+            index = 7;
         }
     }
 
@@ -656,6 +658,8 @@ void Inventory_SetWorldMapCloudVisibility(s16 tingleIndex) {
                 index = 5;
             } else if (((s16)(*tingleMapSceneIds)[i]) < 0xE0) {
                 index = 6;
+            } else if (((s16)(*tingleMapSceneIds)[i]) < 0x100) { // 3Ship [Hyrule] scenesVisible grew to 8 words
+                index = 7;
             }
 
             gSaveContext.save.saveInfo.scenesVisible[index] = gSaveContext.save.saveInfo.scenesVisible[index] |

@@ -327,7 +327,8 @@ typedef struct SaveInfo {
     /* 0x000 */ SavePlayerData playerData;
     /* 0x028 */ ItemEquips equips;
     /* 0x04C */ Inventory inventory;
-    /* 0x0D4 */ PermanentSceneFlags permanentSceneFlags[120];
+    // 3Ship [Hyrule] Room for OoT's scenes after MM's (was 120). Offsets below this are shifted.
+    /* 0x0D4 */ PermanentSceneFlags permanentSceneFlags[256];
     /* 0xDF4 */ UNK_TYPE1 unk_DF4[0x54];
     /* 0xE48 */ u32 dekuPlaygroundHighScores[3];
     /* 0xE54 */ u32 pictoFlags0;                       // Flags set by `PictoActor`s if pictograph is valid
@@ -335,7 +336,8 @@ typedef struct SaveInfo {
     /* 0xE5C */ u32 unk_E5C;
     /* 0xE60 */ u32 unk_E60;
     /* 0xE64 */ u32 alienInfo[7];                      // Used by EnInvadepoh to hold alien spawn times and how many aliens the player has killed
-    /* 0xE80 */ u32 scenesVisible[7];                  // tingle maps and clouded regions on pause map. Stores scenes bitwise for up to 224 scenes even though there are not that many scenes
+    // 3Ship [Hyrule] 256 scenes (was 7 words, 224 scenes)
+    /* 0xE80 */ u32 scenesVisible[8];                  // tingle maps and clouded regions on pause map. Stores scenes bitwise for up to 224 scenes even though there are not that many scenes
     /* 0xE9C */ u32 skullTokenCount;                   // upper 16 bits store Swamp skulls, lower 16 bits store Ocean skulls
     /* 0xEA0 */ u32 unk_EA0;                           // Gossic stone heart piece flags
     /* 0xEA4 */ u32 unk_EA4;
@@ -524,7 +526,8 @@ typedef struct SaveContext {
     /* 0x3F5C */ s32 unk_3F5C;                 // "bet_rupees"
     /* 0x3F60 */ u8 screenScaleFlag;           // "framescale_flag"
     /* 0x3F64 */ f32 screenScale;              // "framescale_scale"
-    /* 0x3F68 */ CycleSceneFlags cycleSceneFlags[120]; // Scene flags that are temporarily stored over the duration of a single 3-day cycle
+    // 3Ship [Hyrule] Same size as permanentSceneFlags (was 120)
+    /* 0x3F68 */ CycleSceneFlags cycleSceneFlags[256]; // Scene flags that are temporarily stored over the duration of a single 3-day cycle
     /* 0x48C8 */ u16 dungeonSceneSharedIndex; // similar to mapIndex, except values correspond to one of the four dungeons "scene_id_mix"
     /* 0x48CA */ u8 masksGivenOnMoon[27];     // bit-packed, masks given away on the Moon. "mask_mask_bit"
     /*  2S2H  */ ShipSaveContext shipSaveContext; 
