@@ -103,6 +103,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 2 | `En_Ishi` (small and silver rocks) |
 | 3 | `En_A_Obj` (signposts, blocks, grass clumps, tree stumps; part of `code` in OoT) |
 | 4 | `En_Kanban` (wooden signs that can be cut apart) |
+| 5 | `En_Wonder_Talk2` (invisible message spots), `En_Wonder_Item` (invisible item drops and switches) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -151,6 +152,12 @@ wooden textbox shows OoT's text and closes normally.
 
 Wave 4's signs match SoH on all 2631 frames. A scripted replay reads "LINK's House" and cuts the top
 off the sign with a slash.
+
+Wave 5 matches SoH on all 2631 frames, including the two hidden rupees in room 2 that both Links
+collect on the same frames. Walking out of the Kokiri Shop, human Link gets the forced "Hi, LINK! Look
+this way!" message. OoT's Player cutscene actions 7 and 8 are MM's `PLAYER_CSACTION_END` and
+`PLAYER_CSACTION_WAIT`; `En_Wonder_Item` drops MM's collectibles for OoT's (arrows come in MM's
+bundles of 10 and 30).
 
 ## Text
 
