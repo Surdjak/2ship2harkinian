@@ -657,3 +657,6 @@
 /* 0x280 */ DEFINE_OBJECT(object_fusen, OBJECT_FUSEN)
 /* 0x281 */ DEFINE_OBJECT(object_ending_obj, OBJECT_ENDING_OBJ)
 /* 0x282 */ DEFINE_OBJECT(object_gi_mask13, OBJECT_GI_MASK13)
+
+// 3Ship [Hyrule] OoT objects follow MM's; unified id = OBJECT_OOT_BASE + OoT id
+#include "tables/object_table_oot.h"

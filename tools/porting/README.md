@@ -8,6 +8,7 @@ flags, read from the Ninja builds, so they see the code exactly as the compiler 
 | `extract_decls.py` | Lists the functions declared in a decomp's headers, with exact types. |
 | `compare_signatures.py` | Compares SoH's and 2Ship's lists and writes [docs/SIGNATURES.md](../../docs/SIGNATURES.md). |
 | `translate_calls.py` | Rewrites calls in an OoT source file to 2Ship's signatures, following `call_rules.json`. |
+| `gen_oot_tables.py` | Generates the OoT parts of 2Ship's actor and object tables from SoH's (see [hyrule/README.md](../../hyrule/README.md)). |
 
 Both builds must exist: this repo's `build-cmake` and a SoH build (see
 [harness/README.md](../../harness/README.md)).

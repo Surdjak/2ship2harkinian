@@ -7,7 +7,7 @@
 
 typedef enum ObjectId {
     #include "tables/object_table.h"
-    /* 0x283 */ OBJECT_ID_MAX
+    /* 0x283 */ OBJECT_ID_MAX // 3Ship [Hyrule] OoT objects start at 0x283 (object_table_oot.h)
 } ObjectId;
 
 #undef DEFINE_OBJECT

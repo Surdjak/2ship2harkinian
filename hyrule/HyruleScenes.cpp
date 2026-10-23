@@ -1,4 +1,5 @@
 #include "HyruleScenes.h"
+#include "HyruleIds.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -11,6 +12,13 @@ extern "C" {
 #include "variables.h"
 #include "overlays/gamestates/ovl_select/z_select.h"
 }
+
+static_assert(ACTOR_PLAYER_Oot == ACTOR_OOT_BASE, "ACTOR_OOT_BASE must be the first OoT actor");
+static_assert(ACTOR_ID_MAX == ACTOR_OOT_BASE + 0x1D7, "OoT has 0x1D7 actors");
+static_assert(OBJECT_INVALID_Oot == OBJECT_OOT_BASE, "OBJECT_OOT_BASE must be the first OoT object");
+static_assert(OBJECT_ID_MAX == OBJECT_OOT_BASE + 0x192, "OoT has 0x192 objects");
+// Spawn entries keep the actor id in 13 bits.
+static_assert(ACTOR_ID_MAX <= 0x2000, "actor ids must fit in 13 bits");
 
 namespace {
 

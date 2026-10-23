@@ -496,7 +496,7 @@ typedef enum {
 
 typedef enum ActorId {
     #include "tables/actor_table.h"
-    /* 0x2B2 */ ACTOR_ID_MAX // originally "ACTOR_DLF_MAX"
+    /* 0x2B2 */ ACTOR_ID_MAX // originally "ACTOR_DLF_MAX". 3Ship [Hyrule] OoT actors start at 0x2B2 (actor_table_oot.h)
 } ActorId;
 
 #undef DEFINE_ACTOR
