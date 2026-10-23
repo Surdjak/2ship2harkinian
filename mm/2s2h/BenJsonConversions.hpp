@@ -332,6 +332,9 @@ inline void to_json(json& j, const SaveInfo& saveInfo) {
         { "unk_EB4", saveInfo.unk_EB4 },
         { "highScores", saveInfo.highScores },
         { "weekEventReg", saveInfo.weekEventReg },
+        { "eventChkInfOot", saveInfo.eventChkInfOot }, // 3Ship [Hyrule]
+        { "itemGetInfOot", saveInfo.itemGetInfOot },
+        { "infTableOot", saveInfo.infTableOot },
         { "regionsVisited", saveInfo.regionsVisited },
         { "worldMapCloudVisibility", saveInfo.worldMapCloudVisibility },
         { "unk_F40", saveInfo.unk_F40 },
@@ -368,6 +371,9 @@ inline void from_json(const json& j, SaveInfo& saveInfo) {
     j.at("unk_EB4").get_to(saveInfo.unk_EB4);
     j.at("highScores").get_to(saveInfo.highScores);
     j.at("weekEventReg").get_to(saveInfo.weekEventReg);
+    j.at("eventChkInfOot").get_to(saveInfo.eventChkInfOot); // 3Ship [Hyrule]
+    j.at("itemGetInfOot").get_to(saveInfo.itemGetInfOot);
+    j.at("infTableOot").get_to(saveInfo.infTableOot);
     j.at("regionsVisited").get_to(saveInfo.regionsVisited);
     j.at("worldMapCloudVisibility").get_to(saveInfo.worldMapCloudVisibility);
     j.at("unk_F40").get_to(saveInfo.unk_F40);

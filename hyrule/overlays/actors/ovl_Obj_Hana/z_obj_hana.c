@@ -8,6 +8,7 @@
 
 #include "z_obj_hana.h"
 #include "assets/oot/objects/gameplay_field_keep/gameplay_field_keep.h"
+#include "HyruleFlags.h"
 
 #define FLAGS 0
 
@@ -88,8 +89,9 @@ static void ObjHana_Init(Actor* thisx, PlayState* play) {
         CollisionCheck_SetInfo(&this->actor.colChkInfo, NULL, &sColChkInfoInit);
     }
 
-    // PORT: OoT's event flags are not in the save yet, so the bush removed once Zelda's letter is obtained
-    // (EVENTCHKINF_OBTAINED_ZELDAS_LETTER) always stays.
+    if (type == 2 && GET_EVENTCHKINF_OOT(EVENTCHKINF_OBTAINED_ZELDAS_LETTER_Oot)) {
+        Actor_Kill(&this->actor);
+    }
 }
 
 static void ObjHana_Destroy(Actor* thisx, PlayState* play) {

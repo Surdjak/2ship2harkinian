@@ -428,6 +428,10 @@ void to_json(json& j, const Legacy_SaveInfo& saveInfo) {
         { "unk_EB4", saveInfo.unk_EB4 },
         { "highScores", saveInfo.highScores },
         { "weekEventReg", saveInfo.weekEventReg },
+        // 3Ship [Hyrule] OoT's event flags, which MM's binary saves do not have.
+        { "eventChkInfOot", std::vector<u16>(14, 0) },
+        { "itemGetInfOot", std::vector<u16>(4, 0) },
+        { "infTableOot", std::vector<u16>(30, 0) },
         { "regionsVisited", saveInfo.regionsVisited },
         { "worldMapCloudVisibility", saveInfo.worldMapCloudVisibility },
         { "unk_F40", saveInfo.unk_F40 },

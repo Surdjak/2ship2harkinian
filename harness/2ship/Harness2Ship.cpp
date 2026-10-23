@@ -28,6 +28,12 @@ void CaptureState(HarnessFrameState& state) {
     AddFlags(state, "eventInf", gSaveContext.eventInf);
     AddFlags(state, "permanentSceneFlags", gSaveContext.save.saveInfo.permanentSceneFlags);
     AddFlags(state, "cycleSceneFlags", gSaveContext.cycleSceneFlags);
+    // 3Ship [Hyrule] OoT's flags, under the names SoH's adapter uses (tools/ootlog.py renames SoH's
+    // eventInf, which MM's would clash with).
+    AddFlags(state, "eventChkInf", gSaveContext.save.saveInfo.eventChkInfOot);
+    AddFlags(state, "itemGetInf", gSaveContext.save.saveInfo.itemGetInfOot);
+    AddFlags(state, "infTable", gSaveContext.save.saveInfo.infTableOot);
+    AddFlags(state, "eventInfOot", gSaveContext.eventInfOot);
 
     if (gPlayState == nullptr) {
         state.gameState = "other";

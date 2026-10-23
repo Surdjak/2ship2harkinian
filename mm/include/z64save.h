@@ -358,7 +358,12 @@ typedef struct SaveInfo {
     /* 0xFD7 */ s8 bomberCode[5];                      // "bombers_aikotoba_table"
     /* 0xFDC */ HorseData horseData;
     /* 0xFE6 */ u16 checksum;                          // "check_sum"
-} SaveInfo; // size = 0xFE8
+    // 3Ship [Hyrule] OoT's event flags (hyrule/HyruleFlags.h). Hyrule resets with each cycle, so they are
+    // cleared in Sram_SaveEndOfCycle.
+    /*       */ u16 eventChkInfOot[14];
+    /*       */ u16 itemGetInfOot[4];
+    /*       */ u16 infTableOot[30];
+} SaveInfo;
 
 // #region 2S2H
 typedef struct DpadSaveInfo {
@@ -448,6 +453,7 @@ typedef struct ShipSaveContext {
 typedef struct SaveContext {
     /* 0x0000 */ Save save;
     /* 0x100C */ u8 eventInf[8]; // "event_inf"
+    /*        */ u16 eventInfOot[4]; // 3Ship [Hyrule] OoT's unsaved event flags (hyrule/HyruleFlags.h)
     /* 0x1014 */ u8 unk_1014;    // "stone_set_flag"
     /* 0x1015 */ u8 bButtonStatus;
     /* 0x1016 */ u16 jinxTimer;

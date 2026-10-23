@@ -30,6 +30,7 @@ void MapSelect_LoadGame(MapSelectState* this, u32 entrance, s32 spawn) {
         for (size_t i = 0; i < ARRAY_COUNT(gSaveContext.eventInf); i++) {
             gSaveContext.eventInf[i] = 0;
         }
+        memset(gSaveContext.eventInfOot, 0, sizeof(gSaveContext.eventInfOot)); // 3Ship [Hyrule]
 
         for (size_t i = 0; i < ARRAY_COUNT(gSaveContext.cycleSceneFlags); i++) {
             gSaveContext.cycleSceneFlags[i].chest = gSaveContext.save.saveInfo.permanentSceneFlags[i].chest;

@@ -104,7 +104,9 @@ Each line is one logic frame:
 - **`player`:** position, shape rotation, forward speed, yaw, state flags and form (MM transformation; OoT `linkAge`).
 - **`actors`:** every actor with category, id, params, room, flags, position and shape rotation.
 - **`flagHashes`:** a hash of each save flag block every frame. The block's bytes are written under
-  `flags` only on frames where it changes.
+  `flags` only on frames where it changes. This fork logs OoT's flags under SoH's names (`eventChkInf`,
+  `itemGetInf`, `infTable`, and `eventInfOot` for OoT's `eventInf`), so a converted SoH log can be
+  compared flag by flag.
 - **`h`:** hashes of the whole frame and of each section, for quick comparison.
 
 ## Determinism

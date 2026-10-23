@@ -526,6 +526,12 @@ void Sram_SaveEndOfCycle(PlayState* play) {
         }
     }
 
+    // 3Ship [Hyrule] Hyrule resets completely with each cycle.
+    memset(gSaveContext.save.saveInfo.eventChkInfOot, 0, sizeof(gSaveContext.save.saveInfo.eventChkInfOot));
+    memset(gSaveContext.save.saveInfo.itemGetInfOot, 0, sizeof(gSaveContext.save.saveInfo.itemGetInfOot));
+    memset(gSaveContext.save.saveInfo.infTableOot, 0, sizeof(gSaveContext.save.saveInfo.infTableOot));
+    memset(gSaveContext.eventInfOot, 0, sizeof(gSaveContext.eventInfOot));
+
     for (i = 0; i < ARRAY_COUNT(gSaveContext.eventInf); i++) {
         gSaveContext.eventInf[i] = 0;
     }
@@ -1285,6 +1291,7 @@ void Sram_ResetSaveFromMoonCrash(SramContext* sramCtx) {
     for (i = 0; i < ARRAY_COUNT(gSaveContext.eventInf); i++) {
         gSaveContext.eventInf[i] = 0;
     }
+    memset(gSaveContext.eventInfOot, 0, sizeof(gSaveContext.eventInfOot)); // 3Ship [Hyrule]
 
     for (i = 0; i < ARRAY_COUNT(gSaveContext.cycleSceneFlags); i++) {
         gSaveContext.cycleSceneFlags[i].chest = gSaveContext.save.saveInfo.permanentSceneFlags[i].chest;
@@ -1369,6 +1376,7 @@ void Sram_OpenSave(FileSelectState* fileSelect, SramContext* sramCtx) {
         for (i = 0; i < ARRAY_COUNT(gSaveContext.eventInf); i++) {
             gSaveContext.eventInf[i] = 0;
         }
+        memset(gSaveContext.eventInfOot, 0, sizeof(gSaveContext.eventInfOot)); // 3Ship [Hyrule]
 
         for (i = 0; i < ARRAY_COUNT(gSaveContext.cycleSceneFlags); i++) {
             gSaveContext.cycleSceneFlags[i].chest = gSaveContext.save.saveInfo.permanentSceneFlags[i].chest;

@@ -3,7 +3,8 @@
 
 Scene ids are matched by scene file name between SoH's and 2Ship's scene tables; scenes this fork does
 not have yet are dropped. Actor ids get ACTOR_OOT_BASE (hyrule/HyruleIds.h) added, except the ones the
-scene converter maps to MM's own actors (OotToMm::ActorId in OTRExporter).
+scene converter maps to MM's own actors (OotToMm::ActorId in OTRExporter). SoH's eventInf flag block
+becomes eventInfOot, the name this fork logs OoT's under.
 
 --visit N keeps only the Nth visit (from 1) to --scene, so a puppet or diff uses that visit rather than
 whichever one a frame lookup finds first or last.
@@ -80,6 +81,10 @@ def main():
                 continue
             for actor in row.get("actors", []):
                 actor["id"] = MM_ACTORS.get(actor["id"], base + actor["id"])
+            # This fork logs OoT's eventInf as eventInfOot, beside MM's own eventInf.
+            for block in ("flags", "flagHashes"):
+                if "eventInf" in row.get(block, {}):
+                    row[block]["eventInfOot"] = row[block].pop("eventInf")
             # The hashes cover the original ids, so they no longer describe this row.
             row.pop("h", None)
             out.write(json.dumps(row, separators=(",", ":")) + "\n")
