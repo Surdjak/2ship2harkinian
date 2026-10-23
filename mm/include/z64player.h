@@ -1138,7 +1138,7 @@ typedef struct Player {
     /* 0x145 */ s8 currentBoots;
     /* 0x146 */ s8 heldItemButton;
     /* 0x147 */ s8 heldItemAction; // PlayerItemAction enum
-    /* 0x148 */ u8 heldItemId; // ItemId enum
+    /* 0x148 */ u16 heldItemId; // ItemId enum. 3Ship [Hyrule] was u8
     /* 0x149 */ s8 prevBoots;
     /* 0x14A */ s8 itemAction; // PlayerItemAction enum
     /* 0x14B */ u8 transformation; // PlayerTransformation enum

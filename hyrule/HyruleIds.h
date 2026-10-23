@@ -6,3 +6,5 @@
 
 #define ACTOR_OOT_BASE 0x2B2
 #define OBJECT_OOT_BASE 0x283
+// Item ids are not a table: OoT's start above MM's last one (ITEM_NONE, 0xFF), so MM's keep their values.
+#define ITEM_OOT_BASE 0x100

@@ -541,10 +541,10 @@ void GameInteractor_ExecuteOnPassPlayerInputs(Input* input);
 
 void GameInteractor_ExecuteOnOpenText(u16* textId, bool* loadFromMessageTable);
 
-bool GameInteractor_ShouldItemGive(u8 item);
-void GameInteractor_ExecuteOnItemGive(u8 item);
+bool GameInteractor_ShouldItemGive(u16 item);
+void GameInteractor_ExecuteOnItemGive(u16 item);
 
-void GameInteractor_ExecuteOnBottleContentsUpdate(u8 item);
+void GameInteractor_ExecuteOnBottleContentsUpdate(u16 item);
 
 void GameInteractor_ExecuteOnSeqPlayerInit(int32_t playerIdx, int32_t seqId);
 

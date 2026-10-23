@@ -86,3 +86,14 @@ Actors that have not been ported are `DEFINE_ACTOR_UNSET`: their ids exist, but 
 nothing. To port an actor, regenerate the tables with its OoT enum in `--ported`, which turns its line
 into a `DEFINE_ACTOR` entry named `<Name>_Oot`. Player and the room-loading planes still map to MM's
 own actors.
+
+## Item ids
+
+Item ids are 16-bit wherever they are stored: the inventory, C-button and D-pad items in saves,
+`Player.heldItemId`, the item functions in `z64interface.h` and the item hooks. MM's items keep
+their values, so saves need no migration. OoT's items follow MM's last one (`ITEM_NONE`, 0xFF) from
+`ITEM_OOT_BASE` (0x100), suffixed `_Oot` (`mm/include/tables/item_id_oot.h`, generated with the tables).
+
+OoT items cannot be given or shown yet: `Item_Give` and `Item_CheckObtainability` return `ITEM_NONE`
+for them, and MM's item tables (slots, icons, prices, draw table) and get-item ids only cover MM's
+items. Those are extended when OoT's items and interface are ported.

@@ -366,7 +366,7 @@ void SplitSaveFileAction(uint32_t action, std::string listName) {
 void RegisterTimesplits() {
     SplitSaveFileAction(SPLIT_RETRIEVE, "");
 
-    COND_HOOK(OnItemGive, CVAR, [](u8 item) {
+    COND_HOOK(OnItemGive, CVAR, [](u16 item) {
         if (item == ITEM_HEART_PIECE_2) {
             item = ITEM_HEART_PIECE;
         }
@@ -380,7 +380,7 @@ void RegisterTimesplits() {
         UpdateSplitStatusById((uint32_t)item);
     });
 
-    COND_HOOK(OnBottleContentsUpdate, CVAR, [](u8 item) { UpdateSplitStatusById((uint32_t)item); });
+    COND_HOOK(OnBottleContentsUpdate, CVAR, [](u16 item) { UpdateSplitStatusById((uint32_t)item); });
     COND_HOOK(OnBossDefeated, CVAR, [](int16_t actorId) { GetSplitByActorId(actorId); });
 
     COND_VB_SHOULD(VB_GIVE_ITEM_FROM_GREAT_FAIRY, CVAR, {

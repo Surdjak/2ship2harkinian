@@ -132,7 +132,7 @@ void DrawItemCycleExtras(PlayState* play, u8 slot, u8 canCycle, u8 leftItem, u8 
 
     u8 isCycling = sCurrentItemCyclingSlot == slot;
 
-    u8 itemId = gSaveContext.save.saveInfo.inventory.items[slot];
+    u16 itemId = gSaveContext.save.saveInfo.inventory.items[slot];
     u8 showLeftItem = leftItem != ITEM_NONE && itemId != leftItem && leftItem != rightItem;
     u8 showRightItem = rightItem != ITEM_NONE && itemId != rightItem;
 
@@ -360,9 +360,9 @@ void Rando::MiscBehavior::InitKaleidoItemPage() {
         std::vector<u8> availableKeyMamaItems = BuildAvailableItemsList(SLOT_TRADE_KEY_MAMA);
         std::vector<u8> availableCoupleItems = BuildAvailableItemsList(SLOT_TRADE_COUPLE);
 
-        u8 currentDeedItem = gSaveContext.save.saveInfo.inventory.items[SLOT_TRADE_DEED];
-        u8 currentKeyMamaItem = gSaveContext.save.saveInfo.inventory.items[SLOT_TRADE_KEY_MAMA];
-        u8 currentCoupleItem = gSaveContext.save.saveInfo.inventory.items[SLOT_TRADE_COUPLE];
+        u16 currentDeedItem = gSaveContext.save.saveInfo.inventory.items[SLOT_TRADE_DEED];
+        u16 currentKeyMamaItem = gSaveContext.save.saveInfo.inventory.items[SLOT_TRADE_KEY_MAMA];
+        u16 currentCoupleItem = gSaveContext.save.saveInfo.inventory.items[SLOT_TRADE_COUPLE];
 
         DrawItemCycleExtras(gPlayState, SLOT_TRADE_DEED, true,
                             GetPreviousListEntry(availableDeedItems, currentDeedItem),

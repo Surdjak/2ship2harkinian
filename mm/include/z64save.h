@@ -239,13 +239,13 @@ typedef struct SramContext {
 } SramContext; // size = 0x28
 
 typedef struct ItemEquips {
-    /* 0x00 */ u8 buttonItems[4][4];                    // "register_item"
+    /* 0x00 */ u16 buttonItems[4][4];                   // "register_item". 3Ship [Hyrule] was u8. Offsets below are shifted.
     /* 0x10 */ u8 cButtonSlots[4][4];                   // "register_item_pt"
     /* 0x20 */ u16 equipment;
 } ItemEquips; // size = 0x22
 
 typedef struct Inventory {
-    /* 0x00 */ u8 items[48];                            // "item_register", first 24 elements are normal items and the other 24 are masks
+    /* 0x00 */ u16 items[48];                           // "item_register", first 24 elements are normal items and the other 24 are masks. 3Ship [Hyrule] was u8. Offsets below are shifted.
     /* 0x30 */ s8 ammo[24];                             // "item_count"
     /* 0x48 */ u32 upgrades;                            // "non_equip_register" some bits are wallet upgrades
     /* 0x4C */ u32 questItems;                          // "collect_register"
@@ -362,7 +362,7 @@ typedef struct SaveInfo {
 
 // #region 2S2H
 typedef struct DpadSaveInfo {
-    u8 dpadItems[4][4];
+    u16 dpadItems[4][4]; // 3Ship [Hyrule] was u8
     u8 dpadSlots[4][4];
 } DpadSaveInfo;
 
@@ -622,7 +622,7 @@ typedef enum {
 #define GET_CYCLE_CHEST_OPENED(sceneId, chestFlagId) ((void)0, gSaveContext.cycleSceneFlags[(sceneId)].chest) & (1 << (chestFlagId));
 
 
-#define GET_CUR_FORM_BTN_ITEM(btn) ((u8)((btn) == EQUIP_SLOT_B ? BUTTON_ITEM_EQUIP(CUR_FORM, btn) : BUTTON_ITEM_EQUIP(0, btn)))
+#define GET_CUR_FORM_BTN_ITEM(btn) ((u16)((btn) == EQUIP_SLOT_B ? BUTTON_ITEM_EQUIP(CUR_FORM, btn) : BUTTON_ITEM_EQUIP(0, btn))) // 3Ship [Hyrule] was (u8)
 #define GET_CUR_FORM_BTN_SLOT(btn) ((u8)((btn) == EQUIP_SLOT_B ? C_SLOT_EQUIP(CUR_FORM, btn) : C_SLOT_EQUIP(0, btn)))
 
 #define C_BTN_ITEM(btn)                                 \

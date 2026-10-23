@@ -265,7 +265,7 @@ void GameInteractor_ExecuteOnOpenText(u16* textId, bool* loadFromMessageTable) {
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnOpenText>(textId, loadFromMessageTable);
 }
 
-bool GameInteractor_ShouldItemGive(u8 item) {
+bool GameInteractor_ShouldItemGive(u16 item) {
     bool result = true;
     GameInteractor::Instance->ExecuteHooks<GameInteractor::ShouldItemGive>(item, &result);
     GameInteractor::Instance->ExecuteHooksForID<GameInteractor::ShouldItemGive>(item, item, &result);
@@ -273,14 +273,14 @@ bool GameInteractor_ShouldItemGive(u8 item) {
     return result;
 }
 
-void GameInteractor_ExecuteOnItemGive(u8 item) {
+void GameInteractor_ExecuteOnItemGive(u16 item) {
     SPDLOG_DEBUG("OnItemGive: item: {}", item);
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnItemGive>(item);
     GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnItemGive>(item, item);
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnItemGive>(item);
 }
 
-void GameInteractor_ExecuteOnBottleContentsUpdate(u8 item) {
+void GameInteractor_ExecuteOnBottleContentsUpdate(u16 item) {
     SPDLOG_DEBUG("OnBottleContentsUpdate: item: {}", item);
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnBottleContentsUpdate>(item);
     GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnBottleContentsUpdate>(item, item);

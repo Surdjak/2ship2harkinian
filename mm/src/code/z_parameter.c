@@ -4605,7 +4605,13 @@ u8 Item_GiveImpl(PlayState* play, u8 item) {
 }
 
 // #region 2S2H [Enhancements] This is our wrapper around the original Item_Give function for hooking purposes
-u8 Item_Give(PlayState* play, u8 item) {
+u16 Item_Give(PlayState* play, u16 item) {
+    // 3Ship [Hyrule] OoT items are not given yet; MM's tables below only cover MM's items.
+    // TODO: give OoT items once they and their inventory slots are ported.
+    if (item >= ITEM_OOT_BASE) {
+        return ITEM_NONE;
+    }
+
     if (!GameInteractor_ShouldItemGive(item) || item == ITEM_SHIP) {
         return ITEM_NONE;
     }
@@ -4775,7 +4781,12 @@ u8 Item_CheckObtainabilityImpl(u8 item) {
     return gSaveContext.save.saveInfo.inventory.items[slot];
 }
 
-u8 Item_CheckObtainability(u8 item) {
+u16 Item_CheckObtainability(u16 item) {
+    // 3Ship [Hyrule] See Item_Give.
+    if (item >= ITEM_OOT_BASE) {
+        return ITEM_NONE;
+    }
+
     return Item_CheckObtainabilityImpl(item);
 }
 
@@ -4887,7 +4898,7 @@ s32 Inventory_HasEmptyBottle(void) {
     return false;
 }
 
-s32 Inventory_HasItemInBottle(u8 item) {
+s32 Inventory_HasItemInBottle(u16 item) {
     s32 slot;
 
     for (slot = SLOT_BOTTLE_1; slot <= SLOT_BOTTLE_6; slot++) {
@@ -4899,7 +4910,7 @@ s32 Inventory_HasItemInBottle(u8 item) {
 }
 
 // #region 2S2H [Dpad]
-void Inventory_Dpad_UpdateBottleItem(PlayState* play, u8 item, u8 btn) {
+void Inventory_Dpad_UpdateBottleItem(PlayState* play, u16 item, u8 btn) {
     gSaveContext.save.saveInfo.inventory.items[DPAD_GET_CUR_FORM_BTN_SLOT(btn)] = item;
     DPAD_SET_CUR_FORM_BTN_ITEM(btn, item);
 
@@ -4916,7 +4927,7 @@ void Inventory_Dpad_UpdateBottleItem(PlayState* play, u8 item, u8 btn) {
 }
 // #endregion
 
-void Inventory_UpdateBottleItem(PlayState* play, u8 item, u8 btn) {
+void Inventory_UpdateBottleItem(PlayState* play, u16 item, u8 btn) {
     gSaveContext.save.saveInfo.inventory.items[GET_CUR_FORM_BTN_SLOT(btn)] = item;
     SET_CUR_FORM_BTN_ITEM(btn, item);
 

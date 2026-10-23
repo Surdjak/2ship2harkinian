@@ -327,21 +327,21 @@ void Interface_Dpad_LoadItemIcon(struct PlayState* play, u8 btn);
 void Interface_LoadItemIconImpl(struct PlayState* play, u8 btn);
 void Interface_LoadItemIcon(struct PlayState* play, u8 btn);
 void Interface_UpdateButtonsAlt(struct PlayState* play, u16 flag);
-u8 Item_Give(struct PlayState* play, u8 item);
-u8 Item_CheckObtainability(u8 item);
+u16 Item_Give(struct PlayState* play, u16 item);
+u16 Item_CheckObtainability(u16 item);
 void Inventory_DeleteItem(s16 item, s16 slot);
 void Inventory_UnequipItem(s16 item);
 s32 Inventory_ReplaceItem(struct PlayState* play, u8 oldItem, u8 newItem);
 void Inventory_UpdateDeitySwordEquip(struct PlayState* play) ;
 s32 Inventory_HasEmptyBottle(void);
-s32 Inventory_HasItemInBottle(u8 item);
+s32 Inventory_HasItemInBottle(u16 item);
 // #region 2S2H - Enhancements
 // [Dpad]
-void Inventory_Dpad_UpdateBottleItem(struct PlayState* play, u8 item, u8 btn);
+void Inventory_Dpad_UpdateBottleItem(struct PlayState* play, u16 item, u8 btn);
 // [Autosave]
 void Interface_DrawAutosaveIcon(struct PlayState* play, uint16_t opacity);
 // #endregion
-void Inventory_UpdateBottleItem(struct PlayState* play, u8 item, u8 btn);
+void Inventory_UpdateBottleItem(struct PlayState* play, u16 item, u8 btn);
 s32 Inventory_ConsumeFairy(struct PlayState* play);
 void Inventory_UpdateItem(struct PlayState* play, s16 slot, s16 item);
 void Interface_SetAButtonDoAction(struct PlayState* play, u16 aButtonDoAction);

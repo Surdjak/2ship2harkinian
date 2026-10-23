@@ -354,7 +354,10 @@ typedef enum ItemId {
     /* 0xFC */ ITEM_FC = 0xFC,
     /* 0xFD */ ITEM_FD,
     /* 0xFE */ ITEM_FE,
-    /* 0xFF */ ITEM_NONE = 0xFF
+    /* 0xFF */ ITEM_NONE = 0xFF,
+    // 3Ship [Hyrule] OoT's items follow, from ITEM_OOT_BASE. Item ids are 16-bit wherever they are stored.
+#include "HyruleIds.h"
+#include "tables/item_id_oot.h"
 } ItemId;
 
 #define BOTTLE_FIRST 0

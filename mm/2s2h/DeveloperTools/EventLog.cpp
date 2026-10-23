@@ -246,7 +246,7 @@ void RegisterEventLogHooks() {
             TrimEventLog();
         });
 
-    onItemGiveHookId = GameInteractor::Instance->RegisterGameHook<GameInteractor::OnItemGive>([](u8 item) {
+    onItemGiveHookId = GameInteractor::Instance->RegisterGameHook<GameInteractor::OnItemGive>([](u16 item) {
         eventLogEntries.insert(eventLogEntries.begin(), {
                                                             .timestamp = CurrentTime(),
                                                             .type = EVENT_LOG_ENTRY_TYPE_ITEM_GIVE,
