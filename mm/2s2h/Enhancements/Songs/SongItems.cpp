@@ -539,7 +539,7 @@ static void RegisterSongItems() {
         }
     });
 
-    COND_HOOK(OnSceneInit, CVAR, [](s8 sceneId, s8 spawnNum) {
+    COND_HOOK(OnSceneInit, CVAR, [](s16 sceneId, s8 spawnNum) {
         sPendingAutoPlaySong = 0xFF;
         sHideOcarinaStaff = false;
         sOcarinaErrorPlayed = false;

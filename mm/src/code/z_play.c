@@ -2033,10 +2033,10 @@ void Play_SaveCycleSceneFlags(PlayState* this) {
     cycleSceneFlags->clearedRoom = this->actorCtx.sceneFlags.clearedRoom;
 }
 
-void Play_SetRespawnData(PlayState* this, s32 respawnMode, u16 entrance, s32 roomIndex, s32 playerParams, Vec3f* pos,
+void Play_SetRespawnData(PlayState* this, s32 respawnMode, u32 entrance, s32 roomIndex, s32 playerParams, Vec3f* pos,
                          s16 yaw) {
 
-    gSaveContext.respawn[respawnMode].entrance = Entrance_Create(entrance >> 9, 0, entrance & 0xF);
+    gSaveContext.respawn[respawnMode].entrance = Entrance_Create(ENTRANCE_GET_SCENE(entrance), 0, entrance & 0xF);
     gSaveContext.respawn[respawnMode].roomIndex = roomIndex;
     gSaveContext.respawn[respawnMode].pos = *pos;
     gSaveContext.respawn[respawnMode].yaw = yaw;
@@ -2258,7 +2258,7 @@ void Play_Init(GameState* thisx) {
     // #endregion
 
     if ((gSaveContext.nextCutsceneIndex == 0xFFEF) || (gSaveContext.nextCutsceneIndex == 0xFFF0)) {
-        scene = ((void)0, gSaveContext.save.entrance) >> 9;
+        scene = ENTRANCE_GET_SCENE(((void)0, gSaveContext.save.entrance));
 
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE)) {
             if (scene == ENTR_SCENE_MOUNTAIN_VILLAGE_WINTER) {

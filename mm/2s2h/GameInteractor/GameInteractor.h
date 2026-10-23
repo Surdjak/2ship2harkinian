@@ -158,7 +158,7 @@ struct GIEventSpawnActor {
 };
 
 struct GIEventTransition {
-    u16 entrance;
+    u32 entrance; // 3Ship [Hyrule] was u16, see ENTRANCE_MAKE
     u16 cutsceneIndex;
     s8 transitionTrigger;
     u8 transitionType;

@@ -18,7 +18,7 @@ void RegisterRainEverywhere() {
         gPlayState->envCtx.precipitation[PRECIP_SNOW_CUR] = 0;
     });
 
-    COND_HOOK(OnSceneInit, CVAR, [](s8 sceneId, s8 spawnNum) { Environment_PlayStormNatureAmbience(gPlayState); });
+    COND_HOOK(OnSceneInit, CVAR, [](s16 sceneId, s8 spawnNum) { Environment_PlayStormNatureAmbience(gPlayState); });
 
     if (gPlayState == NULL) {
         return;

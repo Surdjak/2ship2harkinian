@@ -37,6 +37,7 @@
 #include "2s2h/resource/type/scenecommand/SetMinimapList.h"
 #include "2s2h/resource/type/scenecommand/SetMinimapChests.h"
 #include "2s2h/resource/type/scenecommand/SetCsCamera.h"
+#include "2s2h/resource/type/scenecommand/SetExitList.h"
 
 s32 OTRScene_ExecuteCommands(PlayState* play, SOH::Scene* scene);
 
@@ -330,7 +331,11 @@ void Scene_CommandSkyboxDisables(PlayState* play, SOH::ISceneCommand* cmd) {
 }
 
 void Scene_CommandExitList(PlayState* play, SOH::ISceneCommand* cmd) {
-    play->setupExitList = (u16*)cmd->GetRawPointer();
+    // 3Ship [Hyrule] Entrances are 32-bit now (see ENTRANCE_MAKE); MM's 16-bit exits keep their values.
+    static std::vector<u32> sExitList;
+    SOH::SetExitList* exitList = (SOH::SetExitList*)cmd;
+    sExitList.assign(exitList->exits.begin(), exitList->exits.end());
+    play->setupExitList = sExitList.data();
 }
 
 void Scene_CommandSoundSettings(PlayState* play, SOH::ISceneCommand* cmd) {

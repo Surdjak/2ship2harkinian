@@ -594,7 +594,7 @@ typedef union CutsceneData {
 
 typedef struct {
     /* 0x0 */ CutsceneData* script;
-    /* 0x4 */ s16 nextEntrance;
+    /* 0x4 */ u16 nextEntrance; // 3Ship [Hyrule] was s16, which sign-extended into the 32-bit entrance fields
     /* 0x6 */ u8 spawn;
     /* 0x7 */ u8 spawnFlags; // See `CS_SPAWN_FLAG_`
 } CutsceneScriptEntry; // size = 0x8

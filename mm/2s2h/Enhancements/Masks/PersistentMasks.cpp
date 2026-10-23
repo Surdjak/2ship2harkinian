@@ -146,7 +146,7 @@ static void RegisterPersistentMasks() {
     UpdatePersistentMasksState();
 
     // Easiest way to handle things like loading into a different file, debug warping, etc.
-    COND_HOOK(OnSceneInit, CVAR, [](s8 sceneId, s8 spawnNum) { UpdatePersistentMasksState(); });
+    COND_HOOK(OnSceneInit, CVAR, [](s16 sceneId, s8 spawnNum) { UpdatePersistentMasksState(); });
 
     // Speed the player up when the bunny hood state is active
     COND_VB_SHOULD(VB_CONSIDER_BUNNY_HOOD_EQUIPPED, CVAR, {

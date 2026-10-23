@@ -141,7 +141,7 @@ void RefreshObtainableTrapItems() {
 
 static RegisterShipInitFunc refreshInitFunc(
     []() {
-        COND_HOOK(OnSceneInit, IS_RANDO, [](s8 sceneId, s8 spawnNum) {
+        COND_HOOK(OnSceneInit, IS_RANDO, [](s16 sceneId, s8 spawnNum) {
             RefreshObtainableJunkItems();
             RefreshObtainableTrapItems();
         });

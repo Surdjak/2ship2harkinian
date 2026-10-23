@@ -284,7 +284,7 @@ void BetterMapSelect_Update(MapSelectState* mapSelectState) {
     // Clamp and wrap around the spawn value based on the supported entrances for that scene
     if (mapSelectState->currentScene < ARRAY_COUNT(sBetterMapSelectInfo)) {
         // Scenes from scene_table.h can be checked directly against `sSceneEntranceTable`
-        s32 entrSceneId = sBetterScenes[mapSelectState->currentScene].entrance >> 9;
+        s32 entrSceneId = ENTRANCE_GET_SCENE(sBetterScenes[mapSelectState->currentScene].entrance);
         SceneEntranceTableEntry entry = sSceneEntranceTable[entrSceneId];
 
         if (mapSelectState->opt >= entry.tableCount) {

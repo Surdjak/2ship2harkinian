@@ -6498,7 +6498,7 @@ void func_808354A4(PlayState* play, s32 exitIndex, s32 arg2) {
         play->nextEntrance = gSaveContext.respawn[RESPAWN_MODE_UNK_3].entrance;
         play->transitionType = TRANS_TYPE_FADE_WHITE;
         gSaveContext.nextTransitionType = TRANS_TYPE_FADE_WHITE;
-    } else if (play->nextEntrance >= 0xFE00) {
+    } else if ((play->nextEntrance >= 0xFE00) && (play->nextEntrance <= 0xFFFF)) { // 3Ship [Hyrule] wider entrances
         play->nextEntrance =
             sReturnEntranceGroupData[sReturnEntranceGroupIndices[play->nextEntrance - 0xFE00] + play->curSpawn];
 

@@ -614,13 +614,14 @@ s32 Scene_ExecuteCommands(PlayState* play, SceneCmd* sceneCmd) {
 /**
  * Creates an entrance from the scene, spawn, and layer.
  */
-u16 Entrance_Create(s32 scene, s32 spawn, s32 layer) {
-    return (scene << 9) | (spawn << 4) | layer;
+u32 Entrance_Create(s32 scene, s32 spawn, s32 layer) {
+    // 3Ship [Hyrule] Room for entrance scenes above 0x7F
+    return ENTRANCE_MAKE(scene, spawn, layer);
 }
 
 /**
  * Creates an layer 0 entrance from the current entrance and the given spawn.
  */
-u16 Entrance_CreateFromSpawn(s32 spawn) {
-    return Entrance_Create((u32)gSaveContext.save.entrance >> 9, spawn, 0);
+u32 Entrance_CreateFromSpawn(s32 spawn) {
+    return Entrance_Create(ENTRANCE_GET_SCENE(gSaveContext.save.entrance), spawn, 0);
 }

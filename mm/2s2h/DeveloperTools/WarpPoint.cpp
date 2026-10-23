@@ -84,12 +84,12 @@ void Warp(WarpPoint& warpPoint) {
         // The else case, and the rest of this function is primarily relevant code copied from Play_SetRespawnData and
         // func_80169EFC, minus the parts that copy scene flags to scene we are warping to (this is obviously
         // undesirable)
-        gPlayState->nextEntrance = Entrance_Create(warpPoint.entranceId >> 9, 0, warpPoint.entranceId & 0xF);
+        gPlayState->nextEntrance = Entrance_Create(ENTRANCE_GET_SCENE(warpPoint.entranceId), 0, warpPoint.entranceId & 0xF);
         gPlayState->transitionTrigger = TRANS_TRIGGER_START;
         gPlayState->transitionType = TRANS_TYPE_INSTANT;
     }
     gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance =
-        Entrance_Create(warpPoint.entranceId >> 9, 0, warpPoint.entranceId & 0xF);
+        Entrance_Create(ENTRANCE_GET_SCENE(warpPoint.entranceId), 0, warpPoint.entranceId & 0xF);
     gSaveContext.respawn[RESPAWN_MODE_DOWN].roomIndex = warpPoint.roomNum;
     gSaveContext.respawn[RESPAWN_MODE_DOWN].pos = warpPoint.pos;
     gSaveContext.respawn[RESPAWN_MODE_DOWN].yaw = warpPoint.rotY;

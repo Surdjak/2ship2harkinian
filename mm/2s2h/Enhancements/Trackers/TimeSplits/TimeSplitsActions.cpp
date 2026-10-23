@@ -394,7 +394,7 @@ void RegisterTimesplits() {
 
         GetSplitByActorId(actor->id, GREAT_FAIRY_GET_TYPE(actor));
     });
-    COND_HOOK(OnSceneInit, CVAR, [](s8 sceneId, s8 spawnNum) { UpdateSplitStatusBySceneId(sceneId); });
+    COND_HOOK(OnSceneInit, CVAR, [](s16 sceneId, s8 spawnNum) { UpdateSplitStatusBySceneId(sceneId); });
 }
 
 static RegisterShipInitFunc initFunc(RegisterTimesplits, { CVAR_NAME });

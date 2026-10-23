@@ -102,7 +102,7 @@ void RegisterHarness() {
     std::atexit(Harness_Shutdown);
 
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnSceneInit>(
-        [](s8 sceneId, s8 spawnNum) { sSceneFrame = 0; });
+        [](s16 sceneId, s8 spawnNum) { sSceneFrame = 0; });
 
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnGameStateMainFinish>([]() {
         HarnessFrameState state;

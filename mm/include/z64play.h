@@ -93,7 +93,7 @@ typedef struct PlayState {
     /* 0x18854 */ ActorEntry* setupActorList;
     /* 0x18858 */ ActorCsCamInfo* actorCsCamList;
     /* 0x1885C */ EntranceEntry* setupEntranceList;
-    /* 0x18860 */ u16* setupExitList;
+    /* 0x18860 */ u32* setupExitList; // 3Ship [Hyrule] was u16*, see ENTRANCE_MAKE
     /* 0x18864 */ Path* setupPathList;
     /* 0x18868 */ void* naviQuestHints; // leftover from OoT, system which processes this is removed
     /* 0x1886C */ AnimatedMaterial* sceneMaterialAnims;
@@ -102,7 +102,7 @@ typedef struct PlayState {
     /* 0x18875 */ s8 transitionTrigger; // "fade_direction"
     /* 0x18876 */ s16 worldCoverAlpha;
     /* 0x18878 */ s16 bgCoverAlpha;
-    /* 0x1887A */ u16 nextEntrance;
+    /* 0x1887A */ u32 nextEntrance; // 3Ship [Hyrule] was u16, see ENTRANCE_MAKE
     /* 0x1887C */ s8 bButtonAmmoPlusOne;
     /* 0x1887D */ s8 unk_1887D;
     /* 0x1887E */ s8 unk_1887E;
@@ -175,7 +175,7 @@ u16 Play_GetActorCsCamSetting(PlayState* thisx, s32 csCamDataIndex);
 Vec3s* Play_GetActorCsCamFuncData(PlayState* thisx, s32 csCamDataIndex);
 s16 Play_GetOriginalSceneId(s16 sceneId);
 void Play_SaveCycleSceneFlags(PlayState* thisx);
-void Play_SetRespawnData(PlayState* thisx, s32 respawnMode, u16 entrance, s32 roomIndex, s32 playerParams, Vec3f* pos, s16 yaw);
+void Play_SetRespawnData(PlayState* thisx, s32 respawnMode, u32 entrance, s32 roomIndex, s32 playerParams, Vec3f* pos, s16 yaw);
 void Play_SetupRespawnPoint(PlayState* thisx, s32 respawnMode, s32 playerParams);
 void func_80169EFC(PlayState* thisx);
 void func_80169F78(PlayState* thisx);

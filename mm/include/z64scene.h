@@ -401,10 +401,10 @@ typedef struct {
 } EntranceEntry; // size = 0x2
 
 typedef struct {
-    /* 0x0 */ s8 sceneId;
+    /* 0x0 */ s16 sceneId; // 3Ship [Hyrule] was s8; scene ids go above 127. Negative ids still mark special entrances.
     /* 0x1 */ s8 spawnNum;
     /* 0x2 */ u16 flags;
-} EntranceTableEntry; // size = 0x4
+} EntranceTableEntry; // size = 0x4 (3Ship: now 0x6)
 
 typedef struct {
     /* 0x0 */ u32 tableCount : 8; // unused
@@ -744,7 +744,7 @@ typedef enum {
     /* 0x6B */ ENTR_SCENE_NORTH_CLOCK_TOWN,
     /* 0x6C */ ENTR_SCENE_SOUTH_CLOCK_TOWN,
     /* 0x6D */ ENTR_SCENE_LAUNDRY_POOL,
-    // 3Ship [Hyrule] OoT scenes
+    // 3Ship [Hyrule] OoT scenes. 0x7F must stay unused: entrances 0xFE00-0xFFFF are Player's "return" exits.
     /* 0x6E */ ENTR_SCENE_KOKIRI_FOREST_Oot,
     /* 0x6F */ ENTR_SCENE_MAX
 } EntranceSceneId;
@@ -754,7 +754,16 @@ typedef enum {
 * 0x01F0:  Index into the scenes specific entrance table (Spawn)
 * 0x000F:  Index into the specific entrance table (Layer), stored separately in sceneLayer
 */
-#define ENTRANCE(scene, spawn) ((((ENTR_SCENE_##scene) & 0x7F) << 9) | (((spawn) & 0x1F) << 4))
+/*
+* 3Ship [Hyrule] Entrance scene ids above 0x7F continue in bits 16 and up, so MM's entrances keep their
+* 16-bit values while there is room for OoT's scenes. Decode with ENTRANCE_GET_SCENE, never `>> 9`.
+*/
+#define ENTRANCE_MAKE(entrSceneId, spawn, layer)                                              \
+    ((((entrSceneId) & 0x7F) << 9) | (((u32)(entrSceneId) >> 7) << 16) | (((spawn) & 0x1F) << 4) | \
+     ((layer) & 0xF))
+#define ENTRANCE_GET_SCENE(entrance) ((((u32)(entrance) >> 9) & 0x7F) | (((u32)(entrance) >> 16) << 7))
+
+#define ENTRANCE(scene, spawn) ENTRANCE_MAKE(ENTR_SCENE_##scene, spawn, 0)
 
 #define ENTR_LOAD_OPENING -1
 
@@ -765,7 +774,7 @@ typedef enum {
 * 0x01F0:  Index into the scenes specific entrance table (Spawn)
 * 0x000F:  Index into the specific entrance table (Layer)
 */
-#define CS_ENTRANCE(scene, spawn, layer) ((((ENTR_SCENE_##scene) & 0x7F) << 9) | (((spawn) & 0x1F) << 4) | ((layer) & 0xF))
+#define CS_ENTRANCE(scene, spawn, layer) ENTRANCE_MAKE(ENTR_SCENE_##scene, spawn, layer)
 
 // SceneTableEntry draw configs
 typedef enum {
@@ -959,8 +968,8 @@ void Scene_CommandSetRegionVisitedFlag(struct PlayState* play, SceneCmd* cmd);
 void Scene_CommandAnimatedMaterials(struct PlayState* play, SceneCmd* cmd);
 void Scene_SetExitFade(struct PlayState* play);
 s32 Scene_ExecuteCommands(struct PlayState* play, SceneCmd* sceneCmd);
-u16 Entrance_Create(s32 scene, s32 spawn, s32 layer);
-u16 Entrance_CreateFromSpawn(s32 spawn);
+u32 Entrance_Create(s32 scene, s32 spawn, s32 layer);
+u32 Entrance_CreateFromSpawn(s32 spawn);
 void Scene_Draw(struct PlayState* play);
 void Scene_DrawConfigDefault(struct PlayState* play);
 Gfx* AnimatedMat_TexScroll(struct PlayState* play, AnimatedMatTexScrollParams* params);
@@ -997,10 +1006,10 @@ void Scene_SetCullFlag(struct PlayState* play, s32 index, u32 flags);
 void Scene_DrawConfig5(struct PlayState* play);
 void Scene_DrawConfigMatAnimManualStep(struct PlayState* play);
 void Scene_DrawConfigGreatBayTemple(struct PlayState* play);
-EntranceTableEntry* Entrance_GetTableEntry(u16 entrance);
-s32 Entrance_GetSceneId(u16 entrance);
-s32 Entrance_GetSceneIdAbsolute(u16 entrance);
-s32 Entrance_GetSpawnNum(u16 entrance);
-s32 Entrance_GetTransitionFlags(u16 entrance);
+EntranceTableEntry* Entrance_GetTableEntry(u32 entrance);
+s32 Entrance_GetSceneId(u32 entrance);
+s32 Entrance_GetSceneIdAbsolute(u32 entrance);
+s32 Entrance_GetSpawnNum(u32 entrance);
+s32 Entrance_GetTransitionFlags(u32 entrance);
 
 #endif

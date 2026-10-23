@@ -267,7 +267,7 @@ typedef struct RespawnData {
     /* 0x00 */ Vec3f pos;
     /* 0x0C */ s16 yaw;
     /* 0x0E */ s16 playerParams;
-    /* 0x10 */ u16 entrance;
+    /* 0x10 */ u32 entrance; // 3Ship [Hyrule] was u16, see ENTRANCE_MAKE. Offsets below are shifted.
     /* 0x12 */ u8 roomIndex;
     /* 0x13 */ s8 data;
     /* 0x14 */ u32 tempSwitchFlags;

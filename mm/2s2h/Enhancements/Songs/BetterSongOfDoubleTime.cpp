@@ -333,7 +333,7 @@ void DrawIndicators() {
 }
 
 void RegisterBetterSongOfDoubleTime() {
-    COND_HOOK(OnSceneInit, CVAR, [](s8 sceneId, s8 spawnNum) {
+    COND_HOOK(OnSceneInit, CVAR, [](s16 sceneId, s8 spawnNum) {
         // In case we didn't properly reset our variables
         sActivelyChangingTime = false;
         sOriginalTime = CLOCK_TIME(0, 0);

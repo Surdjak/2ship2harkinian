@@ -35,7 +35,7 @@ const OotScene* FindScene(s16 sceneId) {
 
 // OoT exits are OoT entrance numbers. Until Hyrule's entrances exist, every exit leads back to the
 // scene's first spawn.
-u16 sExitList[32];
+u32 sExitList[32];
 
 void LoadOotArchive() {
     std::string path = Ship::Context::LocateFileAcrossAppDirs("oot.o2r");
@@ -74,7 +74,7 @@ void RegisterHyruleScenes() {
 
     // OoT actor ids are not mapped yet (only the room-loading planes are), so room actor lists would
     // spawn the wrong MM actors.
-    GameInteractor::Instance->RegisterGameHook<GameInteractor::AfterRoomSceneCommands>([](s8 sceneId, s8 roomNum) {
+    GameInteractor::Instance->RegisterGameHook<GameInteractor::AfterRoomSceneCommands>([](s16 sceneId, s8 roomNum) {
         if (gPlayState != nullptr && FindScene(gPlayState->sceneId) != nullptr) {
             gPlayState->numSetupActors = 0;
         }
@@ -95,7 +95,7 @@ extern "C" void Hyrule_AfterSceneCommands(PlayState* play) {
     if (scene == nullptr) {
         return;
     }
-    for (u16& exit : sExitList) {
+    for (u32& exit : sExitList) {
         exit = Entrance_Create(scene->entranceSceneId, 0, 0);
     }
     play->setupExitList = sExitList;
