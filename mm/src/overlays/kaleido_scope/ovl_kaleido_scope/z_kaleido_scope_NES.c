@@ -5,6 +5,7 @@
  */
 
 #include "z_kaleido_scope.h"
+#include "HyruleKaleido.h"
 #include "z64map.h"
 #include "z64skybox.h"
 #include "z64view.h"
@@ -208,38 +209,58 @@ s16 sGameOverEnvB = 0;
 
 s16 sInDungeonScene = false;
 
-f32 sPageSwitchEyeDx[] = {
-    -PAUSE_EYE_DIST * (PAUSE_MAP_X - PAUSE_ITEM_X) / 16, // From PAUSE_ITEM to PAUSE_MAP (switching right)
-    -PAUSE_EYE_DIST*(PAUSE_MASK_X - PAUSE_ITEM_X) / 16,  // From PAUSE_ITEM to PAUSE_MASK (switching left)
-    -PAUSE_EYE_DIST*(PAUSE_QUEST_X - PAUSE_MAP_X) / 16,  // From PAUSE_MAP to PAUSE_QUEST (switching right)
-    -PAUSE_EYE_DIST*(PAUSE_ITEM_X - PAUSE_MAP_X) / 16,   // From PAUSE_MAP to PAUSE_ITEM (switching left)
-    -PAUSE_EYE_DIST*(PAUSE_MASK_X - PAUSE_QUEST_X) / 16, // From PAUSE_QUEST to PAUSE_MASK (switching right)
-    -PAUSE_EYE_DIST*(PAUSE_MAP_X - PAUSE_QUEST_X) / 16,  // From PAUSE_QUEST to PAUSE_MAP (switching left)
-    -PAUSE_EYE_DIST*(PAUSE_ITEM_X - PAUSE_MASK_X) / 16,  // From PAUSE_MASK to PAUSE_ITEM (switching right)
-    -PAUSE_EYE_DIST*(PAUSE_QUEST_X - PAUSE_MASK_X) / 16, // From PAUSE_MASK to PAUSE_QUEST (switching left)
-};
+// 3Ship [Hyrule] The pages on their pentagon, going right (z_kaleido_scope.h). MM's cube, with its eye
+// steps for each pair of pages, is a square of the first four.
+static const s16 sRingPages[PAUSE_RING_PAGES] = { PAUSE_ITEM, PAUSE_MAP, PAUSE_QUEST, PAUSE_EQUIP, PAUSE_MASK };
 
-f32 sPageSwitchEyeDz[] = {
-    -PAUSE_EYE_DIST * (PAUSE_MAP_Z - PAUSE_ITEM_Z) / 16, // From PAUSE_ITEM to PAUSE_MAP (switching right)
-    -PAUSE_EYE_DIST*(PAUSE_MASK_Z - PAUSE_ITEM_Z) / 16,  // From PAUSE_ITEM to PAUSE_MASK (switching left)
-    -PAUSE_EYE_DIST*(PAUSE_QUEST_Z - PAUSE_MAP_Z) / 16,  // From PAUSE_MAP to PAUSE_QUEST (switching right)
-    -PAUSE_EYE_DIST*(PAUSE_ITEM_Z - PAUSE_MAP_Z) / 16,   // From PAUSE_MAP to PAUSE_ITEM (switching left)
-    -PAUSE_EYE_DIST*(PAUSE_MASK_Z - PAUSE_QUEST_Z) / 16, // From PAUSE_QUEST to PAUSE_MASK (switching right)
-    -PAUSE_EYE_DIST*(PAUSE_MAP_Z - PAUSE_QUEST_Z) / 16,  // From PAUSE_QUEST to PAUSE_MAP (switching left)
-    -PAUSE_EYE_DIST*(PAUSE_ITEM_Z - PAUSE_MASK_Z) / 16,  // From PAUSE_MASK to PAUSE_ITEM (switching right)
-    -PAUSE_EYE_DIST*(PAUSE_QUEST_Z - PAUSE_MASK_Z) / 16, // From PAUSE_MASK to PAUSE_QUEST (switching left)
-};
+static s32 KaleidoScope_GetRingIndex(s16 page) {
+    s32 i;
 
-u16 sPageSwitchNextPageIndex[] = {
-    PAUSE_MAP,   // From PAUSE_ITEM (switching right)
-    PAUSE_MASK,  // From PAUSE_ITEM (switching left)
-    PAUSE_QUEST, // From PAUSE_MAP (switching right)
-    PAUSE_ITEM,  // From PAUSE_MAP (switching left)
-    PAUSE_MASK,  // From PAUSE_QUEST (switching right)
-    PAUSE_MAP,   // From PAUSE_QUEST (switching left)
-    PAUSE_ITEM,  // From PAUSE_MASK (switching right)
-    PAUSE_QUEST, // From PAUSE_MASK (switching left)
-};
+    for (i = 0; i < PAUSE_RING_PAGES; i++) {
+        if (sRingPages[i] == page) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+f32 KaleidoScope_GetPageAngle(s16 page) {
+    return -KaleidoScope_GetRingIndex(page) * (2.0f * M_PI / PAUSE_RING_PAGES);
+}
+
+// A page at angle a stands at (-sin a, -cos a) * PAUSE_PAGE_DIST; its eye is on the other side.
+f32 KaleidoScope_GetPageEyeX(s16 page) {
+    return PAUSE_EYE_DIST * sinf(KaleidoScope_GetPageAngle(page));
+}
+
+f32 KaleidoScope_GetPageEyeZ(s16 page) {
+    return PAUSE_EYE_DIST * cosf(KaleidoScope_GetPageAngle(page));
+}
+
+s16 KaleidoScope_GetNeighborPage(s16 page, s32 toTheLeft) {
+    s32 i = KaleidoScope_GetRingIndex(page) + (toTheLeft ? PAUSE_RING_PAGES - 1 : 1);
+
+    return sRingPages[i % PAUSE_RING_PAGES];
+}
+
+s32 KaleidoScope_IsPageVisible(PauseContext* pauseCtx, s16 page) {
+    return (page == pauseCtx->pageIndex) || (page == KaleidoScope_GetNeighborPage(pauseCtx->pageIndex, true)) ||
+           (page == KaleidoScope_GetNeighborPage(pauseCtx->pageIndex, false));
+}
+
+// nextPageMode is (2 * page switched from) + (switching left ? 1 : 0).
+static s16 KaleidoScope_GetSwitchTargetPage(u16 nextPageMode) {
+    return KaleidoScope_GetNeighborPage(nextPageMode >> 1, nextPageMode & 1);
+}
+
+// Moves the eye an eighth of the way between the two pages' eyes, as MM's tables did.
+static void KaleidoScope_StepSwitchEye(PauseContext* pauseCtx) {
+    s16 from = pauseCtx->nextPageMode >> 1;
+    s16 to = KaleidoScope_GetSwitchTargetPage(pauseCtx->nextPageMode);
+
+    pauseCtx->eye.x += (KaleidoScope_GetPageEyeX(to) - KaleidoScope_GetPageEyeX(from)) / 8.0f;
+    pauseCtx->eye.z += (KaleidoScope_GetPageEyeZ(to) - KaleidoScope_GetPageEyeZ(from)) / 8.0f;
+}
 
 f32 sPauseMenuVerticalOffset = 0.0f;
 f32 D_8082B90C = 0.0f;
@@ -415,7 +436,9 @@ void Kaleido_LoadItemNameStatic(void** segment, u32 texIndex) {
     };
 
     // 2S2H [Port] Bounds check texture to load to prevent crashes
-    if (texIndex < ARRAY_COUNTU(gItemNameStatics)) {
+    if ((texIndex >= ITEM_OOT_BASE) && (Hyrule_GetItemNameTexture(texIndex) != NULL)) {
+        *segment = Hyrule_GetItemNameTexture(texIndex); // 3Ship [Hyrule] OoT's names
+    } else if (texIndex < ARRAY_COUNTU(gItemNameStatics)) {
         *segment = gItemNameStatics[texIndex];
     } else {
         *segment = gEmptyTexture;
@@ -651,6 +674,34 @@ static TexturePtr sGameOverTexs[] = {
     gPauseSave20Tex,     gPauseSave21Tex, gPauseSave22Tex, gPauseSave23Tex, gPauseSave24Tex,
 };
 
+// 3Ship [Hyrule] The equipment page: its place on the ring, OoT's background, and its contents.
+static void KaleidoScope_DrawEquipPage(PlayState* play, GraphicsContext* gfxCtx) {
+    PauseContext* pauseCtx = &play->pauseCtx;
+
+    OPEN_DISPS(gfxCtx);
+
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetTextureFilter(POLY_OPA_DISP++, G_TF_BILERP);
+    gDPSetCombineLERP(POLY_OPA_DISP++, TEXEL0, 0, PRIMITIVE, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIMITIVE, 0, TEXEL0, 0,
+                      SHADE, 0);
+    gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, 180, 180, 120, 255, COSMETIC_ID("Menus.PausePanels"));
+
+    Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_EQUIP), MTXMODE_NEW);
+    Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
+    Matrix_Scale(0.78f, 0.78f, 0.78f, MTXMODE_APPLY);
+    Matrix_RotateXFApply(-pauseCtx->equipPageRoll / 100.0f);
+
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gfxCtx);
+
+    POLY_OPA_DISP = KaleidoScope_DrawPageSections(POLY_OPA_DISP, pauseCtx->equipPageVtx, Hyrule_GetEquipPageBgTextures());
+
+    GameInteractor_ExecuteBeforeKaleidoDrawPage(pauseCtx, PAUSE_EQUIP);
+    Hyrule_KaleidoDrawEquipment(play);
+    GameInteractor_ExecuteAfterKaleidoDrawPage(pauseCtx, PAUSE_EQUIP);
+
+    CLOSE_DISPS(gfxCtx);
+}
+
 void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
     static s16 sCursorColorTimer = 10;
     static s16 sCursorColorTargetIndex = 0;
@@ -734,7 +785,8 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
             }
         }
 
-        if ((pauseCtx->pageIndex != PAUSE_ITEM) && (pauseCtx->pageIndex != PAUSE_QUEST)) {
+        // 3Ship [Hyrule] Behind the current page: its neighbours on the ring (MM: all but the opposite one).
+        if ((pauseCtx->pageIndex != PAUSE_ITEM) && KaleidoScope_IsPageVisible(pauseCtx, PAUSE_ITEM)) {
             gDPPipeSync(POLY_OPA_DISP++);
 
             gDPSetCombineLERP(POLY_OPA_DISP++, TEXEL0, 0, PRIMITIVE, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIMITIVE, 0,
@@ -742,8 +794,8 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
 
             gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, 180, 180, 120, 255, COSMETIC_ID("Menus.PausePanels"));
 
-            Matrix_RotateYF(0.0f, MTXMODE_NEW);
-            Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+            Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_ITEM), MTXMODE_NEW);
+            Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
             Matrix_Scale(0.78f, 0.78f, 0.78f, MTXMODE_APPLY);
             Matrix_RotateXFApply(-pauseCtx->itemPageRoll / 100.0f);
 
@@ -756,7 +808,7 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
             GameInteractor_ExecuteAfterKaleidoDrawPage(pauseCtx, PAUSE_ITEM);
         }
 
-        if ((pauseCtx->pageIndex != PAUSE_MAP) && (pauseCtx->pageIndex != PAUSE_MASK)) {
+        if ((pauseCtx->pageIndex != PAUSE_MAP) && KaleidoScope_IsPageVisible(pauseCtx, PAUSE_MAP)) {
             gDPPipeSync(POLY_OPA_DISP++);
 
             gDPSetCombineLERP(POLY_OPA_DISP++, TEXEL0, 0, PRIMITIVE, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIMITIVE, 0,
@@ -764,8 +816,8 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
 
             gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, 180, 180, 120, 255, COSMETIC_ID("Menus.PausePanels"));
 
-            Matrix_RotateYF(-1.57f, MTXMODE_NEW);
-            Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+            Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_MAP), MTXMODE_NEW);
+            Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
             Matrix_Scale(0.78f, 0.78f, 0.78f, MTXMODE_APPLY);
             Matrix_RotateXFApply(-pauseCtx->mapPageRoll / 100.0f);
 
@@ -785,7 +837,7 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
             GameInteractor_ExecuteAfterKaleidoDrawPage(pauseCtx, PAUSE_MAP);
         }
 
-        if ((pauseCtx->pageIndex != PAUSE_QUEST) && (pauseCtx->pageIndex != PAUSE_ITEM)) {
+        if ((pauseCtx->pageIndex != PAUSE_QUEST) && KaleidoScope_IsPageVisible(pauseCtx, PAUSE_QUEST)) {
             gDPPipeSync(POLY_OPA_DISP++);
 
             gDPSetTextureFilter(POLY_OPA_DISP++, G_TF_BILERP);
@@ -795,8 +847,8 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
 
             gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, 180, 180, 120, 255, COSMETIC_ID("Menus.PausePanels"));
 
-            Matrix_RotateYF(-3.14f, MTXMODE_NEW);
-            Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+            Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_QUEST), MTXMODE_NEW);
+            Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
             Matrix_Scale(0.78f, 0.78f, 0.78f, MTXMODE_APPLY);
             Matrix_RotateXFApply(-pauseCtx->questPageRoll / 100.0f);
 
@@ -809,7 +861,7 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
             GameInteractor_ExecuteAfterKaleidoDrawPage(pauseCtx, PAUSE_QUEST);
         }
 
-        if ((pauseCtx->pageIndex != PAUSE_MASK) && (pauseCtx->pageIndex != PAUSE_MAP)) {
+        if ((pauseCtx->pageIndex != PAUSE_MASK) && KaleidoScope_IsPageVisible(pauseCtx, PAUSE_MASK)) {
             gDPPipeSync(POLY_OPA_DISP++);
 
             gDPSetTextureFilter(POLY_OPA_DISP++, G_TF_BILERP);
@@ -819,8 +871,8 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
 
             gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, 180, 180, 120, 255, COSMETIC_ID("Menus.PausePanels"));
 
-            Matrix_RotateYF(1.57f, MTXMODE_NEW);
-            Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+            Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_MASK), MTXMODE_NEW);
+            Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
             Matrix_Scale(0.78f, 0.78f, 0.78f, MTXMODE_APPLY);
             Matrix_RotateXFApply(-pauseCtx->maskPageRoll / 100.0f);
 
@@ -831,6 +883,11 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
             GameInteractor_ExecuteBeforeKaleidoDrawPage(pauseCtx, PAUSE_MASK);
             KaleidoScope_DrawMaskSelect(play);
             GameInteractor_ExecuteAfterKaleidoDrawPage(pauseCtx, PAUSE_MASK);
+        }
+
+        // 3Ship [Hyrule] The equipment page (HyruleKaleido.c).
+        if ((pauseCtx->pageIndex != PAUSE_EQUIP) && KaleidoScope_IsPageVisible(pauseCtx, PAUSE_EQUIP)) {
+            KaleidoScope_DrawEquipPage(play, gfxCtx);
         }
 
         switch (pauseCtx->pageIndex) {
@@ -844,8 +901,8 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
                     gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, 180, 180, 120, 255,
                                             COSMETIC_ID("Menus.PausePanels"));
 
-                    Matrix_RotateYF(0.0f, MTXMODE_NEW);
-                    Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+                    Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_ITEM), MTXMODE_NEW);
+                    Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
                     Matrix_Scale(0.78f, 0.78f, 0.78f, MTXMODE_APPLY);
                     Matrix_RotateXFApply(-pauseCtx->itemPageRoll / 100.0f);
 
@@ -868,8 +925,8 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
 
                 gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, 180, 180, 120, 255, COSMETIC_ID("Menus.PausePanels"));
 
-                Matrix_RotateYF(-1.57f, MTXMODE_NEW);
-                Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+                Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_MAP), MTXMODE_NEW);
+                Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
                 Matrix_Scale(0.78f, 0.78f, 0.78f, MTXMODE_APPLY);
                 Matrix_RotateXFApply(-pauseCtx->mapPageRoll / 100.0f);
 
@@ -920,8 +977,8 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
 
                 gDPSetTextureFilter(POLY_OPA_DISP++, G_TF_BILERP);
 
-                Matrix_RotateYF(-3.14f, MTXMODE_NEW);
-                Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+                Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_QUEST), MTXMODE_NEW);
+                Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
                 Matrix_Scale(0.78f, 0.78f, 0.78f, MTXMODE_APPLY);
                 Matrix_RotateXFApply(-pauseCtx->questPageRoll / 100.0f);
 
@@ -943,8 +1000,8 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
 
                 gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, 180, 180, 120, 255, COSMETIC_ID("Menus.PausePanels"));
 
-                Matrix_RotateYF(1.57f, MTXMODE_NEW);
-                Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+                Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_MASK), MTXMODE_NEW);
+                Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
                 Matrix_Scale(0.78f, 0.78f, 0.78f, MTXMODE_APPLY);
                 Matrix_RotateXFApply(-pauseCtx->maskPageRoll / 100.0f);
 
@@ -956,6 +1013,10 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
                 GameInteractor_ExecuteBeforeKaleidoDrawPage(pauseCtx, pauseCtx->pageIndex);
                 KaleidoScope_DrawMaskSelect(play);
                 GameInteractor_ExecuteAfterKaleidoDrawPage(pauseCtx, pauseCtx->pageIndex);
+                break;
+
+            case PAUSE_EQUIP: // 3Ship [Hyrule]
+                KaleidoScope_DrawEquipPage(play, gfxCtx);
                 break;
         }
     }
@@ -972,29 +1033,36 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
             switch (pauseCtx->pageIndex) {
                 case PAUSE_ITEM:
                     pauseCtx->itemPageRoll = pauseCtx->roll + 314.0f;
-                    Matrix_RotateYF(0.0f, MTXMODE_NEW);
-                    Matrix_Translate(0, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+                    Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_ITEM), MTXMODE_NEW);
+                    Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
                     Matrix_Scale(0.78f, 0.78f, 0.78f, 1);
                     Matrix_RotateXFApply(-pauseCtx->roll / 100.0f);
                     break;
                 case PAUSE_MAP:
                     pauseCtx->mapPageRoll = pauseCtx->roll + 314.0f;
-                    Matrix_RotateYF(-1.57f, MTXMODE_NEW);
-                    Matrix_Translate(0, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+                    Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_MAP), MTXMODE_NEW);
+                    Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
                     Matrix_Scale(0.78f, 0.78f, 0.78f, 1);
                     Matrix_RotateXFApply(-pauseCtx->roll / 100.0f);
                     break;
                 case PAUSE_QUEST:
                     pauseCtx->questPageRoll = pauseCtx->roll + 314.0f;
-                    Matrix_RotateYF(-3.14f, MTXMODE_NEW);
-                    Matrix_Translate(0, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+                    Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_QUEST), MTXMODE_NEW);
+                    Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
                     Matrix_Scale(0.78f, 0.78f, 0.78f, 1);
                     Matrix_RotateXFApply(-pauseCtx->roll / 100.0f);
                     break;
                 case PAUSE_MASK:
                     pauseCtx->maskPageRoll = pauseCtx->roll + 314.0f;
-                    Matrix_RotateYF(1.57f, MTXMODE_NEW);
-                    Matrix_Translate(0, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+                    Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_MASK), MTXMODE_NEW);
+                    Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
+                    Matrix_Scale(0.78f, 0.78f, 0.78f, 1);
+                    Matrix_RotateXFApply(-pauseCtx->roll / 100.0f);
+                    break;
+                case PAUSE_EQUIP: // 3Ship [Hyrule]
+                    pauseCtx->equipPageRoll = pauseCtx->roll + 314.0f;
+                    Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_EQUIP), MTXMODE_NEW);
+                    Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
                     Matrix_Scale(0.78f, 0.78f, 0.78f, 1);
                     Matrix_RotateXFApply(-pauseCtx->roll / 100.0f);
                     break;
@@ -1073,18 +1141,21 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
     FrameInterpolation_RecordCloseChild();
 }
 
-TexturePtr D_8082B998[] = {
-    gPauseToMasksENGTex,
-    gPauseToSelectItemENGTex,
-    gPauseToMapENGTex,
-    gPauseToQuestStatusENGTex,
-};
-TexturePtr D_8082B9A8[] = {
-    gPauseToMapENGTex,
-    gPauseToQuestStatusENGTex,
-    gPauseToMasksENGTex,
-    gPauseToSelectItemENGTex,
-};
+// 3Ship [Hyrule] "To <page>" labels, by page (MM listed each page's left and right neighbours).
+static TexturePtr KaleidoScope_GetToPageTexture(s16 page) {
+    switch (page) {
+        case PAUSE_ITEM:
+            return gPauseToSelectItemENGTex;
+        case PAUSE_MAP:
+            return gPauseToMapENGTex;
+        case PAUSE_QUEST:
+            return gPauseToQuestStatusENGTex;
+        case PAUSE_EQUIP:
+            return Hyrule_GetToEquipmentTexture();
+        default:
+            return gPauseToMasksENGTex;
+    }
+}
 void KaleidoScope_DrawInfoPanel(PlayState* play) {
     static s16 sPauseZRCursorColorTargets[][4] = {
         { 180, 210, 255, 220 },
@@ -1363,12 +1434,18 @@ void KaleidoScope_DrawInfoPanel(PlayState* play) {
                 gDPPipeSync(POLY_OPA_DISP++);
                 gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 200, 0, 255);
 
-                if (pauseCtx->cursorSpecialPos == PAUSE_CURSOR_PAGE_LEFT) {
-                    POLY_OPA_DISP =
-                        Gfx_DrawTexQuad4b(POLY_OPA_DISP, D_8082B998[pauseCtx->pageIndex], G_IM_FMT_IA, 128, 16, 0);
-                } else {
-                    POLY_OPA_DISP =
-                        Gfx_DrawTexQuad4b(POLY_OPA_DISP, D_8082B9A8[pauseCtx->pageIndex], G_IM_FMT_IA, 128, 16, 0);
+                // 3Ship [Hyrule] "To <page>" for the neighbour on the ring. OoT's label is IA8, MM's IA4.
+                {
+                    s16 toPage = KaleidoScope_GetNeighborPage(pauseCtx->pageIndex,
+                                                              pauseCtx->cursorSpecialPos == PAUSE_CURSOR_PAGE_LEFT);
+
+                    if (toPage == PAUSE_EQUIP) {
+                        POLY_OPA_DISP =
+                            Gfx_DrawTexQuadIA8(POLY_OPA_DISP, KaleidoScope_GetToPageTexture(toPage), 128, 16, 0);
+                    } else {
+                        POLY_OPA_DISP = Gfx_DrawTexQuad4b(POLY_OPA_DISP, KaleidoScope_GetToPageTexture(toPage),
+                                                          G_IM_FMT_IA, 128, 16, 0);
+                    }
                 }
             }
         } else if ((!pauseCtx->pageIndex || (pauseCtx->pageIndex == PAUSE_MASK)) &&
@@ -1510,8 +1587,8 @@ void KaleidoScope_DrawOwlWarpMapPage(PlayState* play) {
 
     gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, 180, 180, 120, 255, COSMETIC_ID("Menus.PausePanels"));
 
-    Matrix_RotateYF(-1.57f, MTXMODE_NEW);
-    Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -93.0f, MTXMODE_APPLY);
+    Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_MAP), MTXMODE_NEW);
+    Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
     Matrix_Scale(0.78f, 0.78f, 0.78f, MTXMODE_APPLY);
     Matrix_RotateXFApply(-pauseCtx->mapPageRoll / 100.0f);
 
@@ -1788,8 +1865,7 @@ void KaleidoScope_UpdateSwitchPage(PlayState* play, Input* input) {
 
     //! FAKE
     if (1) {
-        pauseCtx->eye.x += sPageSwitchEyeDx[pauseCtx->nextPageMode] * 2.0f;
-        pauseCtx->eye.z += sPageSwitchEyeDz[pauseCtx->nextPageMode] * 2.0f;
+        KaleidoScope_StepSwitchEye(pauseCtx);
 
         if (pauseCtx->switchPageTimer < 32) {
             sPauseCursorLeftX -= TRUNCF_BINANG(sPauseCursorLeftMoveOffsetX / 4);
@@ -1803,7 +1879,7 @@ void KaleidoScope_UpdateSwitchPage(PlayState* play, Input* input) {
 
         if (pauseCtx->switchPageTimer == 64) {
             pauseCtx->switchPageTimer = 0;
-            pauseCtx->pageIndex = sPageSwitchNextPageIndex[pauseCtx->nextPageMode];
+            pauseCtx->pageIndex = KaleidoScope_GetSwitchTargetPage(pauseCtx->nextPageMode);
             pauseCtx->mainState = PAUSE_MAIN_STATE_IDLE;
 
             KaleidoScope_HandlePageToggles(play, input);
@@ -2303,7 +2379,8 @@ void KaleidoScope_SetVertices(PlayState* play, GraphicsContext* gfxCtx) {
         pauseCtx->offsetY = 80;
     }
 
-    if (pauseCtx->pageIndex != PAUSE_QUEST) {
+    // 3Ship [Hyrule] Vertices for the pages drawn: the current one and its neighbours on the ring.
+    if (KaleidoScope_IsPageVisible(pauseCtx, PAUSE_ITEM)) {
         pauseCtx->itemPageVtx = GRAPH_ALLOC(gfxCtx, ((PAGE_BG_QUADS + VTX_PAGE_ITEM_QUADS) * 4) * sizeof(Vtx));
         KaleidoScope_SetPageVertices(play, pauseCtx->itemPageVtx, VTX_PAGE_ITEM, VTX_PAGE_ITEM_QUADS);
 
@@ -2462,7 +2539,7 @@ void KaleidoScope_SetVertices(PlayState* play, GraphicsContext* gfxCtx) {
         // #endregion
     }
 
-    if (pauseCtx->pageIndex != PAUSE_MASK) {
+    if (KaleidoScope_IsPageVisible(pauseCtx, PAUSE_MAP)) {
         if (!sInDungeonScene) {
             pauseCtx->mapPageVtx = GRAPH_ALLOC(
                 gfxCtx, ((PAGE_BG_QUADS + VTX_PAGE_MAP_WORLD_QUADS + WORLD_MAP_IMAGE_FRAG_NUM) * 4) * sizeof(Vtx));
@@ -2518,7 +2595,7 @@ void KaleidoScope_SetVertices(PlayState* play, GraphicsContext* gfxCtx) {
         }
     }
 
-    if (pauseCtx->pageIndex != PAUSE_ITEM) {
+    if (KaleidoScope_IsPageVisible(pauseCtx, PAUSE_QUEST)) {
         pauseCtx->questPageVtx = GRAPH_ALLOC(gfxCtx, ((PAGE_BG_QUADS + VTX_PAGE_QUEST_QUADS) * 4) * sizeof(Vtx));
         KaleidoScope_SetPageVertices(play, pauseCtx->questPageVtx, VTX_PAGE_QUEST, VTX_PAGE_QUEST_QUADS);
 
@@ -2573,7 +2650,13 @@ void KaleidoScope_SetVertices(PlayState* play, GraphicsContext* gfxCtx) {
         }
     }
 
-    if (pauseCtx->pageIndex != PAUSE_MAP) {
+    if (KaleidoScope_IsPageVisible(pauseCtx, PAUSE_EQUIP)) {
+        pauseCtx->equipPageVtx = GRAPH_ALLOC(gfxCtx, (PAGE_BG_QUADS * 4) * sizeof(Vtx));
+        KaleidoScope_SetPageVertices(play, pauseCtx->equipPageVtx, VTX_PAGE_MASK, 0);
+        Hyrule_KaleidoSetEquipmentVertices(play);
+    }
+
+    if (KaleidoScope_IsPageVisible(pauseCtx, PAUSE_MASK)) {
         pauseCtx->maskPageVtx = GRAPH_ALLOC(gfxCtx, ((PAGE_BG_QUADS + VTX_PAGE_MASK_QUADS) * 4) * sizeof(Vtx));
         KaleidoScope_SetPageVertices(play, pauseCtx->maskPageVtx, VTX_PAGE_MASK, VTX_PAGE_MASK_QUADS);
 
@@ -2998,6 +3081,10 @@ void KaleidoScope_UpdateCursorSize(PlayState* play) {
                 pauseCtx->cursorHeight = 15.0f;
                 break;
 
+            case PAUSE_EQUIP: // 3Ship [Hyrule]
+                Hyrule_KaleidoSetEquipCursor(play);
+                break;
+
             default:
                 break;
         }
@@ -3247,8 +3334,7 @@ void KaleidoScope_GrayOutTextureRGBA32(u32* texture, u16 pixelCount) {
 void KaleidoScope_UpdateOpening(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
 
-    pauseCtx->eye.x += sPageSwitchEyeDx[pauseCtx->nextPageMode] * 2.0f;
-    pauseCtx->eye.z += sPageSwitchEyeDz[pauseCtx->nextPageMode] * 2.0f;
+    KaleidoScope_StepSwitchEye(pauseCtx);
     pauseCtx->switchPageTimer += 8;
 
     if (pauseCtx->switchPageTimer == 64) {
@@ -3285,13 +3371,13 @@ void KaleidoScope_UpdateOpening(PlayState* play) {
             gSaveContext.buttonStatus[EQUIP_SLOT_A] = BTN_DISABLED;
         }
 
-        pauseCtx->pageIndex = sPageSwitchNextPageIndex[pauseCtx->nextPageMode];
+        pauseCtx->pageIndex = KaleidoScope_GetSwitchTargetPage(pauseCtx->nextPageMode);
         pauseCtx->mainState = PAUSE_MAIN_STATE_IDLE;
         pauseCtx->state++; // PAUSE_STATE_MAIN
         pauseCtx->alpha = 255;
         Interface_SetBButtonInterfaceDoAction(play, DO_ACTION_RETURN);
     } else if (pauseCtx->switchPageTimer == 64) {
-        pauseCtx->pageIndex = sPageSwitchNextPageIndex[pauseCtx->nextPageMode];
+        pauseCtx->pageIndex = KaleidoScope_GetSwitchTargetPage(pauseCtx->nextPageMode);
         pauseCtx->nextPageMode = (pauseCtx->pageIndex * 2) + 1;
     }
 }
@@ -3421,7 +3507,7 @@ void KaleidoScope_Update(PlayState* play) {
 
         case PAUSE_STATE_OPENING_3:
             pauseCtx->infoPanelOffsetY += 10;
-            pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll -= 40.0f;
+            pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll -= 40.0f;
 
             interfaceCtx->startAlpha += 63;
             sPauseCursorLeftX += TRUNCF_BINANG(sPauseCursorLeftMoveOffsetX / 4);
@@ -3646,7 +3732,7 @@ void KaleidoScope_Update(PlayState* play) {
                 case PAUSE_SAVEPROMPT_STATE_3:
                 case PAUSE_SAVEPROMPT_STATE_7:
                     if (pauseCtx->roll != (D_8082B90C + 160.0f)) {
-                        pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
+                        pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
                             pauseCtx->maskPageRoll += 40.0f;
                         pauseCtx->roll += 40.0f;
                         pauseCtx->infoPanelOffsetY -= 10;
@@ -3659,7 +3745,7 @@ void KaleidoScope_Update(PlayState* play) {
                     } else {
                         pauseCtx->debugEditor = DEBUG_EDITOR_NONE;
                         pauseCtx->state = PAUSE_STATE_UNPAUSE_CLOSE;
-                        pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
+                        pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
                             pauseCtx->maskPageRoll = 160.0f;
                         pauseCtx->roll = -434.0f;
                         pauseCtx->namedItem = PAUSE_ITEM_NONE;
@@ -3676,7 +3762,7 @@ void KaleidoScope_Update(PlayState* play) {
                         pauseCtx->state = PAUSE_STATE_MAIN;
                         pauseCtx->savePromptState = PAUSE_SAVEPROMPT_STATE_APPEARING;
                         pauseCtx->roll = -314.0f;
-                        pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
+                        pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
                             pauseCtx->maskPageRoll = 0.0f;
                         Interface_SetAButtonDoAction(play, DO_ACTION_INFO);
                         gSaveContext.buttonStatus[EQUIP_SLOT_B] =
@@ -3842,7 +3928,7 @@ void KaleidoScope_Update(PlayState* play) {
         case PAUSE_STATE_GAMEOVER_5:
             pauseCtx->infoPanelOffsetY += 10;
             pauseCtx->roll -= 40.0f;
-            pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll =
+            pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll =
                 pauseCtx->roll;
             interfaceCtx->startAlpha += 63;
             sGameOverRectPosY -= 3;
@@ -4107,7 +4193,7 @@ void KaleidoScope_Update(PlayState* play) {
             } else {
                 pauseCtx->debugEditor = DEBUG_EDITOR_NONE;
                 pauseCtx->state = PAUSE_STATE_UNPAUSE_CLOSE;
-                pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll =
+                pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll =
                     160.0f;
                 pauseCtx->namedItem = PAUSE_ITEM_NONE;
                 interfaceCtx->startAlpha = 0;
@@ -4119,7 +4205,7 @@ void KaleidoScope_Update(PlayState* play) {
         case PAUSE_STATE_UNPAUSE_SETUP:
             if (pauseCtx->itemPageRoll != 160.0f) {
                 pauseCtx->infoPanelOffsetY -= 10;
-                pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll +=
+                pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll +=
                     40.0f;
                 interfaceCtx->startAlpha -= 63;
                 sPauseCursorLeftX -= TRUNCF_BINANG(sPauseCursorLeftMoveOffsetX / 4);
@@ -4132,6 +4218,7 @@ void KaleidoScope_Update(PlayState* play) {
                 pauseCtx->debugEditor = DEBUG_EDITOR_NONE;
                 pauseCtx->state = PAUSE_STATE_UNPAUSE_CLOSE;
                 pauseCtx->maskPageRoll = 160.0f;
+                pauseCtx->equipPageRoll = 160.0f; // 3Ship [Hyrule]
                 pauseCtx->questPageRoll = 160.0f;
                 pauseCtx->mapPageRoll = 160.0f;
                 pauseCtx->itemPageRoll = 160.0f;
@@ -4281,6 +4368,10 @@ void KaleidoScope_Update(PlayState* play) {
 
                 case PAUSE_MASK:
                     KaleidoScope_UpdateMaskCursor(play);
+                    break;
+
+                case PAUSE_EQUIP: // 3Ship [Hyrule]
+                    Hyrule_KaleidoUpdateEquipCursor(play);
                     break;
             }
 

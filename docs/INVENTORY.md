@@ -121,14 +121,13 @@ Not yet:
 
 - **Get-item entries:** OoT's get-item models and texts are not in MM's get-item table, so actors cannot
   hand OoT items to Link with the get-item animation yet; chests holding OoT-only items stay OoT actors.
-- **Using OoT items:** equipping them, and Player using the Slingshot, Boomerang, Hammer, spells,
-  boots, tunics and OoT's swords and shields, need the pause menu (next) and Player work. Until the
-  equipment page exists, Mido accepts any shield, and Link cannot offer OoT's trade items.
-- **Losing MM's sword or shield** (stolen, eaten) does not clear their ownership yet.
+- **Using OoT items:** the equipment page ([PAUSE.md](PAUSE.md)) equips OoT's swords, shields, tunics and
+  boots, and child Link uses the Deku and Hylian Shields and the Great Fairy's Sword; adult pieces wait
+  for the adult body. Player using the Slingshot, Boomerang, Hammer and spells comes item by item after
+  the item page. Mido still accepts any shield, and Link cannot offer OoT's trade items.
+- **Losing MM's shield** (stolen, eaten) does not clear its ownership yet; MM's sword follows the one worn.
 
-**Next:** the unified pause menu (PLAN.md, stage 2), as its own proposal. MM's pause screen has four
-pages (items, map, quest, masks) on a rotating cube; the new slots, the equipment and OoT's quest status
-need a place there.
+**Next:** the unified pause menu, in [PAUSE.md](PAUSE.md).
 
 ## Decisions
 
@@ -144,4 +143,3 @@ need a place there.
 | | Great Fairy's Sword | moves to the Master Sword's slot (see Equipment) |
 | | Shields | Hero's and MM Mirror share the Deku Shield's slot (see Equipment) |
 
-The unified pause menu comes next, as its own proposal.

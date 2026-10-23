@@ -128,8 +128,12 @@ s32 Hyrule_CheckQuestItemOot(s32 quest);
 u8 Hyrule_GetGsFlagsOot(s32 index);
 void Hyrule_SetGsFlagsOot(s32 index, u8 value);
 
-// Records MM's sword and shield, which MM keeps only as what is worn, as owned.
+// Records MM's sword and shield, which MM keeps only as what is worn, as owned (MM's one sword replacing the
+// others), and the Great Fairy's Sword while its MM item slot holds it.
 void Hyrule_SyncEquipmentOwnership(void);
+
+// The Great Fairy's Sword stolen: no longer owned, and if worn, MM's own sword (or none) goes back on B.
+void Hyrule_LoseGreatFairySword(struct PlayState* play);
 
 // OoT's items at the end of a cycle (docs/INVENTORY.md): ammo, bottle contents, trade items other than
 // masks and OoT's dungeon items reset; the rest is kept.

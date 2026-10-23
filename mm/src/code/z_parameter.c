@@ -1,5 +1,6 @@
 #include "global.h"
 #include "HyruleInventory.h"
+#include "HyrulePlayer.h"
 #include "PR/gs2dex.h"
 #include "sys_cfb.h"
 #include "z64malloc.h"
@@ -3300,7 +3301,7 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
 
                     if (gSaveContext.buttonStatus[EQUIP_SLOT_B] == BTN_ENABLED) {
                         gSaveContext.buttonStatus[EQUIP_SLOT_B] =
-                            ITEM_SWORD_KOKIRI + GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) - EQUIP_VALUE_SWORD_KOKIRI;
+                            Hyrule_SwordValueToItem(GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD)); // 3Ship [Hyrule]
                     }
 
                     BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) = gSaveContext.buttonStatus[EQUIP_SLOT_B];
@@ -4876,8 +4877,8 @@ void Inventory_UpdateDeitySwordEquip(PlayState* play) {
             if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) == EQUIP_VALUE_SWORD_NONE) {
                 CUR_FORM_EQUIP(EQUIP_SLOT_B) = ITEM_NONE;
             } else {
-                CUR_FORM_EQUIP(EQUIP_SLOT_B) =
-                    GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) - EQUIP_VALUE_SWORD_KOKIRI + ITEM_SWORD_KOKIRI;
+                // 3Ship [Hyrule] The sword worn may be OoT's.
+                CUR_FORM_EQUIP(EQUIP_SLOT_B) = Hyrule_SwordValueToItem(GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD));
             }
         }
     }

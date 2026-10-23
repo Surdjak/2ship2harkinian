@@ -5,6 +5,7 @@
  */
 
 #include "z_en_thiefbird.h"
+#include "HyruleInventory.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
@@ -236,6 +237,10 @@ s32 func_80C10B0C(EnThiefbird* this, PlayState* play) {
 
     if (GET_PLAYER_FORM == PLAYER_FORM_HUMAN) {
         phi_a3 = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD);
+        // 3Ship [Hyrule] OoT's swords are not stolen; the Great Fairy's Sword is, worn or not.
+        if (phi_a3 > EQUIP_VALUE_SWORD_GILDED) {
+            phi_a3 = EQUIP_VALUE_SWORD_NONE;
+        }
         if (INV_CONTENT(ITEM_SWORD_GREAT_FAIRY) == ITEM_SWORD_GREAT_FAIRY) {
             phi_a3 += 4;
         }
@@ -268,6 +273,7 @@ s32 func_80C10B0C(EnThiefbird* this, PlayState* play) {
         itemId1 = phi_a3 + (ITEM_SWORD_KOKIRI - 1);
         if (phi_a3 == 4) {
             Inventory_DeleteItem(ITEM_SWORD_GREAT_FAIRY, SLOT_SWORD_GREAT_FAIRY);
+            Hyrule_LoseGreatFairySword(play); // 3Ship [Hyrule]
             this->unk_3E8 = gTakkuriStolenGreatFairysSwordDL;
             itemId1 = ITEM_SWORD_GREAT_FAIRY;
         } else {

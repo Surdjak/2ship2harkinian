@@ -4,6 +4,7 @@
  */
 
 #include "global.h"
+#include "HyrulePlayer.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
 #include "objects/gameplay_keep/gameplay_keep.h"
@@ -1493,7 +1494,8 @@ u8 D_801C07AC[] = {
 };
 
 void Player_SetModelsForHoldingShield(Player* player) {
-    if (player->stateFlags1 & PLAYER_STATE1_400000) {
+    // 3Ship [Hyrule] Child Link shields with the Hylian Shield on his back, as in OoT.
+    if ((player->stateFlags1 & PLAYER_STATE1_400000) && !Hyrule_IsChildWithHylianShield(player)) {
         if ((player->itemAction <= PLAYER_IA_MINUS1) || (player->itemAction == player->heldItemAction)) {
             if (!Player_IsHoldingTwoHandedWeapon(player)) {
                 if (!Player_IsGoronOrDeku(player)) {
@@ -2630,7 +2632,9 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
             } else if ((player->leftHandType == PLAYER_MODELTYPE_LH_ONE_HAND_SWORD) &&
                        (player->transformation == PLAYER_FORM_HUMAN) &&
                        ((swordEquipValue = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD),
-                         swordEquipValue != EQUIP_VALUE_SWORD_NONE))) {
+                         // 3Ship [Hyrule] MM's table has MM's swords only.
+                         (swordEquipValue != EQUIP_VALUE_SWORD_NONE) &&
+                             (swordEquipValue <= EQUIP_VALUE_SWORD_GILDED)))) {
                 leftHandDLists = &D_801C018C[2 * ((swordEquipValue - 1) ^ 0)];
             } else {
                 s32 handIndex = GET_LEFT_HAND_INDEX_FROM_JOINT_TABLE(player->skelAnime.jointTable);
@@ -2679,7 +2683,11 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
 
                 if (sPlayerRightHandType == PLAYER_MODELTYPE_RH_SHIELD) {
                     if (player->transformation == PLAYER_FORM_HUMAN) {
-                        if (player->currentShield != PLAYER_SHIELD_NONE) {
+                        // 3Ship [Hyrule] OoT's shields are not in MM's table.
+                        if (Hyrule_GetHandHoldingShieldDLs(player->currentShield) != NULL) {
+                            rightHandDLists = Hyrule_GetHandHoldingShieldDLs(player->currentShield);
+                        } else if ((player->currentShield != PLAYER_SHIELD_NONE) &&
+                                   (player->currentShield < PLAYER_SHIELD_MAX)) {
                             //! FAKE:
                             rightHandDLists = &gPlayerHandHoldingShields[2 * ((player->currentShield - 1) ^ 0)];
                         }
@@ -2715,7 +2723,13 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
             if (player->transformation == PLAYER_FORM_HUMAN) {
                 EquipValueSword swordEquipValue = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD);
 
-                if (swordEquipValue != EQUIP_VALUE_SWORD_NONE) {
+                // 3Ship [Hyrule] While an OoT sword is worn, MM's own sword's sheath is shown empty.
+                if (swordEquipValue > EQUIP_VALUE_SWORD_GILDED) {
+                    swordEquipValue = Hyrule_GetOwnedMmSwordValue();
+                    if (swordEquipValue != EQUIP_VALUE_SWORD_NONE) {
+                        sheathDLists = &gPlayerSwordSheaths[2 * ((swordEquipValue - 1) ^ 0)];
+                    }
+                } else if (swordEquipValue != EQUIP_VALUE_SWORD_NONE) {
                     if ((player->sheathType == PLAYER_MODELTYPE_SHEATH_14) ||
                         (player->sheathType == PLAYER_MODELTYPE_SHEATH_12)) {
                         sheathDLists = &gPlayerSheathedSwords[2 * ((swordEquipValue - 1) ^ 0)];
@@ -2824,7 +2838,10 @@ void Player_UpdateShieldCollider(PlayState* play, Player* player, ColliderQuad* 
     if (player->stateFlags1 & PLAYER_STATE1_400000) {
         Vec3f quadDest[4];
 
-        player->shieldQuad.base.colMaterial = sPlayerShieldColMaterials[player->currentShield];
+        // 3Ship [Hyrule] OoT's shields are not in MM's table.
+        player->shieldQuad.base.colMaterial = (player->currentShield < PLAYER_SHIELD_MAX)
+                                                  ? sPlayerShieldColMaterials[player->currentShield]
+                                                  : Hyrule_GetShieldColMaterial(player->currentShield);
         Matrix_MultVec3f(&quadSrc[0], &quadDest[0]);
         Matrix_MultVec3f(&quadSrc[1], &quadDest[1]);
         Matrix_MultVec3f(&quadSrc[2], &quadDest[2]);
@@ -4267,7 +4284,16 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
             (player->currentShield != PLAYER_SHIELD_NONE) &&
             ((player->sheathType == PLAYER_MODELTYPE_SHEATH_14) ||
              (player->sheathType == PLAYER_MODELTYPE_SHEATH_15))) {
-            CosmeticEditor_DrawBackShield(play, gPlayerShields[2 * ((player->currentShield - 1) ^ 0)]);
+            // 3Ship [Hyrule] OoT's shields come from OoT's child Link, whose lists leave the TLUT mode set.
+            if (Hyrule_GetBackShieldDL(player->currentShield) != NULL) {
+                OPEN_DISPS(play->state.gfxCtx);
+                gDPPipeSync(POLY_OPA_DISP++);
+                gDPSetTextureLUT(POLY_OPA_DISP++, G_TT_NONE);
+                CLOSE_DISPS(play->state.gfxCtx);
+                CosmeticEditor_DrawBackShield(play, Hyrule_GetBackShieldDL(player->currentShield));
+            } else if (player->currentShield < PLAYER_SHIELD_MAX) {
+                CosmeticEditor_DrawBackShield(play, gPlayerShields[2 * ((player->currentShield - 1) ^ 0)]);
+            }
         }
 
         if (player->actor.scale.y >= 0.0f) {
@@ -4275,6 +4301,17 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                 (player->rightHandType != PLAYER_MODELTYPE_RH_FF)) {
                 static Vec3f sSheathLimbModelShieldOnBackPos = { 630.0f, 100.0f, -30.0f };
                 static Vec3s sSheathLimbModelShieldOnBackZyxRot = { 0, 0, 0x7FFF };
+                // 3Ship [Hyrule] OoT's quad for the Hylian Shield on child Link's back.
+                static Vec3f sSheathLimbModelShieldQuadVertices[] = {
+                    { -3000.0f, -3000.0f, -900.0f },
+                    { 3000.0f, -3000.0f, -900.0f },
+                    { -3000.0f, 3000.0f, -900.0f },
+                    { 3000.0f, 3000.0f, -900.0f },
+                };
+
+                if (Hyrule_IsChildWithHylianShield(player)) {
+                    Player_UpdateShieldCollider(play, player, &player->shieldQuad, sSheathLimbModelShieldQuadVertices);
+                }
 
                 Matrix_TranslateRotateZYX(&sSheathLimbModelShieldOnBackPos, &sSheathLimbModelShieldOnBackZyxRot);
                 Matrix_Get(&player->shieldMf);

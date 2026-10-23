@@ -7,27 +7,6 @@
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 #include <string.h>
 
-s16 sKaleidoSetupRightPageIndex[] = {
-    PAUSE_MAP,   // PAUSE_ITEM
-    PAUSE_QUEST, // PAUSE_MAP
-    PAUSE_MASK,  // PAUSE_QUEST
-    PAUSE_ITEM,  // PAUSE_MASK
-};
-
-f32 sKaleidoSetupRightPageEyeX[] = {
-    PAUSE_EYE_DIST * -PAUSE_MAP_X,   // PAUSE_ITEM
-    PAUSE_EYE_DIST * -PAUSE_QUEST_X, // PAUSE_MAP
-    PAUSE_EYE_DIST * -PAUSE_MASK_X,  // PAUSE_QUEST
-    PAUSE_EYE_DIST * -PAUSE_ITEM_X,  // PAUSE_MASK
-};
-
-f32 sKaleidoSetupRightPageEyeZ[] = {
-    PAUSE_EYE_DIST * -PAUSE_MAP_Z,   // PAUSE_ITEM
-    PAUSE_EYE_DIST * -PAUSE_QUEST_Z, // PAUSE_MAP
-    PAUSE_EYE_DIST * -PAUSE_MASK_Z,  // PAUSE_QUEST
-    PAUSE_EYE_DIST * -PAUSE_ITEM_Z,  // PAUSE_MASK
-};
-
 void func_800F4A10(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
     s16 i;
@@ -38,9 +17,10 @@ void func_800F4A10(PlayState* play) {
     pauseCtx->mainState = PAUSE_MAIN_STATE_SWITCHING_PAGE;
 
     // Set eye position and pageIndex such that scrolling left brings to the desired page
-    pauseCtx->eye.x = sKaleidoSetupRightPageEyeX[pauseCtx->pageIndex];
-    pauseCtx->eye.z = sKaleidoSetupRightPageEyeZ[pauseCtx->pageIndex];
-    pauseCtx->pageIndex = sKaleidoSetupRightPageIndex[pauseCtx->pageIndex];
+    // 3Ship [Hyrule] The right neighbour on the pentagon (z_kaleido_scope.h).
+    pauseCtx->pageIndex = KaleidoScope_GetNeighborPage(pauseCtx->pageIndex, false);
+    pauseCtx->eye.x = KaleidoScope_GetPageEyeX(pauseCtx->pageIndex);
+    pauseCtx->eye.z = KaleidoScope_GetPageEyeZ(pauseCtx->pageIndex);
     pauseCtx->infoPanelOffsetY = -40;
 
     for (i = 0; i < ARRAY_COUNT(pauseCtx->worldMapPoints); i++) {
@@ -79,9 +59,10 @@ void func_800F4A10(PlayState* play) {
     YREG(21) = -0x0622;
     YREG(22) = -0x0C44;
     YREG(23) = 0x0622;
-    R_PAUSE_WORLD_MAP_YAW = -0x622;
+    // 3Ship [Hyrule] The map page's angle on the pentagon, and MM's distance from the eye (z_kaleido_scope.h).
+    R_PAUSE_WORLD_MAP_YAW = -1257;
     R_PAUSE_WORLD_MAP_Y_OFFSET = -90;
-    R_PAUSE_WORLD_MAP_DEPTH = -14400;
+    R_PAUSE_WORLD_MAP_DEPTH = -18000;
 }
 
 void KaleidoSetup_Update(PlayState* play) {
@@ -156,8 +137,10 @@ void KaleidoSetup_Init(PlayState* play) {
     pauseCtx->questPageRoll = 160.0f;
     pauseCtx->mapPageRoll = 160.0f;
     pauseCtx->itemPageRoll = 160.0f;
+    pauseCtx->equipPageRoll = 160.0f; // 3Ship [Hyrule]
 
-    pauseCtx->eye.x = -64.0f;
+    pauseCtx->eye.x = KaleidoScope_GetPageEyeX(PAUSE_MAP);
+    pauseCtx->eye.z = KaleidoScope_GetPageEyeZ(PAUSE_MAP);
     pauseCtx->unk_20C = 936.0f;
     pauseCtx->roll = -314.0f;
 

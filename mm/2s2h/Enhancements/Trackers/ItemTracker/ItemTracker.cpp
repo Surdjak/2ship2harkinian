@@ -7,6 +7,7 @@
 #include "Rando/MiscBehavior/ClockShuffle.h"
 #include "2s2h/BenPort.h"
 #include "2s2h/ShipUtils.h"
+#include "HyrulePlayer.h"
 #include <spdlog/fmt/fmt.h>
 #include <algorithm>
 
@@ -173,7 +174,14 @@ TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
             }
             int vanillaItemId = ITEM_SWORD_KOKIRI;
             if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) > EQUIP_VALUE_SWORD_KOKIRI) {
-                vanillaItemId = ITEM_SWORD_KOKIRI + GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) - EQUIP_VALUE_SWORD_KOKIRI;
+                // 3Ship [Hyrule] OoT's swords have no MM icon; show MM's own.
+                u8 swordValue = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD);
+                if (swordValue > EQUIP_VALUE_SWORD_GILDED) {
+                    swordValue = Hyrule_GetOwnedMmSwordValue();
+                }
+                if (swordValue > EQUIP_VALUE_SWORD_KOKIRI) {
+                    vanillaItemId = Hyrule_SwordValueToItem(swordValue);
+                }
             }
 
             trackerImageObject.textureId =

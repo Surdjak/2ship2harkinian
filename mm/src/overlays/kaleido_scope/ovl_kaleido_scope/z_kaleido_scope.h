@@ -9,17 +9,21 @@
 #define PAUSE_CURSOR_PAGE_LEFT 10
 #define PAUSE_CURSOR_PAGE_RIGHT 11
 
-// Direction of pause pages
-#define PAUSE_ITEM_X (0)
-#define PAUSE_ITEM_Z (-1)
-#define PAUSE_MAP_X (1)
-#define PAUSE_MAP_Z (0)
-#define PAUSE_QUEST_X (0)
-#define PAUSE_QUEST_Z (1)
-#define PAUSE_MASK_X (-1)
-#define PAUSE_MASK_Z (0)
+// 3Ship [Hyrule] The pages stand on a pentagon instead of MM's cube (docs/PAUSE.md): item, map, quest,
+// equipment and mask pages, in that order going right. Each faces the centre from PAUSE_PAGE_DIST away,
+// where neighbouring pages meet at their edges, and the eye looks at the centre from PAUSE_EYE_DIST on the
+// other side, keeping MM's distance of 157 between eye and page (MM: 93 and 64, on a square).
+#define PAUSE_RING_PAGES 5
+#define PAUSE_PAGE_DIST (129.0f)
+#define PAUSE_EYE_DIST (28.0f)
 
-#define PAUSE_EYE_DIST (64.0f)
+// The page's Y rotation, its eye position, and its neighbour to the left or right.
+f32 KaleidoScope_GetPageAngle(s16 page);
+f32 KaleidoScope_GetPageEyeX(s16 page);
+f32 KaleidoScope_GetPageEyeZ(s16 page);
+s16 KaleidoScope_GetNeighborPage(s16 page, s32 toTheLeft);
+// Whether a page is drawn: the current one and its two neighbours.
+s32 KaleidoScope_IsPageVisible(PauseContext* pauseCtx, s16 page);
 
 typedef enum PauseEquipCButton {
     /* 0 */ PAUSE_EQUIP_C_LEFT,

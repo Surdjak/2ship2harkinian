@@ -5,6 +5,7 @@
  */
 
 #include "z_kaleido_scope.h"
+#include "HyruleKaleido.h"
 #include "interface/parameter_static/parameter_static.h"
 #include "archives/icon_item_static/icon_item_static_yar.h"
 
@@ -200,19 +201,18 @@ void KaleidoScope_DrawQuestStatus(PlayState* play) {
     gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, pauseCtx->alpha);
     gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
 
-    if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) != EQUIP_VALUE_SHIELD_NONE) {
+    // 3Ship [Hyrule] The shield and sword worn may be OoT's (HyruleKaleido.c).
+    if (Hyrule_GetWornEquipIcon(EQUIP_TYPE_SHIELD) != NULL) {
         gSPVertex(POLY_OPA_DISP++, &pauseCtx->questVtx[j], 4, 0);
-        KaleidoScope_DrawTexQuadRGBA32(play->state.gfxCtx, gItemIcons[(ITEM_SHIELD_HERO - 1) + GET_CUR_EQUIP_VALUE(1)],
-                                       32, 32, 0);
+        KaleidoScope_DrawTexQuadRGBA32(play->state.gfxCtx, Hyrule_GetWornEquipIcon(EQUIP_TYPE_SHIELD), 32, 32, 0);
     }
 
     j += 4;
 
     // Draw Sword
-    if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) != EQUIP_VALUE_SWORD_NONE) {
+    if (Hyrule_GetWornEquipIcon(EQUIP_TYPE_SWORD) != NULL) {
         gSPVertex(POLY_OPA_DISP++, &pauseCtx->questVtx[j], 4, 0);
-        KaleidoScope_DrawTexQuadRGBA32(play->state.gfxCtx, gItemIcons[(ITEM_SWORD_KOKIRI - 1) + GET_CUR_EQUIP_VALUE(0)],
-                                       32, 32, 0);
+        KaleidoScope_DrawTexQuadRGBA32(play->state.gfxCtx, Hyrule_GetWornEquipIcon(EQUIP_TYPE_SWORD), 32, 32, 0);
     }
 
     j += 4;
@@ -715,16 +715,15 @@ void KaleidoScope_UpdateQuestCursor(PlayState* play) {
                     }
                 } else if (pauseCtx->cursorPoint[PAUSE_QUEST] == QUEST_SHIELD) {
                     // Shield
-                    if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) != EQUIP_VALUE_SHIELD_NONE) {
-                        cursorItem = (ITEM_SHIELD_HERO - EQUIP_TYPE_SHIELD) + GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD);
+                    if (Hyrule_GetWornEquipItem(EQUIP_TYPE_SHIELD) != ITEM_NONE) { // 3Ship [Hyrule]
+                        cursorItem = Hyrule_GetWornEquipItem(EQUIP_TYPE_SHIELD);
                     } else {
                         cursorItem = PAUSE_ITEM_NONE;
                     }
                 } else if (pauseCtx->cursorPoint[PAUSE_QUEST] == QUEST_SWORD) {
                     // Sword
-                    if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) != EQUIP_VALUE_SWORD_NONE) {
-                        cursorItem =
-                            (ITEM_SWORD_KOKIRI - EQUIP_VALUE_SWORD_KOKIRI) + GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD);
+                    if (Hyrule_GetWornEquipItem(EQUIP_TYPE_SWORD) != ITEM_NONE) { // 3Ship [Hyrule]
+                        cursorItem = Hyrule_GetWornEquipItem(EQUIP_TYPE_SWORD);
                     } else {
                         cursorItem = PAUSE_ITEM_NONE;
                     }

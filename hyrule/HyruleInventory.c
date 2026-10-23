@@ -10,6 +10,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleScenes.h"
+#include "HyrulePlayer.h"
 
 #define INVENTORY_OOT (gSaveContext.save.saveInfo.inventoryOot)
 #define OOT_ITEM(ootItem) ((ootItem) - ITEM_OOT_BASE)
@@ -183,19 +184,23 @@ void Hyrule_InitInventoryOot(void) {
 }
 
 void Hyrule_SyncEquipmentOwnership(void) {
-    // MM owns one sword (Kokiri, Razor or Gilded; Fierce Deity's is a mask's) and one shield at a time.
-    switch (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD)) {
-        case EQUIP_VALUE_SWORD_KOKIRI:
-            INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KOKIRI);
-            break;
-        case EQUIP_VALUE_SWORD_RAZOR:
-            INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_RAZOR);
-            break;
-        case EQUIP_VALUE_SWORD_GILDED:
-            INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_GILDED);
-            break;
-        default:
-            break;
+    static const u8 sMmSwords[] = { EQUIP_OWNED_SWORD_KOKIRI, EQUIP_OWNED_SWORD_RAZOR, EQUIP_OWNED_SWORD_GILDED };
+    u32 mmSwordBits = EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KOKIRI) |
+                      EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_RAZOR) |
+                      EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_GILDED);
+    u8 sword = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD);
+
+    // MM owns one sword at a time (Kokiri, Razor or Gilded; Fierce Deity's is a mask's): the one worn, or none
+    // while the smithy or a thief has it. While an OoT sword is worn, the MM one owned stays as it was.
+    if (sword <= EQUIP_VALUE_SWORD_GILDED) {
+        INVENTORY_OOT.equipmentOwned &= ~mmSwordBits;
+        if (sword != EQUIP_VALUE_SWORD_NONE) {
+            INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, sMmSwords[sword - EQUIP_VALUE_SWORD_KOKIRI]);
+        }
+    }
+    // The Great Fairy's Sword is owned while MM's item slot holds it (docs/PAUSE.md frees that slot later).
+    if (INV_CONTENT(ITEM_SWORD_GREAT_FAIRY) == ITEM_SWORD_GREAT_FAIRY) {
+        INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_GREAT_FAIRY);
     }
     switch (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD)) {
         case EQUIP_VALUE_SHIELD_HERO:
@@ -450,5 +455,26 @@ void Hyrule_ResetInventoryOotForCycle(PlayState* play) {
     memset(INVENTORY_OOT.dungeonItems, 0, sizeof(INVENTORY_OOT.dungeonItems));
     for (i = 0; i < ARRAY_COUNT(INVENTORY_OOT.dungeonKeys); i++) {
         INVENTORY_OOT.dungeonKeys[i] = -1;
+    }
+    // MM turns the Razor Sword back into the Kokiri Sword (Sram_SaveEndOfCycle) when it is worn; while an OoT
+    // sword is worn, ownership is the only record of it.
+    if ((GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) > EQUIP_VALUE_SWORD_GILDED) &&
+        CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_RAZOR)) {
+        INVENTORY_OOT.equipmentOwned &= ~EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_RAZOR);
+        INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KOKIRI);
+    }
+}
+
+void Hyrule_LoseGreatFairySword(PlayState* play) {
+    INVENTORY_OOT.equipmentOwned &= ~EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_GREAT_FAIRY);
+
+    if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) == EQUIP_VALUE_SWORD_GREAT_FAIRY_Oot) {
+        u8 sword = Hyrule_GetOwnedMmSwordValue();
+
+        SET_EQUIP_VALUE(EQUIP_TYPE_SWORD, sword);
+        BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_B) = Hyrule_SwordValueToItem(sword); // human Link's B
+        if (CUR_FORM == 0) {
+            Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
+        }
     }
 }

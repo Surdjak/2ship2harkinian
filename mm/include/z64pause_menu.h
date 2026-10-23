@@ -15,7 +15,8 @@ typedef enum PauseMenuPage {
     /* 2 */ PAUSE_QUEST,
     /* 3 */ PAUSE_MASK,
     /* 4 */ PAUSE_WORLD_MAP,
-    /* 5 */ PAUSE_PAGE_MAX
+    /* 5 */ PAUSE_EQUIP, // 3Ship [Hyrule] OoT's equipment page (docs/PAUSE.md)
+    /* 6 */ PAUSE_PAGE_MAX
 } PauseMenuPage;
 
 typedef enum PauseState {
@@ -173,7 +174,11 @@ typedef struct PauseContext {
     /* 0x2BE */ s16 ocarinaButtonsY[5];
     /* 0x2C8 */ u16 unk_2C8; // Uses PauseMenuPage enum for Owl Warp. Never set.
     /* 0x2CA */ s16 unk_2CA; // Uses OwlWarpId enum for Owl Warp. Never set.
-} PauseContext; // size = 0x2D0
+    // 3Ship [Hyrule] The equipment page (PAUSE_EQUIP), the fifth page of the ring.
+    /*       */ Vtx* equipPageVtx;
+    /*       */ Vtx* equipVtx;
+    /*       */ f32 equipPageRoll;
+} PauseContext; // size = 0x2D0 (3Ship: larger)
 
 #define IS_PAUSE_STATE_GAMEOVER(pauseCtx) \
     (((pauseCtx)->state >= PAUSE_STATE_GAMEOVER_0) && ((pauseCtx)->state <= PAUSE_STATE_GAMEOVER_10))
