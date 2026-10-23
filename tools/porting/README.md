@@ -10,6 +10,8 @@ flags, read from the Ninja builds, so they see the code exactly as the compiler 
 | `translate_calls.py` | Rewrites calls in an OoT source file to 2Ship's signatures, following `call_rules.json`. |
 | `gen_oot_tables.py` | Generates the OoT parts of 2Ship's actor and object tables from SoH's (see [hyrule/README.md](../../hyrule/README.md)). |
 | `gen_oot_asset_headers.py` | Copies SoH's asset headers into `hyrule/assets/oot/`, with paths under `oot/`. |
+| `gen_oot_flags.py` | Generates `hyrule/HyruleFlags.h`, OoT's event flag names with an `_Oot` suffix. |
+| `port_actor.py` | Copies a SoH actor into `hyrule/overlays/actors/` with the mechanical renames, and lists lines to review. |
 
 Both builds must exist: this repo's `build-cmake` and a SoH build (see
 [harness/README.md](../../harness/README.md)).

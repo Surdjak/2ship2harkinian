@@ -94,6 +94,10 @@ ported actors only and leave out rotations that come from random numbers and fla
 the camera. The puppet moves Player but cannot attack, so check attacks with a scripted replay in this
 fork (`make_inputs.py`).
 
+A puppet log can also be written by hand to hold Player in one place, such as in front of an NPC,
+while `HARNESS_REPLAY` presses buttons: one line per scene frame with `gs`, `scene`, `sf` and a
+`player` object (`pos`, `rot`, `speedXZ`, `yaw`).
+
 ## State log
 
 Each line is one logic frame:

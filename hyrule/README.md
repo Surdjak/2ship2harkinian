@@ -106,6 +106,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 3 | `En_A_Obj` (signposts, blocks, grass clumps, tree stumps; part of `code` in OoT) |
 | 4 | `En_Kanban` (wooden signs that can be cut apart) |
 | 5 | `En_Wonder_Talk2` (invisible message spots), `En_Wonder_Item` (invisible item drops and switches) |
+| 6 | `En_Ko` (the Kokiri children; Fado is left out) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -122,6 +123,13 @@ possible:
   ids of the same name.
 - **Damage:** AC masks are written `DMG_FROM_OOT(<OoT mask>)` (see Damage types).
 - **SoH additions:** enhancements, cvars, game-interactor hooks, stats and debug prints are dropped.
+- **OoT code helpers:** the few `z_actor.c` functions MM lacks are in `HyruleActor.c`. MM keeps OoT's
+  `Npc_UpdateTalking` and `Npc_TrackPoint`.
+- **Missing state:** `HyrulePort.h` stands in for OoT state 2Ship does not have yet: age checks (Link is
+  a child), quest items and inventory (none).
+
+`tools/porting/port_actor.py <SoH actor dir>` does the mechanical part of these steps and lists the lines
+to review; the rest is done by hand.
 - **Gaps:** anything that depends on a system not ported yet is marked with a `PORT:` comment.
 
 Known differences:
@@ -160,6 +168,12 @@ collect on the same frames. Walking out of the Kokiri Shop, human Link gets the 
 this way!" message. OoT's Player cutscene actions 7 and 8 are MM's `PLAYER_CSACTION_END` and
 `PLAYER_CSACTION_WAIT`; `En_Wonder_Item` drops MM's collectibles for OoT's (arrows come in MM's
 bundles of 10 and 30).
+
+Wave 6's eight Kokiri spawn, animate and despawn with SoH's on all 2631 frames. The one guarding the
+forest exit aims at Link from about 1500 units away, so the puppet's few units of error move it by 1-3
+units. Held in front of a Kokiri cutting grass, human Link talks to him ("That meanie, Mido, ..."). The
+Kokiri in the houses, the shop and the Lost Woods, and Fado's trade, wait for those scenes and OoT's
+items; until OoT's quest items exist, every Kokiri acts as at the start of the game.
 
 ## Text
 
