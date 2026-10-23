@@ -19,8 +19,9 @@ import re
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, "..", "..")
 SCENE = re.compile(r"^/\* (0x[0-9A-Fa-f]+) \*/ DEFINE_SCENE\((\w+),\s*(\w+)")
-# OoT actors that the scene converter maps to MM's own: Player, and En_Holl to the room-loading plane.
-MM_ACTORS = {0x0000: 0x0000, 0x0023: 0x0018}
+# OoT actors that the scene converter maps to MM's own: Player, En_Holl to the room-loading plane, and
+# En_Item00 to MM's collectibles.
+MM_ACTORS = {0x0000: 0x0000, 0x0015: 0x000E, 0x0023: 0x0018}
 
 
 def scene_table(path, name_arg):

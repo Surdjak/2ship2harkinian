@@ -85,8 +85,10 @@ OoT's actors and objects follow MM's in 2Ship's tables, in OoT's own order and s
 
 Actors that have not been ported are `DEFINE_ACTOR_UNSET`: their ids exist, but spawning one does
 nothing. To port an actor, regenerate the tables with its OoT enum in `--ported`, which turns its line
-into a `DEFINE_ACTOR` entry named `<Name>_Oot`. Player and the room-loading planes still map to MM's
-own actors.
+into a `DEFINE_ACTOR` entry named `<Name>_Oot`. Player, the room-loading planes and collectibles
+(`En_Item00`) still map to MM's own actors: the converter turns OoT's collectible types into MM's
+(`OotToMm::ActorParams`) and gives these actors MM's spawn rotations. In Kokiri Forest every placed and
+dropped collectible matches the SoH session.
 
 Room actor lists keep OoT's rotations, since some OoT actors read parameters from them. MM keeps a
 cutscene id and half-day bits in its rotations instead, so `Actor_SpawnEntry` spawns OoT ids with the
