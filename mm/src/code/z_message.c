@@ -3401,7 +3401,7 @@ void Message_OpenText(PlayState* play, u16 textId) {
             msgCtx->textPosXTarget = 0x32;
             itemIconScale = 1.4;
         }
-    } else if (textId >= 0x4E20) {
+    } else if ((textId >= 0x4E20) && (textId < TEXT_OOT_BASE)) { // 3Ship [Hyrule] OoT's text ids follow the credits
         msgCtx->textIsCredits = true;
         msgCtx->textCharScale = 0.85f;
         msgCtx->lineHeight = 6;

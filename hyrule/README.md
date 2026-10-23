@@ -101,6 +101,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 |------|--------|
 | 1 | `Obj_Hana` (flowers, rocks, bush), `En_Kusa` (grass), `Obj_Mure2` (grass and rock rings) |
 | 2 | `En_Ishi` (small and silver rocks) |
+| 3 | `En_A_Obj` (signposts, blocks, grass clumps, tree stumps; part of `code` in OoT) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -139,6 +140,23 @@ Wave 2 matches SoH the same way, except that `Obj_Mure2` spawns and removes its 
 distance from the camera, and MM's camera differs from OoT's: the ring appears and goes on different
 frames (3 against 401 on entry), while on every frame both games have it, its rocks match. Human Link
 lifts, throws and breaks a small rock in a scripted replay.
+
+Wave 3's signposts match SoH's in position and parameters on every frame but one: on a room change,
+MM removes an actor that was drawn that frame one frame later (`func_800BA798`), so the sign in view
+outlives SoH's by a frame. In a scripted replay human Link reads the Know-it-All Brothers' sign: the
+wooden textbox shows OoT's text and closes normally.
+
+## Text
+
+OoT's messages are added to MM's message table at startup (`HyruleText.cpp`), with `TEXT_OOT_BASE`
+(0x8000) added to their ids and to the next-message id in their headers. Text ids stay 16-bit: MM's run
+to 0x354C (plus 0xFFFC) and its credits from 0x4E20 to 0x4E4C, while OoT's run to 0x71B2. Ported code
+writes `TEXT_OOT(<OoT id>)`. MM sends ids from 0x4E20 up to the credits table, so that check now stops
+at `TEXT_OOT_BASE`.
+
+The text itself is converted at extraction (`OotToMm::ConvertMessage`). Textbox types are kept, which
+works for signs (type 1 is the wooden board in both games); OoT's other types, colours and icons are
+not checked yet.
 
 ## Item ids
 

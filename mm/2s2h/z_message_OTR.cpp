@@ -47,11 +47,20 @@ MessageTableEntry* OTRMessage_LoadTable(const char* filePath, bool isNES) {
         //_message_0xFFFC_nes = (char*)file->messages[i].msg.c_str();
     }
 
+    // 3Ship [Hyrule] Message_FindMessageNES searches until id 0xFFFF, which MM's table does not contain, so
+    // end the table there instead of leaving the extra entry uninitialized.
+    table[file->messages.size()] = {};
+    table[file->messages.size()].textId = 0xFFFF;
+
     return table;
 }
 
+// 3Ship [Hyrule] Adds OoT's messages to the table (hyrule/HyruleText.cpp).
+extern "C" MessageTableEntry* Hyrule_AddOotMessages(MessageTableEntry* mmTable);
+
 extern "C" void OTRMessage_Init() {
     sMessageTableNES = OTRMessage_LoadTable("text/message_data_static/message_data_static", true);
+    sMessageTableNES = Hyrule_AddOotMessages(sMessageTableNES);
 
     auto file2 =
         std::static_pointer_cast<SOH::TextMM>(Ship::Context::GetRawInstance()->GetResourceManager()->LoadResource(
