@@ -69,8 +69,7 @@ Not yet:
 
 - **Actors:** only the first wave is ported, so other OoT actors in room lists do not appear.
 - **Exits:** every exit leads back to the scene's first spawn.
-- **Ambience and OoT sound effects:** OoT's night ambience (nature sounds) and the OoT-only sound
-  effects are not played yet (see Audio).
+- **OoT sound effects:** the OoT-only sound effects are not played yet (see Audio).
 - **Scene effects:** OoT's per-scene animated textures are not drawn.
 - **Cameras:** OoT settings with no MM counterpart (crawlspaces, magic beans, fishing, boss arenas,
   some temple rooms) use a general MM setting.
@@ -218,12 +217,18 @@ the ids after MM's, custom soundfonts follow them, and OoT's sequences are loade
 0x80) and of the ids the audio editor and custom sequences use; sequence ids are 16-bit in 2Ship.
 
 Hyrule scenes name OoT sequences, so `Hyrule_AfterSceneCommands` adds `SEQ_OOT_BASE` to the scene's
-music. MM plays a scene's music by day and its ambience at night, unless the ambience is 0x13 (none),
-as OoT does. OoT's other nature ambiences are not MM's, so they are switched off for now and Hyrule is
-quiet at night. Sequence flags (resume, fanfare, enemy music...) come from OoT's table for OoT's
+music, and `AMBIENCE_OOT_BASE` (0x40) to its nature ambience. MM plays a scene's music by day and its
+ambience at night, unless the ambience is 0x13 (none), as OoT does; OoT's 0x13 is left as MM's. For the
+ids from 0x40, `Audio_PlayAmbience` plays OoT's ambience sequence (`SEQ_OOT_NATURE_AMBIENCE`) on MM's
+ambience player with OoT's channel settings (`HyruleAudio.c`). MM's ambience grew out of OoT's, so the
+channels, IO ports and rain and critter controls are the same; OoT played it on the main music player.
+Not ported: OoT plays the Kokiri ambience on the Lost Woods bridge whatever the scene says. Sequence flags (resume, fanfare, enemy music...) come from OoT's table for OoT's
 sequences (`HyruleAudio.c`, through `Audio_GetSeqFlags`); the two games use the same flag bits.
 
-Kokiri Forest plays its theme by day (`HYRULE_BOOT_TIME=1200` with the boot shortcut).
+Kokiri Forest plays its theme by day (`HYRULE_BOOT_TIME=1200` with the boot shortcut) and its
+night ambience at night (`HYRULE_BOOT_TIME=2200`). Checked against SoH's Kokiri Forest at 22:00
+(`HARNESS_TIME=2200`): the ambience's spectrum matches SoH's (correlation 0.94 over 24 bands; against
+the daytime music, 0.3).
 
 ## Event flags
 

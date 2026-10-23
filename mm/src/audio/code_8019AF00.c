@@ -1158,6 +1158,15 @@ AmbienceDataIO sAmbienceData[20] = {
     },
 };
 
+// 3Ship [Hyrule] OoT's nature ambiences (AMBIENCE_OOT_BASE and up) play OoT's ambience sequence with OoT's
+// channel settings, on MM's ambience player. sAmbienceSeqId is the ambience sequence last started.
+const void* Hyrule_GetNatureAmbienceData(u8 ootAmbienceId);
+static u16 sAmbienceSeqId = NA_BGM_AMBIENCE;
+
+static s32 Audio_IsAmbienceSeq(u16 seqId) {
+    return (seqId == NA_BGM_AMBIENCE) || (seqId == SEQ_OOT_NATURE_AMBIENCE);
+}
+
 // AudioOcarina Data
 u8 sIsOcarinaInputEnabled = false;
 s8 sOcarinaInstrumentId = OCARINA_INSTRUMENT_OFF;
@@ -6157,7 +6166,7 @@ void Audio_SetExtraFilter(u8 filter) {
 
     sAudioExtraFilter2 = filter;
     sAudioExtraFilter = filter;
-    if (gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId == NA_BGM_AMBIENCE) {
+    if (Audio_IsAmbienceSeq(gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId)) {
         for (channelIndex = 0; channelIndex < SEQ_NUM_CHANNELS; channelIndex++) {
             // seq player 4, all channels, slot 6
             AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_AMBIENCE, channelIndex, 6, filter);
@@ -6411,9 +6420,9 @@ void Audio_SetAmbienceChannelIO(u8 channelIndexRange, u8 ioPort, u8 ioData) {
     u8 lastChannelIndex;
     u8 channelIndex;
 
-    if ((gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId != NA_BGM_AMBIENCE) &&
-        AudioSeq_IsSeqCmdNotQueued((SEQCMD_OP_PLAY_SEQUENCE << 28) | NA_BGM_AMBIENCE,
-                                   SEQCMD_OP_MASK | SEQCMD_SEQID_MASK)) {
+    if (!Audio_IsAmbienceSeq(gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId) &&
+        AudioSeq_IsSeqCmdNotQueued((SEQCMD_OP_PLAY_SEQUENCE << 28) | sAmbienceSeqId,
+                                   SEQCMD_OP_MASK | SEQCMD_SEQID_MASK_16)) {
         return;
     }
 
@@ -6444,7 +6453,7 @@ void Audio_StartAmbience(u16 initChannelMask, u16 initMuteChannelMask) {
     AudioSeq_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, VOL_SCALE_INDEX_BGM_MAIN, 0x7F, 1);
 
     if ((AudioSeq_GetActiveSeqId(SEQ_PLAYER_AMBIENCE) != NA_BGM_DISABLED) &&
-        (AudioSeq_GetActiveSeqId(SEQ_PLAYER_AMBIENCE) != NA_BGM_AMBIENCE)) {
+        (AudioSeq_GetActiveSeqId(SEQ_PLAYER_AMBIENCE) != sAmbienceSeqId)) {
         AudioSeq_StopSequence(SEQ_PLAYER_AMBIENCE, 0);
         AUDIOCMD_GLOBAL_STOP_AUDIOCMDS();
     }
@@ -6453,7 +6462,7 @@ void Audio_StartAmbience(u16 initChannelMask, u16 initMuteChannelMask) {
         AudioSeq_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, VOL_SCALE_INDEX_BGM_SUB, 0x7F, 1);
     }
 
-    SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_AMBIENCE, 0, NA_BGM_AMBIENCE);
+    SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_AMBIENCE, 0, sAmbienceSeqId);
 
     for (channelIndex = 0; channelIndex < SEQ_NUM_CHANNELS; channelIndex++) {
         if (!(initMuteChannelMask & (1 << channelIndex)) && (initChannelMask & (1 << channelIndex))) {
@@ -6467,21 +6476,29 @@ void Audio_PlayAmbience(u8 ambienceId) {
     u8 channelIndex;
     u8 ioPort;
     u8 ioData;
+    const AmbienceDataIO* ambienceData;
 
     if (!((gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId != NA_BGM_DISABLED) &&
           (Audio_GetSeqFlags(AudioEditor_GetOriginalSeq(gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId)) &
            SEQ_FLAG_NO_AMBIENCE))) {
-        if (gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId != NA_BGM_AMBIENCE) {
+        if (!Audio_IsAmbienceSeq(gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId)) {
             sPrevAmbienceSeqId = gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId;
         }
 
-        Audio_StartAmbience(sAmbienceData[ambienceId].initChannelMask, sAmbienceData[ambienceId].initMuteChannelMask);
+        if (ambienceId >= AMBIENCE_OOT_BASE) {
+            ambienceData = Hyrule_GetNatureAmbienceData(ambienceId - AMBIENCE_OOT_BASE);
+            sAmbienceSeqId = SEQ_OOT_NATURE_AMBIENCE;
+        } else {
+            ambienceData = &sAmbienceData[ambienceId];
+            sAmbienceSeqId = NA_BGM_AMBIENCE;
+        }
 
-        while ((sAmbienceData[ambienceId].channelProperties[i] != 0xFF) &&
-               (i < ARRAY_COUNT(sAmbienceData[ambienceId].channelProperties))) {
-            channelIndex = sAmbienceData[ambienceId].channelProperties[i++];
-            ioPort = sAmbienceData[ambienceId].channelProperties[i++];
-            ioData = sAmbienceData[ambienceId].channelProperties[i++];
+        Audio_StartAmbience(ambienceData->initChannelMask, ambienceData->initMuteChannelMask);
+
+        while ((ambienceData->channelProperties[i] != 0xFF) && (i < ARRAY_COUNT(ambienceData->channelProperties))) {
+            channelIndex = ambienceData->channelProperties[i++];
+            ioPort = ambienceData->channelProperties[i++];
+            ioData = ambienceData->channelProperties[i++];
             SEQCMD_SET_CHANNEL_IO(SEQ_PLAYER_AMBIENCE, channelIndex, ioPort, ioData);
         }
 

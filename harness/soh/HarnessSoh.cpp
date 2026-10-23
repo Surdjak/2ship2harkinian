@@ -110,6 +110,15 @@ void RegisterHarness() {
 
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnSceneInit>([](int16_t sceneNum) { sSceneFrame = 0; });
 
+    // HARNESS_TIME=<hhmm> sets the time of day whenever a scene is entered (cutscenes such as the intro set
+    // their own), to check night behavior. The run then differs from its recording.
+    const char* timeValue = std::getenv("HARNESS_TIME");
+    if (timeValue != nullptr && timeValue[0] != '\0') {
+        int32_t time = std::atoi(timeValue);
+        GameInteractor::Instance->RegisterGameHook<GameInteractor::OnSceneInit>(
+            [time](int16_t sceneNum) { gSaveContext.dayTime = CLOCK_TIME(time / 100, time % 100); });
+    }
+
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnGameFrameUpdate>([]() {
         HarnessFrameState state;
         CaptureState(state);

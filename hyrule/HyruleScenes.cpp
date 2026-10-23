@@ -121,9 +121,9 @@ extern "C" void Hyrule_AfterSceneCommands(PlayState* play) {
     if (play->sceneSequences.seqId != NA_BGM_NO_MUSIC) {
         play->sceneSequences.seqId = SEQ_OOT(play->sceneSequences.seqId);
     }
-    // OoT's nature ambience 0x13 means none, so the music plays all day, as MM's AMBIENCE_ID_13 does.
-    // TODO: OoT's other nature ambiences are not MM's ambience ids; they are left off until ported.
+    // The same for OoT's nature ambiences, except 0x13 (none), which means MM's AMBIENCE_ID_13: the music
+    // plays all day.
     if (play->sceneSequences.ambienceId != AMBIENCE_ID_13) {
-        play->sceneSequences.ambienceId = AMBIENCE_ID_DISABLED;
+        play->sceneSequences.ambienceId = AMBIENCE_OOT(play->sceneSequences.ambienceId);
     }
 }

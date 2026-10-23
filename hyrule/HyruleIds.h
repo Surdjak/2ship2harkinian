@@ -16,3 +16,9 @@
 // assigned at load time (mm/src/audio/lib/load.c).
 #define SEQ_OOT_BASE 0x400
 #define SEQ_OOT(ootSeqId) (SEQ_OOT_BASE + (ootSeqId))
+// OoT's NA_BGM_NATURE_AMBIENCE, which plays OoT's nature ambiences.
+#define SEQ_OOT_NATURE_AMBIENCE SEQ_OOT(0x1)
+// Ambience ids are 8-bit and MM's run to 0x13. OoT's nature ambiences start at 0x40; OoT's 0x13 (none) is
+// MM's AMBIENCE_ID_13, which means the same.
+#define AMBIENCE_OOT_BASE 0x40
+#define AMBIENCE_OOT(ootAmbienceId) (AMBIENCE_OOT_BASE + (ootAmbienceId))
