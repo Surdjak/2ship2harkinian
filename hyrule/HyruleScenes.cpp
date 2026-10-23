@@ -71,6 +71,8 @@ void BootToEntrance() {
         }
         sBooted = true;
         gSaveContext.fileNum = 0xFF;
+        // Map select's init sets this; the debug save leaves it at 0, which is Fierce Deity.
+        gSaveContext.save.playerForm = PLAYER_FORM_HUMAN;
         // ConsoleLogoState and MapSelectState both start with their GameState, which is all
         // MapSelect_LoadGame uses.
         MapSelect_LoadGame((MapSelectState*)gGameState, entrance, 0);

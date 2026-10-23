@@ -56,7 +56,7 @@ MM's in the scene table, suffixed `_Oot`. So far there is one:
 To go there:
 
 - start the game with `HYRULE_BOOT_ENTRANCE=0xDC00`, which skips the title screen and starts a debug
-  save there;
+  save there as human Link;
 - in the console, run `entrance dc00`;
 - or pick "Kokiri Forest (OoT)" in Better Map Select.
 
@@ -129,8 +129,8 @@ Known differences in wave 1:
 Wave 1 was checked against the SoH session's second Kokiri Forest visit, with that run's Link
 puppeting this fork's: every wave-1 actor matched in id, parameters, room and position on all 2631
 scene frames, including spawning and despawning on room changes. Rotations differ because grass picks
-a random yaw and the two engines draw different random numbers. A scripted spin attack cuts grass
-and drops a collectible.
+a random yaw and the two engines draw different random numbers. Scripted replays with human Link
+cut grass with a slash (dropping a collectible), and lift, throw and break it.
 
 ## Item ids
 
