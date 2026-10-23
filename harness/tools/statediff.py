@@ -3,7 +3,8 @@
 
 Frames are matched by logic frame (--align frame, the default, for two runs of the same game) or by
 scene and frames since the scene was entered (--align scene, for SoH against our fork, whose boot
-sequences differ). Exit status is 0 when no compared frame differs and 1 otherwise.
+sequences differ). Run tools/ootlog.py on a SoH log first to give it this fork's ids. Exit status is 0
+when no compared frame differs and 1 otherwise.
 """
 import argparse
 import json
@@ -65,12 +66,23 @@ def diff_flags(a, b, out, limit):
             return
 
 
-def compare(a, b, ignore, limit):
+def actor_view(actors, ids, ignore, ordered):
+    """Keeps the actors whose id is in ids (all when ids is empty), without ignored fields."""
+    fields = {s.split(".", 1)[1] for s in ignore if s.startswith("actors.")}
+    kept = [{k: v for k, v in actor.items() if k not in fields} for actor in actors or []
+            if not ids or actor["id"] in ids]
+    return kept if ordered else sorted(kept, key=lambda actor: json.dumps(actor, sort_keys=True))
+
+
+def compare(a, b, ignore, ids, ordered, limit):
     diffs = []
     for section in SECTIONS:
         if section in ignore:
             continue
-        if section == "flags":
+        if section == "actors":
+            diff_values(actor_view(a.get("actors"), ids, ignore, ordered),
+                        actor_view(b.get("actors"), ids, ignore, ordered), "actors", diffs, limit)
+        elif section == "flags":
             diff_flags({k: v for k, v in a["flags"].items() if f"flags.{k}" not in ignore},
                        {k: v for k, v in b["flags"].items() if f"flags.{k}" not in ignore}, diffs, limit)
         else:
@@ -84,11 +96,16 @@ def main():
     parser.add_argument("b")
     parser.add_argument("--align", choices=("frame", "scene"), default="frame")
     parser.add_argument("--ignore", default="",
-                        help="comma-separated sections (gs, scene, room, rng, player, actors, flags) "
-                             "or flag blocks (flags.NAME) to leave out")
+                        help="comma-separated sections (gs, scene, room, rng, player, actors, flags), "
+                             "flag blocks (flags.NAME) or actor fields (actors.FIELD) to leave out")
+    parser.add_argument("--actors", default="",
+                        help="comma-separated actor ids (decimal or 0x hex) to compare, leaving out the others")
+    parser.add_argument("--unordered", action="store_true",
+                        help="compare actor lists as sets; OoT and MM order actors of a category differently")
     parser.add_argument("--limit", type=int, default=20, help="maximum field differences to print")
     args = parser.parse_args()
     ignore = {s.strip() for s in args.ignore.split(",") if s.strip()}
+    ids = {int(s, 0) for s in args.actors.split(",") if s.strip()}
 
     b_rows = {}
     for row in load(args.b):
@@ -103,7 +120,7 @@ def main():
         if other is None:
             continue
         compared += 1
-        diffs = compare(row, other, ignore, args.limit)
+        diffs = compare(row, other, ignore, ids, not args.unordered, args.limit)
         if diffs:
             where = f"frame {k}" if args.align == "frame" else f"scene {k[0]} scene frame {k[1]}"
             print(f"first divergence at {where} (a: frame {row['f']}, b: frame {other['f']})")

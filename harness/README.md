@@ -11,6 +11,7 @@ diverge. It is how OoT ports are checked against SoH (see [docs/PLAN.md](../docs
 | `soh/` | Adapter compiled into SoH when it is configured with `-DHARNESS_DIR=<this directory>`. |
 | `tools/make_inputs.py` | Builds an input file from a short script, for replays without a recording session. |
 | `tools/statediff.py` | Compares two state logs and reports the first divergent frame. |
+| `tools/ootlog.py` | Converts a SoH state log to this fork's scene and actor ids, optionally one scene visit. |
 | `tools/session.py` | Records and replays sessions together with the saves and settings they started from. |
 
 ## Running
@@ -67,7 +68,31 @@ Later differences usually follow from the first one, so fix the first and compar
 
 Use `--align scene` to compare runs whose boot sequences differ, such as SoH against this fork: frames
 are then matched by scene and by frames since that scene was entered. `--ignore` leaves out sections
-(`rng`, `actors`, ...) or single flag blocks (`flags.liveSceneFlags`).
+(`rng`, `actors`, ...), single flag blocks (`flags.liveSceneFlags`) or actor fields (`actors.rot`).
+`--actors` compares only the listed actor ids, and `--unordered` compares actor lists as sets.
+
+### Checking an OoT actor port against SoH
+
+A SoH log uses OoT's scene and actor ids. `ootlog.py` rewrites them to this fork's unified ids and can
+keep a single visit to a scene, so this fork can be started at that visit's entrance with SoH's Player
+as its puppet:
+
+```bash
+python3 harness/tools/ootlog.py sessions/kokiri-walk/record.state kf.state --scene SCENE_KOKIRI_FOREST_Oot --visit 2
+```
+
+```bash
+HYRULE_BOOT_ENTRANCE=0xDC30 HARNESS_PUPPET=kf.state HARNESS_STATELOG=ours.state ./2s2h.elf
+```
+
+```bash
+python3 harness/tools/statediff.py kf.state ours.state --align scene --unordered --actors 0x3D7,0x401,0x403 --ignore rng,player,flags,actors.flags,actors.rot
+```
+
+The two Players differ, as do the engines' random numbers, cameras and actor list order, so compare the
+ported actors only and leave out rotations that come from random numbers and flags that depend on
+the camera. The puppet moves Player but cannot attack, so check attacks with a scripted replay in this
+fork (`make_inputs.py`).
 
 ## State log
 
@@ -109,4 +134,5 @@ With `HARNESS_PUPPET`, after Player updates on a scene frame that the log also h
 rotation, speed and yaw are replaced with the logged ones. Actors that update afterwards see the
 recorded Player, so a ported actor can be tested against SoH's Player behavior. Collision and
 cutscenes later in the frame can still move Player, so the end-of-frame position can differ slightly.
-Frames are matched by scene id, so SoH logs only drive this fork once Hyrule scenes load here.
+Frames are matched by scene id, so a SoH log needs `ootlog.py` first. When a log visits a scene more
+than once, the last visit wins, so keep only the visit to replay.

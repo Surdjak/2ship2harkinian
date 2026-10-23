@@ -509,6 +509,30 @@ typedef enum ElementMaterial {
 #define DMG_HAMMER_JUMP_Oot  (1ULL << (32 + 0x1E))
 #define DMG_UNKNOWN_2_Oot    (1ULL << (32 + 0x1F))
 
+// 3Ship [Hyrule] An OoT collider's damage flags, from OoT's 32-bit mask. OoT's bits move up to 32-63, and the
+// MM attacks that stand in for each OoT attack are added, so MM's Player can hit OoT actors. The slingshot
+// counts as the Deku bubble. OoT's spells and unknown arrows have no MM counterpart, and MM-only attacks
+// such as Goron rolling, the Deku launch or the horse are not added to any OoT actor.
+#define DMG_MM_IF_OOT(mask, bit, mmFlags) (((u32)(mask) & (1u << (bit))) ? (mmFlags) : 0)
+#define DMG_FROM_OOT(mask)                                                                        \
+    (((u64)(u32)(mask) << 32) | DMG_MM_IF_OOT(mask, 0x00, DMG_DEKU_NUT) |                         \
+     DMG_MM_IF_OOT(mask, 0x01, DMG_DEKU_STICK) | DMG_MM_IF_OOT(mask, 0x02, DMG_DEKU_BUBBLE) |      \
+     DMG_MM_IF_OOT(mask, 0x03, DMG_EXPLOSIVES | DMG_POWDER_KEG) |                                \
+     DMG_MM_IF_OOT(mask, 0x04, DMG_ZORA_BOOMERANG) | DMG_MM_IF_OOT(mask, 0x05, DMG_NORMAL_ARROW) | \
+     DMG_MM_IF_OOT(mask, 0x06, DMG_GORON_PUNCH) | DMG_MM_IF_OOT(mask, 0x07, DMG_HOOKSHOT) |        \
+     DMG_MM_IF_OOT(mask, 0x08, DMG_SWORD | DMG_ZORA_PUNCH) |                                     \
+     DMG_MM_IF_OOT(mask, 0x09, DMG_SWORD | DMG_ZORA_PUNCH) |                                     \
+     DMG_MM_IF_OOT(mask, 0x0A, DMG_SWORD | DMG_ZORA_PUNCH) |                                     \
+     DMG_MM_IF_OOT(mask, 0x0B, DMG_FIRE_ARROW) | DMG_MM_IF_OOT(mask, 0x0C, DMG_ICE_ARROW) |        \
+     DMG_MM_IF_OOT(mask, 0x0D, DMG_LIGHT_ARROW) | DMG_MM_IF_OOT(mask, 0x14, DMG_NORMAL_SHIELD) |  \
+     DMG_MM_IF_OOT(mask, 0x15, DMG_LIGHT_RAY) |                                                  \
+     DMG_MM_IF_OOT(mask, 0x16, DMG_SPIN_ATTACK | DMG_DEKU_SPIN) |                                \
+     DMG_MM_IF_OOT(mask, 0x17, DMG_SPIN_ATTACK | DMG_DEKU_SPIN) |                                \
+     DMG_MM_IF_OOT(mask, 0x18, DMG_SPIN_ATTACK | DMG_DEKU_SPIN) |                                \
+     DMG_MM_IF_OOT(mask, 0x19, DMG_SWORD) | DMG_MM_IF_OOT(mask, 0x1A, DMG_SWORD) |                \
+     DMG_MM_IF_OOT(mask, 0x1B, DMG_SWORD) | DMG_MM_IF_OOT(mask, 0x1D, DMG_UNBLOCKABLE) |          \
+     DMG_MM_IF_OOT(mask, 0x1E, DMG_GORON_POUND))
+
 typedef struct DamageTable {
     /* 0x00 */ u8 attack[64]; // 3Ship [Hyrule] was 32: MM's damage types, then OoT's
 } DamageTable; // size = 0x40

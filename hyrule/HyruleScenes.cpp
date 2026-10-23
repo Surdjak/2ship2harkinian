@@ -18,8 +18,8 @@ static_assert(ACTOR_ID_MAX == ACTOR_OOT_BASE + 0x1D7, "OoT has 0x1D7 actors");
 static_assert(OBJECT_INVALID_Oot == OBJECT_OOT_BASE, "OBJECT_OOT_BASE must be the first OoT object");
 static_assert(OBJECT_ID_MAX == OBJECT_OOT_BASE + 0x192, "OoT has 0x192 objects");
 static_assert(ITEM_STICK_Oot == ITEM_OOT_BASE && ITEM_OOT_BASE > ITEM_NONE, "OoT items must follow MM's");
-// Spawn entries keep the actor id in 13 bits.
-static_assert(ACTOR_ID_MAX <= 0x2000, "actor ids must fit in 13 bits");
+// Spawn entries keep the actor id in 13 bits, and Actor_SpawnSetupActors reads bit 11 (0x800) as a flag.
+static_assert(ACTOR_ID_MAX <= 0x800, "actor ids must stay below 0x800");
 
 namespace {
 
@@ -81,13 +81,6 @@ void RegisterHyruleScenes() {
     LoadOotArchive();
     BootToEntrance();
 
-    // OoT actor ids are not mapped yet (only the room-loading planes are), so room actor lists would
-    // spawn the wrong MM actors.
-    GameInteractor::Instance->RegisterGameHook<GameInteractor::AfterRoomSceneCommands>([](s16 sceneId, s8 roomNum) {
-        if (gPlayState != nullptr && FindScene(gPlayState->sceneId) != nullptr) {
-            gPlayState->numSetupActors = 0;
-        }
-    });
 }
 
 RegisterShipInitFunc sInitFunc(RegisterHyruleScenes, {});

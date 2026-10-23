@@ -2674,7 +2674,9 @@ void Actor_SpawnSetupActors(PlayState* play, ActorContext* actorCtx) {
             currentActorListIndex = i;
 
             actorEntryHalfDayBit = ((actorEntry->rot.x & 7) << 7) | (actorEntry->rot.z & 0x7F);
-            if (actorEntryHalfDayBit == 0) {
+            // 3Ship [Hyrule] OoT actors keep OoT's raw rotations, which hold no half-day bits. Unified ids stay
+            // below 0x800, so the flag in bit 11 is not mistaken for an OoT id.
+            if ((actorEntryHalfDayBit == 0) || ((actorEntry->id & 0x7FF) >= ACTOR_OOT_BASE)) {
                 actorEntryHalfDayBit = HALFDAYBIT_ALL;
             }
 
@@ -3869,6 +3871,15 @@ void Actor_SpawnTransitionActors(PlayState* play, ActorContext* actorCtx) {
 }
 
 Actor* Actor_SpawnEntry(ActorContext* actorCtx, ActorEntry* actorEntry, PlayState* play) {
+    // 3Ship [Hyrule] OoT actors keep OoT's raw rotations (some use them as extra parameters) and have no
+    // cutscene id or half-day bits in them.
+    if ((actorEntry->id & 0x7FF) >= ACTOR_OOT_BASE) {
+        return Actor_SpawnAsChildAndCutscene(actorCtx, play, actorEntry->id & 0x7FF, actorEntry->pos.x,
+                                             actorEntry->pos.y, actorEntry->pos.z, actorEntry->rot.x,
+                                             actorEntry->rot.y, actorEntry->rot.z, actorEntry->params & 0xFFFF,
+                                             CS_ID_NONE, HALFDAYBIT_ALL, NULL);
+    }
+
     s16 rotX = (actorEntry->rot.x >> 7) & 0x1FF;
     s16 rotY = (actorEntry->rot.y >> 7) & 0x1FF;
     s16 rotZ = (actorEntry->rot.z >> 7) & 0x1FF;

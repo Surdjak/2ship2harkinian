@@ -36,7 +36,8 @@ converters live in `OTRExporter/OTRExporter/OotToMm.cpp` and are skeletons:
 
 - **Scenes:** room behavior, misc settings (0x19), the cutscene list (0x17 becomes 2Ship's 0x1F) and
   paths are rewritten in MM's layout. Other commands already match. MM's extra commands 0x1A-0x1E are
-  not emitted. Actor and object IDs, behavior types, camera type and world map area are not remapped.
+  not emitted. Actor and object ids are mapped to the unified tables; behavior types, camera type and
+  world map area are not remapped.
 - **Text:** OoT control codes become MM ones, item icons and text-ID jumps move into MM's message
   header, and codes without an MM equivalent are dropped and reported in the extraction log. Textbox
   types, sound effects and item IDs are not remapped.
@@ -62,11 +63,11 @@ To go there:
 What works: the scene and its rooms load, render and collide; MM's Link spawns at OoT's spawn points
 and walks between rooms through the room-loading planes (`En_Holl`, mapped to MM's). Collision camera
 settings are mapped to MM's (`OotToMm::CameraSetting`), and a spawn's camera index refers to the
-collision camera list as it does in OoT.
+collision camera list as it does in OoT. Room actor lists spawn the ported OoT actors (see below).
 
 Not yet:
 
-- **Actors:** OoT actors are not ported, so rooms are loaded without their actor lists.
+- **Actors:** only the first wave is ported, so other OoT actors in room lists do not appear.
 - **Exits:** every exit leads back to the scene's first spawn.
 - **Music:** none plays, since OoT's sequences are not extracted.
 - **Scene effects:** OoT's per-scene animated textures are not drawn.
@@ -87,6 +88,50 @@ nothing. To port an actor, regenerate the tables with its OoT enum in `--ported`
 into a `DEFINE_ACTOR` entry named `<Name>_Oot`. Player and the room-loading planes still map to MM's
 own actors.
 
+Room actor lists keep OoT's rotations, since some OoT actors read parameters from them. MM keeps a
+cutscene id and half-day bits in its rotations instead, so `Actor_SpawnEntry` spawns OoT ids with the
+rotations as they are, no cutscene and every half-day.
+
+The scene's sub-keep object (the special files command) is converted like room objects, so OoT's
+`gameplay_field_keep` is loaded as `OBJECT_GAMEPLAY_FIELD_KEEP_Oot`.
+
+## Ported actors
+
+| Wave | Actors |
+|------|--------|
+| 1 | `Obj_Hana` (flowers, rocks, bush), `En_Kusa` (grass), `Obj_Mure2` (grass and rock rings) |
+
+Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
+possible:
+
+- **Names:** functions are `static`, so they do not clash with MM actors of the same name. The profile
+  is `<Name>_Oot_Profile`.
+- **Ids:** actors and objects use the `_Oot` ids. OoT's `gameplay_keep` is always loaded in MM as
+  `GAMEPLAY_KEEP`, so profiles and effects use that instead.
+- **Assets:** headers come from `assets/oot/` (`tools/porting/gen_oot_asset_headers.py`), whose paths
+  start with `oot/`.
+- **Engine names:** MM's names replace OoT's: `ActorProfile`, `objectSlot` and `Object_GetSlot`,
+  `cullingVolume*`, `terminalVelocity`, `speed`, `depthInWater`, `COL_MATERIAL_`, `ELEM_MATERIAL_`,
+  `ATELEM_`, `ACELEM_`, and `ACTOR_FLAG_800` for `ACTOR_FLAG_GRASS_DESTROYED`. Sound effects use MM's
+  ids of the same name.
+- **Damage:** AC masks are written `DMG_FROM_OOT(<OoT mask>)` (see Damage types).
+- **SoH additions:** enhancements, cvars, game-interactor hooks, stats and debug prints are dropped.
+- **Gaps:** anything that depends on a system not ported yet is marked with a `PORT:` comment.
+
+Known differences in wave 1:
+
+- Grass drops come from MM's drop table of the same index, since OoT's tables and Deku seeds are not
+  ported. Regrowing grass gives a recovery heart half the time and nothing instead of seeds.
+- The bush that `Obj_Hana` removes once Zelda's letter is obtained always stays, since OoT's event
+  flags are not in the save.
+- Rock rings spawn nothing until `En_Ishi` is ported, and bugs from grass wait for `En_Insect`.
+
+Wave 1 was checked against the SoH session's second Kokiri Forest visit, with that run's Link
+puppeting this fork's: every wave-1 actor matched in id, parameters, room and position on all 2631
+scene frames, including spawning and despawning on room changes. Rotations differ because grass picks
+a random yaw and the two engines draw different random numbers. A scripted spin attack cuts grass
+and drops a collectible.
+
 ## Item ids
 
 Item ids are 16-bit wherever they are stored: the inventory, C-button and D-pad items in saves,
@@ -104,6 +149,25 @@ Collider damage flags (`dmgFlags`) are 64-bit and damage tables have 64 entries.
 bits 0-31 and table entries 0-31; OoT's follow in bits 32-63 as `DMG_<NAME>_Oot`
 (`mm/include/z64collision_check.h`) and use entries 32-63. MM's damage tables leave those entries at
 zero, so MM actors ignore OoT damage until cross-play decides otherwise.
+
+OoT actors are hit by MM's Player through `DMG_FROM_OOT`, which keeps an OoT mask in bits 32-63 and adds
+the MM attacks that stand in for each OoT one:
+
+| OoT | MM |
+|-----|----|
+| Deku nut, Deku stick, hookshot, normal/fire/ice/light arrows, unblockable | the same |
+| Slingshot | Deku bubble |
+| Explosive | explosives, powder keg |
+| Boomerang | Zora boomerang |
+| Hammer swing / hammer jump | Goron punch / Goron pound |
+| Sword slashes | sword, Zora punch |
+| Spin attacks | spin attack, Deku spin |
+| Jump attacks | sword |
+| Shield / mirror ray | normal shield / light ray |
+
+OoT's spells and unknown arrows have no MM counterpart. MM-only attacks (Goron rolling, Deku launch,
+the horse, thrown objects, sword beam, roll) are not added, so an OoT actor that should react to them
+needs its own mask. Damage tables of OoT enemies will need entries 0-31 filled the same way.
 
 MM's `DMG_` constants are 64-bit so that `flags &= ~DMG_X` clears only `DMG_X`, matching MM's integer
 masks, and the top MM bit does not spill into OoT's. Variables that copy damage flags should be `u64`.

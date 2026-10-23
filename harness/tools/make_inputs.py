@@ -2,10 +2,10 @@
 """Build a harness input file from a short script, for replays that need no recording session.
 
 Script lines (one per line, # starts a comment):
-  wait N                    N frames with nothing pressed
-  press BUTTON[+BUTTON] [N] press for N frames (default 1), then release for 1 frame
-  hold BUTTON[+BUTTON] N    press for N frames without the release frame
-  stick X Y N               hold the control stick at (X, Y) for N frames
+  wait N                         N frames with nothing pressed
+  press BUTTON[+BUTTON] [N]      press for N frames (default 1), then release for 1 frame
+  hold BUTTON[+BUTTON] N         press for N frames without the release frame
+  stick X Y N [BUTTON[+BUTTON]]  hold the control stick at (X, Y) for N frames, and any buttons given
 
 Buttons: A B Z START L R CUP CDOWN CLEFT CRIGHT DUP DDOWN DLEFT DRIGHT
 """
@@ -44,7 +44,8 @@ def build(lines):
             elif cmd == "hold":
                 frames += [(parse_buttons(args[0]), 0, 0)] * int(args[1])
             elif cmd == "stick":
-                frames += [(0, int(args[0]), int(args[1]))] * int(args[2])
+                buttons = parse_buttons(args[3]) if len(args) > 3 else 0
+                frames += [(buttons, int(args[0]), int(args[1]))] * int(args[2])
             else:
                 sys.exit(f"line {lineno}: unknown command {cmd}")
         except (IndexError, ValueError):
