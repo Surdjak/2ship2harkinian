@@ -86,3 +86,41 @@ static Color_RGBA8 sDustBrownEnv = { 100, 60, 20, 255 };
 void func_800286CC(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, s16 scaleStep) {
     EffectSsDust_Spawn(play, 5, pos, velocity, accel, &sDustBrownPrim, &sDustBrownEnv, scale, scaleStep, 10, 0);
 }
+
+void func_8002836C(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor,
+                   Color_RGBA8* envColor, s16 scale, s16 scaleStep, s16 life) {
+    EffectSsDust_Spawn(play, 0, pos, velocity, accel, primColor, envColor, scale, scaleStep, life, 0);
+}
+
+s32 func_8002DDF4(PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    // OoT's PLAYER_STATE2_STATIONARY_LADDER, the same bit in MM.
+    return player->stateFlags2 & PLAYER_STATE2_1000;
+}
+
+void func_8002EBCC(Actor* actor, PlayState* play, s32 flag) {
+    Hilite* hilite;
+    Vec3f lightDir;
+    Gfx* displayListHead;
+    Gfx* displayList;
+
+    lightDir.x = play->envCtx.dirLight1.params.dir.x;
+    lightDir.y = play->envCtx.dirLight1.params.dir.y;
+    lightDir.z = play->envCtx.dirLight1.params.dir.z;
+
+    hilite = Hilite_DrawOpa(&actor->world.pos, &play->view.eye, &lightDir, play->state.gfxCtx);
+
+    if (flag != 0) {
+        displayList = GRAPH_ALLOC(play->state.gfxCtx, 2 * sizeof(Gfx));
+        displayListHead = displayList;
+
+        OPEN_DISPS(play->state.gfxCtx);
+
+        gDPSetHilite1Tile(displayListHead++, 1, hilite, 0x10, 0x10);
+        gSPEndDisplayList(displayListHead);
+        gSPSegment(POLY_OPA_DISP++, 0x07, displayList);
+
+        CLOSE_DISPS(play->state.gfxCtx);
+    }
+}

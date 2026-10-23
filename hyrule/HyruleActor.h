@@ -10,6 +10,19 @@ s16 Actor_UpdateAlphaByDistance(Actor* actor, PlayState* play, s16 alpha, f32 ra
 // OoT's brown dust puffs (z_effect_soft_sprite_old_init.c).
 void func_800286CC(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, s16 scaleStep);
 
+// One of OoT's 23 preset damage tables (HyruleDamage.c), or NULL.
+DamageTable* DamageTable_Get_Oot(s32 index);
+
+// OoT's dust variant 0 (z_effect_soft_sprite_old_init.c).
+void func_8002836C(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor,
+                   Color_RGBA8* envColor, s16 scale, s16 scaleStep, s16 life);
+
+// True while Player stands on a ladder.
+s32 func_8002DDF4(PlayState* play);
+
+// Sets up the specular highlight for the actor's opaque draw; with flag, also its segment 7 tile.
+void func_8002EBCC(Actor* actor, PlayState* play, s32 flag);
+
 // Draw a flex skeleton with the env colour's alpha set, opaque or translucent.
 void func_80034BA0(PlayState* play, SkelAnime* skelAnime, OverrideLimbDraw overrideLimbDraw,
                    PostLimbDraw postLimbDraw, Actor* actor, s16 alpha);

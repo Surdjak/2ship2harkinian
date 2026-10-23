@@ -11,3 +11,11 @@
 // OoT's quest items and inventory are not in the save yet: ported checks see none of them.
 #define CHECK_QUEST_ITEM_OOT(item) false
 #define INV_CONTENT_OOT(slotItem) ITEM_NONE
+
+// OoT's day and night are MM's.
+#define IS_DAY_OOT (!gSaveContext.save.isNight)
+#define IS_NIGHT_OOT (gSaveContext.save.isNight)
+
+// OoT's Gold Skulltula flags are not in the save yet: none are collected, and collecting one is not kept.
+#define GET_GS_FLAGS_OOT(index) 0
+#define SET_GS_FLAGS_OOT(index, value) ((void)0)

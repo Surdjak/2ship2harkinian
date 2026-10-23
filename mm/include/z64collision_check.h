@@ -537,6 +537,27 @@ typedef struct DamageTable {
     /* 0x00 */ u8 attack[64]; // 3Ship [Hyrule] was 32: MM's damage types, then OoT's
 } DamageTable; // size = 0x40
 
+// 3Ship [Hyrule] A damage table from an OoT one's 32 entries, in OoT's order. OoT's entries fill 32-63;
+// each of MM's attacks (0-31) takes the entry of the OoT attack it stands in for, as in DMG_FROM_OOT.
+// MM-only attacks with no OoT counterpart (horse, Deku launch, Zora barrier, roll) have no effect.
+#define DMG_TABLE_FROM_OOT(nut, stick, sling, expl, boom, arrow, hammer, hook, slashK, slashM, slashG, arrowF,  \
+                           arrowI, arrowL, arrowU1, arrowU2, arrowU3, magicF, magicI, magicL, shield, mirror, \
+                           spinK, spinG, spinM, jumpK, jumpG, jumpM, unk1, unblock, hammerJump, unk2)        \
+    { {                                                                                                     \
+        /* MM: nut, stick, horse, explosives, boomerang, arrow, unk 6, hookshot */                          \
+        nut, stick, 0, expl, boom, arrow, 0, hook,                                                          \
+        /* Goron punch, sword, Goron pound, fire/ice/light arrows, Goron spikes, Deku spin */               \
+        hammer, slashK, hammerJump, arrowF, arrowI, arrowL, hammerJump, spinK,                              \
+        /* Deku bubble, Deku launch, unk 0x12, Zora barrier, shield, light ray, thrown, Zora punch */        \
+        sling, 0, 0, 0, shield, mirror, stick, slashK,                                                      \
+        /* spin attack, sword beam, roll, unk 0x1B-0x1C, unblockable, unk 0x1E, powder keg */               \
+        spinK, spinM, 0, 0, 0, unblock, 0, expl,                                                            \
+        /* OoT's own */                                                                                     \
+        nut, stick, sling, expl, boom, arrow, hammer, hook, slashK, slashM, slashG, arrowF, arrowI, arrowL,  \
+        arrowU1, arrowU2, arrowU3, magicF, magicI, magicL, shield, mirror, spinK, spinG, spinM, jumpK,      \
+        jumpG, jumpM, unk1, unblock, hammerJump, unk2,                                                      \
+    } }
+
 typedef struct CollisionCheckInfoInit {
     /* 0x0 */ u8 health;
     /* 0x2 */ s16 cylRadius;
