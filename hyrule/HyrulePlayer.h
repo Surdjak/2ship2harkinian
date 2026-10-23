@@ -22,6 +22,8 @@ struct Player;
 Gfx** Hyrule_GetHandHoldingShieldDLs(s32 shield);
 // One of OoT's shields on the back, drawn on the sheath limb; NULL for MM's shields.
 Gfx* Hyrule_GetBackShieldDL(s32 shield);
+// Sets up what Hyrule_GetBackShieldDL's lists expect and do not set themselves.
+void Hyrule_SetupBackShieldDraw(struct PlayState* play);
 u8 Hyrule_GetShieldColMaterial(s32 shield);
 // OoT's Player_IsChildWithHylianShield: shields with it on his back instead of holding it.
 s32 Hyrule_IsChildWithHylianShield(struct Player* player);

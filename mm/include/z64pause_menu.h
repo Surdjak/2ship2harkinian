@@ -15,8 +15,9 @@ typedef enum PauseMenuPage {
     /* 2 */ PAUSE_QUEST,
     /* 3 */ PAUSE_MASK,
     /* 4 */ PAUSE_WORLD_MAP,
-    /* 5 */ PAUSE_EQUIP, // 3Ship [Hyrule] OoT's equipment page (docs/PAUSE.md)
-    /* 6 */ PAUSE_PAGE_MAX
+    /* 5 */ PAUSE_EQUIP,     // 3Ship [Hyrule] OoT's equipment page (docs/PAUSE.md)
+    /* 6 */ PAUSE_QUEST_OOT, // 3Ship [Hyrule] OoT's quest status page
+    /* 7 */ PAUSE_PAGE_MAX
 } PauseMenuPage;
 
 typedef enum PauseState {
@@ -174,10 +175,14 @@ typedef struct PauseContext {
     /* 0x2BE */ s16 ocarinaButtonsY[5];
     /* 0x2C8 */ u16 unk_2C8; // Uses PauseMenuPage enum for Owl Warp. Never set.
     /* 0x2CA */ s16 unk_2CA; // Uses OwlWarpId enum for Owl Warp. Never set.
-    // 3Ship [Hyrule] The equipment page (PAUSE_EQUIP), the fifth page of the ring.
+    // 3Ship [Hyrule] OoT's equipment and quest status pages (PAUSE_EQUIP, PAUSE_QUEST_OOT) on the ring.
     /*       */ Vtx* equipPageVtx;
     /*       */ Vtx* equipVtx;
     /*       */ f32 equipPageRoll;
+    /*       */ Vtx* questOotPageVtx;
+    /*       */ Vtx* questOotVtx;
+    /*       */ f32 questOotPageRoll;
+    /*       */ Vtx* worldMapOotVtx; // 3Ship [Hyrule] Hyrule's world map on the map page (HyruleKaleidoMap.c)
 } PauseContext; // size = 0x2D0 (3Ship: larger)
 
 #define IS_PAUSE_STATE_GAMEOVER(pauseCtx) \
@@ -242,12 +247,15 @@ void KaleidoScopeCall_Draw(struct PlayState* play);
 
 // Item macros
 
-#define ITEM_GRID_ROWS 4
-#define ITEM_GRID_COLS 6
+// 3Ship [Hyrule] The item page is a 7x5 grid of MM's and OoT's item slots (docs/PAUSE.md, U2); a cell's slot
+// comes from KaleidoScope_GetItemCellSlot. ITEM_NUM_SLOTS stays MM's 24 item slots, before its masks.
+#define ITEM_GRID_ROWS 5
+#define ITEM_GRID_COLS 7
+#define ITEM_GRID_CELLS (ITEM_GRID_ROWS * ITEM_GRID_COLS)
 #define MASK_GRID_ROWS 4
 #define MASK_GRID_COLS 6
 
-#define ITEM_NUM_SLOTS (ITEM_GRID_ROWS * ITEM_GRID_COLS)
+#define ITEM_NUM_SLOTS 24
 #define MASK_NUM_SLOTS (MASK_GRID_ROWS * MASK_GRID_COLS)
 
 #endif

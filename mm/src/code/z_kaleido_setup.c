@@ -59,10 +59,11 @@ void func_800F4A10(PlayState* play) {
     YREG(21) = -0x0622;
     YREG(22) = -0x0C44;
     YREG(23) = 0x0622;
-    // 3Ship [Hyrule] The map page's angle on the pentagon, and MM's distance from the eye (z_kaleido_scope.h).
-    R_PAUSE_WORLD_MAP_YAW = -1257;
+    // 3Ship [Hyrule] The map page's angle on the hexagon, and MM's distance of 208 from the eye, which stands
+    // 5 towards the page (z_kaleido_scope.h).
+    R_PAUSE_WORLD_MAP_YAW = -1047;
     R_PAUSE_WORLD_MAP_Y_OFFSET = -90;
-    R_PAUSE_WORLD_MAP_DEPTH = -18000;
+    R_PAUSE_WORLD_MAP_DEPTH = -21300;
 }
 
 void KaleidoSetup_Update(PlayState* play) {
@@ -138,6 +139,7 @@ void KaleidoSetup_Init(PlayState* play) {
     pauseCtx->mapPageRoll = 160.0f;
     pauseCtx->itemPageRoll = 160.0f;
     pauseCtx->equipPageRoll = 160.0f; // 3Ship [Hyrule]
+    pauseCtx->questOotPageRoll = 160.0f;
 
     pauseCtx->eye.x = KaleidoScope_GetPageEyeX(PAUSE_MAP);
     pauseCtx->eye.z = KaleidoScope_GetPageEyeZ(PAUSE_MAP);

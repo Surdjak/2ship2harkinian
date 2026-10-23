@@ -198,10 +198,6 @@ void Hyrule_SyncEquipmentOwnership(void) {
             INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, sMmSwords[sword - EQUIP_VALUE_SWORD_KOKIRI]);
         }
     }
-    // The Great Fairy's Sword is owned while MM's item slot holds it (docs/PAUSE.md frees that slot later).
-    if (INV_CONTENT(ITEM_SWORD_GREAT_FAIRY) == ITEM_SWORD_GREAT_FAIRY) {
-        INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_GREAT_FAIRY);
-    }
     switch (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD)) {
         case EQUIP_VALUE_SHIELD_HERO:
             INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SHIELD, EQUIP_OWNED_SHIELD_HERO);
@@ -463,6 +459,46 @@ void Hyrule_ResetInventoryOotForCycle(PlayState* play) {
         INVENTORY_OOT.equipmentOwned &= ~EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_RAZOR);
         INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KOKIRI);
     }
+}
+
+u16* Hyrule_GetSlotContent(s16 slot) {
+    if ((slot >= 0) && (slot < ARRAY_COUNT(gSaveContext.save.saveInfo.inventory.items))) {
+        return &gSaveContext.save.saveInfo.inventory.items[slot];
+    }
+    if ((slot >= SLOT_OOT_FIRST) && (slot < SLOT_OOT_END)) {
+        return &INV_CONTENT_SLOT_OOT(slot);
+    }
+    return NULL;
+}
+
+u16 Hyrule_GetNextChildTradeMask(void) {
+    u16 item = INV_CONTENT_SLOT_OOT(SLOT_OOT_TRADE_CHILD);
+    s32 count = ITEM_MASK_TRUTH_Oot - ITEM_MASK_KEATON_Oot + 1;
+    s32 i;
+
+    if ((item < ITEM_MASK_KEATON_Oot) || (item > ITEM_MASK_TRUTH_Oot)) {
+        return ITEM_NONE;
+    }
+    for (i = 1; i < count; i++) {
+        s32 mask = (item - ITEM_MASK_KEATON_Oot + i) % count;
+
+        if (INVENTORY_OOT.masksOwned & (1 << mask)) {
+            return ITEM_MASK_KEATON_Oot + mask;
+        }
+    }
+    return ITEM_NONE;
+}
+
+s32 Hyrule_IsOotItemUsableByForm(s32 form, u16 item) {
+    return form == PLAYER_FORM_HUMAN;
+}
+
+void Hyrule_GiveGreatFairySword(void) {
+    INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_GREAT_FAIRY);
+}
+
+s32 Hyrule_OwnsGreatFairySword(void) {
+    return CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_GREAT_FAIRY);
 }
 
 void Hyrule_LoseGreatFairySword(PlayState* play) {

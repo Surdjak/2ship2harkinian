@@ -196,7 +196,9 @@ u8 gPageSwitchNextButtonStatus[][5] = {
     { BTN_ENABLED, BTN_DISABLED, BTN_DISABLED, BTN_ENABLED, BTN_ENABLED },
     { BTN_ENABLED, BTN_DISABLED, BTN_DISABLED, BTN_ENABLED, BTN_ENABLED },
     { BTN_ENABLED, BTN_ENABLED, BTN_DISABLED, BTN_ENABLED, BTN_ENABLED },
-    // 3Ship [Hyrule] The equipment page (PAUSE_EQUIP), read at both of MM's indices: no C-buttons.
+    // 3Ship [Hyrule] OoT's equipment and quest pages (PAUSE_EQUIP, PAUSE_QUEST_OOT), read at both of MM's
+    // indices (page and page + 1): no C-buttons.
+    { BTN_ENABLED, BTN_DISABLED, BTN_DISABLED, BTN_ENABLED, BTN_ENABLED },
     { BTN_ENABLED, BTN_DISABLED, BTN_DISABLED, BTN_ENABLED, BTN_ENABLED },
     { BTN_ENABLED, BTN_DISABLED, BTN_DISABLED, BTN_ENABLED, BTN_ENABLED },
 };

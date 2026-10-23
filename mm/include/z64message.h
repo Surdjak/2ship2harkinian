@@ -363,7 +363,7 @@ void Message_FindCreditsMessage(struct PlayState* play, u16 textId);
 void Message_DrawTextCredits(struct PlayState* play, Gfx** gfxP);
 void Message_DecodeCredits(struct PlayState* play);
 
-extern u8 gPageSwitchNextButtonStatus[7][5];
+extern u8 gPageSwitchNextButtonStatus[8][5];
 extern u16 gBombersNotebookWeekEventFlags[BOMBERS_NOTEBOOK_EVENT_MAX];
 extern s16 gOcarinaSongItemMap[];
 

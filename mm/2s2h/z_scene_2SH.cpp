@@ -4,6 +4,7 @@
 #include <memory>
 #include <cassert>
 #include "HyruleScenes.h"
+#include "HyruleKaleidoMap.h"
 #include <ship/utils/StringHelper.h>
 #include <fast/resource/type/DisplayList.h>
 #include <libultraship/bridge/resourcebridge.h>
@@ -410,6 +411,7 @@ void Scene_CommandSetRegionVisitedFlag(PlayState* play, SOH::ISceneCommand* cmd)
     // 3Ship [Hyrule] OoT's version of this command holds the scene's camera type (no OoT scene is in a region).
     if (Hyrule_GetScenePath(play->sceneId) != nullptr) {
         Hyrule_SetCameraMovement(((SOH::SetCameraSettings*)cmd)->settings.cameraMovement);
+        Hyrule_SetWorldMapArea(play, ((SOH::SetCameraSettings*)cmd)->settings.worldMapArea);
     }
 
     while (true) {

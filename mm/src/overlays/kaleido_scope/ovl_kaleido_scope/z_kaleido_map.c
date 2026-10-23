@@ -258,7 +258,7 @@ void KaleidoScope_DrawDungeonMap(PlayState* play) {
 
                     POLY_OPA_DISP =
                         Gfx_DrawTexQuad4b(POLY_OPA_DISP, gStrayFairyGlowingCircleIconTex, G_IM_FMT_I, 32, 24, 0);
-                    KaleidoScope_SetView(pauseCtx, pauseCtx->eye.x, pauseCtx->eye.y, pauseCtx->eye.z);
+                    KaleidoScope_SetRingView(pauseCtx); // 3Ship [Hyrule]
                     Gfx_SetupDL39_Opa(play->state.gfxCtx);
 
                     gDPPipeSync(POLY_OPA_DISP++);
@@ -885,7 +885,7 @@ void KaleidoScope_DrawWorldMap(PlayState* play) {
 
         // Draw Player's face at the current region
         if (n != REGION_MAX) {
-            KaleidoScope_SetView(pauseCtx, pauseCtx->eye.x, pauseCtx->eye.y, pauseCtx->eye.z);
+            KaleidoScope_SetRingView(pauseCtx); // 3Ship [Hyrule]
             Gfx_SetupDL39_Opa(play->state.gfxCtx);
 
             gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, pauseCtx->alpha);

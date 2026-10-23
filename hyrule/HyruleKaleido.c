@@ -1,16 +1,19 @@
-// OoT's equipment page (z_kaleido_equipment.c in OoT), placed on MM's pause menu ring (docs/PAUSE.md).
+// OoT's pages on MM's pause menu ring (docs/PAUSE.md): the equipment page (z_kaleido_equipment.c in OoT)
+// here, the quest status page in HyruleKaleidoQuest.c.
 // The grid is OoT's 4x4: an upgrade column, then three cells each for swords, shields, tunics and boots.
 // A cell can hold several pieces (MM's swords, the Master and Great Fairy's Swords, the Deku, Hero's and MM
 // Mirror shields); it shows the one worn, or else the first owned, and A wears it or the next one.
 
 #include "global.h"
 #include "HyruleKaleido.h"
+#include "HyruleKaleidoQuest.h"
 #include "HyruleInventory.h"
 #include "HyrulePort.h"
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 #include "assets/oot/textures/icon_item_static/icon_item_static.h"
 #include "assets/oot/textures/icon_item_nes_static/icon_item_nes_static.h"
 #include "assets/oot/textures/item_name_static/item_name_static.h"
+#include "assets/oot/textures/icon_item_24_static/icon_item_24_static.h"
 #include "interface/parameter_static/parameter_static.h"
 
 static TexturePtr sEquipPageBgTextures[] = {
@@ -34,13 +37,6 @@ static TexturePtr sEquipPageBgTextures[] = {
     (TexturePtr)gPauseEquipment24Tex,
 };
 
-TexturePtr* Hyrule_GetEquipPageBgTextures(void) {
-    return sEquipPageBgTextures;
-}
-
-TexturePtr Hyrule_GetToEquipmentTexture(void) {
-    return (TexturePtr)gPauseToEquipmentENGTex;
-}
 
 #define EQUIP_ROWS 4
 #define EQUIP_COLS 4
@@ -172,140 +168,281 @@ static u16 Hyrule_GetCellItem(s32 row, s32 col) {
     return (piece != NULL) ? piece->item : ITEM_NONE;
 }
 
-static TexturePtr Hyrule_GetEquipIcon(u16 item) {
-    switch (item) {
-        case ITEM_SWORD_MASTER_Oot:
-            return (TexturePtr)gItemIconSwordMasterTex;
-        case ITEM_SWORD_BGS_Oot:
-            return (TexturePtr)gItemIconSwordBiggoronTex;
-        case ITEM_SWORD_KNIFE_Oot:
-            return (TexturePtr)gItemIconSwordBiggoronTex; // OoT shows the Giant's Knife with Biggoron's icon
-        case ITEM_SWORD_BROKEN_Oot:
-            return (TexturePtr)gItemIconBrokenGiantsKnifeTex;
-        case ITEM_SHIELD_DEKU_Oot:
-            return (TexturePtr)gItemIconShieldDekuTex;
-        case ITEM_SHIELD_HYLIAN_Oot:
-            return (TexturePtr)gItemIconShieldHylianTex;
-        case ITEM_SHIELD_MIRROR_Oot:
-            return (TexturePtr)gItemIconShieldMirrorTex;
-        case ITEM_TUNIC_KOKIRI_Oot:
-            return (TexturePtr)gItemIconTunicKokiriTex;
-        case ITEM_TUNIC_GORON_Oot:
-            return (TexturePtr)gItemIconTunicGoronTex;
-        case ITEM_TUNIC_ZORA_Oot:
-            return (TexturePtr)gItemIconTunicZoraTex;
-        case ITEM_BOOTS_KOKIRI_Oot:
-            return (TexturePtr)gItemIconBootsKokiriTex;
-        case ITEM_BOOTS_IRON_Oot:
-            return (TexturePtr)gItemIconBootsIronTex;
-        case ITEM_BOOTS_HOVER_Oot:
-            return (TexturePtr)gItemIconBootsHoverTex;
-        case ITEM_BULLET_BAG_30_Oot:
-            return (TexturePtr)gItemIconBulletBag30Tex;
-        case ITEM_BULLET_BAG_40_Oot:
-            return (TexturePtr)gItemIconBulletBag40Tex;
-        case ITEM_BULLET_BAG_50_Oot:
-            return (TexturePtr)gItemIconBulletBag50Tex;
-        case ITEM_BRACELET_Oot:
-            return (TexturePtr)gItemIconGoronsBraceletTex;
-        case ITEM_GAUNTLETS_SILVER_Oot:
-            return (TexturePtr)gItemIconSilverGauntletsTex;
-        case ITEM_GAUNTLETS_GOLD_Oot:
-            return (TexturePtr)gItemIconGoldenGauntletsTex;
-        case ITEM_SCALE_SILVER_Oot:
-            return (TexturePtr)gItemIconScaleSilverTex;
-        case ITEM_SCALE_GOLDEN_Oot:
-            return (TexturePtr)gItemIconScaleGoldenTex;
-        default:
-            // MM's own pieces and wallets
-            return (item < ARRAY_COUNT(gItemIcons)) ? gItemIcons[item] : NULL;
+// OoT's item icons and names, by OoT item id (gItemIcons in OoT's z_inventory.c, its pause menu's English
+// names); NULL where OoT has none.
+static const TexturePtr sOotItemIcons[] = {
+    (TexturePtr)gItemIconDekuStickTex, // ITEM_STICK_Oot
+    (TexturePtr)gItemIconDekuNutTex, // ITEM_NUT_Oot
+    (TexturePtr)gItemIconBombTex, // ITEM_BOMB_Oot
+    (TexturePtr)gItemIconBowTex, // ITEM_BOW_Oot
+    (TexturePtr)gItemIconArrowFireTex, // ITEM_ARROW_FIRE_Oot
+    (TexturePtr)gItemIconDinsFireTex, // ITEM_DINS_FIRE_Oot
+    (TexturePtr)gItemIconSlingshotTex, // ITEM_SLINGSHOT_Oot
+    (TexturePtr)gItemIconOcarinaFairyTex, // ITEM_OCARINA_FAIRY_Oot
+    (TexturePtr)gItemIconOcarinaOfTimeTex, // ITEM_OCARINA_TIME_Oot
+    (TexturePtr)gItemIconBombchuTex, // ITEM_BOMBCHU_Oot
+    (TexturePtr)gItemIconHookshotTex, // ITEM_HOOKSHOT_Oot
+    (TexturePtr)gItemIconLongshotTex, // ITEM_LONGSHOT_Oot
+    (TexturePtr)gItemIconArrowIceTex, // ITEM_ARROW_ICE_Oot
+    (TexturePtr)gItemIconFaroresWindTex, // ITEM_FARORES_WIND_Oot
+    (TexturePtr)gItemIconBoomerangTex, // ITEM_BOOMERANG_Oot
+    (TexturePtr)gItemIconLensOfTruthTex, // ITEM_LENS_Oot
+    (TexturePtr)gItemIconMagicBeanTex, // ITEM_BEAN_Oot
+    (TexturePtr)gItemIconHammerTex, // ITEM_HAMMER_Oot
+    (TexturePtr)gItemIconArrowLightTex, // ITEM_ARROW_LIGHT_Oot
+    (TexturePtr)gItemIconNayrusLoveTex, // ITEM_NAYRUS_LOVE_Oot
+    (TexturePtr)gItemIconBottleEmptyTex, // ITEM_BOTTLE_Oot
+    (TexturePtr)gItemIconBottlePotionRedTex, // ITEM_POTION_RED_Oot
+    (TexturePtr)gItemIconBottlePotionGreenTex, // ITEM_POTION_GREEN_Oot
+    (TexturePtr)gItemIconBottlePotionBlueTex, // ITEM_POTION_BLUE_Oot
+    (TexturePtr)gItemIconBottleFairyTex, // ITEM_FAIRY_Oot
+    (TexturePtr)gItemIconBottleFishTex, // ITEM_FISH_Oot
+    (TexturePtr)gItemIconBottleMilkFullTex, // ITEM_MILK_BOTTLE_Oot
+    (TexturePtr)gItemIconBottleRutosLetterTex, // ITEM_LETTER_RUTO_Oot
+    (TexturePtr)gItemIconBottleBlueFireTex, // ITEM_BLUE_FIRE_Oot
+    (TexturePtr)gItemIconBottleBugTex, // ITEM_BUG_Oot
+    (TexturePtr)gItemIconBottleBigPoeTex, // ITEM_BIG_POE_Oot
+    (TexturePtr)gItemIconBottleMilkHalfTex, // ITEM_MILK_HALF_Oot
+    (TexturePtr)gItemIconBottlePoeTex, // ITEM_POE_Oot
+    (TexturePtr)gItemIconWeirdEggTex, // ITEM_WEIRD_EGG_Oot
+    (TexturePtr)gItemIconChickenTex, // ITEM_CHICKEN_Oot
+    (TexturePtr)gItemIconZeldasLetterTex, // ITEM_LETTER_ZELDA_Oot
+    (TexturePtr)gItemIconMaskKeatonTex, // ITEM_MASK_KEATON_Oot
+    (TexturePtr)gItemIconMaskSkullTex, // ITEM_MASK_SKULL_Oot
+    (TexturePtr)gItemIconMaskSpookyTex, // ITEM_MASK_SPOOKY_Oot
+    (TexturePtr)gItemIconMaskBunnyHoodTex, // ITEM_MASK_BUNNY_Oot
+    (TexturePtr)gItemIconMaskGoronTex, // ITEM_MASK_GORON_Oot
+    (TexturePtr)gItemIconMaskZoraTex, // ITEM_MASK_ZORA_Oot
+    (TexturePtr)gItemIconMaskGerudoTex, // ITEM_MASK_GERUDO_Oot
+    (TexturePtr)gItemIconMaskTruthTex, // ITEM_MASK_TRUTH_Oot
+    (TexturePtr)gItemIconSoldOutTex, // ITEM_SOLD_OUT_Oot
+    (TexturePtr)gItemIconPocketEggTex, // ITEM_POCKET_EGG_Oot
+    (TexturePtr)gItemIconPocketCuccoTex, // ITEM_POCKET_CUCCO_Oot
+    (TexturePtr)gItemIconCojiroTex, // ITEM_COJIRO_Oot
+    (TexturePtr)gItemIconOddMushroomTex, // ITEM_ODD_MUSHROOM_Oot
+    (TexturePtr)gItemIconOddPotionTex, // ITEM_ODD_POTION_Oot
+    (TexturePtr)gItemIconPoachersSawTex, // ITEM_SAW_Oot
+    (TexturePtr)gItemIconBrokenGoronsSwordTex, // ITEM_SWORD_BROKEN_Oot
+    (TexturePtr)gItemIconPrescriptionTex, // ITEM_PRESCRIPTION_Oot
+    (TexturePtr)gItemIconEyeballFrogTex, // ITEM_FROG_Oot
+    (TexturePtr)gItemIconEyeDropsTex, // ITEM_EYEDROPS_Oot
+    (TexturePtr)gItemIconClaimCheckTex, // ITEM_CLAIM_CHECK_Oot
+    (TexturePtr)gItemIconBowFireTex, // ITEM_BOW_ARROW_FIRE_Oot
+    (TexturePtr)gItemIconBowIceTex, // ITEM_BOW_ARROW_ICE_Oot
+    (TexturePtr)gItemIconBowLightTex, // ITEM_BOW_ARROW_LIGHT_Oot
+    (TexturePtr)gItemIconSwordKokiriTex, // ITEM_SWORD_KOKIRI_Oot
+    (TexturePtr)gItemIconSwordMasterTex, // ITEM_SWORD_MASTER_Oot
+    (TexturePtr)gItemIconSwordBiggoronTex, // ITEM_SWORD_BGS_Oot
+    (TexturePtr)gItemIconShieldDekuTex, // ITEM_SHIELD_DEKU_Oot
+    (TexturePtr)gItemIconShieldHylianTex, // ITEM_SHIELD_HYLIAN_Oot
+    (TexturePtr)gItemIconShieldMirrorTex, // ITEM_SHIELD_MIRROR_Oot
+    (TexturePtr)gItemIconTunicKokiriTex, // ITEM_TUNIC_KOKIRI_Oot
+    (TexturePtr)gItemIconTunicGoronTex, // ITEM_TUNIC_GORON_Oot
+    (TexturePtr)gItemIconTunicZoraTex, // ITEM_TUNIC_ZORA_Oot
+    (TexturePtr)gItemIconBootsKokiriTex, // ITEM_BOOTS_KOKIRI_Oot
+    (TexturePtr)gItemIconBootsIronTex, // ITEM_BOOTS_IRON_Oot
+    (TexturePtr)gItemIconBootsHoverTex, // ITEM_BOOTS_HOVER_Oot
+    (TexturePtr)gItemIconBulletBag30Tex, // ITEM_BULLET_BAG_30_Oot
+    (TexturePtr)gItemIconBulletBag40Tex, // ITEM_BULLET_BAG_40_Oot
+    (TexturePtr)gItemIconBulletBag50Tex, // ITEM_BULLET_BAG_50_Oot
+    (TexturePtr)gItemIconQuiver30Tex, // ITEM_QUIVER_30_Oot
+    (TexturePtr)gItemIconQuiver40Tex, // ITEM_QUIVER_40_Oot
+    (TexturePtr)gItemIconQuiver50Tex, // ITEM_QUIVER_50_Oot
+    (TexturePtr)gItemIconBombBag20Tex, // ITEM_BOMB_BAG_20_Oot
+    (TexturePtr)gItemIconBombBag30Tex, // ITEM_BOMB_BAG_30_Oot
+    (TexturePtr)gItemIconBombBag40Tex, // ITEM_BOMB_BAG_40_Oot
+    (TexturePtr)gItemIconGoronsBraceletTex, // ITEM_BRACELET_Oot
+    (TexturePtr)gItemIconSilverGauntletsTex, // ITEM_GAUNTLETS_SILVER_Oot
+    (TexturePtr)gItemIconGoldenGauntletsTex, // ITEM_GAUNTLETS_GOLD_Oot
+    (TexturePtr)gItemIconScaleSilverTex, // ITEM_SCALE_SILVER_Oot
+    (TexturePtr)gItemIconScaleGoldenTex, // ITEM_SCALE_GOLDEN_Oot
+    (TexturePtr)gItemIconBrokenGiantsKnifeTex, // ITEM_SWORD_KNIFE_Oot
+    (TexturePtr)gItemIconAdultsWalletTex, // ITEM_WALLET_ADULT_Oot
+    (TexturePtr)gItemIconGiantsWalletTex, // ITEM_WALLET_GIANT_Oot
+    (TexturePtr)gItemIconDekuSeedsTex, // ITEM_SEEDS_Oot
+    (TexturePtr)gItemIconFishingPoleTex, // ITEM_FISHING_POLE_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_MINUET_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_BOLERO_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_SERENADE_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_REQUIEM_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_NOCTURNE_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_PRELUDE_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_LULLABY_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_EPONA_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_SARIA_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_SUN_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_TIME_Oot
+    (TexturePtr)gSongNoteTex, // ITEM_SONG_STORMS_Oot
+    (TexturePtr)gQuestIconMedallionForestTex, // ITEM_MEDALLION_FOREST_Oot
+    (TexturePtr)gQuestIconMedallionFireTex, // ITEM_MEDALLION_FIRE_Oot
+    (TexturePtr)gQuestIconMedallionWaterTex, // ITEM_MEDALLION_WATER_Oot
+    (TexturePtr)gQuestIconMedallionSpiritTex, // ITEM_MEDALLION_SPIRIT_Oot
+    (TexturePtr)gQuestIconMedallionShadowTex, // ITEM_MEDALLION_SHADOW_Oot
+    (TexturePtr)gQuestIconMedallionLightTex, // ITEM_MEDALLION_LIGHT_Oot
+    (TexturePtr)gQuestIconKokiriEmeraldTex, // ITEM_KOKIRI_EMERALD_Oot
+    (TexturePtr)gQuestIconGoronRubyTex, // ITEM_GORON_RUBY_Oot
+    (TexturePtr)gQuestIconZoraSapphireTex, // ITEM_ZORA_SAPPHIRE_Oot
+    (TexturePtr)gQuestIconStoneOfAgonyTex, // ITEM_STONE_OF_AGONY_Oot
+    (TexturePtr)gQuestIconGerudosCardTex, // ITEM_GERUDO_CARD_Oot
+    (TexturePtr)gQuestIconGoldSkulltulaTex, // ITEM_SKULL_TOKEN_Oot
+    (TexturePtr)gQuestIconHeartContainerTex, // ITEM_HEART_CONTAINER_Oot
+    (TexturePtr)gQuestIconHeartPieceTex, // ITEM_HEART_PIECE_Oot
+    (TexturePtr)gQuestIconDungeonBossKeyTex, // ITEM_KEY_BOSS_Oot
+    (TexturePtr)gQuestIconDungeonCompassTex, // ITEM_COMPASS_Oot
+    (TexturePtr)gQuestIconDungeonMapTex, // ITEM_DUNGEON_MAP_Oot
+    (TexturePtr)gQuestIconSmallKeyTex, // ITEM_KEY_SMALL_Oot
+    (TexturePtr)gQuestIconMagicJarSmallTex, // ITEM_MAGIC_SMALL_Oot
+    (TexturePtr)gQuestIconMagicJarBigTex, // ITEM_MAGIC_LARGE_Oot
+    (TexturePtr)gHeartPieceIcon1Tex, // ITEM_HEART_PIECE_2_Oot
+    (TexturePtr)gHeartPieceIcon2Tex, // ITEM_SINGLE_MAGIC_Oot
+    (TexturePtr)gHeartPieceIcon3Tex, // ITEM_DOUBLE_MAGIC_Oot
+    NULL, // ITEM_DOUBLE_DEFENSE_Oot
+    NULL, // ITEM_INVALID_4_Oot
+    NULL, // ITEM_INVALID_5_Oot
+    NULL, // ITEM_INVALID_6_Oot
+    NULL, // ITEM_INVALID_7_Oot
+    NULL, // ITEM_MILK_Oot
+};
+
+static const TexturePtr sOotItemNames[] = {
+    (TexturePtr)gDekuStickItemNameENGTex, // ITEM_STICK_Oot
+    (TexturePtr)gDekuNutItemNameENGTex, // ITEM_NUT_Oot
+    (TexturePtr)gBombItemNameENGTex, // ITEM_BOMB_Oot
+    (TexturePtr)gFairyBowItemNameENGTex, // ITEM_BOW_Oot
+    (TexturePtr)gFireArrowItemNameENGTex, // ITEM_ARROW_FIRE_Oot
+    (TexturePtr)gDinsFireItemNameENGTex, // ITEM_DINS_FIRE_Oot
+    (TexturePtr)gFairySlingshotItemNameENGTex, // ITEM_SLINGSHOT_Oot
+    (TexturePtr)gFairyOcarinaItemNameENGTex, // ITEM_OCARINA_FAIRY_Oot
+    (TexturePtr)gOcarinaOfTimeItemNameENGTex, // ITEM_OCARINA_TIME_Oot
+    (TexturePtr)gBombchuItemNameENGTex, // ITEM_BOMBCHU_Oot
+    (TexturePtr)gHookshotItemNameENGTex, // ITEM_HOOKSHOT_Oot
+    (TexturePtr)gLongshotItemNameENGTex, // ITEM_LONGSHOT_Oot
+    (TexturePtr)gIceArrowItemNameENGTex, // ITEM_ARROW_ICE_Oot
+    (TexturePtr)gFaroresWindItemNameENGTex, // ITEM_FARORES_WIND_Oot
+    (TexturePtr)gBoomerangItemNameENGTex, // ITEM_BOOMERANG_Oot
+    (TexturePtr)gLensItemNameENGTex, // ITEM_LENS_Oot
+    (TexturePtr)gMagicBeansItemNameENGTex, // ITEM_BEAN_Oot
+    (TexturePtr)gMegatonHammerItemNameENGTex, // ITEM_HAMMER_Oot
+    (TexturePtr)gLightArrowItemNameENGTex, // ITEM_ARROW_LIGHT_Oot
+    (TexturePtr)gNayrusLoveItemNameENGTex, // ITEM_NAYRUS_LOVE_Oot
+    (TexturePtr)gEmptyBottleItemNameENGTex, // ITEM_BOTTLE_Oot
+    (TexturePtr)gRedPotionItemNameENGTex, // ITEM_POTION_RED_Oot
+    (TexturePtr)gGreenPotionItemNameENGTex, // ITEM_POTION_GREEN_Oot
+    (TexturePtr)gBluePotionItemNameENGTex, // ITEM_POTION_BLUE_Oot
+    (TexturePtr)gBottledFairyItemNameENGTex, // ITEM_FAIRY_Oot
+    (TexturePtr)gFishItemNameENGTex, // ITEM_FISH_Oot
+    (TexturePtr)gFullMilkItemNameENGTex, // ITEM_MILK_BOTTLE_Oot
+    (TexturePtr)gRutosLetterItemNameENGTex, // ITEM_LETTER_RUTO_Oot
+    (TexturePtr)gBlueFireItemNameENGTex, // ITEM_BLUE_FIRE_Oot
+    (TexturePtr)gBugItemNameENGTex, // ITEM_BUG_Oot
+    (TexturePtr)gBigPoeItemNameENGTex, // ITEM_BIG_POE_Oot
+    (TexturePtr)gHalfMilkItemNameENGTex, // ITEM_MILK_HALF_Oot
+    (TexturePtr)gPoeItemNameENGTex, // ITEM_POE_Oot
+    (TexturePtr)gWeirdEggItemNameENGTex, // ITEM_WEIRD_EGG_Oot
+    (TexturePtr)gCuccoItemNameENGTex, // ITEM_CHICKEN_Oot
+    (TexturePtr)gZeldasLetterItemNameENGTex, // ITEM_LETTER_ZELDA_Oot
+    (TexturePtr)gKeatonMaskItemNameENGTex, // ITEM_MASK_KEATON_Oot
+    (TexturePtr)gSkullMaskItemNameENGTex, // ITEM_MASK_SKULL_Oot
+    (TexturePtr)gSpookyMaskItemNameENGTex, // ITEM_MASK_SPOOKY_Oot
+    (TexturePtr)gBunnyHoodItemNameENGTex, // ITEM_MASK_BUNNY_Oot
+    (TexturePtr)gGoronMaskItemNameENGTex, // ITEM_MASK_GORON_Oot
+    (TexturePtr)gZoraMaskItemNameENGTex, // ITEM_MASK_ZORA_Oot
+    (TexturePtr)gGerudoMaskItemNameENGTex, // ITEM_MASK_GERUDO_Oot
+    (TexturePtr)gMaskofTruthItemNameENGTex, // ITEM_MASK_TRUTH_Oot
+    (TexturePtr)gSOLDOUTItemNameENGTex, // ITEM_SOLD_OUT_Oot
+    (TexturePtr)gPocketEggItemNameENGTex, // ITEM_POCKET_EGG_Oot
+    (TexturePtr)gPocketCuccoItemNameENGTex, // ITEM_POCKET_CUCCO_Oot
+    (TexturePtr)gCojiroItemNameENGTex, // ITEM_COJIRO_Oot
+    (TexturePtr)gOddMushroomItemNameENGTex, // ITEM_ODD_MUSHROOM_Oot
+    (TexturePtr)gOddPotionItemNameENGTex, // ITEM_ODD_POTION_Oot
+    (TexturePtr)gPoachersSawItemNameENGTex, // ITEM_SAW_Oot
+    (TexturePtr)gBrokenGoronsSwordItemNameENGTex, // ITEM_SWORD_BROKEN_Oot
+    (TexturePtr)gPrescriptionItemNameENGTex, // ITEM_PRESCRIPTION_Oot
+    (TexturePtr)gEyeBallFrogItemNameENGTex, // ITEM_FROG_Oot
+    (TexturePtr)gEyeDropsItemNameENGTex, // ITEM_EYEDROPS_Oot
+    (TexturePtr)gClaimCheckItemNameENGTex, // ITEM_CLAIM_CHECK_Oot
+    (TexturePtr)gUnusedWindMedallionItemName1JPNTex, // ITEM_BOW_ARROW_FIRE_Oot
+    (TexturePtr)gUnusedFireMedallionItemName1JPNTex, // ITEM_BOW_ARROW_ICE_Oot
+    (TexturePtr)gUnusedIceMedallionItemName1JPNTex, // ITEM_BOW_ARROW_LIGHT_Oot
+    (TexturePtr)gKokiriSwordItemNameENGTex, // ITEM_SWORD_KOKIRI_Oot
+    (TexturePtr)gMasterSwordItemNameENGTex, // ITEM_SWORD_MASTER_Oot
+    (TexturePtr)gGiantsKnifeItemNameENGTex, // ITEM_SWORD_BGS_Oot
+    (TexturePtr)gDekuShieldItemNameENGTex, // ITEM_SHIELD_DEKU_Oot
+    (TexturePtr)gHylianShieldItemNameENGTex, // ITEM_SHIELD_HYLIAN_Oot
+    (TexturePtr)gMirrorShieldItemNameENGTex, // ITEM_SHIELD_MIRROR_Oot
+    (TexturePtr)gKokiriTunicItemNameENGTex, // ITEM_TUNIC_KOKIRI_Oot
+    (TexturePtr)gGoronTunicItemNameENGTex, // ITEM_TUNIC_GORON_Oot
+    (TexturePtr)gZoraTunicItemNameENGTex, // ITEM_TUNIC_ZORA_Oot
+    (TexturePtr)gKokiriBootsItemNameENGTex, // ITEM_BOOTS_KOKIRI_Oot
+    (TexturePtr)gIronBootsItemNameENGTex, // ITEM_BOOTS_IRON_Oot
+    (TexturePtr)gHoverBootsItemNameENGTex, // ITEM_BOOTS_HOVER_Oot
+    (TexturePtr)gBulletBag30ItemNameENGTex, // ITEM_BULLET_BAG_30_Oot
+    (TexturePtr)gBulletBag40ItemNameENGTex, // ITEM_BULLET_BAG_40_Oot
+    (TexturePtr)gBulletBag50ItemNameENGTex, // ITEM_BULLET_BAG_50_Oot
+    (TexturePtr)gQuiver30ItemNameENGTex, // ITEM_QUIVER_30_Oot
+    (TexturePtr)gQuiver40ItemNameENGTex, // ITEM_QUIVER_40_Oot
+    (TexturePtr)gQuiver50ItemNameENGTex, // ITEM_QUIVER_50_Oot
+    (TexturePtr)gBombBag20ItemNameENGTex, // ITEM_BOMB_BAG_20_Oot
+    (TexturePtr)gBombBag30ItemNameENGTex, // ITEM_BOMB_BAG_30_Oot
+    (TexturePtr)gBombBag40ItemNameENGTex, // ITEM_BOMB_BAG_40_Oot
+    (TexturePtr)gGoronsBraceletItemNameENGTex, // ITEM_BRACELET_Oot
+    (TexturePtr)gSilverGauntletsItemNameENGTex, // ITEM_GAUNTLETS_SILVER_Oot
+    (TexturePtr)gGoldenGauntletsItemNameENGTex, // ITEM_GAUNTLETS_GOLD_Oot
+    (TexturePtr)gSilverScaleItemNameENGTex, // ITEM_SCALE_SILVER_Oot
+    (TexturePtr)gGoldenScaleItemNameENGTex, // ITEM_SCALE_GOLDEN_Oot
+    (TexturePtr)gBrokenGiantsKnifeItemNameENGTex, // ITEM_SWORD_KNIFE_Oot
+    (TexturePtr)gUnusedBossKeyItemName1JPNTex, // ITEM_WALLET_ADULT_Oot
+    (TexturePtr)gUnusedBossKeyItemName2JPNTex, // ITEM_WALLET_GIANT_Oot
+    (TexturePtr)gUnusedBossKeyItemName3JPNTex, // ITEM_SEEDS_Oot
+    (TexturePtr)gUnusedBossKeyItemName4JPNTex, // ITEM_FISHING_POLE_Oot
+    (TexturePtr)gMinuetOfForestItemNameENGTex, // ITEM_SONG_MINUET_Oot
+    (TexturePtr)gBoleroOfFireItemNameENGTex, // ITEM_SONG_BOLERO_Oot
+    (TexturePtr)gSerenadeOfWaterItemNameENGTex, // ITEM_SONG_SERENADE_Oot
+    (TexturePtr)gRequiemOfSpiritItemNameENGTex, // ITEM_SONG_REQUIEM_Oot
+    (TexturePtr)gNocturneOfShadowItemNameENGTex, // ITEM_SONG_NOCTURNE_Oot
+    (TexturePtr)gPreludeOfLightItemNameENGTex, // ITEM_SONG_PRELUDE_Oot
+    (TexturePtr)gZeldasLullabyItemNameENGTex, // ITEM_SONG_LULLABY_Oot
+    (TexturePtr)gEponasSongItemNameENGTex, // ITEM_SONG_EPONA_Oot
+    (TexturePtr)gSariasSongItemNameENGTex, // ITEM_SONG_SARIA_Oot
+    (TexturePtr)gSunsSongItemNameENGTex, // ITEM_SONG_SUN_Oot
+    (TexturePtr)gSongOfTimeItemNameENGTex, // ITEM_SONG_TIME_Oot
+    (TexturePtr)gSongOfStormsItemNameENGTex, // ITEM_SONG_STORMS_Oot
+    (TexturePtr)gForestMedallionItemNameENGTex, // ITEM_MEDALLION_FOREST_Oot
+    (TexturePtr)gFireMedallionItemNameENGTex, // ITEM_MEDALLION_FIRE_Oot
+    (TexturePtr)gWaterMedallionItemNameENGTex, // ITEM_MEDALLION_WATER_Oot
+    (TexturePtr)gSpiritMedallionItemNameENGTex, // ITEM_MEDALLION_SPIRIT_Oot
+    (TexturePtr)gShadowMedallionItemNameENGTex, // ITEM_MEDALLION_SHADOW_Oot
+    (TexturePtr)gLightMedallionItemNameENGTex, // ITEM_MEDALLION_LIGHT_Oot
+    (TexturePtr)gKokiriEmeraldItemNameENGTex, // ITEM_KOKIRI_EMERALD_Oot
+    (TexturePtr)gGoronsRubyItemNameENGTex, // ITEM_GORON_RUBY_Oot
+    (TexturePtr)gZorasSapphireItemNameENGTex, // ITEM_ZORA_SAPPHIRE_Oot
+    (TexturePtr)gStoneofAgonyItemNameENGTex, // ITEM_STONE_OF_AGONY_Oot
+    (TexturePtr)gGerudosCardItemNameENGTex, // ITEM_GERUDO_CARD_Oot
+    (TexturePtr)gGoldSkulltulaItemNameENGTex, // ITEM_SKULL_TOKEN_Oot
+    (TexturePtr)gPieceOfHeartItemNameENGTex, // ITEM_HEART_CONTAINER_Oot
+    (TexturePtr)gUnusedPieceOfHeartItemName1JPNTex, // ITEM_HEART_PIECE_Oot
+    (TexturePtr)gUnusedBigKeyItemNameENGTex, // ITEM_KEY_BOSS_Oot
+    (TexturePtr)gCompassItemNameENGTex, // ITEM_COMPASS_Oot
+    (TexturePtr)gDungeonMapItemNameENGTex, // ITEM_DUNGEON_MAP_Oot
+    (TexturePtr)gUnusedBossKeyItemName5JPNTex, // ITEM_KEY_SMALL_Oot
+    (TexturePtr)gUnusedBossKeyItemName6JPNTex, // ITEM_MAGIC_SMALL_Oot
+    (TexturePtr)gUnusedBossKeyItemName7JPNTex, // ITEM_MAGIC_LARGE_Oot
+    (TexturePtr)gBiggoronsSwordItemNameENGTex, // ITEM_HEART_PIECE_2_Oot
+};
+
+TexturePtr Hyrule_GetItemIcon(u16 item) {
+    if (item >= ITEM_OOT_BASE) {
+        item -= ITEM_OOT_BASE;
+        return (item < ARRAY_COUNT(sOotItemIcons)) ? sOotItemIcons[item] : NULL;
     }
+    return (item < ARRAY_COUNT(gItemIcons)) ? gItemIcons[item] : NULL;
 }
 
 TexturePtr Hyrule_GetItemNameTexture(u16 item) {
-    switch (item) {
-        case ITEM_SWORD_MASTER_Oot:
-            return (TexturePtr)gMasterSwordItemNameENGTex;
-        case ITEM_SWORD_BGS_Oot:
-            return (TexturePtr)gBiggoronsSwordItemNameENGTex;
-        case ITEM_SWORD_KNIFE_Oot:
-            return (TexturePtr)gGiantsKnifeItemNameENGTex;
-        case ITEM_SWORD_BROKEN_Oot:
-            return (TexturePtr)gBrokenGiantsKnifeItemNameENGTex;
-        case ITEM_SHIELD_DEKU_Oot:
-            return (TexturePtr)gDekuShieldItemNameENGTex;
-        case ITEM_SHIELD_HYLIAN_Oot:
-            return (TexturePtr)gHylianShieldItemNameENGTex;
-        case ITEM_SHIELD_MIRROR_Oot:
-            return (TexturePtr)gMirrorShieldItemNameENGTex;
-        case ITEM_TUNIC_KOKIRI_Oot:
-            return (TexturePtr)gKokiriTunicItemNameENGTex;
-        case ITEM_TUNIC_GORON_Oot:
-            return (TexturePtr)gGoronTunicItemNameENGTex;
-        case ITEM_TUNIC_ZORA_Oot:
-            return (TexturePtr)gZoraTunicItemNameENGTex;
-        case ITEM_BOOTS_KOKIRI_Oot:
-            return (TexturePtr)gKokiriBootsItemNameENGTex;
-        case ITEM_BOOTS_IRON_Oot:
-            return (TexturePtr)gIronBootsItemNameENGTex;
-        case ITEM_BOOTS_HOVER_Oot:
-            return (TexturePtr)gHoverBootsItemNameENGTex;
-        case ITEM_BULLET_BAG_30_Oot:
-            return (TexturePtr)gBulletBag30ItemNameENGTex;
-        case ITEM_BULLET_BAG_40_Oot:
-            return (TexturePtr)gBulletBag40ItemNameENGTex;
-        case ITEM_BULLET_BAG_50_Oot:
-            return (TexturePtr)gBulletBag50ItemNameENGTex;
-        case ITEM_BRACELET_Oot:
-            return (TexturePtr)gGoronsBraceletItemNameENGTex;
-        case ITEM_GAUNTLETS_SILVER_Oot:
-            return (TexturePtr)gSilverGauntletsItemNameENGTex;
-        case ITEM_GAUNTLETS_GOLD_Oot:
-            return (TexturePtr)gGoldenGauntletsItemNameENGTex;
-        case ITEM_SCALE_SILVER_Oot:
-            return (TexturePtr)gSilverScaleItemNameENGTex;
-        case ITEM_SCALE_GOLDEN_Oot:
-            return (TexturePtr)gGoldenScaleItemNameENGTex;
-        default:
-            return NULL;
+    if ((item < ITEM_OOT_BASE) || (item - ITEM_OOT_BASE >= ARRAY_COUNT(sOotItemNames))) {
+        return NULL;
     }
-}
-
-// The piece worn of a type, as an item id; ITEM_NONE if none. Pieces sharing a value (the Giant's Knife,
-// whole or broken) are told apart by ownership.
-u16 Hyrule_GetWornEquipItem(u8 type) {
-    u16 found = ITEM_NONE;
-    s32 row;
-    s32 col;
-    s32 i;
-
-    for (row = 0; row < EQUIP_ROWS; row++) {
-        if (sEquipRowTypes[row] != type) {
-            continue;
-        }
-        for (col = 1; col < EQUIP_COLS; col++) {
-            const EquipCell* cell = &sEquipCells[row][col - 1];
-
-            for (i = 0; i < cell->count; i++) {
-                if (GET_CUR_EQUIP_VALUE(type) != cell->pieces[i].value) {
-                    continue;
-                }
-                if (CHECK_OWNED_EQUIP_OOT(type, cell->pieces[i].owned)) {
-                    return cell->pieces[i].item;
-                }
-                if (found == ITEM_NONE) {
-                    found = cell->pieces[i].item;
-                }
-            }
-        }
-    }
-    return found;
-}
-
-TexturePtr Hyrule_GetWornEquipIcon(u8 type) {
-    u16 item = Hyrule_GetWornEquipItem(type);
-
-    return (item == ITEM_NONE) ? NULL : Hyrule_GetEquipIcon(item);
+    return sOotItemNames[item - ITEM_OOT_BASE];
 }
 
 static void Hyrule_SetQuad(Vtx* vtx, s16 x, s16 y, s16 size, u8 alpha) {
@@ -328,7 +465,7 @@ static void Hyrule_SetQuad(Vtx* vtx, s16 x, s16 y, s16 size, u8 alpha) {
 #define EQUIP_VTX_OUTLINE(row) ((EQUIP_ROWS * EQUIP_COLS + (row)) * 4)
 #define EQUIP_VTX_COUNT ((EQUIP_ROWS * EQUIP_COLS + EQUIP_ROWS) * 4)
 
-void Hyrule_KaleidoSetEquipmentVertices(PlayState* play) {
+static void Hyrule_KaleidoSetEquipmentVertices(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
     s32 row;
     s32 col;
@@ -346,7 +483,7 @@ void Hyrule_KaleidoSetEquipmentVertices(PlayState* play) {
     }
 }
 
-void Hyrule_KaleidoDrawEquipment(PlayState* play) {
+static void Hyrule_KaleidoDrawEquipment(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
     s32 row;
     s32 col;
@@ -387,7 +524,7 @@ void Hyrule_KaleidoDrawEquipment(PlayState* play) {
             TexturePtr icon;
             u16 item = Hyrule_GetCellItem(row, col);
 
-            if ((item == ITEM_NONE) || ((icon = Hyrule_GetEquipIcon(item)) == NULL)) {
+            if ((item == ITEM_NONE) || ((icon = Hyrule_GetItemIcon(item)) == NULL)) {
                 continue;
             }
             gSPVertex(POLY_OPA_DISP++, &pauseCtx->equipVtx[EQUIP_VTX_ICON(row, col)], 4, 0);
@@ -398,7 +535,7 @@ void Hyrule_KaleidoDrawEquipment(PlayState* play) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-void Hyrule_KaleidoSetEquipCursor(PlayState* play) {
+static void Hyrule_KaleidoSetEquipCursor(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
     s16 col = pauseCtx->cursorXIndex[PAUSE_EQUIP];
     s16 row = pauseCtx->cursorYIndex[PAUSE_EQUIP];
@@ -485,7 +622,7 @@ static void Hyrule_EquipCell(PlayState* play, s32 row, s32 col) {
     Audio_PlaySfx(NA_SE_SY_DECIDE);
 }
 
-void Hyrule_KaleidoUpdateEquipCursor(PlayState* play) {
+static void Hyrule_KaleidoUpdateEquipCursor(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
     Input* input = CONTROLLER1(&play->state);
     s16 oldCursorPoint = pauseCtx->cursorPoint[PAUSE_EQUIP];
@@ -556,5 +693,45 @@ void Hyrule_KaleidoUpdateEquipCursor(PlayState* play) {
         }
     } else {
         Interface_SetAButtonDoAction(play, DO_ACTION_INFO);
+    }
+}
+
+TexturePtr* Hyrule_GetPageBgTextures(s16 page) {
+    return (page == PAUSE_EQUIP) ? sEquipPageBgTextures : Hyrule_GetQuestPageBgTextures();
+}
+
+TexturePtr Hyrule_GetToPageTexture(s16 page) {
+    return (page == PAUSE_EQUIP) ? (TexturePtr)gPauseToEquipmentENGTex : Hyrule_GetToQuestStatusTexture();
+}
+
+void Hyrule_KaleidoSetPageVertices(PlayState* play, s16 page) {
+    if (page == PAUSE_EQUIP) {
+        Hyrule_KaleidoSetEquipmentVertices(play);
+    } else {
+        Hyrule_KaleidoSetQuestVertices(play);
+    }
+}
+
+void Hyrule_KaleidoDrawPage(PlayState* play, s16 page) {
+    if (page == PAUSE_EQUIP) {
+        Hyrule_KaleidoDrawEquipment(play);
+    } else {
+        Hyrule_KaleidoDrawQuest(play);
+    }
+}
+
+void Hyrule_KaleidoSetCursor(PlayState* play, s16 page) {
+    if (page == PAUSE_EQUIP) {
+        Hyrule_KaleidoSetEquipCursor(play);
+    } else {
+        Hyrule_KaleidoSetQuestCursor(play);
+    }
+}
+
+void Hyrule_KaleidoUpdateCursor(PlayState* play, s16 page) {
+    if (page == PAUSE_EQUIP) {
+        Hyrule_KaleidoUpdateEquipCursor(play);
+    } else {
+        Hyrule_KaleidoUpdateQuestCursor(play);
     }
 }

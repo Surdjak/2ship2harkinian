@@ -33,6 +33,20 @@ Gfx* Hyrule_GetBackShieldDL(s32 shield) {
     }
 }
 
+void Hyrule_SetupBackShieldDraw(PlayState* play) {
+    OPEN_DISPS(play->state.gfxCtx);
+
+    // What gLinkChildHylianShieldAndSheathNearDL sets before its shield part: no TLUT, no environment
+    // mapping (MM's Gilded Sword leaves it on), fog and lighting, and OoT's render mode.
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetTextureLUT(POLY_OPA_DISP++, G_TT_NONE);
+    gSPClearGeometryMode(POLY_OPA_DISP++, G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
+    gSPSetGeometryMode(POLY_OPA_DISP++, G_FOG | G_LIGHTING | G_CULL_BACK);
+    gDPSetRenderMode(POLY_OPA_DISP++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
 u8 Hyrule_GetShieldColMaterial(s32 shield) {
     return (shield == PLAYER_SHIELD_DEKU_Oot) ? COL_MATERIAL_WOOD : COL_MATERIAL_METAL;
 }

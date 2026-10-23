@@ -365,6 +365,7 @@ inline void to_json(json& j, const SaveInfo& saveInfo) {
         { "itemGetInfOot", saveInfo.itemGetInfOot },
         { "infTableOot", saveInfo.infTableOot },
         { "inventoryOot", saveInfo.inventoryOot },
+        { "worldMapAreaDataOot", saveInfo.worldMapAreaDataOot },
         { "regionsVisited", saveInfo.regionsVisited },
         { "worldMapCloudVisibility", saveInfo.worldMapCloudVisibility },
         { "unk_F40", saveInfo.unk_F40 },
@@ -405,6 +406,7 @@ inline void from_json(const json& j, SaveInfo& saveInfo) {
     j.at("itemGetInfOot").get_to(saveInfo.itemGetInfOot);
     j.at("infTableOot").get_to(saveInfo.infTableOot);
     j.at("inventoryOot").get_to(saveInfo.inventoryOot);
+    j.at("worldMapAreaDataOot").get_to(saveInfo.worldMapAreaDataOot);
     j.at("regionsVisited").get_to(saveInfo.regionsVisited);
     j.at("worldMapCloudVisibility").get_to(saveInfo.worldMapCloudVisibility);
     j.at("unk_F40").get_to(saveInfo.unk_F40);

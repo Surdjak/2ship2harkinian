@@ -241,7 +241,7 @@ s32 func_80C10B0C(EnThiefbird* this, PlayState* play) {
         if (phi_a3 > EQUIP_VALUE_SWORD_GILDED) {
             phi_a3 = EQUIP_VALUE_SWORD_NONE;
         }
-        if (INV_CONTENT(ITEM_SWORD_GREAT_FAIRY) == ITEM_SWORD_GREAT_FAIRY) {
+        if (Hyrule_OwnsGreatFairySword()) {
             phi_a3 += 4;
         }
     }
@@ -272,8 +272,7 @@ s32 func_80C10B0C(EnThiefbird* this, PlayState* play) {
 
         itemId1 = phi_a3 + (ITEM_SWORD_KOKIRI - 1);
         if (phi_a3 == 4) {
-            Inventory_DeleteItem(ITEM_SWORD_GREAT_FAIRY, SLOT_SWORD_GREAT_FAIRY);
-            Hyrule_LoseGreatFairySword(play); // 3Ship [Hyrule]
+            Hyrule_LoseGreatFairySword(play); // 3Ship [Hyrule] equipment now, not an item slot
             this->unk_3E8 = gTakkuriStolenGreatFairysSwordDL;
             itemId1 = ITEM_SWORD_GREAT_FAIRY;
         } else {

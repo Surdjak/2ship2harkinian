@@ -9,13 +9,15 @@
 #define PAUSE_CURSOR_PAGE_LEFT 10
 #define PAUSE_CURSOR_PAGE_RIGHT 11
 
-// 3Ship [Hyrule] The pages stand on a pentagon instead of MM's cube (docs/PAUSE.md): item, map, quest,
-// equipment and mask pages, in that order going right. Each faces the centre from PAUSE_PAGE_DIST away,
-// where neighbouring pages meet at their edges, and the eye looks at the centre from PAUSE_EYE_DIST on the
-// other side, keeping MM's distance of 157 between eye and page (MM: 93 and 64, on a square).
-#define PAUSE_RING_PAGES 5
-#define PAUSE_PAGE_DIST (129.0f)
-#define PAUSE_EYE_DIST (28.0f)
+// 3Ship [Hyrule] The pages stand on a hexagon instead of MM's cube (docs/PAUSE.md): item, map, Termina
+// quest, Hyrule quest, equipment and mask pages, in that order going right. Each faces the centre from
+// PAUSE_PAGE_DIST away, where neighbouring pages meet at their edges. MM's eye looks at the centre from
+// the far side, 157 from the page (MM: 93 and 64, on a square); a hexagon is too wide for that, so the eye
+// stands PAUSE_EYE_DIST (negative: on the page's side) from the centre and looks outward
+// (KaleidoScope_SetRingView), still 157 from the page.
+#define PAUSE_RING_PAGES 6
+#define PAUSE_PAGE_DIST (162.0f)
+#define PAUSE_EYE_DIST (-5.0f)
 
 // The page's Y rotation, its eye position, and its neighbour to the left or right.
 f32 KaleidoScope_GetPageAngle(s16 page);
@@ -74,8 +76,13 @@ typedef enum VtxPage {
 
 // === ITEM === //
 
-#define ITEM_GRID_CELL_WIDTH 32
-#define ITEM_GRID_CELL_HEIGHT 32
+// 3Ship [Hyrule] 25 instead of MM's 32: 7x5 cells within the item page's frame, which MM drew for 6x4
+// (192x128, docs/PAUSE.md).
+#define ITEM_GRID_CELL_WIDTH 25
+#define ITEM_GRID_CELL_HEIGHT 25
+// A cell's left and top on the page; the grid is centred, 6 below the middle as MM's was.
+#define ITEM_GRID_CELL_LEFT(col) (-(ITEM_GRID_COLS * ITEM_GRID_CELL_WIDTH) / 2 + (col) * ITEM_GRID_CELL_WIDTH)
+#define ITEM_GRID_CELL_TOP(row) ((ITEM_GRID_ROWS * ITEM_GRID_CELL_HEIGHT) / 2 - 6 - (row) * ITEM_GRID_CELL_HEIGHT)
 #define ITEM_GRID_QUAD_MARGIN 2
 #define ITEM_GRID_QUAD_WIDTH (ITEM_GRID_CELL_WIDTH - (2 * ITEM_GRID_QUAD_MARGIN))
 #define ITEM_GRID_QUAD_HEIGHT (ITEM_GRID_CELL_HEIGHT - (2 * ITEM_GRID_QUAD_MARGIN))
@@ -96,15 +103,14 @@ typedef enum ItemPageQuad {
 } ItemPageQuad;
 
 typedef enum ItemQuad {
-    // 0..23 are the ITEM_GRID_ROWS*ITEM_GRID_COLS item grid
-    // The values follow the `InventorySlot` enum
+    // 0..34 are the ITEM_GRID_ROWS*ITEM_GRID_COLS item grid, by cell (3Ship: MM followed slots)
     /*  0 */ QUAD_ITEM_GRID_FIRST,
-    /* 23 */ QUAD_ITEM_GRID_LAST = ITEM_GRID_ROWS * ITEM_GRID_COLS - 1,
+    /* 34 */ QUAD_ITEM_GRID_LAST = ITEM_GRID_CELLS - 1,
     // White-box Markers indicating the currently equipped items
-    /* 24 */ QUAD_ITEM_GRID_SELECTED_C_LEFT,
-    /* 25 */ QUAD_ITEM_GRID_SELECTED_C_DOWN,
-    /* 26 */ QUAD_ITEM_GRID_SELECTED_C_RIGHT,
-    /* 27 */ QUAD_ITEM_MAX
+    /* 35 */ QUAD_ITEM_GRID_SELECTED_C_LEFT,
+    /* 36 */ QUAD_ITEM_GRID_SELECTED_C_DOWN,
+    /* 37 */ QUAD_ITEM_GRID_SELECTED_C_RIGHT,
+    /* 38 */ QUAD_ITEM_MAX
 } ItemQuad;
 
 // === MASK === //
@@ -313,6 +319,13 @@ typedef enum PromptQuad {
 void KaleidoScope_MoveCursorToSpecialPos(PlayState* play, s16 cursorSpecialPos);
 void KaleidoScope_DrawTexQuadRGBA32(GraphicsContext* gfxCtx, TexturePtr texture, u16 width, u16 height, u16 point);
 void KaleidoScope_SetView(PauseContext* pauseCtx, f32 eyeX, f32 eyeY, f32 eyeZ);
+void KaleidoScope_SetRingView(PauseContext* pauseCtx); // 3Ship [Hyrule] from pauseCtx->eye, see PAUSE_EYE_DIST
+
+// 3Ship [Hyrule] The item page's cells (z_kaleido_item.c): a cell's slot (MM's SLOT_* or OoT's SLOT_OOT_*),
+// a slot's cell (-1 if it has none), and what a slot holds.
+s16 KaleidoScope_GetItemCellSlot(s16 cell);
+s16 KaleidoScope_GetItemSlotCell(s16 slot);
+u16 KaleidoScope_GetItemSlotContent(s16 slot);
 void KaleidoScope_MoveCursorFromSpecialPos(PlayState* play);
 
 // Map

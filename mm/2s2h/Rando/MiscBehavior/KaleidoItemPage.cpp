@@ -145,7 +145,7 @@ void DrawItemCycleExtras(PlayState* play, u8 slot, u8 canCycle, u8 leftItem, u8 
     if (canCycle && (showLeftItem || showRightItem)) {
         Matrix_Push();
 
-        Vtx* itemTopLeft = &pauseCtx->itemVtx[slot * 4];
+        Vtx* itemTopLeft = &pauseCtx->itemVtx[KaleidoScope_GetItemSlotCell(slot) * 4]; // 3Ship [Hyrule] by cell
         Vtx* itemBottomRight = &itemTopLeft[3];
 
         s16 halfX = (itemBottomRight->v.ob[0] - itemTopLeft->v.ob[0]) / 2;

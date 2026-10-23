@@ -59,7 +59,7 @@ way; ported code reads them with `INV_CONTENT_OOT`.
 - MM's Kokiri, Razor and Gilded swords keep MM's rule that only one of them exists at a time.
 - **The Great Fairy's Sword** becomes a sword instead of a C-button item: it shares the Master Sword's
   equipment slot, as a two-handed sword for child Link and an alternative to the Master Sword for
-  adult Link. Its item slot (`SLOT_SWORD_GREAT_FAIRY`) is freed once the equipment page exists.
+  adult Link. Its item slot (`SLOT_SWORD_GREAT_FAIRY`) stays empty (save version 12).
 - **Shields:** the Deku Shield, Hero's Shield and MM Mirror Shield share one equipment slot; the
   Hylian and OoT Mirror shields have their own, as in OoT. How the shared slot picks among them is part
   of the pause menu proposal.

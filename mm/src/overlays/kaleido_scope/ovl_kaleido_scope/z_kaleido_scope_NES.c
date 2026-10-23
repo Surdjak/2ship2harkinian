@@ -6,6 +6,7 @@
 
 #include "z_kaleido_scope.h"
 #include "HyruleKaleido.h"
+#include "HyruleKaleidoMap.h"
 #include "z64map.h"
 #include "z64skybox.h"
 #include "z64view.h"
@@ -208,10 +209,13 @@ s16 sGameOverEnvG = 0;
 s16 sGameOverEnvB = 0;
 
 s16 sInDungeonScene = false;
+// 3Ship [Hyrule] In Hyrule's scenes the map page shows OoT's world map (HyruleKaleidoMap.c).
+static s16 sInHyrule = false;
 
 // 3Ship [Hyrule] The pages on their pentagon, going right (z_kaleido_scope.h). MM's cube, with its eye
 // steps for each pair of pages, is a square of the first four.
-static const s16 sRingPages[PAUSE_RING_PAGES] = { PAUSE_ITEM, PAUSE_MAP, PAUSE_QUEST, PAUSE_EQUIP, PAUSE_MASK };
+static const s16 sRingPages[PAUSE_RING_PAGES] = { PAUSE_ITEM,      PAUSE_MAP,   PAUSE_QUEST,
+                                                     PAUSE_QUEST_OOT, PAUSE_EQUIP, PAUSE_MASK };
 
 static s32 KaleidoScope_GetRingIndex(s16 page) {
     s32 i;
@@ -674,8 +678,21 @@ static TexturePtr sGameOverTexs[] = {
     gPauseSave20Tex,     gPauseSave21Tex, gPauseSave22Tex, gPauseSave23Tex, gPauseSave24Tex,
 };
 
-// 3Ship [Hyrule] The equipment page: its place on the ring, OoT's background, and its contents.
-static void KaleidoScope_DrawEquipPage(PlayState* play, GraphicsContext* gfxCtx) {
+// 3Ship [Hyrule] The pages HyruleKaleido.c fills: OoT's equipment and quest status.
+static s32 KaleidoScope_IsHyrulePage(s16 page) {
+    return (page == PAUSE_EQUIP) || (page == PAUSE_QUEST_OOT);
+}
+
+static f32* KaleidoScope_GetHyrulePageRoll(PauseContext* pauseCtx, s16 page) {
+    return (page == PAUSE_EQUIP) ? &pauseCtx->equipPageRoll : &pauseCtx->questOotPageRoll;
+}
+
+static Vtx** KaleidoScope_GetHyrulePageVtx(PauseContext* pauseCtx, s16 page) {
+    return (page == PAUSE_EQUIP) ? &pauseCtx->equipPageVtx : &pauseCtx->questOotPageVtx;
+}
+
+// A Hyrule page in its place on the ring: OoT's background, then its contents.
+static void KaleidoScope_DrawHyrulePage(PlayState* play, GraphicsContext* gfxCtx, s16 page) {
     PauseContext* pauseCtx = &play->pauseCtx;
 
     OPEN_DISPS(gfxCtx);
@@ -686,18 +703,19 @@ static void KaleidoScope_DrawEquipPage(PlayState* play, GraphicsContext* gfxCtx)
                       SHADE, 0);
     gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, 180, 180, 120, 255, COSMETIC_ID("Menus.PausePanels"));
 
-    Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_EQUIP), MTXMODE_NEW);
+    Matrix_RotateYF(KaleidoScope_GetPageAngle(page), MTXMODE_NEW);
     Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
     Matrix_Scale(0.78f, 0.78f, 0.78f, MTXMODE_APPLY);
-    Matrix_RotateXFApply(-pauseCtx->equipPageRoll / 100.0f);
+    Matrix_RotateXFApply(-*KaleidoScope_GetHyrulePageRoll(pauseCtx, page) / 100.0f);
 
     MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gfxCtx);
 
-    POLY_OPA_DISP = KaleidoScope_DrawPageSections(POLY_OPA_DISP, pauseCtx->equipPageVtx, Hyrule_GetEquipPageBgTextures());
+    POLY_OPA_DISP = KaleidoScope_DrawPageSections(POLY_OPA_DISP, *KaleidoScope_GetHyrulePageVtx(pauseCtx, page),
+                                                  Hyrule_GetPageBgTextures(page));
 
-    GameInteractor_ExecuteBeforeKaleidoDrawPage(pauseCtx, PAUSE_EQUIP);
-    Hyrule_KaleidoDrawEquipment(play);
-    GameInteractor_ExecuteAfterKaleidoDrawPage(pauseCtx, PAUSE_EQUIP);
+    GameInteractor_ExecuteBeforeKaleidoDrawPage(pauseCtx, page);
+    Hyrule_KaleidoDrawPage(play, page);
+    GameInteractor_ExecuteAfterKaleidoDrawPage(pauseCtx, page);
 
     CLOSE_DISPS(gfxCtx);
 }
@@ -823,10 +841,13 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
 
             MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gfxCtx);
 
-            POLY_OPA_DISP = KaleidoScope_DrawPageSections(POLY_OPA_DISP, pauseCtx->mapPageVtx, sMapPageBgTextures);
+            POLY_OPA_DISP = KaleidoScope_DrawPageSections(
+                POLY_OPA_DISP, pauseCtx->mapPageVtx, sInHyrule ? Hyrule_GetMapPageBgTextures() : sMapPageBgTextures);
 
             GameInteractor_ExecuteBeforeKaleidoDrawPage(pauseCtx, PAUSE_MAP);
-            if (sInDungeonScene) {
+            if (sInHyrule) {
+                Hyrule_KaleidoDrawWorldMap(play); // 3Ship [Hyrule]
+            } else if (sInDungeonScene) {
                 KaleidoScope_DrawDungeonMap(play);
                 Gfx_SetupDL42_Opa(gfxCtx);
                 gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
@@ -885,9 +906,12 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
             GameInteractor_ExecuteAfterKaleidoDrawPage(pauseCtx, PAUSE_MASK);
         }
 
-        // 3Ship [Hyrule] The equipment page (HyruleKaleido.c).
+        // 3Ship [Hyrule] OoT's pages (HyruleKaleido.c).
         if ((pauseCtx->pageIndex != PAUSE_EQUIP) && KaleidoScope_IsPageVisible(pauseCtx, PAUSE_EQUIP)) {
-            KaleidoScope_DrawEquipPage(play, gfxCtx);
+            KaleidoScope_DrawHyrulePage(play, gfxCtx, PAUSE_EQUIP);
+        }
+        if ((pauseCtx->pageIndex != PAUSE_QUEST_OOT) && KaleidoScope_IsPageVisible(pauseCtx, PAUSE_QUEST_OOT)) {
+            KaleidoScope_DrawHyrulePage(play, gfxCtx, PAUSE_QUEST_OOT);
         }
 
         switch (pauseCtx->pageIndex) {
@@ -932,10 +956,13 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
 
                 MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gfxCtx);
 
-                POLY_OPA_DISP = KaleidoScope_DrawPageSections(POLY_OPA_DISP, pauseCtx->mapPageVtx, sMapPageBgTextures);
+                POLY_OPA_DISP = KaleidoScope_DrawPageSections(
+                    POLY_OPA_DISP, pauseCtx->mapPageVtx, sInHyrule ? Hyrule_GetMapPageBgTextures() : sMapPageBgTextures);
 
                 GameInteractor_ExecuteBeforeKaleidoDrawPage(pauseCtx, pauseCtx->pageIndex);
-                if (sInDungeonScene) {
+                if (sInHyrule) {
+                    Hyrule_KaleidoDrawWorldMap(play); // 3Ship [Hyrule]
+                } else if (sInDungeonScene) {
                     KaleidoScope_DrawDungeonMap(play);
                     Gfx_SetupDL42_Opa(gfxCtx);
 
@@ -1016,7 +1043,8 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
                 break;
 
             case PAUSE_EQUIP: // 3Ship [Hyrule]
-                KaleidoScope_DrawEquipPage(play, gfxCtx);
+            case PAUSE_QUEST_OOT:
+                KaleidoScope_DrawHyrulePage(play, gfxCtx, pauseCtx->pageIndex);
                 break;
         }
     }
@@ -1060,8 +1088,9 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
                     Matrix_RotateXFApply(-pauseCtx->roll / 100.0f);
                     break;
                 case PAUSE_EQUIP: // 3Ship [Hyrule]
-                    pauseCtx->equipPageRoll = pauseCtx->roll + 314.0f;
-                    Matrix_RotateYF(KaleidoScope_GetPageAngle(PAUSE_EQUIP), MTXMODE_NEW);
+                case PAUSE_QUEST_OOT:
+                    *KaleidoScope_GetHyrulePageRoll(pauseCtx, pauseCtx->pageIndex) = pauseCtx->roll + 314.0f;
+                    Matrix_RotateYF(KaleidoScope_GetPageAngle(pauseCtx->pageIndex), MTXMODE_NEW);
                     Matrix_Translate(0.0f, sPauseMenuVerticalOffset / 100.0f, -PAUSE_PAGE_DIST, MTXMODE_APPLY);
                     Matrix_Scale(0.78f, 0.78f, 0.78f, 1);
                     Matrix_RotateXFApply(-pauseCtx->roll / 100.0f);
@@ -1151,7 +1180,8 @@ static TexturePtr KaleidoScope_GetToPageTexture(s16 page) {
         case PAUSE_QUEST:
             return gPauseToQuestStatusENGTex;
         case PAUSE_EQUIP:
-            return Hyrule_GetToEquipmentTexture();
+        case PAUSE_QUEST_OOT:
+            return Hyrule_GetToPageTexture(page);
         default:
             return gPauseToMasksENGTex;
     }
@@ -1439,7 +1469,7 @@ void KaleidoScope_DrawInfoPanel(PlayState* play) {
                     s16 toPage = KaleidoScope_GetNeighborPage(pauseCtx->pageIndex,
                                                               pauseCtx->cursorSpecialPos == PAUSE_CURSOR_PAGE_LEFT);
 
-                    if (toPage == PAUSE_EQUIP) {
+                    if (KaleidoScope_IsHyrulePage(toPage)) {
                         POLY_OPA_DISP =
                             Gfx_DrawTexQuadIA8(POLY_OPA_DISP, KaleidoScope_GetToPageTexture(toPage), 128, 16, 0);
                     } else {
@@ -1549,7 +1579,9 @@ void KaleidoScope_UpdateNamePanel(PlayState* play) {
         // osCreateMesgQueue(&pauseCtx->loadQueue, &pauseCtx->loadMsg, 1);
 
         if (pauseCtx->namedItem != PAUSE_ITEM_NONE) {
-            if ((pauseCtx->pageIndex == PAUSE_MAP) && !sInDungeonScene) {
+            if ((pauseCtx->pageIndex == PAUSE_MAP) && sInHyrule) {
+                pauseCtx->nameSegment = Hyrule_GetWorldMapPointName(namedItem); // 3Ship [Hyrule]
+            } else if ((pauseCtx->pageIndex == PAUSE_MAP) && !sInDungeonScene) {
                 Kaleido_LoadMapNameStatic(&pauseCtx->nameSegment, namedItem);
             } else {
                 Kaleido_LoadItemNameStatic(&pauseCtx->nameSegment, namedItem);
@@ -1900,6 +1932,18 @@ void KaleidoScope_SetView(PauseContext* pauseCtx, f32 eyeX, f32 eyeY, f32 eyeZ) 
     up.y = 1.0f;
 
     View_LookAt(&pauseCtx->view, &eye, &at, &up);
+    View_Apply(&pauseCtx->view,
+               VIEW_ALL | VIEW_FORCE_VIEWING | VIEW_FORCE_VIEWPORT | VIEW_FORCE_PROJECTION_PERSPECTIVE);
+}
+
+// 3Ship [Hyrule] The ring's view: the eye stands on the current page's side of the centre and looks outward,
+// through the point PAUSE_PAGE_DIST from the centre in its direction (z_kaleido_scope.h).
+void KaleidoScope_SetRingView(PauseContext* pauseCtx) {
+    f32 scale = PAUSE_PAGE_DIST / -PAUSE_EYE_DIST;
+    Vec3f at = { pauseCtx->eye.x * scale, 0.0f, pauseCtx->eye.z * scale };
+    Vec3f up = { 0.0f, 1.0f, 0.0f };
+
+    View_LookAt(&pauseCtx->view, &pauseCtx->eye, &at, &up);
     View_Apply(&pauseCtx->view,
                VIEW_ALL | VIEW_FORCE_VIEWING | VIEW_FORCE_VIEWPORT | VIEW_FORCE_PROJECTION_PERSPECTIVE);
 }
@@ -2433,9 +2477,10 @@ void KaleidoScope_SetVertices(PlayState* play, GraphicsContext* gfxCtx) {
 
         // QUAD_ITEM_GRID_SELECTED_C_LEFT, QUAD_ITEM_GRID_SELECTED_C_DOWN, QUAD_ITEM_GRID_SELECTED_C_RIGHT
 
+        // 3Ship [Hyrule] Markers go on the equipped slot's cell; slots without one (masks) are out of view.
         for (j = EQUIP_SLOT_C_LEFT; j <= EQUIP_SLOT_C_RIGHT; j++, i += 4) {
-            if (GET_CUR_FORM_BTN_SLOT(j) != ITEM_NONE) {
-                k = GET_CUR_FORM_BTN_SLOT(j) * 4;
+            if (KaleidoScope_GetItemSlotCell(GET_CUR_FORM_BTN_SLOT(j)) >= 0) {
+                k = KaleidoScope_GetItemSlotCell(GET_CUR_FORM_BTN_SLOT(j)) * 4;
 
                 pauseCtx->itemVtx[i + 0].v.ob[0] = pauseCtx->itemVtx[i + 2].v.ob[0] =
                     pauseCtx->itemVtx[k].v.ob[0] + ITEM_GRID_SELECTED_QUAD_MARGIN;
@@ -2486,8 +2531,8 @@ void KaleidoScope_SetVertices(PlayState* play, GraphicsContext* gfxCtx) {
         }
         // #region 2S2H [Dpad]
         for (j = EQUIP_SLOT_D_RIGHT; j <= EQUIP_SLOT_D_UP; j++, i += 4) {
-            if (DPAD_GET_CUR_FORM_BTN_SLOT(j) != ITEM_NONE) {
-                k = DPAD_GET_CUR_FORM_BTN_SLOT(j) * 4;
+            if (KaleidoScope_GetItemSlotCell(DPAD_GET_CUR_FORM_BTN_SLOT(j)) >= 0) { // 3Ship [Hyrule]
+                k = KaleidoScope_GetItemSlotCell(DPAD_GET_CUR_FORM_BTN_SLOT(j)) * 4;
 
                 pauseCtx->itemVtx[i + 0].v.ob[0] = pauseCtx->itemVtx[i + 2].v.ob[0] =
                     pauseCtx->itemVtx[k].v.ob[0] + ITEM_GRID_SELECTED_QUAD_MARGIN;
@@ -2540,6 +2585,9 @@ void KaleidoScope_SetVertices(PlayState* play, GraphicsContext* gfxCtx) {
     }
 
     if (KaleidoScope_IsPageVisible(pauseCtx, PAUSE_MAP)) {
+        if (sInHyrule) {
+            Hyrule_KaleidoSetWorldMapVertices(play); // 3Ship [Hyrule] besides MM's below, for the page itself
+        }
         if (!sInDungeonScene) {
             pauseCtx->mapPageVtx = GRAPH_ALLOC(
                 gfxCtx, ((PAGE_BG_QUADS + VTX_PAGE_MAP_WORLD_QUADS + WORLD_MAP_IMAGE_FRAG_NUM) * 4) * sizeof(Vtx));
@@ -2650,10 +2698,16 @@ void KaleidoScope_SetVertices(PlayState* play, GraphicsContext* gfxCtx) {
         }
     }
 
-    if (KaleidoScope_IsPageVisible(pauseCtx, PAUSE_EQUIP)) {
-        pauseCtx->equipPageVtx = GRAPH_ALLOC(gfxCtx, (PAGE_BG_QUADS * 4) * sizeof(Vtx));
-        KaleidoScope_SetPageVertices(play, pauseCtx->equipPageVtx, VTX_PAGE_MASK, 0);
-        Hyrule_KaleidoSetEquipmentVertices(play);
+    for (i = 0; i < 2; i++) {
+        s16 page = (i == 0) ? PAUSE_EQUIP : PAUSE_QUEST_OOT;
+
+        if (KaleidoScope_IsPageVisible(pauseCtx, page)) {
+            Vtx** pageVtx = KaleidoScope_GetHyrulePageVtx(pauseCtx, page);
+
+            *pageVtx = GRAPH_ALLOC(gfxCtx, (PAGE_BG_QUADS * 4) * sizeof(Vtx));
+            KaleidoScope_SetPageVertices(play, *pageVtx, VTX_PAGE_MASK, 0);
+            Hyrule_KaleidoSetPageVertices(play, page);
+        }
     }
 
     if (KaleidoScope_IsPageVisible(pauseCtx, PAUSE_MASK)) {
@@ -3006,14 +3060,21 @@ void KaleidoScope_UpdateCursorSize(PlayState* play) {
     if (pauseCtx->cursorSpecialPos == 0) {
         switch (pauseCtx->pageIndex) {
             case PAUSE_ITEM:
-                pauseCtx->cursorX = sItemMaskCursorsX[pauseCtx->cursorXIndex[PAUSE_ITEM]];
-                pauseCtx->cursorY = sItemMaskCursorsY[pauseCtx->cursorYIndex[PAUSE_ITEM]];
-                pauseCtx->cursorWidth = 15.0f;
-                pauseCtx->cursorHeight = 15.0f;
+                // 3Ship [Hyrule] The 7x5 grid's cell centres, mapped to the cursor's view as MM's table was
+                // (MM: sItemMaskCursorsX/Y, which the mask page keeps).
+                pauseCtx->cursorX =
+                    (ITEM_GRID_CELL_LEFT(pauseCtx->cursorXIndex[PAUSE_ITEM]) + ITEM_GRID_CELL_WIDTH / 2) * 0.8125f + 3.0f;
+                pauseCtx->cursorY =
+                    (ITEM_GRID_CELL_TOP(pauseCtx->cursorYIndex[PAUSE_ITEM]) - ITEM_GRID_CELL_HEIGHT / 2) * 0.8125f -
+                    3.125f;
+                pauseCtx->cursorWidth = 12.0f;
+                pauseCtx->cursorHeight = 12.0f;
                 break;
 
             case PAUSE_MAP:
-                if (!sInDungeonScene) {
+                if (sInHyrule) {
+                    Hyrule_KaleidoSetWorldMapCursor(play); // 3Ship [Hyrule]
+                } else if (!sInDungeonScene) {
                     if (IS_PAUSE_STATE_OWL_WARP(pauseCtx) || PauseOwlWarp_IsOwlWarpEnabled()) {
                         pauseCtx->cursorX = sOwlWarpWorldMapCursorsX[pauseCtx->cursorPoint[PAUSE_WORLD_MAP]];
                         pauseCtx->cursorY = sOwlWarpWorldMapCursorsY[pauseCtx->cursorPoint[PAUSE_WORLD_MAP]];
@@ -3082,7 +3143,8 @@ void KaleidoScope_UpdateCursorSize(PlayState* play) {
                 break;
 
             case PAUSE_EQUIP: // 3Ship [Hyrule]
-                Hyrule_KaleidoSetEquipCursor(play);
+            case PAUSE_QUEST_OOT:
+                Hyrule_KaleidoSetCursor(play, pauseCtx->pageIndex);
                 break;
 
             default:
@@ -3249,7 +3311,7 @@ void KaleidoScope_Draw(PlayState* play) {
     gSPSegment(POLY_OPA_DISP++, 0x0B, pauseCtx->iconItemVtxSegment);
 
     if (pauseCtx->debugEditor == DEBUG_EDITOR_NONE) {
-        KaleidoScope_SetView(pauseCtx, pauseCtx->eye.x, pauseCtx->eye.y, pauseCtx->eye.z);
+        KaleidoScope_SetRingView(pauseCtx);
         Gfx_SetupDL42_Opa(play->state.gfxCtx);
 
         if (!IS_PAUSE_STATE_OWL_WARP(pauseCtx)) {
@@ -3473,10 +3535,12 @@ void KaleidoScope_Update(PlayState* play) {
                 iconItemLangSegment =
                     MapDisp_AllocDungeonMap(play, (void*)ALIGN16((uintptr_t)pauseCtx->iconItemAltSegment + size));
                 sInDungeonScene = true;
+                sInHyrule = false;
             } else {
                 size_t size;
 
                 sInDungeonScene = false;
+                sInHyrule = Hyrule_IsInHyrule(play);
                 size = SEGMENT_ROM_SIZE(icon_item_field_static);
                 DmaMgr_SendRequest0(pauseCtx->iconItemAltSegment, SEGMENT_ROM_START(icon_item_field_static), size);
                 iconItemLangSegment = (void*)ALIGN16((uintptr_t)pauseCtx->iconItemAltSegment + size);
@@ -3507,7 +3571,7 @@ void KaleidoScope_Update(PlayState* play) {
 
         case PAUSE_STATE_OPENING_3:
             pauseCtx->infoPanelOffsetY += 10;
-            pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll -= 40.0f;
+            pauseCtx->equipPageRoll = pauseCtx->questOotPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll -= 40.0f;
 
             interfaceCtx->startAlpha += 63;
             sPauseCursorLeftX += TRUNCF_BINANG(sPauseCursorLeftMoveOffsetX / 4);
@@ -3732,7 +3796,7 @@ void KaleidoScope_Update(PlayState* play) {
                 case PAUSE_SAVEPROMPT_STATE_3:
                 case PAUSE_SAVEPROMPT_STATE_7:
                     if (pauseCtx->roll != (D_8082B90C + 160.0f)) {
-                        pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
+                        pauseCtx->equipPageRoll = pauseCtx->questOotPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
                             pauseCtx->maskPageRoll += 40.0f;
                         pauseCtx->roll += 40.0f;
                         pauseCtx->infoPanelOffsetY -= 10;
@@ -3745,7 +3809,7 @@ void KaleidoScope_Update(PlayState* play) {
                     } else {
                         pauseCtx->debugEditor = DEBUG_EDITOR_NONE;
                         pauseCtx->state = PAUSE_STATE_UNPAUSE_CLOSE;
-                        pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
+                        pauseCtx->equipPageRoll = pauseCtx->questOotPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
                             pauseCtx->maskPageRoll = 160.0f;
                         pauseCtx->roll = -434.0f;
                         pauseCtx->namedItem = PAUSE_ITEM_NONE;
@@ -3762,7 +3826,7 @@ void KaleidoScope_Update(PlayState* play) {
                         pauseCtx->state = PAUSE_STATE_MAIN;
                         pauseCtx->savePromptState = PAUSE_SAVEPROMPT_STATE_APPEARING;
                         pauseCtx->roll = -314.0f;
-                        pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
+                        pauseCtx->equipPageRoll = pauseCtx->questOotPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll =
                             pauseCtx->maskPageRoll = 0.0f;
                         Interface_SetAButtonDoAction(play, DO_ACTION_INFO);
                         gSaveContext.buttonStatus[EQUIP_SLOT_B] =
@@ -3928,7 +3992,7 @@ void KaleidoScope_Update(PlayState* play) {
         case PAUSE_STATE_GAMEOVER_5:
             pauseCtx->infoPanelOffsetY += 10;
             pauseCtx->roll -= 40.0f;
-            pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll =
+            pauseCtx->equipPageRoll = pauseCtx->questOotPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll =
                 pauseCtx->roll;
             interfaceCtx->startAlpha += 63;
             sGameOverRectPosY -= 3;
@@ -4083,6 +4147,7 @@ void KaleidoScope_Update(PlayState* play) {
 
             pauseCtx->iconItemAltSegment = (void*)ALIGN16((uintptr_t)pauseCtx->iconItemSegment + size0);
             sInDungeonScene = false;
+            sInHyrule = false; // 3Ship [Hyrule] Owl warps show Termina
             size1 = SEGMENT_ROM_SIZE(icon_item_field_static);
             DmaMgr_SendRequest0(pauseCtx->iconItemAltSegment, SEGMENT_ROM_START(icon_item_field_static), size1);
 
@@ -4193,7 +4258,7 @@ void KaleidoScope_Update(PlayState* play) {
             } else {
                 pauseCtx->debugEditor = DEBUG_EDITOR_NONE;
                 pauseCtx->state = PAUSE_STATE_UNPAUSE_CLOSE;
-                pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll =
+                pauseCtx->equipPageRoll = pauseCtx->questOotPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll =
                     160.0f;
                 pauseCtx->namedItem = PAUSE_ITEM_NONE;
                 interfaceCtx->startAlpha = 0;
@@ -4205,7 +4270,7 @@ void KaleidoScope_Update(PlayState* play) {
         case PAUSE_STATE_UNPAUSE_SETUP:
             if (pauseCtx->itemPageRoll != 160.0f) {
                 pauseCtx->infoPanelOffsetY -= 10;
-                pauseCtx->equipPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll +=
+                pauseCtx->equipPageRoll = pauseCtx->questOotPageRoll = pauseCtx->itemPageRoll = pauseCtx->mapPageRoll = pauseCtx->questPageRoll = pauseCtx->maskPageRoll +=
                     40.0f;
                 interfaceCtx->startAlpha -= 63;
                 sPauseCursorLeftX -= TRUNCF_BINANG(sPauseCursorLeftMoveOffsetX / 4);
@@ -4219,6 +4284,7 @@ void KaleidoScope_Update(PlayState* play) {
                 pauseCtx->state = PAUSE_STATE_UNPAUSE_CLOSE;
                 pauseCtx->maskPageRoll = 160.0f;
                 pauseCtx->equipPageRoll = 160.0f; // 3Ship [Hyrule]
+                pauseCtx->questOotPageRoll = 160.0f;
                 pauseCtx->questPageRoll = 160.0f;
                 pauseCtx->mapPageRoll = 160.0f;
                 pauseCtx->itemPageRoll = 160.0f;
@@ -4355,7 +4421,9 @@ void KaleidoScope_Update(PlayState* play) {
                     break;
 
                 case PAUSE_MAP:
-                    if (sInDungeonScene) {
+                    if (sInHyrule) {
+                        Hyrule_KaleidoUpdateWorldMapCursor(play); // 3Ship [Hyrule]
+                    } else if (sInDungeonScene) {
                         KaleidoScope_UpdateDungeonCursor(play);
                     } else {
                         KaleidoScope_UpdateWorldMapCursor(play);
@@ -4371,7 +4439,8 @@ void KaleidoScope_Update(PlayState* play) {
                     break;
 
                 case PAUSE_EQUIP: // 3Ship [Hyrule]
-                    Hyrule_KaleidoUpdateEquipCursor(play);
+                case PAUSE_QUEST_OOT:
+                    Hyrule_KaleidoUpdateCursor(play, pauseCtx->pageIndex);
                     break;
             }
 

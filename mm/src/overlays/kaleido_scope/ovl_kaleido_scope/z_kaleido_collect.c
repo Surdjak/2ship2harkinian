@@ -5,7 +5,6 @@
  */
 
 #include "z_kaleido_scope.h"
-#include "HyruleKaleido.h"
 #include "interface/parameter_static/parameter_static.h"
 #include "archives/icon_item_static/icon_item_static_yar.h"
 
@@ -196,26 +195,12 @@ void KaleidoScope_DrawQuestStatus(PlayState* play) {
         }
     }
 
-    // Draw shield
     gDPPipeSync(POLY_OPA_DISP++);
     gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, pauseCtx->alpha);
     gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
 
-    // 3Ship [Hyrule] The shield and sword worn may be OoT's (HyruleKaleido.c).
-    if (Hyrule_GetWornEquipIcon(EQUIP_TYPE_SHIELD) != NULL) {
-        gSPVertex(POLY_OPA_DISP++, &pauseCtx->questVtx[j], 4, 0);
-        KaleidoScope_DrawTexQuadRGBA32(play->state.gfxCtx, Hyrule_GetWornEquipIcon(EQUIP_TYPE_SHIELD), 32, 32, 0);
-    }
-
-    j += 4;
-
-    // Draw Sword
-    if (Hyrule_GetWornEquipIcon(EQUIP_TYPE_SWORD) != NULL) {
-        gSPVertex(POLY_OPA_DISP++, &pauseCtx->questVtx[j], 4, 0);
-        KaleidoScope_DrawTexQuadRGBA32(play->state.gfxCtx, Hyrule_GetWornEquipIcon(EQUIP_TYPE_SWORD), 32, 32, 0);
-    }
-
-    j += 4;
+    // 3Ship [Hyrule] The shield and sword are on the equipment page (docs/PAUSE.md); their slots stay empty.
+    j += 4 * 2;
 
     // Draw Songs
     gDPPipeSync(POLY_OPA_DISP++);
@@ -713,20 +698,10 @@ void KaleidoScope_UpdateQuestCursor(PlayState* play) {
                     } else {
                         cursorItem = PAUSE_ITEM_NONE;
                     }
-                } else if (pauseCtx->cursorPoint[PAUSE_QUEST] == QUEST_SHIELD) {
-                    // Shield
-                    if (Hyrule_GetWornEquipItem(EQUIP_TYPE_SHIELD) != ITEM_NONE) { // 3Ship [Hyrule]
-                        cursorItem = Hyrule_GetWornEquipItem(EQUIP_TYPE_SHIELD);
-                    } else {
-                        cursorItem = PAUSE_ITEM_NONE;
-                    }
-                } else if (pauseCtx->cursorPoint[PAUSE_QUEST] == QUEST_SWORD) {
-                    // Sword
-                    if (Hyrule_GetWornEquipItem(EQUIP_TYPE_SWORD) != ITEM_NONE) { // 3Ship [Hyrule]
-                        cursorItem = Hyrule_GetWornEquipItem(EQUIP_TYPE_SWORD);
-                    } else {
-                        cursorItem = PAUSE_ITEM_NONE;
-                    }
+                } else if ((pauseCtx->cursorPoint[PAUSE_QUEST] == QUEST_SHIELD) ||
+                           (pauseCtx->cursorPoint[PAUSE_QUEST] == QUEST_SWORD)) {
+                    // 3Ship [Hyrule] On the equipment page instead (docs/PAUSE.md)
+                    cursorItem = PAUSE_ITEM_NONE;
                 } else if (pauseCtx->cursorPoint[PAUSE_QUEST] <= QUEST_SONG_SUN) {
                     // Songs
                     if (CHECK_QUEST_ITEM(pauseCtx->cursorPoint[PAUSE_QUEST])) {

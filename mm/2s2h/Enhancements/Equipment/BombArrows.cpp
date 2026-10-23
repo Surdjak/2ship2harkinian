@@ -279,7 +279,7 @@ static void InitiateEquipAnimation(PauseContext* pauseCtx, ItemId item, s32 slot
     pauseCtx->equipTargetSlot = slot;
 
     pauseCtx->mainState = PAUSE_MAIN_STATE_EQUIP_ITEM;
-    u16 vtxIndex = pauseCtx->cursorSlot[pauseCtx->pageIndex] * 4;
+    u16 vtxIndex = pauseCtx->cursorPoint[PAUSE_ITEM] * 4; // 3Ship [Hyrule] item page vertices are by cell
     pauseCtx->equipAnimX = pauseCtx->itemVtx[vtxIndex].v.ob[0] * 10;
     pauseCtx->equipAnimY = pauseCtx->itemVtx[vtxIndex].v.ob[1] * 10;
     pauseCtx->equipAnimAlpha = 255;
@@ -385,7 +385,7 @@ static void DrawBombArrowCycleExtras(PlayState* play, bool canCycle, ItemId alte
     if (canCycle && alternateItem != ITEM_NONE) {
         Matrix_Push();
 
-        Vtx* itemTopLeft = &pauseCtx->itemVtx[slot * 4];
+        Vtx* itemTopLeft = &pauseCtx->itemVtx[KaleidoScope_GetItemSlotCell(slot) * 4]; // 3Ship [Hyrule] by cell
         Vtx* itemBottomRight = &itemTopLeft[3];
 
         s16 halfX = (itemBottomRight->v.ob[0] - itemTopLeft->v.ob[0]) / 2;
@@ -438,7 +438,7 @@ static void DrawBombArrowSlotIcon(PlayState* play) {
 
     Matrix_Push();
 
-    Vtx* itemTopLeft = &pauseCtx->itemVtx[slot * 4];
+    Vtx* itemTopLeft = &pauseCtx->itemVtx[KaleidoScope_GetItemSlotCell(slot) * 4]; // 3Ship [Hyrule] by cell
     Vtx* itemBottomRight = &itemTopLeft[3];
 
     s16 centerX = itemTopLeft->v.ob[0] + (itemBottomRight->v.ob[0] - itemTopLeft->v.ob[0]) / 2;
@@ -965,9 +965,10 @@ static void OnDrawItemEquippedOutline(bool* should, va_list args) {
         shouldShow = sBombSlotIsBombArrowMode;
         if (shouldShow) {
             // Redirect highlight to SLOT_BOMB by copying slot vtx and applying the vanilla expansion.
-            s32 bIndex = isDpad ? (27 + btn) : (24 + (btn - 1));
+            // 3Ship [Hyrule] The markers follow the 35 cells, and vertices are by cell.
+            s32 bIndex = isDpad ? (QUAD_ITEM_MAX + (btn - EQUIP_SLOT_D_RIGHT)) : (QUAD_ITEM_GRID_SELECTED_C_LEFT + (btn - 1));
             Vtx* destVtx = &gPlayState->pauseCtx.itemVtx[bIndex * 4];
-            Vtx* srcVtx = &gPlayState->pauseCtx.itemVtx[SLOT_BOMB * 4];
+            Vtx* srcVtx = &gPlayState->pauseCtx.itemVtx[KaleidoScope_GetItemSlotCell(SLOT_BOMB) * 4];
 
             memcpy(destVtx, srcVtx, sizeof(Vtx) * 4);
 

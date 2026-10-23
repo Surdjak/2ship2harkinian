@@ -20,13 +20,14 @@ an equipment page, OoT's quest status, and Hyrule's maps.
 
 ## Proposed pages
 
-Five pages on a pentagon instead of a cube, in this order (Z and R still step between neighbours):
+Six pages on a hexagon instead of a cube, in this order (Z and R still step between neighbours):
 
-**Items → Map → Quest → Equipment → Masks → (Items)**
+**Items → Map → Quest (Termina) → Quest (Hyrule) → Equipment → Masks → (Items)**
 
 ### Items: one 7x5 grid (35 slots)
 
-Cells shrink from 32 to 28 units, so the grid (196 x 140) still fits the page (240 x 160).
+Cells shrink from 32 to 25 units, so the grid (175 x 125) fits inside the frame MM's item page draws for
+its 6x4 grid (192 x 128).
 
 ```
  Ocarina      Bow          Fire Arrow   Ice Arrow    Light Arrow  Slingshot    Boomerang
@@ -48,20 +49,16 @@ In Termina, MM's map page and world map, unchanged. In Hyrule, OoT's: its dungeo
 world map with OoT's point markers. Each region's page needs only its own game's assets and code
 (OoT's `z_kaleido_map` and `z_lmap_mark`).
 
-### Quest: one merged page
+### Quest: one page per region
 
-```
-  Remains (4)          Medallions (6) around      Spiritual Stones (3)
-  Odolwa Goht ...      the Triforce, as in OoT    Emerald Ruby Sapphire
+Termina's quest page stays MM's (remains, MM's songs, the Bombers' Notebook, quiver, bomb bag, heart
+pieces); its sword and shield move to the equipment page. Hyrule's is OoT's page as it is: the six
+medallions, the three spiritual stones, OoT's twelve songs, the Stone of Agony, Gerudo's Card, the Gold
+Skulltula count and the heart pieces.
 
-  Songs, two staves of 10:
-   Termina: Sonata, Goron Lullaby, Bossa Nova, Elegy, Oath, Time, Healing, Epona's, Soaring, Storms
-   Hyrule:  Zelda's Lullaby, Saria's, Sun's, Double Time, Minuet, Bolero, Serenade, Requiem, Nocturne, Prelude
-
-  Bombers' Notebook   Stone of Agony   Gerudo's Card   Quiver   Bomb Bag   Heart pieces   Gold Skulltulas
-```
-
-Epona's Song and the Song of Storms belong to both games but are shown once.
+Songs both games have read the same learned bits, so they show on both pages: Epona's Song and the Song of
+Storms, and Saria's and the Sun's Song, which MM already has bits for. OoT's Song of Time shows the Song of
+Double Time, which does its job (DESIGN.md). Heart pieces are shared too.
 
 ### Equipment: OoT's page, with MM's pieces
 
@@ -89,14 +86,14 @@ MM's 24 masks. OoT's masks live in the child trade slot (DESIGN.md).
 
 ## Work, in order
 
-1. **Pentagon and equipment page:** five page positions instead of four (the eye moves between them as
+1. **Ring and equipment page:** six page positions instead of four (the eye moves between them as
    now), and the equipment page with ownership, wearing, and the restrictions per body. Player draws
    and uses the new swords, shields, tunics and boots: this is when OoT's equipment becomes usable.
 2. **Link's figure** on the equipment page (U6), in the current body and equipment.
 3. **Item page:** the 7x5 grid, OoT's item icons and names (OoT's `icon_item_static` and
    `item_name_static`), C-button assignment for the new slots, and the child trade slot's cycling.
    Player using the Slingshot, Boomerang, Hammer and spells is separate work, item by item.
-4. **Quest page:** the merged layout, with OoT's quest icons.
+4. **Hyrule's quest page:** OoT's page and quest icons, as a sixth page (U1, revised).
 5. **Hyrule's maps:** OoT's map page and world map assets.
 
 Each step leaves the menu working; until step 3, OoT's items stay hidden.
@@ -105,18 +102,25 @@ Each step leaves the menu working; until step 3, OoT's items stay hidden.
 
 Step 1 is done, for child Link:
 
-- **The ring** (`z_kaleido_scope_NES.c`, `z_kaleido_setup.c`): pages stand on a pentagon
-  (`PAUSE_PAGE_DIST` 129, the eye `PAUSE_EYE_DIST` 28 from the centre, so a page is as far from the eye as
-  on MM's cube). Only the current page and its two neighbours are built and drawn. The world map follows
-  the map page's angle. The equipment page (`PAUSE_EQUIP`) has no C-buttons.
+- **The ring** (`z_kaleido_scope_NES.c`, `z_kaleido_setup.c`): pages stand on a hexagon
+  (`PAUSE_PAGE_DIST` 162). A hexagon is too wide for MM's eye, which looks at the centre from the far side,
+  so the eye stands 5 towards the current page and looks outward (`KaleidoScope_SetRingView`), keeping
+  MM's distance of 157 to the page; the cursor and info panel, drawn in their own view, still line up.
+  Only the current page and its two neighbours are built and drawn. The world map follows the map page's
+  angle. OoT's pages (`PAUSE_QUEST_OOT`, `PAUSE_EQUIP`) have no C-buttons.
+- **Hyrule's quest page** (`hyrule/HyruleKaleidoQuest.c`, with OoT's `icon_item_24_static`): OoT's page,
+  layout and cursor links, the medallions in their colours, OoT's song notes, the Gold Skulltula count, the
+  shared heart pieces, and OoT's names. OoT's song playback on A is not ported yet.
 - **The equipment page** (`hyrule/HyruleKaleido.c`, with OoT's `icon_item_static`, `icon_item_nes_static`
   and `item_name_static`): OoT's background, the grid above, OoT's names, the worn piece outlined. Each
   cell lists its pieces in priority order and shows the worn one, else the first the current body can
   wear; A wears it, or the next one if it is already worn. Deku, Goron, Zora and Fierce Deity Link see
-  only the upgrades. The quest page shows the sword and shield worn, OoT's included.
+  only the upgrades. The quest page no longer shows the sword and shield; their slots stay empty until the
+  quest page is redone (step 4).
 - **Ownership:** MM's sword cell follows MM's one-sword rule (the worn MM sword replaces the others; none
-  while the smithy or a thief has it). The Great Fairy's Sword is owned while its MM item slot holds it,
-  until step 3 frees that slot; the thief bird can steal it while worn, and MM's own sword goes back on B.
+  while the smithy or a thief has it). The Great Fairy's Sword is equipment only: `Item_Give` records it
+  as owned and its MM item slot stays empty (save version 12 moves it out of older saves, and off C-buttons
+  and the D-pad). The thief bird can steal it, and MM's own sword goes back on B if it was worn.
 - **Player** (`hyrule/HyrulePlayer.c`, `z_player_lib.c`): the Deku Shield is drawn on the back and in the
   hand from OoT's child Link; the Hylian Shield stays on child Link's back and blocks from there while he
   crouches, as in OoT (its shield-only display list is cut from OoT's shield-and-sheath one in 3Ship's
@@ -125,12 +129,36 @@ Step 1 is done, for child Link:
   that rebuild the B item from the sword value (minigames, Fierce Deity, the item tracker) use
   `Hyrule_SwordValueToItem`.
 
+Step 3, the item page (`z_kaleido_item.c`):
+
+- The 7x5 grid above, as a table of cells to slots (`KaleidoScope_GetItemCellSlot`), MM's and OoT's
+  (`SLOT_OOT_*`). The cursor, vertices, equipped markers and ammo counts work by cell; C-buttons and the
+  D-pad still record slots. OoT's items have OoT's icons and names, on the page and on the buttons, and the
+  Slingshot shows its Deku Seeds.
+- OoT's items can go on C-buttons and the D-pad; Player does nothing with them yet (item by item, after
+  this). Items both games have keep MM's behaviour.
+- A on the child trade slot puts on the next OoT mask owned.
+- Bottles 7 to 10 work as MM's six: their contents change in place, and a fairy in one revives Link. MM's
+  hot spring water timer covers its own six only.
+- MM's ids keep `gPlayerFormItemRestrictions`; OoT's are for human Link (`Inventory_IsItemUsableByForm`).
+
+Step 5, Hyrule's map page (`hyrule/HyruleKaleidoMap.c`, with OoT's `icon_item_field_static` and
+`map_name_static`): in Hyrule's scenes the map page is OoT's world map page. The current area comes from
+the OoT scene's misc settings command; OoT's overworld scenes mark it visited (`worldMapAreaDataOot`, save
+version 13), which clears its clouds. The current area is boxed and named under "Current Position", and
+OoT's twelve points, worked out from OoT's quest items, items and event flags, pulse where the story goes
+next; the cursor steps between them and shows their names. Termina keeps MM's map page, and owl warps
+always show Termina.
+
 Not yet:
 
 - **Adult pieces** (Master Sword, Giant's Knife, Biggoron's Sword, OoT Mirror Shield, Goron and Zora
   Tunics, Iron and Hover Boots) are on the page but only adult Link can wear them, so Player's models and
   effects for them come with the adult body.
 - **Link's figure** (step 2): its area is black.
+- **OoT's item descriptions:** A shows none for OoT's items.
+- **OoT's dungeon maps** come with OoT's dungeons; OoT's trade quest arrow on the world map (adult Link) is
+  not drawn.
 - The Deku Shield does not burn yet, and MM's Hero's and Mirror Shields still are not unowned when lost
   (INVENTORY.md).
 
@@ -138,7 +166,7 @@ Not yet:
 
 | | Question | Decision |
 |-|----------|----------|
-| U1 | Five pages on a pentagon, or six (separate Termina and Hyrule quest pages) | five |
+| U1 | Five pages on a pentagon, or six (separate Termina and Hyrule quest pages) | six (revised from five: OoT's stones, medallions and songs need the room) |
 | U2 | One 7x5 item grid with slightly smaller cells, or MM's 6x4 grid plus a second item page | one 7x5 grid |
 | U3 | The item layout above (tools, consumables, magic, trade, bottles) | as above |
 | U4 | Equipment's upgrade column: Bullet Bag, Strength, Scale, Wallet (quiver and bomb bag stay on the quest page) | yes |

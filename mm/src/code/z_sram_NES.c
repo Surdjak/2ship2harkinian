@@ -1091,7 +1091,7 @@ Inventory sSaveDebugInventory = {
         ITEM_PICTOGRAPH_BOX,     // SLOT_PICTOGRAPH_BOX
         ITEM_LENS_OF_TRUTH,      // SLOT_LENS_OF_TRUTH
         ITEM_HOOKSHOT,           // SLOT_HOOKSHOT
-        ITEM_SWORD_GREAT_FAIRY,  // SLOT_SWORD_GREAT_FAIRY
+        ITEM_NONE,               // SLOT_SWORD_GREAT_FAIRY: 3Ship [Hyrule] equipment, given below
         ITEM_LETTER_TO_KAFEI,    // SLOT_TRADE_COUPLE
         ITEM_BOTTLE,             // SLOT_BOTTLE_1
         ITEM_POTION_RED,         // SLOT_BOTTLE_2
@@ -1227,6 +1227,7 @@ void Sram_InitDebugSave(void) {
     memcpy(&gSaveContext.save.saveInfo.equips, &sSaveDebugItemEquips, sizeof(ItemEquips));
     memcpy(&gSaveContext.save.saveInfo.inventory, &sSaveDebugInventory, sizeof(Inventory));
     Hyrule_InitInventoryOot(); // 3Ship [Hyrule]
+    Hyrule_GiveGreatFairySword();
     memcpy(&gSaveContext.save.saveInfo.checksum, &sSaveDebugChecksum, sizeof(gSaveContext.save.saveInfo.checksum));
 
     if (GET_PLAYER_FORM != PLAYER_FORM_HUMAN) {

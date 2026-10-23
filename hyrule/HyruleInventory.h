@@ -118,6 +118,15 @@ void Hyrule_InitInventoryOot(void);
 u16 Hyrule_ItemGive(struct PlayState* play, u16 item);
 u16 Hyrule_ItemCheckObtainability(u16 item);
 
+// What an item slot holds, for MM's slots (items and masks) and OoT's (SLOT_OOT_*) alike; NULL for others.
+u16* Hyrule_GetSlotContent(s16 slot);
+// The child trade slot's next OoT mask after the one it holds, among those owned (SoH's Mask Select); ITEM_NONE
+// if it holds no mask or no other is owned.
+u16 Hyrule_GetNextChildTradeMask(void);
+
+// Whether a body can use an OoT item: human Link only, until Player uses them per body.
+s32 Hyrule_IsOotItemUsableByForm(s32 form, u16 item);
+
 // OoT's INV_CONTENT: what is in an OoT item's slot, as an OoT item id (ITEM_NONE if empty).
 u16 Hyrule_InvContentOot(u16 item);
 
@@ -129,8 +138,13 @@ u8 Hyrule_GetGsFlagsOot(s32 index);
 void Hyrule_SetGsFlagsOot(s32 index, u8 value);
 
 // Records MM's sword and shield, which MM keeps only as what is worn, as owned (MM's one sword replacing the
-// others), and the Great Fairy's Sword while its MM item slot holds it.
+// others).
 void Hyrule_SyncEquipmentOwnership(void);
+
+// The Great Fairy's Sword is equipment rather than an item (docs/INVENTORY.md): Item_Give records it as owned,
+// and it is worn from the equipment page.
+void Hyrule_GiveGreatFairySword(void);
+s32 Hyrule_OwnsGreatFairySword(void);
 
 // The Great Fairy's Sword stolen: no longer owned, and if worn, MM's own sword (or none) goes back on B.
 void Hyrule_LoseGreatFairySword(struct PlayState* play);

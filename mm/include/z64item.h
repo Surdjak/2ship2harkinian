@@ -360,6 +360,9 @@ typedef enum ItemId {
 #include "tables/item_id_oot.h"
 } ItemId;
 
+// 3Ship [Hyrule] An item that has an icon on a button: MM's below its special ids (ITEM_F0 and up), and OoT's.
+#define ITEM_HAS_BUTTON_ICON(item) (((item) < ITEM_F0) || ((item) >= ITEM_OOT_BASE))
+
 #define BOTTLE_FIRST 0
 #define BOTTLE_MAX 6
 

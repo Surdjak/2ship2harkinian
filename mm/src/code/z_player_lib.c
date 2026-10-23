@@ -4284,12 +4284,9 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
             (player->currentShield != PLAYER_SHIELD_NONE) &&
             ((player->sheathType == PLAYER_MODELTYPE_SHEATH_14) ||
              (player->sheathType == PLAYER_MODELTYPE_SHEATH_15))) {
-            // 3Ship [Hyrule] OoT's shields come from OoT's child Link, whose lists leave the TLUT mode set.
+            // 3Ship [Hyrule] OoT's shields come from OoT's child Link.
             if (Hyrule_GetBackShieldDL(player->currentShield) != NULL) {
-                OPEN_DISPS(play->state.gfxCtx);
-                gDPPipeSync(POLY_OPA_DISP++);
-                gDPSetTextureLUT(POLY_OPA_DISP++, G_TT_NONE);
-                CLOSE_DISPS(play->state.gfxCtx);
+                Hyrule_SetupBackShieldDraw(play);
                 CosmeticEditor_DrawBackShield(play, Hyrule_GetBackShieldDL(player->currentShield));
             } else if (player->currentShield < PLAYER_SHIELD_MAX) {
                 CosmeticEditor_DrawBackShield(play, gPlayerShields[2 * ((player->currentShield - 1) ^ 0)]);

@@ -1,7 +1,8 @@
 #pragma once
 
-// OoT's equipment page in MM's pause menu (docs/PAUSE.md). It lives here because OoT's and MM's pause
-// textures share names, so OoT's headers cannot be included beside MM's in ovl_kaleido_scope.
+// OoT's pages in MM's pause menu (docs/PAUSE.md): equipment (PAUSE_EQUIP) and quest status
+// (PAUSE_QUEST_OOT). They live here because OoT's and MM's pause textures share names, so OoT's headers
+// cannot be included beside MM's in ovl_kaleido_scope.
 
 #include "PR/ultratypes.h"
 
@@ -11,23 +12,21 @@ extern "C" {
 
 struct PlayState;
 
-// The page's background (15 quads, in KaleidoScope_DrawPageSections' order) and its "To Equipment" label
-// (IA8, 128x16).
-TexturePtr* Hyrule_GetEquipPageBgTextures(void);
-TexturePtr Hyrule_GetToEquipmentTexture(void);
+// A page's background (15 quads, in KaleidoScope_DrawPageSections' order) and its "To <page>" label (IA8,
+// 128x16).
+TexturePtr* Hyrule_GetPageBgTextures(s16 page);
+TexturePtr Hyrule_GetToPageTexture(s16 page);
 
-// Called from ovl_kaleido_scope for the equipment page, as MM's own pages are.
-void Hyrule_KaleidoSetEquipmentVertices(struct PlayState* play);
-void Hyrule_KaleidoDrawEquipment(struct PlayState* play);
-void Hyrule_KaleidoSetEquipCursor(struct PlayState* play);
-void Hyrule_KaleidoUpdateEquipCursor(struct PlayState* play);
+// Called from ovl_kaleido_scope for these pages, as MM's own pages are.
+void Hyrule_KaleidoSetPageVertices(struct PlayState* play, s16 page);
+void Hyrule_KaleidoDrawPage(struct PlayState* play, s16 page);
+void Hyrule_KaleidoSetCursor(struct PlayState* play, s16 page);
+void Hyrule_KaleidoUpdateCursor(struct PlayState* play, s16 page);
 
 // OoT's name texture for an OoT item id (IA4, 128x16), or NULL.
 TexturePtr Hyrule_GetItemNameTexture(u16 item);
-
-// The piece of an equipment type (EQUIP_TYPE_*) worn, as an item id or its icon; ITEM_NONE or NULL if none.
-u16 Hyrule_GetWornEquipItem(u8 type);
-TexturePtr Hyrule_GetWornEquipIcon(u8 type);
+// An item's icon (RGBA32, 32x32 for items), MM's or OoT's, or NULL.
+TexturePtr Hyrule_GetItemIcon(u16 item);
 
 #ifdef __cplusplus
 }

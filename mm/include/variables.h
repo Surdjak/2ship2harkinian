@@ -139,6 +139,8 @@ extern u8 gItemSlots[77];
 extern s16 gItemPrices[];
 extern u16 gSceneIdsPerRegion[11][27];
 extern u8 gPlayerFormItemRestrictions[PLAYER_FORM_MAX][114];
+// 3Ship [Hyrule] gPlayerFormItemRestrictions for any item id: OoT's are past its end (z_parameter.c).
+u8 Inventory_IsItemUsableByForm(s32 form, u16 item);
 
 extern s16 gPlayerFormObjectIds[PLAYER_FORM_MAX];
 extern ObjectId gObjectTableSize;

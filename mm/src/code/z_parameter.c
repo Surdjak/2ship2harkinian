@@ -1,6 +1,7 @@
 #include "global.h"
 #include "HyruleInventory.h"
 #include "HyrulePlayer.h"
+#include "HyruleKaleido.h"
 #include "PR/gs2dex.h"
 #include "sys_cfb.h"
 #include "z64malloc.h"
@@ -652,6 +653,14 @@ u8 gPlayerFormItemRestrictions[PLAYER_FORM_MAX][114] = {
         false, // ITEM_71
     },
 };
+
+u8 Inventory_IsItemUsableByForm(s32 form, u16 item) {
+    if (item >= ITEM_OOT_BASE) {
+        return Hyrule_IsOotItemUsableByForm(form, item);
+    }
+    // MM's ids index the table as MM does, past its end for empty buttons included (see Interface_UpdateButtonsPart2).
+    return gPlayerFormItemRestrictions[form][item];
+}
 // #endregion
 
 typedef enum {
@@ -3364,7 +3373,7 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
                 //! the status of empty C-buttons - for most forms, the C-buttons are enabled when empty, however for
                 //! Deku Link only, empty C-buttons are disabled.
                 ItemId itemId = GET_CUR_FORM_BTN_ITEM(i);
-                if (GameInteractor_Should(VB_ITEM_BE_RESTRICTED, !gPlayerFormItemRestrictions[GET_PLAYER_FORM][itemId],
+                if (GameInteractor_Should(VB_ITEM_BE_RESTRICTED, !Inventory_IsItemUsableByForm(GET_PLAYER_FORM, itemId),
                                           &itemId)) {
                     // Item not usable in current playerForm
                     if (gSaveContext.buttonStatus[i] != BTN_DISABLED) {
@@ -3511,7 +3520,7 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
             for (s16 j = EQUIP_SLOT_D_RIGHT; j <= EQUIP_SLOT_D_UP; j++) {
                 // Individual D button
                 ItemId itemId = DPAD_GET_CUR_FORM_BTN_ITEM(j);
-                if (GameInteractor_Should(VB_ITEM_BE_RESTRICTED, !gPlayerFormItemRestrictions[GET_PLAYER_FORM][itemId],
+                if (GameInteractor_Should(VB_ITEM_BE_RESTRICTED, !Inventory_IsItemUsableByForm(GET_PLAYER_FORM, itemId),
                                           &itemId)) {
                     // Item not usable in current playerForm
                     if (gSaveContext.shipSaveContext.dpad.status[j] != BTN_DISABLED) {
@@ -4034,8 +4043,9 @@ void Interface_Dpad_LoadItemIconImpl(PlayState* play, u8 btn) {
         return;
     }
 
-    if (DPAD_GET_CUR_FORM_BTN_ITEM(btn) < ARRAY_COUNT(gItemIcons)) {
-        interfaceCtx->iconItemSegment[DPAD_BUTTON(btn) + EQUIP_SLOT_MAX] = gItemIcons[DPAD_GET_CUR_FORM_BTN_ITEM(btn)];
+    if (Hyrule_GetItemIcon(DPAD_GET_CUR_FORM_BTN_ITEM(btn)) != NULL) { // 3Ship [Hyrule]
+        interfaceCtx->iconItemSegment[DPAD_BUTTON(btn) + EQUIP_SLOT_MAX] =
+            Hyrule_GetItemIcon(DPAD_GET_CUR_FORM_BTN_ITEM(btn));
     } else {
         interfaceCtx->iconItemSegment[btn] = gEmptyTexture;
     }
@@ -4078,8 +4088,9 @@ void Interface_LoadItemIconImpl(PlayState* play, u8 btn) {
     // #region 2S2H [Port]
     // CmpDma_LoadFile(SEGMENT_ROM_START(icon_item_static_yar), GET_CUR_FORM_BTN_ITEM(btn),
     //             &interfaceCtx->iconItemSegment[(u32)btn * ICON_ITEM_TEX_SIZE], ICON_ITEM_TEX_SIZE);
-    if (GET_CUR_FORM_BTN_ITEM(btn) < ARRAY_COUNT(gItemIcons)) {
-        interfaceCtx->iconItemSegment[btn] = gItemIcons[GET_CUR_FORM_BTN_ITEM(btn)];
+    // 3Ship [Hyrule] OoT's items have OoT's icons.
+    if (Hyrule_GetItemIcon(GET_CUR_FORM_BTN_ITEM(btn)) != NULL) {
+        interfaceCtx->iconItemSegment[btn] = Hyrule_GetItemIcon(GET_CUR_FORM_BTN_ITEM(btn));
     } else {
         interfaceCtx->iconItemSegment[btn] = gEmptyTexture;
     }
@@ -4617,6 +4628,13 @@ u16 Item_Give(PlayState* play, u16 item) {
         return ITEM_NONE;
     }
 
+    // 3Ship [Hyrule] The Great Fairy's Sword is equipment, worn from the equipment page (docs/INVENTORY.md).
+    if (item == ITEM_SWORD_GREAT_FAIRY) {
+        Hyrule_GiveGreatFairySword();
+        GameInteractor_ExecuteOnItemGive(item);
+        return ITEM_NONE;
+    }
+
     u8 result = Item_GiveImpl(play, item);
     GameInteractor_ExecuteOnItemGive(item);
     // 3Ship [Hyrule] MM's sword and shield are owned too, alongside OoT's (EQUIP_OWNED_*).
@@ -4789,6 +4807,9 @@ u16 Item_CheckObtainability(u16 item) {
     if (item >= ITEM_OOT_BASE) {
         return Hyrule_ItemCheckObtainability(item);
     }
+    if (item == ITEM_SWORD_GREAT_FAIRY) {
+        return Hyrule_OwnsGreatFairySword() ? ITEM_SWORD_GREAT_FAIRY : ITEM_NONE;
+    }
 
     return Item_CheckObtainabilityImpl(item);
 }
@@ -4909,12 +4930,18 @@ s32 Inventory_HasItemInBottle(u16 item) {
             return true;
         }
     }
+    // 3Ship [Hyrule] Bottles 7 to 10
+    for (slot = SLOT_BOTTLE_7; slot <= SLOT_BOTTLE_10; slot++) {
+        if (INV_CONTENT_SLOT_OOT(slot) == item) {
+            return true;
+        }
+    }
     return false;
 }
 
 // #region 2S2H [Dpad]
 void Inventory_Dpad_UpdateBottleItem(PlayState* play, u16 item, u8 btn) {
-    gSaveContext.save.saveInfo.inventory.items[DPAD_GET_CUR_FORM_BTN_SLOT(btn)] = item;
+    *Hyrule_GetSlotContent(DPAD_GET_CUR_FORM_BTN_SLOT(btn)) = item; // 3Ship [Hyrule] bottles 7 to 10 too
     DPAD_SET_CUR_FORM_BTN_ITEM(btn, item);
 
     Interface_Dpad_LoadItemIconImpl(play, btn);
@@ -4922,7 +4949,8 @@ void Inventory_Dpad_UpdateBottleItem(PlayState* play, u16 item, u8 btn) {
     play->pauseCtx.cursorItem[PAUSE_ITEM] = item;
     gSaveContext.shipSaveContext.dpad.status[btn] = BTN_ENABLED;
 
-    if (item == ITEM_HOT_SPRING_WATER) {
+    // 3Ship [Hyrule] MM times its six bottles only; OoT's four keep hot water hot.
+    if ((item == ITEM_HOT_SPRING_WATER) && (DPAD_GET_CUR_FORM_BTN_SLOT(btn) <= SLOT_BOTTLE_6)) {
         Interface_StartBottleTimer(60, DPAD_GET_CUR_FORM_BTN_SLOT(btn) - SLOT_BOTTLE_1);
     }
 
@@ -4931,7 +4959,7 @@ void Inventory_Dpad_UpdateBottleItem(PlayState* play, u16 item, u8 btn) {
 // #endregion
 
 void Inventory_UpdateBottleItem(PlayState* play, u16 item, u8 btn) {
-    gSaveContext.save.saveInfo.inventory.items[GET_CUR_FORM_BTN_SLOT(btn)] = item;
+    *Hyrule_GetSlotContent(GET_CUR_FORM_BTN_SLOT(btn)) = item; // 3Ship [Hyrule] bottles 7 to 10 too
     SET_CUR_FORM_BTN_ITEM(btn, item);
 
     Interface_LoadItemIconImpl(play, btn);
@@ -4939,7 +4967,8 @@ void Inventory_UpdateBottleItem(PlayState* play, u16 item, u8 btn) {
     play->pauseCtx.cursorItem[PAUSE_ITEM] = item;
     gSaveContext.buttonStatus[btn] = BTN_ENABLED;
 
-    if (item == ITEM_HOT_SPRING_WATER) {
+    // 3Ship [Hyrule] MM times its six bottles only; OoT's four keep hot water hot.
+    if ((item == ITEM_HOT_SPRING_WATER) && (GET_CUR_FORM_BTN_SLOT(btn) <= SLOT_BOTTLE_6)) {
         Interface_StartBottleTimer(60, GET_CUR_FORM_BTN_SLOT(btn) - SLOT_BOTTLE_1);
     }
 
@@ -4979,6 +5008,13 @@ s32 Inventory_ConsumeFairy(PlayState* play) {
             return true;
         }
     }
+    // 3Ship [Hyrule] Bottles 7 to 10
+    for (i = SLOT_BOTTLE_7; i <= SLOT_BOTTLE_10; i++) {
+        if (INV_CONTENT_SLOT_OOT(i) == ITEM_FAIRY) {
+            Inventory_UpdateItem(play, i, ITEM_BOTTLE);
+            return true;
+        }
+    }
 
     return false;
 }
@@ -4989,7 +5025,7 @@ s32 Inventory_ConsumeFairy(PlayState* play) {
 void Inventory_UpdateItem(PlayState* play, s16 slot, s16 item) {
     s16 btn;
 
-    gSaveContext.save.saveInfo.inventory.items[slot] = item;
+    *Hyrule_GetSlotContent(slot) = item; // 3Ship [Hyrule] OoT's slots too
 
     for (btn = EQUIP_SLOT_C_LEFT; btn <= EQUIP_SLOT_C_RIGHT; btn++) {
         if (GET_CUR_FORM_BTN_SLOT(btn) == slot) {
@@ -6173,7 +6209,7 @@ s16 sDpadItemAmmoY[] = {
 };
 
 void Interface_Dpad_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
-    u8 i;
+    u16 i; // 3Ship [Hyrule] was u8, which turned OoT ids into MM ones
     u16 ammo;
 
     if (!GameInteractor_Should(VB_DRAW_HUD_AMMO_COUNT, true, button, alpha, true)) {
@@ -6186,13 +6222,14 @@ void Interface_Dpad_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
 
     if ((i == ITEM_DEKU_STICK) || (i == ITEM_DEKU_NUT) || (i == ITEM_BOMB) || (i == ITEM_BOW) ||
         ((i >= ITEM_BOW_FIRE) && (i <= ITEM_BOW_LIGHT)) || (i == ITEM_BOMBCHU) || (i == ITEM_POWDER_KEG) ||
-        (i == ITEM_MAGIC_BEANS) || (i == ITEM_PICTOGRAPH_BOX)) {
+        (i == ITEM_MAGIC_BEANS) || (i == ITEM_PICTOGRAPH_BOX) || (i == ITEM_SLINGSHOT_Oot)) {
 
         if ((i >= ITEM_BOW_FIRE) && (i <= ITEM_BOW_LIGHT)) {
             i = ITEM_BOW;
         }
 
-        ammo = AMMO(i);
+        // 3Ship [Hyrule] Deku Seeds are in OoT's slots.
+        ammo = (i == ITEM_SLINGSHOT_Oot) ? AMMO_SLOT_OOT(SLOT_OOT_SLINGSHOT) : AMMO(i);
 
         if (i == ITEM_PICTOGRAPH_BOX) {
             if (!CHECK_QUEST_ITEM(QUEST_PICTOGRAPH)) {
@@ -6210,7 +6247,8 @@ void Interface_Dpad_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
             ((i == ITEM_DEKU_NUT) && (AMMO(i) == CUR_CAPACITY(UPG_DEKU_NUTS))) ||
             ((i == ITEM_BOMBCHU) && (AMMO(i) == CUR_CAPACITY(UPG_BOMB_BAG))) ||
             ((i == ITEM_POWDER_KEG) && GameInteractor_Should(VB_POWDER_KEG_AMMO_AT_CAPACITY, ammo == 1)) ||
-            ((i == ITEM_PICTOGRAPH_BOX) && (ammo == 1)) || ((i == ITEM_MAGIC_BEANS) && (ammo == 20))) {
+            ((i == ITEM_PICTOGRAPH_BOX) && (ammo == 1)) || ((i == ITEM_MAGIC_BEANS) && (ammo == 20)) ||
+                   ((i == ITEM_SLINGSHOT_Oot) && (ammo == CUR_CAPACITY(UPG_BULLET_BAG)))) {
             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 120, 255, 0, alpha);
         }
 
@@ -6289,7 +6327,7 @@ void Interface_DrawItemIconTexture(PlayState* play, TexturePtr texture, s16 butt
 void Interface_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
     static s16 sAmmoDigitsXPositions[] = { 162, 228, 250, 272 };
     static s16 sAmmoDigitsYPositions[] = { 35, 35, 51, 35 };
-    u8 i;
+    u16 i; // 3Ship [Hyrule] was u8, which turned OoT ids into MM ones
     u16 ammo;
 
     if (!GameInteractor_Should(VB_DRAW_HUD_AMMO_COUNT, true, button, alpha, false)) {
@@ -6302,13 +6340,14 @@ void Interface_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
 
     if ((i == ITEM_DEKU_STICK) || (i == ITEM_DEKU_NUT) || (i == ITEM_BOMB) || (i == ITEM_BOW) ||
         ((i >= ITEM_BOW_FIRE) && (i <= ITEM_BOW_LIGHT)) || (i == ITEM_BOMBCHU) || (i == ITEM_POWDER_KEG) ||
-        (i == ITEM_MAGIC_BEANS) || (i == ITEM_PICTOGRAPH_BOX)) {
+        (i == ITEM_MAGIC_BEANS) || (i == ITEM_PICTOGRAPH_BOX) || (i == ITEM_SLINGSHOT_Oot)) {
 
         if ((i >= ITEM_BOW_FIRE) && (i <= ITEM_BOW_LIGHT)) {
             i = ITEM_BOW;
         }
 
-        ammo = AMMO(i);
+        // 3Ship [Hyrule] Deku Seeds are in OoT's slots.
+        ammo = (i == ITEM_SLINGSHOT_Oot) ? AMMO_SLOT_OOT(SLOT_OOT_SLINGSHOT) : AMMO(i);
 
         if (i == ITEM_PICTOGRAPH_BOX) {
             if (!CHECK_QUEST_ITEM(QUEST_PICTOGRAPH)) {
@@ -6336,7 +6375,8 @@ void Interface_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
                    ((i == ITEM_DEKU_NUT) && (AMMO(i) == CUR_CAPACITY(UPG_DEKU_NUTS))) ||
                    ((i == ITEM_BOMBCHU) && (AMMO(i) == CUR_CAPACITY(UPG_BOMB_BAG))) ||
                    ((i == ITEM_POWDER_KEG) && GameInteractor_Should(VB_POWDER_KEG_AMMO_AT_CAPACITY, ammo == 1)) ||
-                   ((i == ITEM_PICTOGRAPH_BOX) && (ammo == 1)) || ((i == ITEM_MAGIC_BEANS) && (ammo == 20))) {
+                   ((i == ITEM_PICTOGRAPH_BOX) && (ammo == 1)) || ((i == ITEM_MAGIC_BEANS) && (ammo == 20)) ||
+                   ((i == ITEM_SLINGSHOT_Oot) && (ammo == CUR_CAPACITY(UPG_BULLET_BAG)))) {
             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 120, 255, 0, alpha);
         }
 
@@ -6524,7 +6564,7 @@ void Interface_DrawCButtonIcons(PlayState* play) {
     gDPPipeSync(OVERLAY_DISP++);
 
     // C-Left Button Icon & Ammo Count
-    if (BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_LEFT) < ITEM_F0) {
+    if (ITEM_HAS_BUTTON_ICON(BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_LEFT))) {
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->cLeftAlpha);
         gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
         Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment[EQUIP_SLOT_C_LEFT], EQUIP_SLOT_C_LEFT);
@@ -6537,7 +6577,7 @@ void Interface_DrawCButtonIcons(PlayState* play) {
     gDPPipeSync(OVERLAY_DISP++);
 
     // C-Down Button Icon & Ammo Count
-    if (BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_DOWN) < ITEM_F0) {
+    if (ITEM_HAS_BUTTON_ICON(BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_DOWN))) {
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->cDownAlpha);
         gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
         Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment[EQUIP_SLOT_C_DOWN], EQUIP_SLOT_C_DOWN);
@@ -6550,7 +6590,7 @@ void Interface_DrawCButtonIcons(PlayState* play) {
     gDPPipeSync(OVERLAY_DISP++);
 
     // C-Right Button Icon & Ammo Count
-    if (BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_RIGHT) < ITEM_F0) {
+    if (ITEM_HAS_BUTTON_ICON(BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_RIGHT))) {
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->cRightAlpha);
         gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
         Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment[EQUIP_SLOT_C_RIGHT], EQUIP_SLOT_C_RIGHT);
@@ -6572,7 +6612,7 @@ void Interface_DrawDButtonIcons(PlayState* play) {
     gDPPipeSync(OVERLAY_DISP++);
 
     // D-Right Button Icon & Ammo Count
-    if (DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_RIGHT) < ITEM_F0) {
+    if (ITEM_HAS_BUTTON_ICON(DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_RIGHT))) {
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, dpadInterfaceCtx->dRightAlpha);
         gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
         Interface_Dpad_DrawItemIconTexture(play, interfaceCtx->iconItemSegment[EQUIP_SLOT_D_RIGHT + EQUIP_SLOT_MAX],
@@ -6586,7 +6626,7 @@ void Interface_DrawDButtonIcons(PlayState* play) {
     gDPPipeSync(OVERLAY_DISP++);
 
     // D-Left Button Icon & Ammo Count
-    if (DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_LEFT) < ITEM_F0) {
+    if (ITEM_HAS_BUTTON_ICON(DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_LEFT))) {
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, dpadInterfaceCtx->dLeftAlpha);
         gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
         Interface_Dpad_DrawItemIconTexture(play, interfaceCtx->iconItemSegment[EQUIP_SLOT_D_LEFT + EQUIP_SLOT_MAX],
@@ -6600,7 +6640,7 @@ void Interface_DrawDButtonIcons(PlayState* play) {
     gDPPipeSync(OVERLAY_DISP++);
 
     // D-Down Button Icon & Ammo Count
-    if (DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_DOWN) < ITEM_F0) {
+    if (ITEM_HAS_BUTTON_ICON(DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_DOWN))) {
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, dpadInterfaceCtx->dDownAlpha);
         gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
         Interface_Dpad_DrawItemIconTexture(play, interfaceCtx->iconItemSegment[EQUIP_SLOT_D_DOWN + EQUIP_SLOT_MAX],
@@ -6614,7 +6654,7 @@ void Interface_DrawDButtonIcons(PlayState* play) {
     gDPPipeSync(OVERLAY_DISP++);
 
     // D-Up Button Icon & Ammo Count
-    if (DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_UP) < ITEM_F0) {
+    if (ITEM_HAS_BUTTON_ICON(DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_UP))) {
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, dpadInterfaceCtx->dUpAlpha);
         gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
         Interface_Dpad_DrawItemIconTexture(play, interfaceCtx->iconItemSegment[EQUIP_SLOT_D_UP + EQUIP_SLOT_MAX],
@@ -10112,39 +10152,39 @@ void Interface_Init(PlayState* play) {
     // #endregion [Dpad]
     // #endregion [Port]
 
-    if (CUR_FORM_EQUIP(EQUIP_SLOT_B) < ITEM_F0) {
+    if (ITEM_HAS_BUTTON_ICON(CUR_FORM_EQUIP(EQUIP_SLOT_B))) {
         Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
     } else if ((CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_NONE) && (CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_FD)) {
         Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
     }
 
-    if (BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_LEFT) < ITEM_F0) {
+    if (ITEM_HAS_BUTTON_ICON(BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_LEFT))) {
         Interface_LoadItemIconImpl(play, EQUIP_SLOT_C_LEFT);
     }
 
-    if (BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_DOWN) < ITEM_F0) {
+    if (ITEM_HAS_BUTTON_ICON(BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_DOWN))) {
         Interface_LoadItemIconImpl(play, EQUIP_SLOT_C_DOWN);
     }
 
-    if (BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_RIGHT) < ITEM_F0) {
+    if (ITEM_HAS_BUTTON_ICON(BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_RIGHT))) {
         Interface_LoadItemIconImpl(play, EQUIP_SLOT_C_RIGHT);
     }
 
     // #region 2S2H [Dpad]
     if (CVarGetInteger("gEnhancements.Dpad.DpadEquips", 0)) {
-        if (DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_RIGHT) < ITEM_F0) {
+        if (ITEM_HAS_BUTTON_ICON(DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_RIGHT))) {
             Interface_Dpad_LoadItemIconImpl(play, EQUIP_SLOT_D_RIGHT);
         }
 
-        if (DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_LEFT) < ITEM_F0) {
+        if (ITEM_HAS_BUTTON_ICON(DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_LEFT))) {
             Interface_Dpad_LoadItemIconImpl(play, EQUIP_SLOT_D_LEFT);
         }
 
-        if (DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_DOWN) < ITEM_F0) {
+        if (ITEM_HAS_BUTTON_ICON(DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_DOWN))) {
             Interface_Dpad_LoadItemIconImpl(play, EQUIP_SLOT_D_DOWN);
         }
 
-        if (DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_UP) < ITEM_F0) {
+        if (ITEM_HAS_BUTTON_ICON(DPAD_BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_D_UP))) {
             Interface_Dpad_LoadItemIconImpl(play, EQUIP_SLOT_D_UP);
         }
     }

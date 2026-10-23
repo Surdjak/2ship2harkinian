@@ -424,9 +424,10 @@ void KaleidoScope_DrawInventoryEditor(PlayState* play) {
 
     // Items
     // Loop over rows (i)
-    for (slot = 0, i = 0, rectTop = 38; i < ITEM_GRID_ROWS; i++, rectTop += 14) {
+    // 3Ship [Hyrule] MM's 24 item slots, in MM's 6x4 (the item page is 7x5 now)
+    for (slot = 0, i = 0, rectTop = 38; i < ITEM_NUM_SLOTS / 6; i++, rectTop += 14) {
         // Loop over columns (j)
-        for (j = 0, rectLeft = 44; j < ITEM_GRID_COLS; j++, slot++, rectLeft += 23) {
+        for (j = 0, rectLeft = 44; j < 6; j++, slot++, rectLeft += 23) {
             counterDigits[3] = 0;
             counterDigits[2] = 0;
             if ((slot == SLOT_BOW) || ((slot >= SLOT_BOMB) && (slot <= SLOT_DEKU_NUT)) || (slot == SLOT_POWDER_KEG) ||

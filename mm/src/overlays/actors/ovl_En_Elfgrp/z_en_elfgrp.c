@@ -31,6 +31,7 @@
  */
 
 #include "z_en_elfgrp.h"
+#include "HyruleInventory.h"
 #include "overlays/actors/ovl_En_Elforg/z_en_elforg.h"
 #include "overlays/actors/ovl_Demo_Effect/z_demo_effect.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
@@ -151,7 +152,7 @@ void EnElfgrp_Init(Actor* thisx, PlayState* play) {
                         break;
 
                     case ENELFGRP_TYPE_KINDNESS:
-                        if (INV_CONTENT(ITEM_SWORD_GREAT_FAIRY) == ITEM_SWORD_GREAT_FAIRY) {
+                        if (Hyrule_OwnsGreatFairySword()) { // 3Ship [Hyrule] equipment now
                             EnElfgrp_SetCutscene(this, 1);
                         } else {
                             this->stateFlags |= ELFGRP_STATE_4;

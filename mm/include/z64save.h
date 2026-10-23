@@ -379,6 +379,7 @@ typedef struct SaveInfo {
     /*       */ u16 itemGetInfOot[4];
     /*       */ u16 infTableOot[30];
     /*       */ InventoryOot inventoryOot; // 3Ship [Hyrule]
+    /*       */ u32 worldMapAreaDataOot;   // 3Ship [Hyrule] OoT's areas visited, which clear Hyrule's map clouds
 } SaveInfo;
 
 // #region 2S2H

@@ -6,6 +6,8 @@
 
 #include "z_kaleido_scope.h"
 #include "interface/parameter_static/parameter_static.h"
+#include "HyruleInventory.h"
+#include "HyruleKaleido.h"
 
 #include "2s2h/BenGui/HudEditor.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
@@ -157,33 +159,63 @@ u8 gPlayerFormSlotRestrictions[PLAYER_FORM_MAX][ITEM_NUM_SLOTS] = {
     },
 };
 
-s16 sAmmoRectLeft[] = {
-    95,  // SLOT_BOW
-    62,  // SLOT_BOMB
-    95,  // SLOT_BOMBCHU
-    128, // SLOT_DEKU_STICK
-    161, // SLOT_DEKU_NUT
-    194, // SLOT_MAGIC_BEANS
-    62,  // SLOT_POWDER_KEG
-    95,  // SLOT_PICTOGRAPH_BOX
+// 3Ship [Hyrule] The item page's cells, row by row (docs/PAUSE.md, U3): tools, consumables, magic, trade
+// items and the ten bottles. Cells hold MM's slots and OoT's (SLOT_OOT_*).
+static const s16 sItemCellSlots[ITEM_GRID_CELLS] = {
+    SLOT_OCARINA,       SLOT_BOW,           SLOT_ARROW_FIRE,       SLOT_ARROW_ICE,       SLOT_ARROW_LIGHT,
+    SLOT_OOT_SLINGSHOT, SLOT_OOT_BOOMERANG, SLOT_BOMB,             SLOT_BOMBCHU,         SLOT_DEKU_STICK,
+    SLOT_DEKU_NUT,      SLOT_MAGIC_BEANS,   SLOT_POWDER_KEG,       SLOT_OOT_HAMMER,      SLOT_PICTOGRAPH_BOX,
+    SLOT_LENS_OF_TRUTH, SLOT_HOOKSHOT,      SLOT_OOT_DINS_FIRE,    SLOT_OOT_FARORES_WIND, SLOT_OOT_NAYRUS_LOVE,
+    SLOT_OOT_TRADE_CHILD, SLOT_TRADE_DEED,  SLOT_TRADE_KEY_MAMA,   SLOT_TRADE_COUPLE,    SLOT_OOT_TRADE_ADULT,
+    SLOT_BOTTLE_1,      SLOT_BOTTLE_2,      SLOT_BOTTLE_3,         SLOT_BOTTLE_4,        SLOT_BOTTLE_5,
+    SLOT_BOTTLE_6,      SLOT_BOTTLE_7,      SLOT_BOTTLE_8,         SLOT_BOTTLE_9,        SLOT_BOTTLE_10,
 };
 
-s16 sAmmoRectHeight[] = {
-    85,  // SLOT_BOW
-    117, // SLOT_BOMB
-    117, // SLOT_BOMBCHU
-    117, // SLOT_DEKU_STICK
-    117, // SLOT_DEKU_NUT
-    117, // SLOT_MAGIC_BEANS
-    150, // SLOT_POWDER_KEG
-    150, // SLOT_PICTOGRAPH_BOX
-};
+s16 KaleidoScope_GetItemCellSlot(s16 cell) {
+    return ((cell >= 0) && (cell < ITEM_GRID_CELLS)) ? sItemCellSlots[cell] : SLOT_NONE;
+}
+
+s16 KaleidoScope_GetItemSlotCell(s16 slot) {
+    s16 cell;
+
+    for (cell = 0; cell < ITEM_GRID_CELLS; cell++) {
+        if (sItemCellSlots[cell] == slot) {
+            return cell;
+        }
+    }
+    return -1;
+}
+
+u16 KaleidoScope_GetItemSlotContent(s16 slot) {
+    u16* content = Hyrule_GetSlotContent(slot);
+
+    return (content != NULL) ? *content : ITEM_NONE;
+}
+
+static u16 KaleidoScope_GetItemCellContent(s16 cell) {
+    return KaleidoScope_GetItemSlotContent(KaleidoScope_GetItemCellSlot(cell));
+}
+
+// gPlayerFormSlotRestrictions for any item page slot; OoT's are for human Link.
+static u8 KaleidoScope_IsItemSlotUsable(s16 slot) {
+    if (slot < ITEM_NUM_SLOTS) {
+        return gPlayerFormSlotRestrictions[GET_PLAYER_FORM][slot];
+    }
+    return Hyrule_IsOotItemUsableByForm(GET_PLAYER_FORM, KaleidoScope_GetItemSlotContent(slot));
+}
+
+// The quads of MM's selected and magic-arrow-hover icons, enlarged by ITEM_GRID_QUAD_ENLARGE_OFFSET each side.
+#define ITEM_GRID_ENLARGED_QUAD_SIZE (ITEM_GRID_QUAD_WIDTH + 2 * ITEM_GRID_QUAD_ENLARGE_OFFSET)
 
 extern const char* gAmmoDigitTextures[10];
 
+// 3Ship [Hyrule] ammoIndex is the item's cell; the digits sit at its lower left on screen, as MM's did.
 void KaleidoScope_DrawAmmoCount(PauseContext* pauseCtx, GraphicsContext* gfxCtx, s16 item, u16 ammoIndex) {
     s16 ammoUpperDigit;
     s16 ammo;
+    s16 slot = KaleidoScope_GetItemCellSlot(ammoIndex);
+    s16 rectLeft = 160 + (ITEM_GRID_CELL_LEFT(ammoIndex % ITEM_GRID_COLS) * 33) / 32 + 1;
+    s16 rectTop = 120 - (ITEM_GRID_CELL_TOP(ammoIndex / ITEM_GRID_COLS) * 33) / 32 + (24 * ITEM_GRID_CELL_HEIGHT) / 32;
 
     if (!GameInteractor_Should(VB_KALEIDO_DRAW_AMMO_COUNT, true, pauseCtx, gfxCtx, item, ammoIndex)) {
         return;
@@ -197,13 +229,15 @@ void KaleidoScope_DrawAmmoCount(PauseContext* pauseCtx, GraphicsContext* gfxCtx,
         } else {
             ammo = 1;
         }
+    } else if (slot >= SLOT_OOT_FIRST) {
+        ammo = AMMO_SLOT_OOT(slot); // 3Ship [Hyrule] Deku Seeds
     } else {
         ammo = AMMO(item);
     }
 
     gDPPipeSync(POLY_OPA_DISP++);
 
-    if (!gPlayerFormSlotRestrictions[GET_PLAYER_FORM][SLOT(item)]) {
+    if (!KaleidoScope_IsItemSlotUsable(slot)) {
         // Ammo item is restricted
         gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 100, 100, 100, pauseCtx->alpha);
     } else {
@@ -218,7 +252,8 @@ void KaleidoScope_DrawAmmoCount(PauseContext* pauseCtx, GraphicsContext* gfxCtx,
                    ((item == ITEM_DEKU_NUT) && (AMMO(item) == CUR_CAPACITY(UPG_DEKU_NUTS))) ||
                    ((item == ITEM_BOMBCHU) && (AMMO(item) == CUR_CAPACITY(UPG_BOMB_BAG))) ||
                    ((item == ITEM_POWDER_KEG) && GameInteractor_Should(VB_POWDER_KEG_AMMO_AT_CAPACITY, ammo == 1)) ||
-                   ((item == ITEM_PICTOGRAPH_BOX) && (ammo == 1)) || ((item == ITEM_MAGIC_BEANS) && (ammo == 20))) {
+                   ((item == ITEM_PICTOGRAPH_BOX) && (ammo == 1)) || ((item == ITEM_MAGIC_BEANS) && (ammo == 20)) ||
+                   ((item == ITEM_SLINGSHOT_Oot) && (ammo == CUR_CAPACITY(UPG_BULLET_BAG)))) {
             // Ammo at capacity
             gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 120, 255, 0, pauseCtx->alpha);
         }
@@ -234,13 +269,12 @@ void KaleidoScope_DrawAmmoCount(PauseContext* pauseCtx, GraphicsContext* gfxCtx,
     // Draw upper digit
     if (ammoUpperDigit != 0) {
         POLY_OPA_DISP =
-            Gfx_DrawTexRectIA8(POLY_OPA_DISP, gAmmoDigitTextures[ammoUpperDigit], 8, 8, sAmmoRectLeft[ammoIndex],
-                               sAmmoRectHeight[ammoIndex], 8, 8, 1 << 10, 1 << 10);
+            Gfx_DrawTexRectIA8(POLY_OPA_DISP, gAmmoDigitTextures[ammoUpperDigit], 8, 8, rectLeft, rectTop, 8, 8, 1 << 10, 1 << 10);
     }
 
     // Draw lower digit
-    POLY_OPA_DISP = Gfx_DrawTexRectIA8(POLY_OPA_DISP, gAmmoDigitTextures[ammo], 8, 8, sAmmoRectLeft[ammoIndex] + 6,
-                                       sAmmoRectHeight[ammoIndex], 8, 8, 1 << 10, 1 << 10);
+    POLY_OPA_DISP = Gfx_DrawTexRectIA8(POLY_OPA_DISP, gAmmoDigitTextures[ammo], 8, 8, rectLeft + 6, rectTop, 8, 8,
+                                       1 << 10, 1 << 10);
 
     CLOSE_DISPS(gfxCtx);
 }
@@ -267,10 +301,12 @@ void KaleidoScope_DrawItemSelect(PlayState* play) {
     // Loop over c-buttons (i) and vtx offset (j)
     gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
     gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, pauseCtx->alpha);
-    for (i = 0, j = ITEM_NUM_SLOTS * 4; i < 3; i++, j += 4) {
+    for (i = 0, j = ITEM_GRID_CELLS * 4; i < 3; i++, j += 4) {
         if (GET_CUR_FORM_BTN_ITEM(i + 1) != ITEM_NONE) {
             ItemId item = GET_CUR_FORM_BTN_ITEM(i + 1);
-            if (GameInteractor_Should(VB_DRAW_ITEM_EQUIPPED_OUTLINE, (GET_CUR_FORM_BTN_SLOT(i + 1) < ITEM_NUM_SLOTS),
+            // 3Ship [Hyrule] Any slot with a cell on this page
+            if (GameInteractor_Should(VB_DRAW_ITEM_EQUIPPED_OUTLINE,
+                                      (KaleidoScope_GetItemSlotCell(GET_CUR_FORM_BTN_SLOT(i + 1)) >= 0),
                                       &item, (s32)(i + 1), 0, PAUSE_ITEM)) {
                 gSPVertex(POLY_OPA_DISP++, &pauseCtx->itemVtx[j], 4, 0);
                 POLY_OPA_DISP = Gfx_DrawTexQuadIA8(POLY_OPA_DISP, gEquippedItemOutlineTex, 32, 32, 0);
@@ -283,7 +319,8 @@ void KaleidoScope_DrawItemSelect(PlayState* play) {
             if (DPAD_GET_CUR_FORM_BTN_ITEM(i) != ITEM_NONE) {
                 ItemId item = DPAD_GET_CUR_FORM_BTN_ITEM(i);
                 if (GameInteractor_Should(VB_DRAW_ITEM_EQUIPPED_OUTLINE,
-                                          (DPAD_GET_CUR_FORM_BTN_SLOT(i) < ITEM_NUM_SLOTS), &item, (s32)i, 1,
+                                          (KaleidoScope_GetItemSlotCell(DPAD_GET_CUR_FORM_BTN_SLOT(i)) >= 0), &item,
+                                          (s32)i, 1,
                                           PAUSE_ITEM)) {
                     gSPVertex(POLY_OPA_DISP++, &pauseCtx->itemVtx[j], 4, 0);
                     POLY_OPA_DISP = Gfx_DrawTexQuadIA8(POLY_OPA_DISP, gEquippedItemOutlineTex, 32, 32, 0);
@@ -296,15 +333,18 @@ void KaleidoScope_DrawItemSelect(PlayState* play) {
     gDPPipeSync(POLY_OPA_DISP++);
 
     // Draw the item icons
-    // Loop over slots (i) and vtx offset (j)
+    // 3Ship [Hyrule] Loop over cells (i) and vtx offset (j); a cell's slot may be MM's or OoT's.
     gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-    for (j = 0, i = 0; i < ITEM_NUM_SLOTS; i++, j += 4) {
+    for (j = 0, i = 0; i < ITEM_GRID_CELLS; i++, j += 4) {
+        s16 slot = KaleidoScope_GetItemCellSlot(i);
+        ItemId itemId = KaleidoScope_GetItemSlotContent(slot);
+
         gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, pauseCtx->alpha);
 
-        if (((void)0, gSaveContext.save.saveInfo.inventory.items[i]) != ITEM_NONE) {
+        if (itemId != ITEM_NONE) {
             if ((pauseCtx->mainState == PAUSE_MAIN_STATE_IDLE) && (pauseCtx->pageIndex == PAUSE_ITEM) &&
-                (pauseCtx->cursorSpecialPos == 0) && gPlayerFormSlotRestrictions[GET_PLAYER_FORM][i]) {
-                if ((sEquipState == EQUIP_STATE_MAGIC_ARROW_HOVER_OVER_BOW_SLOT) && (i == SLOT_ARROW_ICE)) {
+                (pauseCtx->cursorSpecialPos == 0) && KaleidoScope_IsItemSlotUsable(slot)) {
+                if ((sEquipState == EQUIP_STATE_MAGIC_ARROW_HOVER_OVER_BOW_SLOT) && (slot == SLOT_ARROW_ICE)) {
                     // Possible bug:
                     // Supposed to be `SLOT_BOW`, unchanged from OoT, instead increase size of ice arrow icon
                     gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, sMagicArrowEffectsR[pauseCtx->equipTargetItem - 0xB5],
@@ -312,37 +352,35 @@ void KaleidoScope_DrawItemSelect(PlayState* play) {
                                     sMagicArrowEffectsB[pauseCtx->equipTargetItem - 0xB5], pauseCtx->alpha);
 
                     pauseCtx->itemVtx[j + 0].v.ob[0] = pauseCtx->itemVtx[j + 2].v.ob[0] =
-                        pauseCtx->itemVtx[j + 0].v.ob[0] - 2;
+                        pauseCtx->itemVtx[j + 0].v.ob[0] - ITEM_GRID_QUAD_ENLARGE_OFFSET;
                     pauseCtx->itemVtx[j + 1].v.ob[0] = pauseCtx->itemVtx[j + 3].v.ob[0] =
-                        pauseCtx->itemVtx[j + 0].v.ob[0] + 32;
+                        pauseCtx->itemVtx[j + 0].v.ob[0] + ITEM_GRID_ENLARGED_QUAD_SIZE;
                     pauseCtx->itemVtx[j + 0].v.ob[1] = pauseCtx->itemVtx[j + 1].v.ob[1] =
-                        pauseCtx->itemVtx[j + 0].v.ob[1] + 2;
+                        pauseCtx->itemVtx[j + 0].v.ob[1] + ITEM_GRID_QUAD_ENLARGE_OFFSET;
                     pauseCtx->itemVtx[j + 2].v.ob[1] = pauseCtx->itemVtx[j + 3].v.ob[1] =
-                        pauseCtx->itemVtx[j + 0].v.ob[1] - 32;
+                        pauseCtx->itemVtx[j + 0].v.ob[1] - ITEM_GRID_ENLARGED_QUAD_SIZE;
 
-                } else if (i == pauseCtx->cursorSlot[PAUSE_ITEM]) {
+                } else if (i == pauseCtx->cursorPoint[PAUSE_ITEM]) {
                     // Increase the size of the selected item
                     pauseCtx->itemVtx[j + 0].v.ob[0] = pauseCtx->itemVtx[j + 2].v.ob[0] =
-                        pauseCtx->itemVtx[j + 0].v.ob[0] - 2;
+                        pauseCtx->itemVtx[j + 0].v.ob[0] - ITEM_GRID_QUAD_ENLARGE_OFFSET;
                     pauseCtx->itemVtx[j + 1].v.ob[0] = pauseCtx->itemVtx[j + 3].v.ob[0] =
-                        pauseCtx->itemVtx[j + 0].v.ob[0] + 32;
+                        pauseCtx->itemVtx[j + 0].v.ob[0] + ITEM_GRID_ENLARGED_QUAD_SIZE;
                     pauseCtx->itemVtx[j + 0].v.ob[1] = pauseCtx->itemVtx[j + 1].v.ob[1] =
-                        pauseCtx->itemVtx[j + 0].v.ob[1] + 2;
+                        pauseCtx->itemVtx[j + 0].v.ob[1] + ITEM_GRID_QUAD_ENLARGE_OFFSET;
                     pauseCtx->itemVtx[j + 2].v.ob[1] = pauseCtx->itemVtx[j + 3].v.ob[1] =
-                        pauseCtx->itemVtx[j + 0].v.ob[1] - 32;
+                        pauseCtx->itemVtx[j + 0].v.ob[1] - ITEM_GRID_ENLARGED_QUAD_SIZE;
                 }
             }
             // #region 2S2H [Port] Originally this was done in KaleidoScope_Update, but now we are using gSPGrayscale.
-            ItemId itemId = gSaveContext.save.saveInfo.inventory.items[i];
             u8 itemRestricted = GameInteractor_Should(
-                VB_ITEM_BE_RESTRICTED, !gPlayerFormItemRestrictions[GET_PLAYER_FORM][(s32)itemId], &itemId);
+                VB_ITEM_BE_RESTRICTED, !Inventory_IsItemUsableByForm(GET_PLAYER_FORM, itemId), &itemId);
             if (itemRestricted) {
                 gDPSetGrayscaleColor(POLY_OPA_DISP++, 109, 109, 109, 255);
                 gSPGrayscale(POLY_OPA_DISP++, true);
             }
             gSPVertex(POLY_OPA_DISP++, &pauseCtx->itemVtx[j + 0], 4, 0);
-            KaleidoScope_DrawTexQuadRGBA32(
-                play->state.gfxCtx, gItemIcons[((void)0, gSaveContext.save.saveInfo.inventory.items[i])], 32, 32, 0);
+            KaleidoScope_DrawTexQuadRGBA32(play->state.gfxCtx, Hyrule_GetItemIcon(itemId), 32, 32, 0);
             if (itemRestricted) {
                 gSPGrayscale(POLY_OPA_DISP++, false);
             }
@@ -358,14 +396,15 @@ void KaleidoScope_DrawItemSelect(PlayState* play) {
             Gfx_SetupDL39_Opa(play->state.gfxCtx);
             gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
 
-            // Loop over slots (i) and ammoIndex (j)
-            for (j = 0, i = 0; i < ITEM_NUM_SLOTS; i++) {
-                if (gAmmoItems[i] != ITEM_NONE) {
-                    if (((void)0, gSaveContext.save.saveInfo.inventory.items[i]) != ITEM_NONE) {
-                        KaleidoScope_DrawAmmoCount(pauseCtx, play->state.gfxCtx,
-                                                   ((void)0, gSaveContext.save.saveInfo.inventory.items[i]), j);
+            // 3Ship [Hyrule] Loop over cells (i); ammo items are MM's (gAmmoItems) and the Slingshot.
+            for (i = 0; i < ITEM_GRID_CELLS; i++) {
+                s16 slot = KaleidoScope_GetItemCellSlot(i);
+
+                if ((slot < ITEM_NUM_SLOTS) ? (gAmmoItems[slot] != ITEM_NONE) : (slot == SLOT_OOT_SLINGSHOT)) {
+                    if (KaleidoScope_GetItemSlotContent(slot) != ITEM_NONE) {
+                        KaleidoScope_DrawAmmoCount(pauseCtx, play->state.gfxCtx, KaleidoScope_GetItemSlotContent(slot),
+                                                   i);
                     }
-                    j++;
                 }
             }
             Gfx_SetupDL42_Opa(play->state.gfxCtx);
@@ -431,14 +470,14 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                             pauseCtx->cursorXIndex[PAUSE_ITEM] = cursorXIndex;
                             pauseCtx->cursorYIndex[PAUSE_ITEM]++;
 
-                            if (pauseCtx->cursorYIndex[PAUSE_ITEM] >= 4) {
+                            if (pauseCtx->cursorYIndex[PAUSE_ITEM] >= ITEM_GRID_ROWS) {
                                 pauseCtx->cursorYIndex[PAUSE_ITEM] = 0;
                             }
 
                             pauseCtx->cursorPoint[PAUSE_ITEM] =
-                                pauseCtx->cursorXIndex[PAUSE_ITEM] + (pauseCtx->cursorYIndex[PAUSE_ITEM] * 6);
+                                pauseCtx->cursorXIndex[PAUSE_ITEM] + (pauseCtx->cursorYIndex[PAUSE_ITEM] * ITEM_GRID_COLS);
 
-                            if (pauseCtx->cursorPoint[PAUSE_ITEM] >= ITEM_NUM_SLOTS) {
+                            if (pauseCtx->cursorPoint[PAUSE_ITEM] >= ITEM_GRID_CELLS) {
                                 pauseCtx->cursorPoint[PAUSE_ITEM] = pauseCtx->cursorXIndex[PAUSE_ITEM];
                             }
 
@@ -454,7 +493,7 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                     } else if (pauseCtx->stickAdjX > 30) {
                         // move cursor right
                         pauseCtx->cursorShrinkRate = 4.0f;
-                        if (pauseCtx->cursorXIndex[PAUSE_ITEM] <= 4) {
+                        if (pauseCtx->cursorXIndex[PAUSE_ITEM] < ITEM_GRID_COLS - 1) {
                             pauseCtx->cursorXIndex[PAUSE_ITEM]++;
                             pauseCtx->cursorPoint[PAUSE_ITEM]++;
                             moveCursorResult = PAUSE_CURSOR_RESULT_SLOT;
@@ -462,14 +501,14 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                             pauseCtx->cursorXIndex[PAUSE_ITEM] = cursorXIndex;
                             pauseCtx->cursorYIndex[PAUSE_ITEM]++;
 
-                            if (pauseCtx->cursorYIndex[PAUSE_ITEM] >= 4) {
+                            if (pauseCtx->cursorYIndex[PAUSE_ITEM] >= ITEM_GRID_ROWS) {
                                 pauseCtx->cursorYIndex[PAUSE_ITEM] = 0;
                             }
 
                             pauseCtx->cursorPoint[PAUSE_ITEM] =
-                                pauseCtx->cursorXIndex[PAUSE_ITEM] + (pauseCtx->cursorYIndex[PAUSE_ITEM] * 6);
+                                pauseCtx->cursorXIndex[PAUSE_ITEM] + (pauseCtx->cursorYIndex[PAUSE_ITEM] * ITEM_GRID_COLS);
 
-                            if (pauseCtx->cursorPoint[PAUSE_ITEM] >= ITEM_NUM_SLOTS) {
+                            if (pauseCtx->cursorPoint[PAUSE_ITEM] >= ITEM_GRID_CELLS) {
                                 pauseCtx->cursorPoint[PAUSE_ITEM] = pauseCtx->cursorXIndex[PAUSE_ITEM];
                             }
 
@@ -486,7 +525,7 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                 }
 
                 if (moveCursorResult == PAUSE_CURSOR_RESULT_SLOT) {
-                    cursorItem = gSaveContext.save.saveInfo.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]];
+                    cursorItem = KaleidoScope_GetItemCellContent(pauseCtx->cursorPoint[PAUSE_ITEM]);
                 }
             }
         } else if (pauseCtx->cursorSpecialPos == PAUSE_CURSOR_PAGE_LEFT) {
@@ -499,7 +538,7 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                 // Search for slot to move to
                 while (true) {
                     // Check if current cursor has an item in its slot
-                    if (gSaveContext.save.saveInfo.inventory.items[cursorPoint] != ITEM_NONE) {
+                    if (KaleidoScope_GetItemCellContent(cursorPoint) != ITEM_NONE) {
                         pauseCtx->cursorPoint[PAUSE_ITEM] = cursorPoint;
                         pauseCtx->cursorXIndex[PAUSE_ITEM] = cursorXIndex;
                         pauseCtx->cursorYIndex[PAUSE_ITEM] = cursorYIndex;
@@ -509,8 +548,8 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
 
                     // move 1 row down and retry
                     cursorYIndex++;
-                    cursorPoint += 6;
-                    if (cursorYIndex < 4) {
+                    cursorPoint += ITEM_GRID_COLS;
+                    if (cursorYIndex < ITEM_GRID_ROWS) {
                         continue;
                     }
 
@@ -518,7 +557,7 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                     cursorYIndex = 0;
                     cursorPoint = cursorXIndex + 1;
                     cursorXIndex = cursorPoint;
-                    if (cursorXIndex < 6) {
+                    if (cursorXIndex < ITEM_GRID_COLS) {
                         continue;
                     }
 
@@ -530,14 +569,14 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
         } else { // PAUSE_CURSOR_PAGE_RIGHT
             if (pauseCtx->stickAdjX < -30) {
                 KaleidoScope_MoveCursorFromSpecialPos(play);
-                cursorXIndex = 5;
-                cursorPoint = 5; // top row, right columne (SLOT_TRADE_DEED)
+                cursorXIndex = ITEM_GRID_COLS - 1;
+                cursorPoint = ITEM_GRID_COLS - 1; // top row, right column
                 cursorYIndex = 0;
 
                 // Search for slot to move to
                 while (true) {
                     // Check if current cursor has an item in its slot
-                    if (gSaveContext.save.saveInfo.inventory.items[cursorPoint] != ITEM_NONE) {
+                    if (KaleidoScope_GetItemCellContent(cursorPoint) != ITEM_NONE) {
                         pauseCtx->cursorPoint[PAUSE_ITEM] = cursorPoint;
                         pauseCtx->cursorXIndex[PAUSE_ITEM] = cursorXIndex;
                         pauseCtx->cursorYIndex[PAUSE_ITEM] = cursorYIndex;
@@ -547,8 +586,8 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
 
                     // move 1 row down and retry
                     cursorYIndex++;
-                    cursorPoint += 6;
-                    if (cursorYIndex < 4) {
+                    cursorPoint += ITEM_GRID_COLS;
+                    if (cursorYIndex < ITEM_GRID_ROWS) {
                         continue;
                     }
 
@@ -582,7 +621,7 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                         if (pauseCtx->cursorYIndex[PAUSE_ITEM] != 0) {
                             pauseCtx->cursorYIndex[PAUSE_ITEM]--;
                             pauseCtx->cursorShrinkRate = 4.0f;
-                            pauseCtx->cursorPoint[PAUSE_ITEM] -= 6;
+                            pauseCtx->cursorPoint[PAUSE_ITEM] -= ITEM_GRID_COLS;
                             moveCursorResult = PAUSE_CURSOR_RESULT_SLOT;
                         } else {
                             pauseCtx->cursorYIndex[PAUSE_ITEM] = cursorYIndex;
@@ -591,10 +630,10 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                     } else if (pauseCtx->stickAdjY < -30) {
                         // move cursor down
                         moveCursorResult = PAUSE_CURSOR_RESULT_SPECIAL_POS;
-                        if (pauseCtx->cursorYIndex[PAUSE_ITEM] < 3) {
+                        if (pauseCtx->cursorYIndex[PAUSE_ITEM] < ITEM_GRID_ROWS - 1) {
                             pauseCtx->cursorYIndex[PAUSE_ITEM]++;
                             pauseCtx->cursorShrinkRate = 4.0f;
-                            pauseCtx->cursorPoint[PAUSE_ITEM] += 6;
+                            pauseCtx->cursorPoint[PAUSE_ITEM] += ITEM_GRID_COLS;
                             moveCursorResult = PAUSE_CURSOR_RESULT_SLOT;
                         } else {
                             pauseCtx->cursorYIndex[PAUSE_ITEM] = cursorYIndex;
@@ -604,13 +643,13 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                 }
             }
 
-            cursorSlot = pauseCtx->cursorPoint[PAUSE_ITEM];
+            cursorSlot = KaleidoScope_GetItemCellSlot(pauseCtx->cursorPoint[PAUSE_ITEM]); // 3Ship [Hyrule]
             pauseCtx->cursorColorSet = PAUSE_CURSOR_COLOR_SET_YELLOW;
 
             if (moveCursorResult == PAUSE_CURSOR_RESULT_SLOT) {
-                cursorItem = gSaveContext.save.saveInfo.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]];
+                cursorItem = KaleidoScope_GetItemCellContent(pauseCtx->cursorPoint[PAUSE_ITEM]);
             } else if (moveCursorResult != PAUSE_CURSOR_RESULT_SPECIAL_POS) {
-                cursorItem = gSaveContext.save.saveInfo.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]];
+                cursorItem = KaleidoScope_GetItemCellContent(pauseCtx->cursorPoint[PAUSE_ITEM]);
             }
 
             if (cursorItem == ITEM_NONE) {
@@ -750,7 +789,7 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                     pauseCtx->equipTargetItem = cursorItem;
                     pauseCtx->equipTargetSlot = cursorSlot;
                     pauseCtx->mainState = PAUSE_MAIN_STATE_EQUIP_ITEM;
-                    vtxIndex = cursorSlot * 4;
+                    vtxIndex = pauseCtx->cursorPoint[PAUSE_ITEM] * 4; // 3Ship [Hyrule] by cell
                     pauseCtx->equipAnimX = pauseCtx->itemVtx[vtxIndex].v.ob[0] * 10;
                     pauseCtx->equipAnimY = pauseCtx->itemVtx[vtxIndex].v.ob[1] * 10;
                     pauseCtx->equipAnimAlpha = 255;
@@ -778,7 +817,15 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                 } else if ((pauseCtx->debugEditor == DEBUG_EDITOR_NONE) && (pauseCtx->state == PAUSE_STATE_MAIN) &&
                            (pauseCtx->mainState == PAUSE_MAIN_STATE_IDLE) &&
                            CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_A) && (msgCtx->msgLength == 0)) {
-                    if (GameInteractor_Should(VB_KALEIDO_DISPLAY_ITEM_TEXT, true, &cursorItem)) {
+                    // 3Ship [Hyrule] A on the child trade slot puts on the next OoT mask owned (docs/PAUSE.md).
+                    if ((cursorSlot == SLOT_OOT_TRADE_CHILD) && (Hyrule_GetNextChildTradeMask() != ITEM_NONE)) {
+                        Inventory_UpdateItem(play, cursorSlot, Hyrule_GetNextChildTradeMask());
+                        pauseCtx->cursorItem[PAUSE_ITEM] = KaleidoScope_GetItemSlotContent(cursorSlot);
+                        Audio_PlaySfx(NA_SE_SY_DECIDE);
+                    }
+                    // 3Ship [Hyrule] OoT's items have no description here yet.
+                    else if ((cursorItem < ITEM_OOT_BASE) &&
+                        GameInteractor_Should(VB_KALEIDO_DISPLAY_ITEM_TEXT, true, &cursorItem)) {
                         // Give description on item through a message box
                         pauseCtx->itemDescriptionOn = true;
                         if (pauseCtx->cursorYIndex[PAUSE_ITEM] < 2) {
@@ -1547,7 +1594,7 @@ void KaleidoScope_UpdateItemEquip(PlayState* play) {
     // #endregion
 
     if (sEquipState == EQUIP_STATE_MAGIC_ARROW_MOVE_TO_BOW_SLOT) {
-        bowItemVtx = &pauseCtx->itemVtx[SLOT_BOW * 4];
+        bowItemVtx = &pauseCtx->itemVtx[KaleidoScope_GetItemSlotCell(SLOT_BOW) * 4];
         offsetX = ABS_ALT(pauseCtx->equipAnimX - bowItemVtx->v.ob[0] * 10) / sEquipAnimTimer;
         offsetY = ABS_ALT(pauseCtx->equipAnimY - bowItemVtx->v.ob[1] * 10) / sEquipAnimTimer;
     } else {
@@ -1572,13 +1619,13 @@ void KaleidoScope_UpdateItemEquip(PlayState* play) {
         // Update coordinates of item icon while being equipped
         if (sEquipState == EQUIP_STATE_MAGIC_ARROW_MOVE_TO_BOW_SLOT) {
             // target is the bow slot
-            if (pauseCtx->equipAnimX >= (pauseCtx->itemVtx[SLOT_BOW * 4].v.ob[0] * 10)) {
+            if (pauseCtx->equipAnimX >= (pauseCtx->itemVtx[KaleidoScope_GetItemSlotCell(SLOT_BOW) * 4].v.ob[0] * 10)) {
                 pauseCtx->equipAnimX -= offsetX;
             } else {
                 pauseCtx->equipAnimX += offsetX;
             }
 
-            if (pauseCtx->equipAnimY >= (pauseCtx->itemVtx[SLOT_BOW * 4].v.ob[1] * 10)) {
+            if (pauseCtx->equipAnimY >= (pauseCtx->itemVtx[KaleidoScope_GetItemSlotCell(SLOT_BOW) * 4].v.ob[1] * 10)) {
                 pauseCtx->equipAnimY -= offsetY;
             } else {
                 pauseCtx->equipAnimY += offsetY;
