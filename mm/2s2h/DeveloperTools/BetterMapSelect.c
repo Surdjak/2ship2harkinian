@@ -13,7 +13,8 @@ void BetterMapSelect_LoadFileSelect(MapSelectState* mapSelectState);
     { humanName, BetterMapSelect_LoadGame, ENTRANCE(entranceSceneId, 0) },
 #define DEFINE_SCENE_UNSET(_enumValue)
 
-static SceneSelectEntry sBetterScenes[107] = {
+// 3Ship [Hyrule] Sized by the scene table, which now includes the OoT scenes.
+static SceneSelectEntry sBetterScenes[] = {
 #include "tables/scene_table.h"
     { "Chest Grottos", BetterMapSelect_LoadGame, ENTRANCE(GROTTOS, 4) },
     { "Cow Grottos", BetterMapSelect_LoadGame, ENTRANCE(GROTTOS, 10) },
@@ -36,7 +37,7 @@ typedef struct {
     s32 index;
 } BetterMapSelectInfoEntry;
 
-static BetterMapSelectInfoEntry sBetterMapSelectInfo[103] = {
+static BetterMapSelectInfoEntry sBetterMapSelectInfo[] = {
 #include "tables/scene_table.h"
 };
 
@@ -292,10 +293,12 @@ void BetterMapSelect_Update(MapSelectState* mapSelectState) {
         } else if (mapSelectState->opt < 0) {
             mapSelectState->opt = entry.tableCount - 1;
         }
-    } else if (mapSelectState->currentScene == 103 || mapSelectState->currentScene == 104) {
+    } else if (mapSelectState->currentScene == ARRAY_COUNT(sBetterMapSelectInfo) ||
+               mapSelectState->currentScene == ARRAY_COUNT(sBetterMapSelectInfo) + 1) {
         // Cheset/Cow special entries (3Ship: after the OoT scenes)
-        s32 count = mapSelectState->currentScene == 103 ? ARRAY_COUNT(sBetterMapSelectChestGrottoInfo)
-                                                        : ARRAY_COUNT(sBetterMapSelectCowGrottoInfo);
+        s32 count = mapSelectState->currentScene == ARRAY_COUNT(sBetterMapSelectInfo)
+                        ? ARRAY_COUNT(sBetterMapSelectChestGrottoInfo)
+                        : ARRAY_COUNT(sBetterMapSelectCowGrottoInfo);
         if (mapSelectState->opt >= count) {
             mapSelectState->opt = 0;
         } else if (mapSelectState->opt < 0) {

@@ -1,5 +1,6 @@
 #include "HyruleScenes.h"
 #include "HyruleIds.h"
+#include "HyrulePort.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -21,30 +22,24 @@ static_assert(ITEM_STICK_Oot == ITEM_OOT_BASE && ITEM_OOT_BASE > ITEM_NONE, "OoT
 // Spawn entries keep the actor id in 13 bits, and Actor_SpawnSetupActors reads bit 11 (0x800) as a flag.
 static_assert(ACTOR_ID_MAX <= 0x800, "actor ids must stay below 0x800");
 
+static_assert(SCENE_KOKIRI_FOREST_Oot == SCENE_ALLEY + 1, "OoT scenes must follow MM's");
+static_assert(ENTR_SCENE_KOKIRI_FOREST_Oot == ENTR_SCENE_LAUNDRY_POOL + 1, "OoT entrance scenes must follow MM's");
+
 namespace {
 
-struct OotScene {
-    s16 sceneId;
-    s16 entranceSceneId;
-    const char* path;
+// The MM entrance for each OoT entrance index (tools/porting/gen_oot_scenes.py).
+const u32 sOotEntrances[] = {
+#include "HyruleOotEntrances.inc"
 };
 
-const OotScene sOotScenes[] = {
-    { SCENE_KOKIRI_FOREST_Oot, ENTR_SCENE_KOKIRI_FOREST_Oot, "oot/scenes/shared/spot04_scene/spot04_scene" },
-};
-
-const OotScene* FindScene(s16 sceneId) {
-    for (const OotScene& scene : sOotScenes) {
-        if (scene.sceneId == sceneId) {
-            return &scene;
-        }
-    }
-    return nullptr;
+bool IsOotScene(s16 sceneId) {
+    return (sceneId >= SCENE_KOKIRI_FOREST_Oot) && (sceneId < SCENE_MAX);
 }
 
-// OoT exits are OoT entrance numbers. Until Hyrule's entrances exist, every exit leads back to the
-// scene's first spawn.
-u32 sExitList[32];
+bool IsOotEntrance(u32 entrance) {
+    u32 entranceSceneId = ENTRANCE_GET_SCENE(entrance);
+    return (entranceSceneId >= ENTR_SCENE_KOKIRI_FOREST_Oot) && (entranceSceneId < ENTR_SCENE_MAX);
+}
 
 void LoadOotArchive() {
     std::string path = Ship::Context::LocateFileAcrossAppDirs("oot.o2r");
@@ -94,19 +89,59 @@ RegisterShipInitFunc sInitFunc(RegisterHyruleScenes, {});
 } // namespace
 
 extern "C" const char* Hyrule_GetScenePath(s16 sceneId) {
-    const OotScene* scene = FindScene(sceneId);
-    return scene != nullptr ? scene->path : nullptr;
+    static std::string sPath;
+    if (!IsOotScene(sceneId)) {
+        return nullptr;
+    }
+    const char* fileName = gSceneTable[sceneId].segment.fileName;
+    sPath = std::string("oot/scenes/shared/") + fileName + "/" + fileName;
+    return sPath.c_str();
+}
+
+extern "C" u32 Hyrule_EntranceFromOot(u16 ootEntrance) {
+    return (ootEntrance < ARRAY_COUNT(sOotEntrances)) ? sOotEntrances[ootEntrance] : HYRULE_ENTRANCE_NONE;
+}
+
+extern "C" u32 Hyrule_ExitFromOot(u16 ootEntrance) {
+    u32 entrance = Hyrule_EntranceFromOot(ootEntrance);
+    // An exit into a scene that is not loaded yet leads back to the spawn Link came in at.
+    return (entrance != HYRULE_ENTRANCE_NONE) ? entrance : (gSaveContext.save.entrance & ~0xF);
+}
+
+// OoT picks the scene layer from Link's age and the time of day, and puts cutscenes from layer 4 (Play_Init
+// in OoT). MM's layer is 0, or 1 + the cutscene.
+extern "C" s32 Hyrule_GetSceneLayer(u32 entrance, s32 mmSceneLayer) {
+    if (!IsOotEntrance(entrance)) {
+        return mmSceneLayer;
+    }
+    if (mmSceneLayer != 0) {
+        return SCENE_LAYER_CUTSCENE_FIRST_OOT + mmSceneLayer - 1;
+    }
+    // OoT's Kokiri Forest and Hyrule Field exceptions depend on adult Link and the spiritual stones.
+    // TODO: port them with adult Link and OoT's quest items.
+    if (LINK_IS_ADULT_OOT) {
+        return IS_DAY_OOT ? SCENE_LAYER_ADULT_DAY_OOT : SCENE_LAYER_ADULT_NIGHT_OOT;
+    }
+    return IS_DAY_OOT ? SCENE_LAYER_CHILD_DAY_OOT : SCENE_LAYER_CHILD_NIGHT_OOT;
+}
+
+extern "C" u8 Hyrule_SkyboxFromOot(u8 ootSkyboxId) {
+    switch (ootSkyboxId) {
+        case 0x01: // SKYBOX_NORMAL_SKY
+            return SKYBOX_NORMAL_SKY;
+        case 0x05: // SKYBOX_CUTSCENE_MAP
+            return SKYBOX_CUTSCENE_MAP;
+        default:
+            // TODO: OoT's other skyboxes are not ported: the bazaar, market and overcast skies, and the
+            // prerendered rooms' panoramas (SKYBOX_HOUSE_LINK...), drawn when their camera is not fixed.
+            return SKYBOX_NONE;
+    }
 }
 
 extern "C" void Hyrule_AfterSceneCommands(PlayState* play) {
-    const OotScene* scene = FindScene(play->sceneId);
-    if (scene == nullptr) {
+    if (!IsOotScene(play->sceneId)) {
         return;
     }
-    for (u32& exit : sExitList) {
-        exit = Entrance_Create(scene->entranceSceneId, 0, 0);
-    }
-    play->setupExitList = sExitList;
 
     // Player spawn parameters name a camera. In OoT that indexes the collision's camera list; MM looks
     // it up in the actor cutscene camera list (command 0x02), which OoT scenes do not have. The two

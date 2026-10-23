@@ -1,4 +1,5 @@
 #include "global.h"
+#include "HyrulePrerender.h"
 #include "PR/gs2dex.h"
 #include "debug.h"
 
@@ -309,7 +310,8 @@ void Room_DrawImageSingle(PlayState* play, Room* room, u32 flags) {
     OPEN_DISPS(play->state.gfxCtx);
 
     activeCam = GET_ACTIVE_CAM(play);
-    isFixedCamera = false; // Condition is inferred from OoT
+    // 3Ship [Hyrule] As in OoT; MM never uses this camera setting.
+    isFixedCamera = (activeCam->setting == CAM_SET_PREREND_FIXED);
     roomShape = &room->roomShape->image.single;
     entry = Lib_SegmentedToVirtual(roomShape->base.entry);
     drawBackground = (flags & ROOM_DRAW_OPA) && isFixedCamera && (roomShape->source != NULL) &&
@@ -336,9 +338,10 @@ void Room_DrawImageSingle(PlayState* play, Room* room, u32 flags) {
 
                 quakeOffset = Camera_GetQuakeOffset(activeCam);
 
+                // 3Ship [Hyrule] The source is OoT's JPEG background, decoded on first use.
                 Prerender_DrawBackground2D(
-                    &gfx, roomShape->source, roomShape->tlut, roomShape->width, roomShape->height, roomShape->fmt,
-                    roomShape->siz, roomShape->tlutMode, roomShape->tlutCount,
+                    &gfx, Hyrule_GetPrerenderImage(roomShape->source), roomShape->tlut, roomShape->width,
+                    roomShape->height, roomShape->fmt, roomShape->siz, roomShape->tlutMode, roomShape->tlutCount,
                     (quakeOffset.x + quakeOffset.z) * 1.2f + quakeOffset.y * 0.6f,
                     quakeOffset.y * 2.4f + (quakeOffset.x + quakeOffset.z) * 0.3f, 1.0f, 1.0f, 0);
             }
@@ -403,7 +406,8 @@ void Room_DrawImageMulti(PlayState* play, Room* room, u32 flags) {
     OPEN_DISPS(play->state.gfxCtx);
 
     activeCam = GET_ACTIVE_CAM(play);
-    isFixedCamera = false; // Condition is inferred from OoT
+    // 3Ship [Hyrule] As in OoT; MM never uses this camera setting.
+    isFixedCamera = (activeCam->setting == CAM_SET_PREREND_FIXED);
     roomShape = &room->roomShape->image.multi;
     dListsEntry = Lib_SegmentedToVirtual(roomShape->base.entry);
 
@@ -435,8 +439,10 @@ void Room_DrawImageMulti(PlayState* play, Room* room, u32 flags) {
 
                 quakeOffset = Camera_GetQuakeOffset(activeCam);
 
-                Prerender_DrawBackground2D(&gfx, bgEntry->source, bgEntry->tlut, bgEntry->width, bgEntry->height,
-                                           bgEntry->fmt, bgEntry->siz, bgEntry->tlutMode, bgEntry->tlutCount,
+                // 3Ship [Hyrule] The source is OoT's JPEG background, decoded on first use.
+                Prerender_DrawBackground2D(&gfx, Hyrule_GetPrerenderImage(bgEntry->source), bgEntry->tlut,
+                                           bgEntry->width, bgEntry->height, bgEntry->fmt, bgEntry->siz,
+                                           bgEntry->tlutMode, bgEntry->tlutCount,
                                            (quakeOffset.x + quakeOffset.z) * 1.2f + quakeOffset.y * 0.6f,
                                            quakeOffset.y * 2.4f + (quakeOffset.x + quakeOffset.z) * 0.3f, 1.0f, 1.0f,
                                            0);

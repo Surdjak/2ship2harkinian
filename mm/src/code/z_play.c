@@ -48,6 +48,7 @@ u8 sMotionBlurStatus;
 #include "2s2h/framebuffer_effects.h"
 #include <string.h>
 #include "Harness.h"
+#include "HyruleScenes.h"
 
 s32 gDbgCamEnabled = false;
 u8 D_801D0D54 = false;
@@ -627,6 +628,8 @@ void Play_UpdateTransition(PlayState* this) {
 
                 if (gSaveContext.nextCutsceneIndex >= 0xFFF0) {
                     sceneLayer = (gSaveContext.nextCutsceneIndex & 0xF) + 1;
+                    // 3Ship [Hyrule] OoT's cutscene layers start at 4.
+                    sceneLayer = Hyrule_GetSceneLayer(this->nextEntrance, sceneLayer);
                 }
 
                 if ((!(Entrance_GetTransitionFlags(this->nextEntrance + sceneLayer) & 0x8000) ||
@@ -2374,6 +2377,8 @@ void Play_Init(GameState* thisx) {
     } else {
         gSaveContext.sceneLayer = 0;
     }
+    // 3Ship [Hyrule] OoT scenes have age and time layers, and their cutscene layers start at 4.
+    gSaveContext.sceneLayer = Hyrule_GetSceneLayer(gSaveContext.save.entrance, gSaveContext.sceneLayer);
 
     sceneLayer = gSaveContext.sceneLayer;
 

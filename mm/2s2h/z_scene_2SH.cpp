@@ -3,6 +3,7 @@
 #include <ship/resource/type/Blob.h>
 #include <memory>
 #include <cassert>
+#include "HyruleScenes.h"
 #include <ship/utils/StringHelper.h>
 #include <fast/resource/type/DisplayList.h>
 #include <libultraship/bridge/resourcebridge.h>
@@ -316,6 +317,10 @@ void Scene_CommandSkyboxSettings(PlayState* play, SOH::ISceneCommand* cmd) {
     SOH::SetSkyboxSettings* settings = (SOH::SetSkyboxSettings*)cmd;
 
     play->skyboxId = settings->settings.skyboxId & 3;
+    // 3Ship [Hyrule] OoT's skybox ids go up to 0x27.
+    if (Hyrule_GetScenePath(play->sceneId) != nullptr) {
+        play->skyboxId = Hyrule_SkyboxFromOot(settings->settings.skyboxId);
+    }
     // BENTODO z_scene.c reads from skyboxSettings.skyboxConfig not weather
     // Settings uses names from OOT
     play->envCtx.skyboxConfig = play->envCtx.changeSkyboxNextConfig = settings->settings.weather;
@@ -335,6 +340,12 @@ void Scene_CommandExitList(PlayState* play, SOH::ISceneCommand* cmd) {
     static std::vector<u32> sExitList;
     SOH::SetExitList* exitList = (SOH::SetExitList*)cmd;
     sExitList.assign(exitList->exits.begin(), exitList->exits.end());
+    // 3Ship [Hyrule] OoT scenes' exits are OoT entrance indices.
+    if (Hyrule_GetScenePath(play->sceneId) != nullptr) {
+        for (u32& exit : sExitList) {
+            exit = Hyrule_ExitFromOot(exit);
+        }
+    }
     play->setupExitList = sExitList.data();
 }
 
@@ -362,12 +373,25 @@ void Scene_CommandCutsceneScriptList(PlayState* play, SOH::ISceneCommand* cmd) {
 }
 
 static bool shouldEndSceneCommands = false;
+
+// 3Ship [Hyrule] OoT's cutscene layers can be past a scene's alternate headers.
+static SOH::Scene* AltHeader(SOH::SetAlternateHeaders* headers, s32 layer) {
+    if ((size_t)(layer - 1) >= headers->headers.size()) {
+        return nullptr;
+    }
+    return std::static_pointer_cast<SOH::Scene>(headers->headers[layer - 1]).get();
+}
+
 void Scene_CommandAltHeaderList(PlayState* play, SOH::ISceneCommand* cmd) {
     SOH::SetAlternateHeaders* headers = (SOH::SetAlternateHeaders*)cmd;
 
     if (gSaveContext.sceneLayer != 0) {
-        SOH::Scene* desiredHeader =
-            std::static_pointer_cast<SOH::Scene>(headers->headers[gSaveContext.sceneLayer - 1]).get();
+        SOH::Scene* desiredHeader = AltHeader(headers, gSaveContext.sceneLayer);
+        // 3Ship [Hyrule] OoT uses the adult day layer when a scene has no adult night layer.
+        if ((desiredHeader == nullptr) && (gSaveContext.sceneLayer == SCENE_LAYER_ADULT_NIGHT_OOT) &&
+            (Hyrule_GetScenePath(play->sceneId) != nullptr)) {
+            desiredHeader = AltHeader(headers, SCENE_LAYER_ADULT_DAY_OOT);
+        }
 
         if (desiredHeader != nullptr) {
             OTRScene_ExecuteCommands(play, desiredHeader);

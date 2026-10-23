@@ -1,6 +1,7 @@
 #include "global.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "GameInteractor/GameInteractor.h"
+#include "HyruleScenes.h"
 
 /**
  * Spawn an object file of a specified ID that will persist through room changes.
@@ -552,7 +553,9 @@ void Scene_CommandAnimatedMaterials(PlayState* play, SceneCmd* cmd) {
  * Sets the exit fade from the next entrance index.
  */
 void Scene_SetExitFade(PlayState* play) {
-    play->transitionType = Entrance_GetTransitionFlags(play->nextEntrance) & 0x7F;
+    // 3Ship [Hyrule] OoT takes the exit fade from the layer for Link's age and the time of day.
+    play->transitionType =
+        Entrance_GetTransitionFlags(play->nextEntrance + Hyrule_GetSceneLayer(play->nextEntrance, 0)) & 0x7F;
 }
 #if 0
 void (*sSceneCmdHandlers[SCENE_CMD_MAX])(PlayState*, SceneCmd*) = {

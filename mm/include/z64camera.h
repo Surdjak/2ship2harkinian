@@ -1096,6 +1096,23 @@ typedef struct {
 #define CAM_FUNCDATA_FIXD3(interfaceFlags) \
     { interfaceFlags, CAM_DATA_INTERFACE_FLAGS }
 
+// 3Ship [Hyrule] Camera_Fixed3 is ported from OoT for its prerendered rooms.
+typedef struct {
+    /* 0x0 */ s16 interfaceFlags;
+} Fixed3ReadOnlyData; // size = 0x2
+
+typedef struct {
+    /* 0x0 */ Vec3s rot;
+    /* 0x6 */ s16 fov;
+    /* 0x8 */ s16 updDirTimer;
+    /* 0xA */ s16 roomImageOverrideBgCamIndex; // "jfifId" in OoT
+} Fixed3ReadWriteData; // size = 0xC
+
+typedef struct {
+    /* 0x0 */ Fixed3ReadOnlyData roData;
+    /* 0x2 */ Fixed3ReadWriteData rwData;
+} Fixed3; // size = 0xE
+
 
 /*================================
  *   Camera_Subject1() Data
@@ -1524,6 +1541,7 @@ typedef union {
     KeepOn4 keep4;
     Fixed1 fixd1;
     Fixed2 fixd2;
+    Fixed3 fixd3; // 3Ship [Hyrule]
     Subject1 subj1;
     Unique2 uniq2;
     Unique0 uniq0;

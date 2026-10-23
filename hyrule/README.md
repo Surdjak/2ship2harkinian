@@ -15,8 +15,9 @@ Re-run the CMake configure step after adding or removing files, because sources 
 `5a57a0cb`, the last one before SoH replaced ZAPD with Torch:
 
 - `assets/extractor/` has the config, file list, symbol lists and texture pool.
-- `assets/xml/N64_NTSC_11/` has XMLs for Kokiri Forest (`spot04`), the objects its rooms load,
-  `gameplay_keep`, `gameplay_field_keep`, `link_animetion` and the overlays of ported actors.
+- `assets/xml/N64_NTSC_11/` has XMLs for the scenes in the table below, the objects Kokiri Forest's rooms
+  load, `gameplay_keep`, `gameplay_field_keep`, `link_animetion`, the audio and the overlays of ported
+  actors.
 
 Only the N64 NTSC 1.1 ROM is supported so far. To extract:
 
@@ -47,28 +48,76 @@ converters live in `OTRExporter/OTRExporter/OotToMm.cpp` and are skeletons:
 ## OoT scenes in game
 
 `ExtractOotAssets` copies `oot.o2r` next to the game, and `HyruleScenes.cpp` loads it. OoT scenes follow
-MM's in the scene table, suffixed `_Oot`. So far there is one:
+MM's in the scene table, suffixed `_Oot`. `tools/porting/gen_oot_scenes.py` generates them from SoH's
+tables: the scene table entries (`mm/include/tables/scene_table_oot.h`), their entrance scenes
+(`HyruleEntranceScenes.h`), their entrance tables (`HyruleEntranceTable.inc`) and the map from OoT
+entrance indices to MM entrances (`HyruleOotEntrances.inc`). To add a scene, append it to the script's
+`SCENES`, add its XML under `assets/xml` and rerun the script and `ExtractOotAssets`.
 
 | Scene | Scene id | Entrance (spawn 0) |
 |-------|----------|--------------------|
 | Kokiri Forest | `SCENE_KOKIRI_FOREST_Oot` (0x71) | `0xDC00` |
+| Link's House | `SCENE_LINKS_HOUSE_Oot` (0x72) | `0xDE00` |
+| Kokiri Shop | `SCENE_KOKIRI_SHOP_Oot` (0x73) | `0xE000` |
+| Know-It-All Brothers' House | `SCENE_KNOW_IT_ALL_BROS_HOUSE_Oot` (0x74) | `0xE200` |
+| Twins' House | `SCENE_TWINS_HOUSE_Oot` (0x75) | `0xE400` |
+| Mido's House | `SCENE_MIDOS_HOUSE_Oot` (0x76) | `0xE600` |
+| Saria's House | `SCENE_SARIAS_HOUSE_Oot` (0x77) | `0xE800` |
+| Lost Woods | `SCENE_LOST_WOODS_Oot` (0x78) | `0xEA00` |
 
 To go there:
 
-- start the game with `HYRULE_BOOT_ENTRANCE=0xDC00`, which skips the title screen and starts a debug
+- start the game with `HYRULE_BOOT_ENTRANCE=<entrance>`, which skips the title screen and starts a debug
   save there as human Link (add `HYRULE_BOOT_TIME=<hhmm>` to choose the time of day);
-- in the console, run `entrance dc00`;
-- or pick "Kokiri Forest (OoT)" in Better Map Select.
+- in the console, run `entrance <entrance>`;
+- or pick the scene (for example "Kokiri Forest (OoT)") in Better Map Select.
 
-What works: the scene and its rooms load, render and collide; MM's Link spawns at OoT's spawn points
+What works: the scenes and their rooms load, render and collide; MM's Link spawns at OoT's spawn points
 and walks between rooms through the room-loading planes (`En_Holl`, mapped to MM's). Collision camera
 settings are mapped to MM's (`OotToMm::CameraSetting`), and a spawn's camera index refers to the
 collision camera list as it does in OoT. Room actor lists spawn the ported OoT actors (see below).
 
+### Entrances and exits
+
+OoT groups its entrances by scene layer: child day, child night, adult day, adult night, then cutscenes.
+Each group becomes one MM entrance of its scene, whose spawn bits are the group's OoT spawn (unique in
+every OoT scene) and whose layers are OoT's. So `ENTRANCE(KOKIRI_FOREST_Oot, 3)` (0xDC30) is Kokiri
+Forest's spawn 3, and an OoT entrance index past the start of its group is that layer of the group's
+entrance. The flags keep OoT's layout, which is MM's; OoT's circle transitions do not exist in MM and
+become fades of the same color and speed.
+
+- **Exits:** OoT scenes' exit lists hold OoT entrance indices; `Scene_CommandExitList` turns them into
+  MM entrances (`Hyrule_ExitFromOot`). An exit into a scene that is not loaded yet leads back to the
+  spawn Link came in at.
+- **Scene layers:** for OoT entrances, `Play_Init` picks the layer as OoT does
+  (`Hyrule_GetSceneLayer`): child day or night (OoT's day is 6:30 to 18:00, MM's `isNight`), and
+  cutscenes from layer 4. OoT's adult layers and its two exceptions (adult Kokiri Forest after the
+  Forest Temple, child Hyrule Field with the three spiritual stones) wait for adult Link and OoT's
+  quest items. The exit fade and the transition setup use the same layer, and a missing adult night
+  layer falls back to adult day.
+- **Skyboxes:** OoT's normal sky and cutscene map use MM's; OoT's other skyboxes are not ported and
+  show nothing (`Hyrule_SkyboxFromOot`).
+
+### Prerendered rooms
+
+The houses and the shop are OoT's prerendered rooms: a JPEG background drawn behind the room's depth
+geometry, from the scene camera it was rendered with (`CAM_SET_PREREND_FIXED`). MM kept that camera
+setting and the room drawing code but never used them, so 3Ship ports OoT's `Camera_Fixed3`, draws
+the background when that camera is active (`z_room.c`), and decodes the JPEG on first use
+(`HyrulePrerender.cpp`, as SoH does).
+
 Not yet:
 
-- **Actors:** only the first wave is ported, so other OoT actors in room lists do not appear.
-- **Exits:** every exit leads back to the scene's first spawn.
+- OoT draws a prerendered panorama through its skybox system (`SKYBOX_HOUSE_MIDO` and the like) when
+  the camera in such a room is not the fixed one: always in Mido's House, whose spawn has no camera
+  (so it shows the bare depth geometry for now), and in first-person view in all of them. The pivot
+  camera (`Camera_Unique7`) is not ported either.
+- The backgrounds are 4:3; in a wider window the sides show the depth geometry.
+
+Not yet:
+
+- **Actors:** only some waves are ported, so other OoT actors in room lists do not appear.
+- **Scenes:** only the ones above; exits into others lead back to the spawn Link came in at.
 - **OoT sound effects:** the OoT-only sound effects are not played yet (see Audio).
 - **Scene effects:** OoT's per-scene animated textures are not drawn.
 - **Cameras:** OoT settings with no MM counterpart (crawlspaces, magic beans, fishing, boss arenas,

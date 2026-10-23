@@ -5106,7 +5106,60 @@ s32 Camera_Fixed2(Camera* camera) {
  * Used by the unused PREREND_FIXED Camera Setting. Remnant of OoT
  */
 s32 Camera_Fixed3(Camera* camera) {
-    return Camera_Noop(camera);
+    // 3Ship [Hyrule] Ported from OoT for its prerendered rooms, whose backgrounds were rendered from the
+    // camera position, rotation and fov in the scene's camera data.
+    Vec3f* eye = &camera->eye;
+    Vec3f* at = &camera->at;
+    Vec3f* eyeNext = &camera->eyeNext;
+    VecGeo atOffset;
+    BgCamFuncData* bgCamFuncData = (BgCamFuncData*)Camera_GetBgCamOrActorCsCamFuncData(camera, camera->bgCamIndex);
+    Fixed3ReadOnlyData* roData = &camera->paramData.fixd3.roData;
+    Fixed3ReadWriteData* rwData = &camera->paramData.fixd3.rwData;
+
+    if (RELOAD_PARAMS(camera)) {
+        CameraModeValue* values = sCameraSettings[camera->setting].cameraModes[camera->mode].values;
+
+        roData->interfaceFlags = GET_NEXT_RO_DATA(values);
+        *eyeNext = Camera_Vec3sToVec3f(&bgCamFuncData->pos);
+        *eye = *eyeNext;
+        rwData->rot = bgCamFuncData->rot;
+        rwData->fov = bgCamFuncData->fov;
+        rwData->roomImageOverrideBgCamIndex = bgCamFuncData->roomImageOverrideBgCamIndex;
+        if (rwData->fov == -1) {
+            rwData->fov = 6000;
+        }
+        if (rwData->fov <= 360) {
+            rwData->fov *= 100;
+        }
+    }
+
+    if (camera->animState == 0) {
+        rwData->updDirTimer = 5;
+        camera->animState++;
+    }
+
+    if (bgCamFuncData->roomImageOverrideBgCamIndex != rwData->roomImageOverrideBgCamIndex) {
+        rwData->roomImageOverrideBgCamIndex = bgCamFuncData->roomImageOverrideBgCamIndex;
+        rwData->updDirTimer = 5;
+    }
+
+    if (rwData->updDirTimer > 0) {
+        rwData->updDirTimer--;
+        sUpdateCameraDirection = true;
+    } else {
+        sUpdateCameraDirection = false;
+    }
+
+    atOffset.r = 150.0f;
+    atOffset.yaw = rwData->rot.y;
+    atOffset.pitch = -rwData->rot.x;
+    *at = OLib_AddVecGeoToVec3f(eye, &atOffset);
+    sCameraInterfaceFlags = roData->interfaceFlags;
+    camera->roll = 0;
+    camera->fov = rwData->fov * 0.01f;
+    camera->atLerpStepScale = 0.0f;
+
+    return true;
 }
 
 s32 Camera_Fixed4(Camera* camera) {

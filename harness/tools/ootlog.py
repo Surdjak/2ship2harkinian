@@ -25,13 +25,16 @@ MM_ACTORS = {0x0000: 0x0000, 0x0015: 0x000E, 0x0023: 0x0018}
 
 
 def scene_table(path, name_arg):
-    """Maps each scene's file name to (id, enum name)."""
+    """Maps each scene's file name to (id, enum name), following the table's #includes."""
     table = {}
     for line in open(path):
         m = SCENE.match(line.strip())
         if m:
             args = re.match(r".*DEFINE_SCENE\(([^)]*)\)", line).group(1).split(",")
             table[m.group(2)] = (int(m.group(1), 16), args[name_arg].strip())
+        include = re.match(r'#include "tables/(\w+\.h)"', line.strip())
+        if include:
+            table.update(scene_table(os.path.join(os.path.dirname(path), include.group(1)), name_arg))
     return table
 
 
