@@ -1,4 +1,5 @@
 #include "AudioCollection.h"
+#include "HyruleIds.h"
 #include "sequence.h"
 #include <ship/utils/StringHelper.h>
 #include <libultraship/bridge/consolevariablebridge.h>
@@ -394,6 +395,10 @@ uint16_t AudioCollection::GetOriginalSequence(uint16_t seqId) {
     // There are 127 original sequences. If the ID is less than that we don't need to do
     // any lookups
     if (seqId <= GetMaxOriginalSeqId()) {
+        return seqId;
+    }
+    // 3Ship [Hyrule] OoT's sequences are original too (mm/src/audio/lib/load.c).
+    if (seqId >= SEQ_OOT_BASE && seqId < SEQ_OOT_BASE + 0x100) {
         return seqId;
     }
 

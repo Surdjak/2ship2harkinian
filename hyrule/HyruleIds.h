@@ -11,3 +11,8 @@
 // Text ids stay 16-bit: MM's run to 0x354C (and 0xFFFC), OoT's to 0x71B2, so OoT's fit above 0x8000.
 #define TEXT_OOT_BASE 0x8000
 #define TEXT_OOT(ootTextId) (TEXT_OOT_BASE + (ootTextId))
+// Sequence ids are 16-bit in 2Ship. OoT's start at 0x400, clear of MM's (below 0x80) and of the ids the
+// audio editor and custom sequences use above them. OoT's soundfonts follow MM's, so their ids are
+// assigned at load time (mm/src/audio/lib/load.c).
+#define SEQ_OOT_BASE 0x400
+#define SEQ_OOT(ootSeqId) (SEQ_OOT_BASE + (ootSeqId))

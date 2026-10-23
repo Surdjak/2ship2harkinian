@@ -56,7 +56,7 @@ MM's in the scene table, suffixed `_Oot`. So far there is one:
 To go there:
 
 - start the game with `HYRULE_BOOT_ENTRANCE=0xDC00`, which skips the title screen and starts a debug
-  save there as human Link;
+  save there as human Link (add `HYRULE_BOOT_TIME=<hhmm>` to choose the time of day);
 - in the console, run `entrance dc00`;
 - or pick "Kokiri Forest (OoT)" in Better Map Select.
 
@@ -69,7 +69,8 @@ Not yet:
 
 - **Actors:** only the first wave is ported, so other OoT actors in room lists do not appear.
 - **Exits:** every exit leads back to the scene's first spawn.
-- **Music:** none plays, since OoT's sequences are not extracted.
+- **Ambience and OoT sound effects:** OoT's night ambience (nature sounds) and the OoT-only sound
+  effects are not played yet (see Audio).
 - **Scene effects:** OoT's per-scene animated textures are not drawn.
 - **Cameras:** OoT settings with no MM counterpart (crawlspaces, magic beans, fishing, boss arenas,
   some temple rooms) use a general MM setting.
@@ -207,6 +208,22 @@ at `TEXT_OOT_BASE`.
 The text itself is converted at extraction (`OotToMm::ConvertMessage`). Textbox types are kept, which
 works for signs (type 1 is the wooden board in both games); OoT's other types, colours and icons are
 not checked yet.
+
+## Audio
+
+`assets/xml/N64_NTSC_11/audio/Audio.xml` extracts OoT's 110 sequences, 38 soundfonts and 451 samples
+into `oot.o2r` under `oot/audio/`. At startup (`mm/src/audio/lib/load.c`) OoT's soundfonts are given
+the ids after MM's, custom soundfonts follow them, and OoT's sequences are loaded at `SEQ_OOT_BASE`
+(0x400) + their OoT id with their font lists shifted to match. 0x400 is clear of MM's sequences (below
+0x80) and of the ids the audio editor and custom sequences use; sequence ids are 16-bit in 2Ship.
+
+Hyrule scenes name OoT sequences, so `Hyrule_AfterSceneCommands` adds `SEQ_OOT_BASE` to the scene's
+music. MM plays a scene's music by day and its ambience at night, unless the ambience is 0x13 (none),
+as OoT does. OoT's other nature ambiences are not MM's, so they are switched off for now and Hyrule is
+quiet at night. Sequence flags (resume, fanfare, enemy music...) come from OoT's table for OoT's
+sequences (`HyruleAudio.c`, through `Audio_GetSeqFlags`); the two games use the same flag bits.
+
+Kokiri Forest plays its theme by day (`HYRULE_BOOT_TIME=1200` with the boot shortcut).
 
 ## Event flags
 

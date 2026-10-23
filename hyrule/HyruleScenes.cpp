@@ -57,14 +57,16 @@ void LoadOotArchive() {
 }
 
 // For tests and quick checks: HYRULE_BOOT_ENTRANCE=<entrance> skips the title screen and starts a debug
-// save at that entrance, the same way map select does.
+// save at that entrance, the same way map select does. HYRULE_BOOT_TIME=<hhmm> sets the time of day.
 void BootToEntrance() {
     const char* value = std::getenv("HYRULE_BOOT_ENTRANCE");
     if (value == nullptr || value[0] == '\0') {
         return;
     }
     u32 entrance = (u32)std::strtoul(value, nullptr, 0);
-    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnConsoleLogoUpdate>([entrance]() {
+    const char* timeValue = std::getenv("HYRULE_BOOT_TIME");
+    s32 time = (timeValue != nullptr && timeValue[0] != '\0') ? std::atoi(timeValue) : -1;
+    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnConsoleLogoUpdate>([entrance, time]() {
         static bool sBooted = false;
         if (sBooted) {
             return;
@@ -76,13 +78,15 @@ void BootToEntrance() {
         // ConsoleLogoState and MapSelectState both start with their GameState, which is all
         // MapSelect_LoadGame uses.
         MapSelect_LoadGame((MapSelectState*)gGameState, entrance, 0);
+        if (time >= 0) {
+            gSaveContext.save.time = CLOCK_TIME(time / 100, time % 100);
+        }
     });
 }
 
 void RegisterHyruleScenes() {
     LoadOotArchive();
     BootToEntrance();
-
 }
 
 RegisterShipInitFunc sInitFunc(RegisterHyruleScenes, {});
@@ -113,7 +117,13 @@ extern "C" void Hyrule_AfterSceneCommands(PlayState* play) {
     // not have. TODO: build one from OoT's camera cutscenes when OoT actors need them.
     CutsceneManager_Init(play, nullptr, 0);
 
-    // OoT sequence ids are not MM's. TODO: play OoT music once its sequences are extracted.
-    play->sceneSequences.seqId = NA_BGM_DISABLED;
-    play->sceneSequences.ambienceId = AMBIENCE_ID_DISABLED;
+    // The scene's sound settings hold OoT's sequence id; OoT's sequences are loaded at SEQ_OOT_BASE.
+    if (play->sceneSequences.seqId != NA_BGM_NO_MUSIC) {
+        play->sceneSequences.seqId = SEQ_OOT(play->sceneSequences.seqId);
+    }
+    // OoT's nature ambience 0x13 means none, so the music plays all day, as MM's AMBIENCE_ID_13 does.
+    // TODO: OoT's other nature ambiences are not MM's ambience ids; they are left off until ported.
+    if (play->sceneSequences.ambienceId != AMBIENCE_ID_13) {
+        play->sceneSequences.ambienceId = AMBIENCE_ID_DISABLED;
+    }
 }

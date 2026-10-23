@@ -1255,8 +1255,14 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
     int customSeqListSize = 0;
     char** seqList = ResourceMgr_ListFiles("audio/sequences*", &seqListSize);
     char** customSeqList = ResourceMgr_ListFiles("custom/music/*", &customSeqListSize);
+    // 3Ship [Hyrule] OoT's sequences, from oot.o2r, at SEQ_OOT_BASE + their OoT id.
+    int ootSeqListSize = 0;
+    char** ootSeqList = ResourceMgr_ListFiles("oot/audio/sequences*", &ootSeqListSize);
     gSequenceMapSize = (size_t)(seqListSize + customSeqListSize);
-    gSequenceMap = malloc(gSequenceMapSize * sizeof(char*));
+    if (ootSeqListSize > 0) {
+        gSequenceMapSize = MAX(gSequenceMapSize, (size_t)(SEQ_OOT_BASE + ootSeqListSize));
+    }
+    gSequenceMap = calloc(gSequenceMapSize, sizeof(char*));
     gAudioCtx.seqLoadStatus = calloc(gSequenceMapSize, sizeof(u8));
 
     memset(&gAudioCtx.seqLoadStatus[seqListSize], LOAD_STATUS_PERMANENT, customSeqListSize);
@@ -1283,6 +1289,32 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
     }
 
     free(fntList);
+
+    // 3Ship [Hyrule] OoT's soundfonts follow MM's, and OoT's sequences name them with that offset. The
+    // resources stay cached, so the changed ids are what later loads see.
+    int ootFntListSize = 0;
+    char** ootFntList = ResourceMgr_ListFiles("oot/audio/fonts*", &ootFntListSize);
+    int ootFontStart = fntListSize;
+    gFontMap = realloc(gFontMap, (fntListSize + ootFntListSize + customFntListSize) * sizeof(char*));
+    gAudioCtx.fontLoadStatus = realloc(gAudioCtx.fontLoadStatus, fntListSize + ootFntListSize + customFntListSize);
+    memset(&gAudioCtx.fontLoadStatus[fntListSize], 0, ootFntListSize + customFntListSize);
+    for (int i = 0; i < ootFntListSize; i++) {
+        SoundFont* sf = ResourceMgr_LoadAudioSoundFontByName(ootFntList[i]);
+        sf->fntIndex += ootFontStart;
+        gFontMap[sf->fntIndex] = strdup(ootFntList[i]);
+    }
+    free(ootFntList);
+    for (int i = 0; i < ootSeqListSize; i++) {
+        SequenceData* sDat = ResourceMgr_LoadSeqPtrByName(ootSeqList[i]);
+        sDat->seqNumber += SEQ_OOT_BASE;
+        for (int f = 0; f < sDat->numFonts; f++) {
+            sDat->fonts[f] += ootFontStart;
+        }
+        gSequenceMap[sDat->seqNumber] = strdup(ootSeqList[i]);
+    }
+    free(ootSeqList);
+    gFontMapSize = fntListSize + ootFntListSize + customFntListSize;
+    fntListSize += ootFntListSize;
 
     int customFontStart = fntListSize;
     for (int i = customFontStart; i < customFntListSize + fntListSize; i++) {
@@ -1333,7 +1365,9 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
             sDat->numFonts = 1;
         }
 
-        while (AudioCollection_HasSequenceNum(seqNum)) {
+        // 3Ship [Hyrule] Custom sequences also skip OoT's.
+        while (AudioCollection_HasSequenceNum(seqNum) ||
+               ((seqNum >= SEQ_OOT_BASE) && (seqNum < SEQ_OOT_BASE + ootSeqListSize))) {
             seqNum++;
         }
 

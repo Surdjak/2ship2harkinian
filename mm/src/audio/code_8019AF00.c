@@ -415,6 +415,19 @@ u8 sSeqFlags[] = {
     0,                                 // NA_BGM_END_CREDITS_SECOND_HALF
 };
 
+// 3Ship [Hyrule] Flags for MM's sequences and OoT's (at SEQ_OOT_BASE); other ids, such as custom
+// sequences, have none.
+u8 Hyrule_GetOotSeqFlags(u16 ootSeqId);
+static u8 Audio_GetSeqFlags(u16 seqId) {
+    if (seqId < ARRAY_COUNT(sSeqFlags)) {
+        return sSeqFlags[seqId];
+    }
+    if (seqId >= SEQ_OOT_BASE) {
+        return Hyrule_GetOotSeqFlags(seqId - SEQ_OOT_BASE);
+    }
+    return 0;
+}
+
 s8 sSpecReverbs[] = {
     0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
@@ -5493,7 +5506,7 @@ void Audio_StartSceneSequence(u16 seqId) {
     u8 skipHarpIntro;
     seqId = AudioEditor_GetOriginalSeq(seqId);
 
-    if ((sSeqFlags[sPrevSceneSeqId] & SEQ_FLAG_RESUME_PREV) && (sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_RESUME)) {
+    if ((Audio_GetSeqFlags(sPrevSceneSeqId) & SEQ_FLAG_RESUME_PREV) && (Audio_GetSeqFlags(seqId) & SEQ_FLAG_RESUME)) {
         // Resume the sequence from the point where it left off last time it was played in the scene
         if ((sSeqResumePoint & 0x3F) != 0) {
             fadeInDuration = 30;
@@ -5507,26 +5520,26 @@ void Audio_StartSceneSequence(u16 seqId) {
         // Start the sequence from the beginning
 
         // Writes to ioPort 7. See `SEQ_FLAG_SKIP_HARP_INTRO` for writing a value of 1 to ioPort 7.
-        if (sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_SKIP_HARP_INTRO) {
+        if (Audio_GetSeqFlags(seqId) & SEQ_FLAG_SKIP_HARP_INTRO) {
             skipHarpIntro = 1;
         } else {
             skipHarpIntro = (u8)SEQ_IO_VAL_NONE;
         }
         Audio_PlaySequenceWithSeqPlayerIO(SEQ_PLAYER_BGM_MAIN, seqId, 0, 7, skipHarpIntro);
 
-        if (!(sSeqFlags[seqId] & SEQ_FLAG_RESUME_PREV)) {
+        if (!(Audio_GetSeqFlags(seqId) & SEQ_FLAG_RESUME_PREV)) {
             // Reset the sequence resumePoint
             sSeqResumePoint = SEQ_RESUME_POINT_NONE;
         }
     }
-    sPrevSceneSeqId = seqId & 0xFF;
+    sPrevSceneSeqId = seqId; // 3Ship [Hyrule] was masked to 8 bits, which turned OoT ids into MM ones
 }
 
 void Audio_UpdateSceneSequenceResumePoint(void) {
     u16 seqId = AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN);
     seqId = AudioEditor_GetOriginalSeq(seqId);
 
-    if ((seqId != NA_BGM_DISABLED) && (sSeqFlags[seqId] & SEQ_FLAG_RESUME)) {
+    if ((seqId != NA_BGM_DISABLED) && (Audio_GetSeqFlags(seqId) & SEQ_FLAG_RESUME)) {
         if (sSeqResumePoint != SEQ_RESUME_POINT_NONE) {
             // Get the current point to resume from
             sSeqResumePoint = gAudioCtx.seqPlayers[SEQ_PLAYER_BGM_MAIN].seqScriptIO[3];
@@ -5592,11 +5605,11 @@ void Audio_IncreaseTempoForTimedMinigame(void) {
 // 127
 void Audio_PlaySequenceInCutscene(u16 seqId) {
     seqId = AudioEditor_GetOriginalSeq(seqId);
-    if (sSeqFlags[seqId] & SEQ_FLAG_FANFARE) {
+    if (Audio_GetSeqFlags(seqId) & SEQ_FLAG_FANFARE) {
         Audio_PlayFanfare(seqId);
-    } else if (sSeqFlags[seqId] & SEQ_FLAG_FANFARE_KAMARO) {
+    } else if (Audio_GetSeqFlags(seqId) & SEQ_FLAG_FANFARE_KAMARO) {
         SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_FANFARE, 0, seqId);
-    } else if (sSeqFlags[seqId] & SEQ_FLAG_NO_AMBIENCE) {
+    } else if (Audio_GetSeqFlags(seqId) & SEQ_FLAG_NO_AMBIENCE) {
         SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_SUB, 0, seqId);
     } else {
         Audio_PlaySequenceWithSeqPlayerIO(SEQ_PLAYER_BGM_MAIN, seqId, 0, 7, SEQ_IO_VAL_NONE);
@@ -5608,11 +5621,11 @@ void Audio_PlaySequenceInCutscene(u16 seqId) {
 
 void Audio_StopSequenceInCutscene(u16 seqId) {
     seqId = AudioEditor_GetOriginalSeq(seqId);
-    if (sSeqFlags[seqId] & SEQ_FLAG_FANFARE) {
+    if (Audio_GetSeqFlags(seqId) & SEQ_FLAG_FANFARE) {
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 0);
-    } else if (sSeqFlags[seqId] & SEQ_FLAG_FANFARE_KAMARO) {
+    } else if (Audio_GetSeqFlags(seqId) & SEQ_FLAG_FANFARE_KAMARO) {
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 0);
-    } else if (sSeqFlags[seqId] & SEQ_FLAG_NO_AMBIENCE) {
+    } else if (Audio_GetSeqFlags(seqId) & SEQ_FLAG_NO_AMBIENCE) {
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_SUB, 0);
     } else {
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
@@ -5624,9 +5637,9 @@ s32 Audio_IsSequencePlaying(u16 seqId) {
 
     u8 seqPlayerIndex = SEQ_PLAYER_BGM_MAIN;
 
-    if (sSeqFlags[origSeqId] & SEQ_FLAG_FANFARE) {
+    if (Audio_GetSeqFlags(origSeqId) & SEQ_FLAG_FANFARE) {
         seqPlayerIndex = SEQ_PLAYER_FANFARE;
-    } else if (sSeqFlags[origSeqId] & SEQ_FLAG_FANFARE_KAMARO) {
+    } else if (Audio_GetSeqFlags(origSeqId) & SEQ_FLAG_FANFARE_KAMARO) {
         seqPlayerIndex = SEQ_PLAYER_FANFARE;
     }
 
@@ -5648,7 +5661,7 @@ void Audio_PlayBgm_StorePrevBgm(u16 seqId) {
         Audio_SetSequenceMode(SEQ_MODE_IGNORE);
 
         // Ensure the sequence about to be stored isn't also storing a separate sequence
-        if (!(sSeqFlags[origSeqId] & SEQ_FLAG_RESTORE)) {
+        if (!(Audio_GetSeqFlags(origSeqId) & SEQ_FLAG_RESTORE)) {
             sPrevMainBgmSeqId = curSeqId;
         }
 
@@ -5661,7 +5674,7 @@ void Audio_PlayBgm_StorePrevBgm(u16 seqId) {
  */
 void Audio_RestorePrevBgm(void) {
     if ((AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) != NA_BGM_DISABLED) &&
-        (sSeqFlags[AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) & 0xFF] & SEQ_FLAG_RESTORE)) {
+        (Audio_GetSeqFlags(AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN)) & SEQ_FLAG_RESTORE)) {
         if ((sPrevMainBgmSeqId == NA_BGM_DISABLED) || (sPrevMainBgmSeqId == NA_BGM_GENERAL_SFX)) {
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
         } else {
@@ -5786,7 +5799,7 @@ void Audio_SetSequenceMode(u8 seqMode) {
 
         seqId = gActiveSeqs[SEQ_PLAYER_BGM_MAIN].seqId;
         seqId = AudioEditor_GetOriginalSeq(seqId);
-        if ((seqId == NA_BGM_DISABLED) || (sSeqFlags[seqId] & SEQ_FLAG_ENEMY) ||
+        if ((seqId == NA_BGM_DISABLED) || (Audio_GetSeqFlags(seqId) & SEQ_FLAG_ENEMY) ||
             ((sPrevSeqMode & 0x7F) == SEQ_MODE_ENEMY)) {
             if (seqMode != (sPrevSeqMode & 0x7F)) {
                 if (seqMode == SEQ_MODE_ENEMY) {
@@ -5821,7 +5834,7 @@ void Audio_SetSequenceMode(u8 seqMode) {
                 if (seqMode == SEQ_MODE_ENEMY) {
                     // If both seqMode = sPrevSeqMode = SEQ_MODE_ENEMY
                     if ((AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_SUB) == NA_BGM_DISABLED) &&
-                        (seqId != NA_BGM_DISABLED) && (sSeqFlags[seqId] & SEQ_FLAG_ENEMY)) {
+                        (seqId != NA_BGM_DISABLED) && (Audio_GetSeqFlags(seqId) & SEQ_FLAG_ENEMY)) {
                         SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_SUB, 10, NA_BGM_ENEMY | 0x800);
                         sPrevSeqMode = seqMode + 0x80;
                     }
@@ -5867,7 +5880,7 @@ void Audio_UpdateEnemyBgmVolume(f32 dist) {
             sBgmEnemyVolume = ((350.0f - adjDist) * 127.0f) / 350.0f;
             AudioSeq_SetVolumeScale(SEQ_PLAYER_BGM_SUB, VOL_SCALE_INDEX_BGM_SUB, sBgmEnemyVolume, 10);
 
-            if ((seqId >= NA_BGM_TERMINA_FIELD) && !(sSeqFlags[seqId & 0xFF & 0xFF] & SEQ_FLAG_FANFARE_KAMARO)) {
+            if ((seqId >= NA_BGM_TERMINA_FIELD) && !(Audio_GetSeqFlags(seqId) & SEQ_FLAG_FANFARE_KAMARO)) {
                 AudioSeq_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, VOL_SCALE_INDEX_BGM_SUB, (0x7F - sBgmEnemyVolume), 10);
             }
         }
@@ -6456,7 +6469,7 @@ void Audio_PlayAmbience(u8 ambienceId) {
     u8 ioData;
 
     if (!((gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId != NA_BGM_DISABLED) &&
-          (sSeqFlags[AudioEditor_GetOriginalSeq(gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId) & 0xFF & 0xFF] &
+          (Audio_GetSeqFlags(AudioEditor_GetOriginalSeq(gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId)) &
            SEQ_FLAG_NO_AMBIENCE))) {
         if (gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId != NA_BGM_AMBIENCE) {
             sPrevAmbienceSeqId = gActiveSeqs[SEQ_PLAYER_AMBIENCE].seqId;
