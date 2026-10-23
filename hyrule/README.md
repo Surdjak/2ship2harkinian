@@ -97,3 +97,13 @@ their values, so saves need no migration. OoT's items follow MM's last one (`ITE
 OoT items cannot be given or shown yet: `Item_Give` and `Item_CheckObtainability` return `ITEM_NONE`
 for them, and MM's item tables (slots, icons, prices, draw table) and get-item ids only cover MM's
 items. Those are extended when OoT's items and interface are ported.
+
+## Damage types
+
+Collider damage flags (`dmgFlags`) are 64-bit and damage tables have 64 entries. MM's damage types keep
+bits 0-31 and table entries 0-31; OoT's follow in bits 32-63 as `DMG_<NAME>_Oot`
+(`mm/include/z64collision_check.h`) and use entries 32-63. MM's damage tables leave those entries at
+zero, so MM actors ignore OoT damage until cross-play decides otherwise.
+
+MM's `DMG_` constants are 64-bit so that `flags &= ~DMG_X` clears only `DMG_X`, matching MM's integer
+masks, and the top MM bit does not spill into OoT's. Variables that copy damage flags should be `u64`.

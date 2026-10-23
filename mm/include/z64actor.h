@@ -959,7 +959,7 @@ void Actor_SpawnFloorDustRing(struct PlayState* play, Actor* actor, Vec3f* posXZ
 void func_800BBFB0(struct PlayState* play, Vec3f* position, f32 arg2, s32 arg3, s16 arg4, s16 scaleStep, u8 arg6);
 void Actor_ChangeCategory(struct PlayState* play, ActorContext* actorCtx, Actor* actor, u8 actorCategory);
 u32 Actor_GetArrowDmgFlags(s32 params);
-Actor* func_800BC270(struct PlayState* play, Actor* actor, f32 distance, u32 dmgFlags);
+Actor* func_800BC270(struct PlayState* play, Actor* actor, f32 distance, u64 dmgFlags);
 Actor* func_800BC444(struct PlayState* play, Actor* actor, f32 distance);
 s16 Actor_TestFloorInDirection(Actor* actor, struct PlayState* play, f32 distance, s16 angle);
 s32 Actor_IsTargeted(struct PlayState* play, Actor* actor);

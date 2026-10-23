@@ -4322,7 +4322,7 @@ s32 func_800BC1B4(Actor* actor, Actor* projectile, f32 distance, f32 speed) {
     return false;
 }
 
-Actor* func_800BC270(PlayState* play, Actor* actor, f32 distance, u32 dmgFlags) {
+Actor* func_800BC270(PlayState* play, Actor* actor, f32 distance, u64 dmgFlags) {
     Actor* itemAction = play->actorCtx.actorLists[ACTORCAT_ITEMACTION].first;
 
     while (itemAction != NULL) {
@@ -5266,7 +5266,7 @@ void Actor_SetDropFlagJntSph(Actor* actor, ColliderJntSph* jntSph) {
         if (acHitElem == NULL) {
             flag = DROPFLAG_NONE;
         } else {
-            s32 dmgFlags = acHitElem->atDmgInfo.dmgFlags;
+            u64 dmgFlags = acHitElem->atDmgInfo.dmgFlags; // 3Ship [Hyrule] was s32
 
             if (dmgFlags & DMG_FIRE_ARROW) {
                 flag = DROPFLAG_1;

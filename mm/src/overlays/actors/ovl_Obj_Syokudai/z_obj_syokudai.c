@@ -168,7 +168,7 @@ void ObjSyokudai_Update(Actor* thisx, PlayState* play2) {
             }
         } else {
             s32 interaction = OBJ_SYOKUDAI_INTERACTION_NONE;
-            u32 flameColliderACDmgFlags = 0;
+            u64 flameColliderACDmgFlags = 0; // 3Ship [Hyrule] was u32
 
             player = GET_PLAYER(play);
 

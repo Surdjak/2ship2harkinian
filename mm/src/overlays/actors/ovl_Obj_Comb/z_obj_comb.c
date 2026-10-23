@@ -388,7 +388,7 @@ void func_8098DC60(ObjComb* this, PlayState* play) {
             func_8098DA74(this, play);
             Actor_Kill(&this->actor);
         } else {
-            s32 dmgFlags = this->collider.elements[0].base.acHitElem->atDmgInfo.dmgFlags;
+            u64 dmgFlags = this->collider.elements[0].base.acHitElem->atDmgInfo.dmgFlags; // 3Ship [Hyrule] was s32
 
             if (dmgFlags & 0x13820) {
                 this->unk_1A8 = 0xDAC;

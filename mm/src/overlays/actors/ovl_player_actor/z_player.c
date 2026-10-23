@@ -453,7 +453,7 @@ typedef struct AttackAnimInfo {
 } AttackAnimInfo; // size = 0x10
 
 typedef struct MeleeWeaponDamageInfo {
-    /* 0x0 */ s32 dmgFlags;
+    /* 0x0 */ u64 dmgFlags; // 3Ship [Hyrule] was s32
     // Presumably these two fields are intended for Fierce Deity, but will also work for Deku if it can equip a sword
     /* 0x4 */ u8 dmgTransformedNormal;
     /* 0x5 */ u8 dmgTransformedStrong;
@@ -2898,7 +2898,7 @@ void Player_ResetCylinder(Player* this) {
  * @param damage to do
  * @param radius of cylinder
  */
-void Player_SetCylinderForAttack(Player* this, u32 dmgFlags, s32 damage, s32 radius) {
+void Player_SetCylinderForAttack(Player* this, u64 dmgFlags, s32 damage, s32 radius) {
     this->cylinder.base.atFlags = AT_ON | AT_TYPE_PLAYER;
     if (radius > 30) {
         this->cylinder.base.ocFlags1 = OC1_NONE;
@@ -5736,7 +5736,7 @@ PlayerMeleeWeaponAnimation func_808335F4(Player* this) {
     return meleeWeaponAnim;
 }
 
-void func_80833728(Player* this, s32 index, u32 dmgFlags, s32 damage) {
+void func_80833728(Player* this, s32 index, u64 dmgFlags, s32 damage) {
     this->meleeWeaponQuads[index].elem.atDmgInfo.dmgFlags = dmgFlags;
     this->meleeWeaponQuads[index].elem.atDmgInfo.damage = damage;
 

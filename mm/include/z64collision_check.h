@@ -47,26 +47,26 @@ typedef struct {
 } ColliderInitToActor; // size = 0x8
 
 typedef struct {
-    /* 0x0 */ u32 dmgFlags; // Damage types dealt by this collider element as AT.
+    /* 0x0 */ u64 dmgFlags; // Damage types dealt by this collider element as AT. 3Ship [Hyrule] was u32
     /* 0x4 */ u8 effect; // Damage Effect (Knockback, Fire, etc.)
     /* 0x5 */ u8 damage; // Damage or Stun Timer
 } ColliderElementDamageInfoAT; // size = 0x8
 
 typedef struct {
-    /* 0x0 */ u32 dmgFlags; // Damage types dealt by this collider element as AT.
+    /* 0x0 */ u64 dmgFlags; // Damage types dealt by this collider element as AT. 3Ship [Hyrule] was u32
     /* 0x4 */ u8 effect; // Damage Effect (Knockback, Fire, etc.)
     /* 0x5 */ u8 damage; // Damage or Stun Timer
 } ColliderElementDamageInfoATInit; // size = 0x8
 
 typedef struct {
-    /* 0x0 */ u32 dmgFlags; // Bumper damage type flags.
+    /* 0x0 */ u64 dmgFlags; // Bumper damage type flags. 3Ship [Hyrule] was u32
     /* 0x4 */ u8 effect; // Damage Effect (Knockback, Fire, etc.)
     /* 0x5 */ u8 defense; // Damage Resistance
     /* 0x6 */ Vec3s hitPos; // Point of contact
 } ColliderElementDamageInfoAC; // size = 0xC
 
 typedef struct {
-    /* 0x0 */ u32 dmgFlags; // Bumper exclusion mask
+    /* 0x0 */ u64 dmgFlags; // Bumper exclusion mask. 3Ship [Hyrule] was u32
     /* 0x4 */ u8 effect; // Damage Effect (Knockback, Fire, etc.)
     /* 0x5 */ u8 defense; // Damage Resistance
 } ColliderElementDamageInfoACInit; // size = 0x8
@@ -440,42 +440,78 @@ typedef enum ElementMaterial {
 
 // Don't use combinations of these flags in code until we figure out how we want to format them.
 // It's okay to use these flags if the code is only checking a single flag, though.
-#define DMG_DEKU_NUT       (1 << 0x00)
-#define DMG_DEKU_STICK     (1 << 0x01)
-#define DMG_HORSE_TRAMPLE  (1 << 0x02)
-#define DMG_EXPLOSIVES     (1 << 0x03)
-#define DMG_ZORA_BOOMERANG (1 << 0x04)
-#define DMG_NORMAL_ARROW   (1 << 0x05)
-#define DMG_UNK_0x06       (1 << 0x06)
-#define DMG_HOOKSHOT       (1 << 0x07)
-#define DMG_GORON_PUNCH    (1 << 0x08)
-#define DMG_SWORD          (1 << 0x09)
-#define DMG_GORON_POUND    (1 << 0x0A)
-#define DMG_FIRE_ARROW     (1 << 0x0B)
-#define DMG_ICE_ARROW      (1 << 0x0C)
-#define DMG_LIGHT_ARROW    (1 << 0x0D)
-#define DMG_GORON_SPIKES   (1 << 0x0E)
-#define DMG_DEKU_SPIN      (1 << 0x0F)
-#define DMG_DEKU_BUBBLE    (1 << 0x10)
-#define DMG_DEKU_LAUNCH    (1 << 0x11)
-#define DMG_UNK_0x12       (1 << 0x12)
-#define DMG_ZORA_BARRIER   (1 << 0x13)
-#define DMG_NORMAL_SHIELD  (1 << 0x14)
-#define DMG_LIGHT_RAY      (1 << 0x15)
-#define DMG_THROWN_OBJECT  (1 << 0x16)
-#define DMG_ZORA_PUNCH     (1 << 0x17)
-#define DMG_SPIN_ATTACK    (1 << 0x18)
-#define DMG_SWORD_BEAM     (1 << 0x19)
-#define DMG_NORMAL_ROLL    (1 << 0x1A)
-#define DMG_UNK_0x1B       (1 << 0x1B)
-#define DMG_UNK_0x1C       (1 << 0x1C)
-#define DMG_UNBLOCKABLE    (1 << 0x1D)
-#define DMG_UNK_0x1E       (1 << 0x1E)
-#define DMG_POWDER_KEG     (1 << 0x1F)
+// 3Ship [Hyrule] 64-bit, so the top bit does not sign-extend into OoT's bits, and ~DMG_X keeps OoT's bits
+// set like MM's int masks do (`flags &= ~DMG_X` clears only DMG_X).
+#define DMG_DEKU_NUT       (1ULL << 0x00)
+#define DMG_DEKU_STICK     (1ULL << 0x01)
+#define DMG_HORSE_TRAMPLE  (1ULL << 0x02)
+#define DMG_EXPLOSIVES     (1ULL << 0x03)
+#define DMG_ZORA_BOOMERANG (1ULL << 0x04)
+#define DMG_NORMAL_ARROW   (1ULL << 0x05)
+#define DMG_UNK_0x06       (1ULL << 0x06)
+#define DMG_HOOKSHOT       (1ULL << 0x07)
+#define DMG_GORON_PUNCH    (1ULL << 0x08)
+#define DMG_SWORD          (1ULL << 0x09)
+#define DMG_GORON_POUND    (1ULL << 0x0A)
+#define DMG_FIRE_ARROW     (1ULL << 0x0B)
+#define DMG_ICE_ARROW      (1ULL << 0x0C)
+#define DMG_LIGHT_ARROW    (1ULL << 0x0D)
+#define DMG_GORON_SPIKES   (1ULL << 0x0E)
+#define DMG_DEKU_SPIN      (1ULL << 0x0F)
+#define DMG_DEKU_BUBBLE    (1ULL << 0x10)
+#define DMG_DEKU_LAUNCH    (1ULL << 0x11)
+#define DMG_UNK_0x12       (1ULL << 0x12)
+#define DMG_ZORA_BARRIER   (1ULL << 0x13)
+#define DMG_NORMAL_SHIELD  (1ULL << 0x14)
+#define DMG_LIGHT_RAY      (1ULL << 0x15)
+#define DMG_THROWN_OBJECT  (1ULL << 0x16)
+#define DMG_ZORA_PUNCH     (1ULL << 0x17)
+#define DMG_SPIN_ATTACK    (1ULL << 0x18)
+#define DMG_SWORD_BEAM     (1ULL << 0x19)
+#define DMG_NORMAL_ROLL    (1ULL << 0x1A)
+#define DMG_UNK_0x1B       (1ULL << 0x1B)
+#define DMG_UNK_0x1C       (1ULL << 0x1C)
+#define DMG_UNBLOCKABLE    (1ULL << 0x1D)
+#define DMG_UNK_0x1E       (1ULL << 0x1E)
+#define DMG_POWDER_KEG     (1ULL << 0x1F)
+
+// 3Ship [Hyrule] OoT's damage types, in bits 32-63 above MM's. They index damageTable->attack[32-63].
+#define DMG_DEKU_NUT_Oot     (1ULL << (32 + 0x00))
+#define DMG_DEKU_STICK_Oot   (1ULL << (32 + 0x01))
+#define DMG_SLINGSHOT_Oot    (1ULL << (32 + 0x02))
+#define DMG_EXPLOSIVE_Oot    (1ULL << (32 + 0x03))
+#define DMG_BOOMERANG_Oot    (1ULL << (32 + 0x04))
+#define DMG_ARROW_NORMAL_Oot (1ULL << (32 + 0x05))
+#define DMG_HAMMER_SWING_Oot (1ULL << (32 + 0x06))
+#define DMG_HOOKSHOT_Oot     (1ULL << (32 + 0x07))
+#define DMG_SLASH_KOKIRI_Oot (1ULL << (32 + 0x08))
+#define DMG_SLASH_MASTER_Oot (1ULL << (32 + 0x09))
+#define DMG_SLASH_GIANT_Oot  (1ULL << (32 + 0x0A))
+#define DMG_ARROW_FIRE_Oot   (1ULL << (32 + 0x0B))
+#define DMG_ARROW_ICE_Oot    (1ULL << (32 + 0x0C))
+#define DMG_ARROW_LIGHT_Oot  (1ULL << (32 + 0x0D))
+#define DMG_ARROW_UNK1_Oot   (1ULL << (32 + 0x0E))
+#define DMG_ARROW_UNK2_Oot   (1ULL << (32 + 0x0F))
+#define DMG_ARROW_UNK3_Oot   (1ULL << (32 + 0x10))
+#define DMG_MAGIC_FIRE_Oot   (1ULL << (32 + 0x11))
+#define DMG_MAGIC_ICE_Oot    (1ULL << (32 + 0x12))
+#define DMG_MAGIC_LIGHT_Oot  (1ULL << (32 + 0x13))
+#define DMG_SHIELD_Oot       (1ULL << (32 + 0x14))
+#define DMG_MIR_RAY_Oot      (1ULL << (32 + 0x15))
+#define DMG_SPIN_KOKIRI_Oot  (1ULL << (32 + 0x16))
+#define DMG_SPIN_GIANT_Oot   (1ULL << (32 + 0x17))
+#define DMG_SPIN_MASTER_Oot  (1ULL << (32 + 0x18))
+#define DMG_JUMP_KOKIRI_Oot  (1ULL << (32 + 0x19))
+#define DMG_JUMP_GIANT_Oot   (1ULL << (32 + 0x1A))
+#define DMG_JUMP_MASTER_Oot  (1ULL << (32 + 0x1B))
+#define DMG_UNKNOWN_1_Oot    (1ULL << (32 + 0x1C))
+#define DMG_UNBLOCKABLE_Oot  (1ULL << (32 + 0x1D))
+#define DMG_HAMMER_JUMP_Oot  (1ULL << (32 + 0x1E))
+#define DMG_UNKNOWN_2_Oot    (1ULL << (32 + 0x1F))
 
 typedef struct DamageTable {
-    /* 0x00 */ u8 attack[32];
-} DamageTable; // size = 0x20
+    /* 0x00 */ u8 attack[64]; // 3Ship [Hyrule] was 32: MM's damage types, then OoT's
+} DamageTable; // size = 0x40
 
 typedef struct CollisionCheckInfoInit {
     /* 0x0 */ u8 health;

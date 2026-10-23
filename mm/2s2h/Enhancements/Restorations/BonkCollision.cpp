@@ -8,7 +8,7 @@
 void RegisterBonkCollision() {
     COND_VB_SHOULD(VB_SET_PLAYER_CYLINDER_OC_FLAGS, CVAR, {
         Player* player = va_arg(args, Player*);
-        u32 dmgFlags = va_arg(args, u32);
+        u64 dmgFlags = va_arg(args, u64); // Player_SetCylinderForAttack passes u64
         if (dmgFlags == DMG_NORMAL_ROLL) {
             // OR the new flags instead of directly assigning them
             player->cylinder.base.ocFlags1 |= OC1_ON | OC1_TYPE_ALL;

@@ -54,7 +54,7 @@ f32 CollisionCheck_GetDamageAndEffectOnElementAC(Collider* atCol, ColliderElemen
     static f32 sDamageMultipliers[] = {
         0.0f, 1.0f, 2.0f, 0.5f, 0.25f, 3.0f, 4.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
     };
-    u32 dmgFlags;
+    u64 dmgFlags; // 3Ship [Hyrule] was u32
     s32 i;
     f32 damage;
 
