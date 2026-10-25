@@ -129,6 +129,11 @@ Step 1 is done, for child Link:
   that rebuild the B item from the sword value (minigames, Fierce Deity, the item tracker) use
   `Hyrule_SwordValueToItem`.
 
+Step 2, Link's figure (`hyrule/HyrulePausePlayer.c`): as SoH draws OoT's, Link is drawn into a 64x112
+framebuffer from the work display list, then shown in the equipment page's opening, on black. MM has no
+pause Link, so it is the Player itself, in its current body, equipment and mask, posed in that body's idle
+animation; the Player is saved and restored around the draw, and gameplay after pausing is unchanged.
+
 Step 3, the item page (`z_kaleido_item.c`):
 
 - The 7x5 grid above, as a table of cells to slots (`KaleidoScope_GetItemCellSlot`), MM's and OoT's
@@ -155,7 +160,6 @@ Not yet:
 - **Adult pieces** (Master Sword, Giant's Knife, Biggoron's Sword, OoT Mirror Shield, Goron and Zora
   Tunics, Iron and Hover Boots) are on the page but only adult Link can wear them, so Player's models and
   effects for them come with the adult body.
-- **Link's figure** (step 2): its area is black.
 - **OoT's item descriptions:** A shows none for OoT's items.
 - **OoT's dungeon maps** come with OoT's dungeons; OoT's trade quest arrow on the world map (adult Link) is
   not drawn.

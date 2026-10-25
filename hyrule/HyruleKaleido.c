@@ -7,6 +7,8 @@
 #include "global.h"
 #include "HyruleKaleido.h"
 #include "HyruleKaleidoQuest.h"
+#include "HyrulePausePlayer.h"
+#include "2s2h/BenGui/CosmeticEditor.h"
 #include "HyruleInventory.h"
 #include "HyrulePort.h"
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
@@ -460,10 +462,13 @@ static void Hyrule_SetQuad(Vtx* vtx, s16 x, s16 y, s16 size, u8 alpha) {
     }
 }
 
-// equipVtx: a 28x28 icon quad per cell, then a 32x32 outline quad per row for the piece worn.
+// equipVtx: a 28x28 icon quad per cell, a 32x32 outline quad per row for the piece worn, then Link's
+// figure (64x112, where OoT draws it).
 #define EQUIP_VTX_ICON(row, col) (((row) * EQUIP_COLS + (col)) * 4)
 #define EQUIP_VTX_OUTLINE(row) ((EQUIP_ROWS * EQUIP_COLS + (row)) * 4)
-#define EQUIP_VTX_COUNT ((EQUIP_ROWS * EQUIP_COLS + EQUIP_ROWS) * 4)
+#define EQUIP_VTX_PLAYER ((EQUIP_ROWS * EQUIP_COLS + EQUIP_ROWS) * 4)
+#define EQUIP_VTX_PLAYER_BACK (EQUIP_VTX_PLAYER + 4) // black behind it, filling the page's opening
+#define EQUIP_VTX_COUNT (EQUIP_VTX_PLAYER_BACK + 4)
 
 static void Hyrule_KaleidoSetEquipmentVertices(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
@@ -481,6 +486,21 @@ static void Hyrule_KaleidoSetEquipmentVertices(PlayState* play) {
         // Moved onto the worn piece's cell when drawn.
         Hyrule_SetQuad(&pauseCtx->equipVtx[EQUIP_VTX_OUTLINE(row)], 0, y, 32, 255);
     }
+
+    Hyrule_SetQuad(&pauseCtx->equipVtx[EQUIP_VTX_PLAYER_BACK], -80, 63 + pauseCtx->offsetY, 90, 255);
+    for (col = 2; col < 4; col++) {
+        pauseCtx->equipVtx[EQUIP_VTX_PLAYER_BACK + col].v.ob[1] = 63 + pauseCtx->offsetY - 134;
+    }
+    Hyrule_SetQuad(&pauseCtx->equipVtx[EQUIP_VTX_PLAYER], -64, 50 + pauseCtx->offsetY, 64, 255);
+    for (col = 0; col < 4; col++) {
+        Vtx* vtx = &pauseCtx->equipVtx[EQUIP_VTX_PLAYER + col];
+
+        if (col & 2) {
+            vtx->v.ob[1] = 50 + pauseCtx->offsetY - 112;
+        }
+        vtx->v.tc[0] = (col & 1) ? 64 << 5 : 0;
+        vtx->v.tc[1] = (col & 2) ? 112 << 5 : 0;
+    }
 }
 
 static void Hyrule_KaleidoDrawEquipment(PlayState* play) {
@@ -489,6 +509,11 @@ static void Hyrule_KaleidoDrawEquipment(PlayState* play) {
     s32 col;
 
     Hyrule_SyncEquipmentOwnership();
+
+    // Link's figure, in his current body and equipment (U6)
+    Hyrule_DrawPausePlayer(play);
+    Gfx_SetupDL42_Opa(play->state.gfxCtx);
+    Hyrule_DrawPausePlayerImage(play, &pauseCtx->equipVtx[EQUIP_VTX_PLAYER], pauseCtx->alpha);
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -710,6 +735,26 @@ void Hyrule_KaleidoSetPageVertices(PlayState* play, s16 page) {
     } else {
         Hyrule_KaleidoSetQuestVertices(play);
     }
+}
+
+void Hyrule_KaleidoDrawPageBack(PlayState* play, s16 page) {
+    PauseContext* pauseCtx = &play->pauseCtx;
+
+    if (page != PAUSE_EQUIP) {
+        return;
+    }
+    // Black behind the equipment page's opening, where OoT shows Link on black
+    OPEN_DISPS(play->state.gfxCtx);
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetCombineMode(POLY_OPA_DISP++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
+    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 0, 0, 0, pauseCtx->alpha);
+    gSPVertex(POLY_OPA_DISP++, &pauseCtx->equipVtx[EQUIP_VTX_PLAYER_BACK], 4, 0);
+    gSP1Quadrangle(POLY_OPA_DISP++, 0, 2, 3, 1, 0);
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetCombineLERP(POLY_OPA_DISP++, TEXEL0, 0, PRIMITIVE, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIMITIVE, 0, TEXEL0, 0,
+                      SHADE, 0);
+    gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, 180, 180, 120, 255, COSMETIC_ID("Menus.PausePanels"));
+    CLOSE_DISPS(play->state.gfxCtx);
 }
 
 void Hyrule_KaleidoDrawPage(PlayState* play, s16 page) {

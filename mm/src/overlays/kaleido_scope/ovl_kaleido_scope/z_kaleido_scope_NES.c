@@ -710,6 +710,7 @@ static void KaleidoScope_DrawHyrulePage(PlayState* play, GraphicsContext* gfxCtx
 
     MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gfxCtx);
 
+    Hyrule_KaleidoDrawPageBack(play, page);
     POLY_OPA_DISP = KaleidoScope_DrawPageSections(POLY_OPA_DISP, *KaleidoScope_GetHyrulePageVtx(pauseCtx, page),
                                                   Hyrule_GetPageBgTextures(page));
 

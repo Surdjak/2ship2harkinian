@@ -19,6 +19,7 @@ TexturePtr Hyrule_GetToPageTexture(s16 page);
 
 // Called from ovl_kaleido_scope for these pages, as MM's own pages are.
 void Hyrule_KaleidoSetPageVertices(struct PlayState* play, s16 page);
+void Hyrule_KaleidoDrawPageBack(struct PlayState* play, s16 page); // before the background
 void Hyrule_KaleidoDrawPage(struct PlayState* play, s16 page);
 void Hyrule_KaleidoSetCursor(struct PlayState* play, s16 page);
 void Hyrule_KaleidoUpdateCursor(struct PlayState* play, s16 page);
