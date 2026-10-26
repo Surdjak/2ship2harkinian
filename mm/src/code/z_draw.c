@@ -380,6 +380,11 @@ static DrawItemTableEntry sDrawItemTable[] = {
  * Calls the corresponding draw function for the given draw ID
  */
 void GetItem_Draw(PlayState* play, s16 drawId) {
+    // 3Ship [Hyrule] OoT's models follow MM's.
+    if (drawId >= GID_OOT_BASE) {
+        Hyrule_GetItemDrawOot(play, drawId);
+        return;
+    }
     sDrawItemTable[drawId].drawFunc(play, drawId);
 }
 

@@ -119,8 +119,8 @@ Done (`hyrule/HyruleInventory.c`, save version 11):
 
 Not yet:
 
-- **Get-item entries:** OoT's get-item models and texts are not in MM's get-item table, so actors cannot
-  hand OoT items to Link with the get-item animation yet; chests holding OoT-only items stay OoT actors.
+- **Get-item entries:** OoT's get-item table and models follow MM's ([OOT_ITEMS.md](OOT_ITEMS.md)), but MM's
+  `En_Box` keeps its get-item id in 7 bits, so chests holding OoT-only items stay OoT actors.
 - **Using OoT items:** the equipment page ([PAUSE.md](PAUSE.md)) equips OoT's swords, shields, tunics and
   boots, and child Link uses the Deku and Hylian Shields and the Great Fairy's Sword; adult pieces wait
   for the adult body. Player using the Slingshot, Boomerang, Hammer and spells comes item by item after

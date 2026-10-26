@@ -1,5 +1,7 @@
 #include "global.h"
 #include "HyruleInventory.h"
+#include "HyruleMagic.h"
+#include "HyrulePlayer.h"
 #include "z64horse.h"
 #include "overlays/gamestates/ovl_file_choose/z_file_select.h"
 #include <string.h>
@@ -533,6 +535,7 @@ void Sram_SaveEndOfCycle(PlayState* play) {
     memset(gSaveContext.save.saveInfo.infTableOot, 0, sizeof(gSaveContext.save.saveInfo.infTableOot));
     memset(gSaveContext.eventInfOot, 0, sizeof(gSaveContext.eventInfOot));
     Hyrule_ResetInventoryOotForCycle(play);
+    Hyrule_ClearFaroresWind(); // the dungeons reset with the cycle (docs/OOT_ITEMS.md)
 
     for (i = 0; i < ARRAY_COUNT(gSaveContext.eventInf); i++) {
         gSaveContext.eventInf[i] = 0;
@@ -714,6 +717,7 @@ void Sram_IncrementDay(void) {
         gSaveContext.save.day++;
         gSaveContext.save.eventDayCount++;
     }
+    Hyrule_OnNewDay(); // 3Ship [Hyrule] the Weird Egg hatches at dawn
 
     gSaveContext.save.saveInfo.bombersCaughtNum = 0;
     gSaveContext.save.saveInfo.bombersCaughtOrder[0] = 0;

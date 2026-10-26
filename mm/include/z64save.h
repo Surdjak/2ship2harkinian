@@ -380,6 +380,7 @@ typedef struct SaveInfo {
     /*       */ u16 infTableOot[30];
     /*       */ InventoryOot inventoryOot; // 3Ship [Hyrule]
     /*       */ u32 worldMapAreaDataOot;   // 3Ship [Hyrule] OoT's areas visited, which clear Hyrule's map clouds
+    /*       */ RespawnData faroresWindOot; // 3Ship [Hyrule] Farore's Wind's warp point (OoT's fw), set while data != 0
 } SaveInfo;
 
 // #region 2S2H
@@ -436,6 +437,7 @@ typedef struct ShipSaveInfo {
 typedef struct Save {
     /* 0x00 */ s32 entrance;        // "scene_no"
     /* 0x04 */ u8 equippedMask;     // "player_mask"
+    /*       */ u8 equippedMaskOot;  // 3Ship [Hyrule] the OoT mask worn, OoT's PlayerMask (1 Keaton to 8 Truth), or 0
     /* 0x05 */ u8 isFirstCycle;     // "opening_flag"
     /* 0x06 */ u8 unk_06;
     /* 0x07 */ u8 linkAge;          // "link_age"
@@ -554,6 +556,8 @@ typedef struct SaveContext {
     /* 0x48C8 */ u16 dungeonSceneSharedIndex; // similar to mapIndex, except values correspond to one of the four dungeons "scene_id_mix"
     /* 0x48CA */ u8 masksGivenOnMoon[27];     // bit-packed, masks given away on the Moon. "mask_mask_bit"
     /*  2S2H  */ ShipSaveContext shipSaveContext; 
+    /* 3Ship  */ s16 nayrusLoveTimerOot; // [Hyrule] OoT's nayrusLoveTimer: Nayru's Love lasts while non-zero, up to 1200
+    /* 3Ship  */ u8 weirdEggHatchedOot;  // [Hyrule] The Weird Egg hatched with the new day; its Cucco shows up in play
 } SaveContext; // size = 0x48C8
 
 typedef enum ButtonStatus {

@@ -8,6 +8,11 @@
 #define OBJECT_OOT_BASE 0x283
 // Item ids are not a table: OoT's start above MM's last one (ITEM_NONE, 0xFF), so MM's keep their values.
 #define ITEM_OOT_BASE 0x100
+// Get-item ids are 16-bit where they are kept (Player.getItemId); MM's run to GI_MAX (0xBB), OoT's start at 0x100.
+#define GI_OOT_BASE 0x100
+// Get-item draw ids: MM's run to GID_MAXIMUM (0x76), OoT's start at 0x80 and run past 0xFF, so they are 16-bit
+// wherever they are kept (GetItemEntry.gid, Player.getItemDrawIdPlusOne).
+#define GID_OOT_BASE 0x80
 // Text ids stay 16-bit: MM's run to 0x354C (and 0xFFFC), OoT's to 0x71B2, so OoT's fit above 0x8000.
 #define TEXT_OOT_BASE 0x8000
 #define TEXT_OOT(ootTextId) (TEXT_OOT_BASE + (ootTextId))

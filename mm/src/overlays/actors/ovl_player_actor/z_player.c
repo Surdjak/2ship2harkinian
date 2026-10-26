@@ -6,6 +6,9 @@
 
 #include "global.h"
 #include "HyruleScenes.h"
+#include "HyruleInventory.h"
+#include "HyrulePlayer.h"
+#include "HyruleMagic.h"
 #include "z64horse.h"
 #include "z64malloc.h"
 #include "z64quake.h"
@@ -120,6 +123,11 @@ typedef struct AnimSfxEntry {
 
 /* action funcs */
 void Player_Action_OwlSaveArrive(Player* this, PlayState* play);
+// 3Ship [Hyrule] OoT's spells (docs/OOT_ITEMS.md)
+void Player_Action_CastSpell_Oot(Player* this, PlayState* play);
+void Player_Action_FaroresWindReturn_Oot(Player* this, PlayState* play);
+void Player_Action_FaroresWindArrive_Oot(Player* this, PlayState* play);
+void Player_StartCastingSpell_Oot(PlayState* play, Player* this, s32 spell);
 void Player_Action_1(Player* this, PlayState* play);
 void Player_Action_2(Player* this, PlayState* play);
 void Player_Action_3(Player* this, PlayState* play);
@@ -479,14 +487,6 @@ typedef struct {
     /* 0xA */ s16 fogNear;
     /* 0xC */ s16 zFar;
 } PlayerEnvLighting; // size = 0xE
-
-typedef struct GetItemEntry {
-    /* 0x0 */ u8 itemId;
-    /* 0x1 */ u8 field; // various bit-packed data
-    /* 0x2 */ s8 gid;   // defines the draw id and chest opening animation
-    /* 0x3 */ u8 textId;
-    /* 0x4 */ u16 objectId;
-} GetItemEntry; // size = 0x6
 
 typedef struct struct_8085D200 {
     /* 0x0 */ PlayerAnimationHeader* unk_0;
@@ -2058,13 +2058,6 @@ s32 Player_IsUsingZoraBoomerang(Player* this) {
     return this->stateFlags1 & PLAYER_STATE1_USING_ZORA_BOOMERANG;
 }
 
-#define CHEST_ANIM_SHORT 0
-#define CHEST_ANIM_LONG 1
-
-// TODO: consider what to do with the NONEs: cannot use a zero-argument macro like OoT since the text id is involved.
-#define GET_ITEM(itemId, objectId, drawId, textId, field, chestAnim) \
-    { itemId, field, (chestAnim != CHEST_ANIM_SHORT ? 1 : -1) * (drawId + 1), textId, objectId }
-
 #define GIFIELD_GET_DROP_TYPE(field) ((field)&0x1F)
 #define GIFIELD_20 (1 << 5)
 #define GIFIELD_40 (1 << 6)
@@ -2571,7 +2564,7 @@ GetItemEntry sGetItemTable[GI_MAX - 1] = {
 
 // Player_UpdateCurrentGetItemDrawId?
 void func_8082ECE0(Player* this) {
-    GetItemEntry* giEntry = &sGetItemTable[this->getItemId - 1];
+    GetItemEntry* giEntry = Player_GetItemEntry(this->getItemId);
 
     this->getItemDrawIdPlusOne = ABS_ALT(giEntry->gid);
 }
@@ -3106,7 +3099,16 @@ s8 sItemItemActions[] = {
 };
 
 PlayerItemAction Player_ItemToItemAction(Player* this, ItemId item) {
-    if (item >= ITEM_FD) {
+    // 3Ship [Hyrule] OoT's items (docs/OOT_ITEMS.md).
+    if (item == ITEM_SLINGSHOT_Oot) {
+        return PLAYER_IA_SLINGSHOT_Oot;
+    } else if (item == ITEM_BOOMERANG_Oot) {
+        return PLAYER_IA_BOOMERANG_Oot;
+    } else if (Hyrule_GetSpell(item) >= 0) {
+        return PLAYER_IA_FARORES_WIND_Oot + Hyrule_GetSpell(item);
+    } else if ((item >= ITEM_WEIRD_EGG_Oot) && (item <= ITEM_MASK_TRUTH_Oot)) {
+        return PLAYER_IA_WEIRD_EGG_Oot + (item - ITEM_WEIRD_EGG_Oot);
+    } else if (item >= ITEM_FD) {
         return PLAYER_IA_NONE;
     } else if (item == ITEM_FC) {
         return PLAYER_IA_LAST_USED;
@@ -3137,7 +3139,7 @@ PlayerUpperActionFunc sItemActionUpdateFuncs[PLAYER_IA_MAX] = {
     Player_UpperAction_CarryActor, // PLAYER_IA_BOMB
     Player_UpperAction_CarryActor, // PLAYER_IA_POWDER_KEG
     Player_UpperAction_CarryActor, // PLAYER_IA_BOMBCHU
-    Player_UpperAction_11,         // PLAYER_IA_11
+    Player_UpperAction_11,         // PLAYER_IA_BOOMERANG_Oot
     Player_UpperAction_6,          // PLAYER_IA_DEKU_NUT
     Player_UpperAction_0,          // PLAYER_IA_PICTOGRAPH_BOX
     Player_UpperAction_0,          // PLAYER_IA_OCARINA
@@ -3203,6 +3205,21 @@ PlayerUpperActionFunc sItemActionUpdateFuncs[PLAYER_IA_MAX] = {
     Player_UpperAction_0,          // PLAYER_IA_MASK_ZORA
     Player_UpperAction_0,          // PLAYER_IA_MASK_DEKU
     Player_UpperAction_0,          // PLAYER_IA_LENS_OF_TRUTH
+    Player_UpperAction_6,          // PLAYER_IA_SLINGSHOT_Oot
+    Player_UpperAction_0,          // PLAYER_IA_FARORES_WIND_Oot
+    Player_UpperAction_0,          // PLAYER_IA_NAYRUS_LOVE_Oot
+    Player_UpperAction_0,          // PLAYER_IA_DINS_FIRE_Oot
+    Player_UpperAction_0,          // PLAYER_IA_WEIRD_EGG_Oot
+    Player_UpperAction_0,          // PLAYER_IA_CHICKEN_Oot
+    Player_UpperAction_0,          // PLAYER_IA_LETTER_ZELDA_Oot
+    Player_UpperAction_0,          // PLAYER_IA_MASK_KEATON_Oot
+    Player_UpperAction_0,          // PLAYER_IA_MASK_SKULL_Oot
+    Player_UpperAction_0,          // PLAYER_IA_MASK_SPOOKY_Oot
+    Player_UpperAction_0,          // PLAYER_IA_MASK_BUNNY_Oot
+    Player_UpperAction_0,          // PLAYER_IA_MASK_GORON_Oot
+    Player_UpperAction_0,          // PLAYER_IA_MASK_ZORA_Oot
+    Player_UpperAction_0,          // PLAYER_IA_MASK_GERUDO_Oot
+    Player_UpperAction_0,          // PLAYER_IA_MASK_TRUTH_Oot
 };
 
 typedef void (*PlayerItemActionInitFunc)(PlayState*, Player*);
@@ -3225,7 +3242,7 @@ PlayerItemActionInitFunc sItemActionInitFuncs[PLAYER_IA_MAX] = {
     Player_InitExplosiveIA,     // PLAYER_IA_BOMB
     Player_InitExplosiveIA,     // PLAYER_IA_POWDER_KEG
     Player_InitExplosiveIA,     // PLAYER_IA_BOMBCHU
-    Player_InitZoraBoomerangIA, // PLAYER_IA_11
+    Player_InitZoraBoomerangIA, // PLAYER_IA_BOOMERANG_Oot
     Player_InitBowOrDekuNutIA,  // PLAYER_IA_DEKU_NUT
     Player_InitDefaultIA,       // PLAYER_IA_PICTOGRAPH_BOX
     Player_InitDefaultIA,       // PLAYER_IA_OCARINA
@@ -3291,6 +3308,21 @@ PlayerItemActionInitFunc sItemActionInitFuncs[PLAYER_IA_MAX] = {
     Player_InitDefaultIA,       // PLAYER_IA_MASK_ZORA
     Player_InitDefaultIA,       // PLAYER_IA_MASK_DEKU
     Player_InitDefaultIA,       // PLAYER_IA_LENS_OF_TRUTH
+    Player_InitBowOrDekuNutIA,  // PLAYER_IA_SLINGSHOT_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_FARORES_WIND_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_NAYRUS_LOVE_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_DINS_FIRE_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_WEIRD_EGG_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_CHICKEN_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_LETTER_ZELDA_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_MASK_KEATON_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_MASK_SKULL_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_MASK_SPOOKY_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_MASK_BUNNY_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_MASK_GORON_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_MASK_ZORA_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_MASK_GERUDO_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_MASK_TRUTH_Oot
 };
 
 void Player_InitDefaultIA(PlayState* play, Player* this) {
@@ -3754,7 +3786,7 @@ void func_8082FC60(Player* this) {
 }
 
 bool Player_ItemIsInUse(Player* this, ItemId item) {
-    if ((item < ITEM_FD) && (Player_ItemToItemAction(this, item) == this->itemAction)) {
+    if (!ITEM_IS_NONE(item) && (Player_ItemToItemAction(this, item) == this->itemAction)) {
         return true;
     } else {
         return false;
@@ -3762,7 +3794,7 @@ bool Player_ItemIsInUse(Player* this, ItemId item) {
 }
 
 bool Player_ItemIsItemAction(Player* this, ItemId item, PlayerItemAction itemAction) {
-    if ((item < ITEM_FD) && (Player_ItemToItemAction(this, item) == itemAction)) {
+    if (!ITEM_IS_NONE(item) && (Player_ItemToItemAction(this, item) == itemAction)) {
         return true;
     } else {
         return false;
@@ -3928,7 +3960,8 @@ void Player_ProcessItemButtons(Player* this, PlayState* play) {
             if (i >= EQUIP_SLOT_A) {
                 DpadEquipSlot j = func_Dpad_8082FDC4();
                 ItemId dpadItem = Player_Dpad_GetItemOnButton(play, this, j);
-                if (dpadItem < item) {
+                // 3Ship [Hyrule] OoT's ids are above ITEM_NONE.
+                if ((dpadItem < item) || (dpadItem >= ITEM_OOT_BASE)) {
                     item = dpadItem;
                 }
                 i = (j >= EQUIP_SLOT_D_MAX) ? i : DPAD_TO_HELD_ITEM(j);
@@ -3936,7 +3969,7 @@ void Player_ProcessItemButtons(Player* this, PlayState* play) {
         }
         // #endregion
 
-        if (item >= ITEM_FD) {
+        if (ITEM_IS_NONE(item)) {
             for (i = 0; i < ARRAY_COUNT(sPlayerItemButtons); i++) {
                 if (CHECK_BTN_ALL(sPlayerControlInput->cur.button, sPlayerItemButtons[i])) {
                     break;
@@ -3944,7 +3977,7 @@ void Player_ProcessItemButtons(Player* this, PlayState* play) {
             }
 
             item = Player_GetItemOnButton(play, this, i);
-            if ((item < ITEM_FD) && (Player_ItemToItemAction(this, item) == this->heldItemAction)) {
+            if (!ITEM_IS_NONE(item) && (Player_ItemToItemAction(this, item) == this->heldItemAction)) {
                 sPlayerHeldItemButtonIsHeldDown = true;
             }
             // #region 2S2H [Dpad]
@@ -3956,7 +3989,7 @@ void Player_ProcessItemButtons(Player* this, PlayState* play) {
                 }
 
                 item = Player_Dpad_GetItemOnButton(play, this, i);
-                if ((item < ITEM_FD) && (Player_ItemToItemAction(this, item) == this->heldItemAction)) {
+                if (!ITEM_IS_NONE(item) && (Player_ItemToItemAction(this, item) == this->heldItemAction)) {
                     sPlayerHeldItemButtonIsHeldDown = true;
                 }
             }
@@ -3974,6 +4007,9 @@ void Player_ProcessItemButtons(Player* this, PlayState* play) {
                     }
                 }
             }
+        } else if ((item >= ITEM_OOT_BASE) && (Player_ItemToItemAction(this, item) == PLAYER_IA_NONE)) {
+            // 3Ship [Hyrule] OoT's items Player does not use yet (docs/OOT_ITEMS.md).
+            Audio_PlaySfx(NA_SE_SY_ERROR);
         } else if (item == ITEM_F1) {
             func_80839978(play, this);
         } else if (item == ITEM_F2) {
@@ -4008,9 +4044,9 @@ void Player_StartChangingHeldItem(Player* this, PlayState* play) {
 
     if ((heldItemAction == PLAYER_IA_ZORA_BOOMERANG) || (this->heldItemAction == PLAYER_IA_ZORA_BOOMERANG)) {
         itemChangeType = (heldItemAction == PLAYER_IA_NONE) ? -PLAYER_ITEM_CHG_14 : PLAYER_ITEM_CHG_14;
-    } else if ((heldItemAction == PLAYER_IA_BOTTLE_EMPTY) || (heldItemAction == PLAYER_IA_11) ||
+    } else if ((heldItemAction == PLAYER_IA_BOTTLE_EMPTY) || (heldItemAction == PLAYER_IA_BOOMERANG_Oot) ||
                ((heldItemAction == PLAYER_IA_NONE) &&
-                ((this->heldItemAction == PLAYER_IA_BOTTLE_EMPTY) || (this->heldItemAction == PLAYER_IA_11)))) {
+                ((this->heldItemAction == PLAYER_IA_BOTTLE_EMPTY) || (this->heldItemAction == PLAYER_IA_BOOMERANG_Oot)))) {
         itemChangeType = (heldItemAction == PLAYER_IA_NONE) ? -PLAYER_ITEM_CHG_13 : PLAYER_ITEM_CHG_13;
     }
 
@@ -4065,6 +4101,10 @@ s32 func_808305BC(PlayState* play, Player* this, ItemId* item, ArrowType* typePa
     if (this->heldItemAction == PLAYER_IA_DEKU_NUT) {
         *item = ITEM_DEKU_NUT;
         *typeParam = (this->transformation == PLAYER_FORM_DEKU) ? ARROW_TYPE_DEKU_BUBBLE : ARROW_TYPE_SLINGSHOT;
+    } else if (this->heldItemAction == PLAYER_IA_SLINGSHOT_Oot) {
+        // 3Ship [Hyrule] OoT's Slingshot fires En_Arrow's seed, with the Deku Seeds.
+        *item = ITEM_SLINGSHOT_Oot;
+        *typeParam = ARROW_TYPE_SLINGSHOT;
     } else {
         *item = ITEM_BOW;
         *typeParam = (this->stateFlags1 & PLAYER_STATE1_800000)
@@ -4086,6 +4126,10 @@ s32 func_808305BC(PlayState* play, Player* this, ItemId* item, ArrowType* typePa
     }
     if (play->bButtonAmmoPlusOne != 0) {
         return play->bButtonAmmoPlusOne;
+    }
+    // 3Ship [Hyrule] The Deku Seeds are in OoT's slots.
+    if (*item == ITEM_SLINGSHOT_Oot) {
+        return AMMO_SLOT_OOT(SLOT_OOT_SLINGSHOT);
     }
 
     return AMMO(*item);
@@ -4127,6 +4171,9 @@ s32 func_808306F8(Player* this, PlayState* play) {
                 // For the port, sometimes this UB would crash so we are opting to just request NA_SE_NONE instead.
                 if (var_v1 - 1 < 0) {
                     Player_PlaySfx(this, NA_SE_NONE);
+                } else if (this->heldItemAction == PLAYER_IA_SLINGSHOT_Oot) {
+                    // 3Ship [Hyrule] OoT's Slingshot sounds.
+                    Player_PlaySfx(this, NA_SE_IT_SLING_DRAW);
                 } else {
                     Player_PlaySfx(this, D_8085CFB0[var_v1 - 1]);
                 }
@@ -4313,15 +4360,20 @@ s32 func_80830DF0(Player* this, PlayState* play) {
 }
 
 s32 func_80830E30(Player* this, PlayState* play) {
-    if ((this->heldItemAction == PLAYER_IA_11) || (this->transformation == PLAYER_FORM_ZORA)) {
+    if ((this->heldItemAction == PLAYER_IA_BOOMERANG_Oot) || (this->transformation == PLAYER_FORM_ZORA)) {
         Player_SetUpperAction(play, this, Player_UpperAction_12);
 
-        PlayerAnimation_PlayOnce(play, &this->skelAnimeUpper,
-                                 (this->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_LEFT)
-                                     ? &gPlayerAnim_pz_cutterwaitA
-                                     : ((this->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_COMBO)
-                                            ? &gPlayerAnim_pz_cutterwaitB
-                                            : &gPlayerAnim_pz_cutterwaitC));
+        if (this->heldItemAction == PLAYER_IA_BOOMERANG_Oot) {
+            // 3Ship [Hyrule] OoT's Boomerang, with OoT's animations.
+            PlayerAnimation_PlayOnce(play, &this->skelAnimeUpper, Hyrule_GetBoomerangAnim(HYRULE_BOOMERANG_ANIM_READY));
+        } else {
+            PlayerAnimation_PlayOnce(play, &this->skelAnimeUpper,
+                                     (this->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_LEFT)
+                                         ? &gPlayerAnim_pz_cutterwaitA
+                                         : ((this->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_COMBO)
+                                                ? &gPlayerAnim_pz_cutterwaitB
+                                                : &gPlayerAnim_pz_cutterwaitC));
+        }
         this->unk_ACC = 0xA;
     } else {
         if (!func_808306F8(this, play)) {
@@ -4627,6 +4679,14 @@ void func_80831944(PlayState* play, Player* this) {
 void Player_UseItem(PlayState* play, Player* this, ItemId item) {
     PlayerItemAction itemAction = Player_ItemToItemAction(this, item);
 
+    // 3Ship [Hyrule] Of OoT's items, only the trade items have a get-item model to show (D_8085D1A4).
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK) &&
+        ((itemAction >= PLAYER_IA_OOT_MIN) || (itemAction == PLAYER_IA_BOOMERANG_Oot)) &&
+        !((itemAction >= PLAYER_IA_WEIRD_EGG_Oot) && (itemAction <= PLAYER_IA_LETTER_ZELDA_Oot))) {
+        Audio_PlaySfx(NA_SE_SY_ERROR);
+        return;
+    }
+
     if ((((this->heldItemAction == this->itemAction) &&
           (!(this->stateFlags1 & PLAYER_STATE1_400000) ||
            (Player_MeleeWeaponFromIA(itemAction) != PLAYER_MELEEWEAPON_NONE) || (itemAction == PLAYER_IA_NONE))) ||
@@ -4647,6 +4707,8 @@ void Player_UseItem(PlayState* play, Player* this, ItemId item) {
         if (var_v1 || (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK) && (itemAction != PLAYER_IA_NONE)) ||
             (itemAction == PLAYER_IA_OCARINA) ||
             ((itemAction > PLAYER_IA_BOTTLE_MIN) && itemAction < PLAYER_IA_MASK_MIN) ||
+            // 3Ship [Hyrule] OoT's child trade items are shown, as MM's trade items are.
+            ((itemAction >= PLAYER_IA_WEIRD_EGG_Oot) && (itemAction <= PLAYER_IA_LETTER_ZELDA_Oot)) ||
             ((itemAction == PLAYER_IA_PICTOGRAPH_BOX) && (this->talkActor != NULL) &&
              (this->exchangeItemAction > PLAYER_IA_NONE))) {
             if (var_v1) {
@@ -4689,6 +4751,24 @@ void Player_UseItem(PlayState* play, Player* this, ItemId item) {
         } else if (itemAction == PLAYER_IA_PICTOGRAPH_BOX) {
             // Handle Pictograph Box
             if (!func_80831814(this, play, PLAYER_UNKAA5_2)) {
+                Audio_PlaySfx(NA_SE_SY_ERROR);
+            }
+        } else if ((itemAction >= PLAYER_IA_MASK_KEATON_Oot) && (itemAction <= PLAYER_IA_MASK_TRUTH_Oot)) {
+            // 3Ship [Hyrule] OoT's masks go on and off at once, as in OoT.
+            Hyrule_ToggleMaskOot(this, itemAction - PLAYER_IA_MASK_KEATON_Oot + 1);
+            func_8082E1F0(this, NA_SE_PL_CHANGE_ARMS);
+        } else if ((itemAction >= PLAYER_IA_FARORES_WIND_Oot) && (itemAction <= PLAYER_IA_DINS_FIRE_Oot)) {
+            // 3Ship [Hyrule] OoT's spells (OoT's Player_UseItem): Farore's Wind returns to its point without magic.
+            s32 spell = itemAction - PLAYER_IA_FARORES_WIND_Oot;
+
+            if (Hyrule_IsSpellAllowed(play, spell) &&
+                (((spell == HYRULE_SPELL_FARORES_WIND) && Hyrule_IsFaroresWindSet()) ||
+                 (gSaveContext.save.saveInfo.playerData.isMagicAcquired &&
+                  (gSaveContext.magicState == MAGIC_STATE_IDLE) &&
+                  (gSaveContext.save.saveInfo.playerData.magic >= Hyrule_GetSpellCost(spell))))) {
+                this->itemAction = itemAction;
+                this->unk_AA5 = PLAYER_UNKAA5_5;
+            } else {
                 Audio_PlaySfx(NA_SE_SY_ERROR);
             }
         } else if ((itemAction == PLAYER_IA_DEKU_NUT) &&
@@ -7830,7 +7910,8 @@ PlayerAnimationHeader* D_8085D190[PLAYER_FORM_MAX] = {
     &gPlayerAnim_link_normal_okarina_swing, // PLAYER_FORM_HUMAN
 };
 
-u8 D_8085D1A4[PLAYER_IA_MAX] = {
+// 3Ship [Hyrule] u16, for OoT's get-item ids. Was u8.
+u16 D_8085D1A4[PLAYER_IA_MAX] = {
     GI_NONE,                // PLAYER_IA_NONE
     GI_NONE,                // PLAYER_IA_LAST_USED
     GI_NONE,                // PLAYER_IA_FISHING_ROD
@@ -7848,7 +7929,7 @@ u8 D_8085D1A4[PLAYER_IA_MAX] = {
     GI_BOMBS_1,             // PLAYER_IA_BOMB
     GI_POWDER_KEG,          // PLAYER_IA_POWDER_KEG
     GI_BOMBCHUS_10,         // PLAYER_IA_BOMBCHU
-    GI_40,                  // PLAYER_IA_11
+    GI_40,                  // PLAYER_IA_BOOMERANG_Oot
     GI_DEKU_NUTS_1,         // PLAYER_IA_DEKU_NUT
     GI_PICTOGRAPH_BOX,      // PLAYER_IA_PICTOGRAPH_BOX
     GI_OCARINA_OF_TIME,     // PLAYER_IA_OCARINA
@@ -7914,6 +7995,21 @@ u8 D_8085D1A4[PLAYER_IA_MAX] = {
     GI_MASK_ZORA,           // PLAYER_IA_MASK_ZORA
     GI_MASK_DEKU,           // PLAYER_IA_MASK_DEKU
     GI_LENS_OF_TRUTH,       // PLAYER_IA_LENS_OF_TRUTH
+    GI_NONE,                // PLAYER_IA_SLINGSHOT_Oot: OoT's items are not shown to anyone yet
+    GI_NONE,                // PLAYER_IA_FARORES_WIND_Oot
+    GI_NONE,                // PLAYER_IA_NAYRUS_LOVE_Oot
+    GI_NONE,                // PLAYER_IA_DINS_FIRE_Oot
+    GI_WEIRD_EGG_Oot,       // PLAYER_IA_WEIRD_EGG_Oot
+    GI_CHICKEN_Oot,         // PLAYER_IA_CHICKEN_Oot
+    GI_LETTER_ZELDA_Oot,    // PLAYER_IA_LETTER_ZELDA_Oot
+    GI_NONE,                // PLAYER_IA_MASK_KEATON_Oot: worn, not shown
+    GI_NONE,                // PLAYER_IA_MASK_SKULL_Oot: worn, not shown
+    GI_NONE,                // PLAYER_IA_MASK_SPOOKY_Oot: worn, not shown
+    GI_NONE,                // PLAYER_IA_MASK_BUNNY_Oot: worn, not shown
+    GI_NONE,                // PLAYER_IA_MASK_GORON_Oot: worn, not shown
+    GI_NONE,                // PLAYER_IA_MASK_ZORA_Oot: worn, not shown
+    GI_NONE,                // PLAYER_IA_MASK_GERUDO_Oot: worn, not shown
+    GI_NONE,                // PLAYER_IA_MASK_TRUTH_Oot: worn, not shown
 };
 
 PlayerAnimationHeader* D_8085D1F8[] = {
@@ -7933,6 +8029,21 @@ s32 Player_ActionHandler_13(Player* this, PlayState* play) {
             return true;
         }
         if (!Player_StartCsAction(play, this)) {
+            if ((this->unk_AA5 == PLAYER_UNKAA5_5) && (this->itemAction >= PLAYER_IA_FARORES_WIND_Oot) &&
+                (this->itemAction <= PLAYER_IA_DINS_FIRE_Oot)) {
+                // 3Ship [Hyrule] OoT's spells (OoT's Player_ActionHandler_13).
+                s32 spell = this->itemAction - PLAYER_IA_FARORES_WIND_Oot;
+
+                if ((spell == HYRULE_SPELL_FARORES_WIND) && Hyrule_IsFaroresWindSet()) {
+                    Player_SetAction_PreserveItemAction(play, this, Player_Action_FaroresWindReturn_Oot, 1);
+                    this->stateFlags1 |= PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000;
+                    Player_Anim_PlayOnce(play, this, Player_GetIdleAnim(this));
+                } else {
+                    Player_StartCastingSpell_Oot(play, this, spell);
+                }
+                this->unk_AA5 = PLAYER_UNKAA5_0;
+                return true;
+            }
             if (this->unk_AA5 == PLAYER_UNKAA5_5) {
                 if ((this->itemAction >= PLAYER_IA_MASK_MIN) && (this->itemAction <= PLAYER_IA_MASK_MAX)) {
                     PlayerMask maskId = GET_MASK_FROM_IA(this->itemAction);
@@ -9595,7 +9706,7 @@ s32 Player_ActionHandler_2(Player* this, PlayState* play) {
         if (interactRangeActor != NULL) {
             if (this->getItemId > GI_NONE) {
                 if (this->getItemId < GI_MAX) {
-                    GetItemEntry* giEntry = &sGetItemTable[this->getItemId - 1];
+                    GetItemEntry* giEntry = Player_GetItemEntry(this->getItemId);
 
                     interactRangeActor->parent = &this->actor;
                     if ((Item_CheckObtainability(giEntry->itemId) == ITEM_NONE) ||
@@ -9628,7 +9739,7 @@ s32 Player_ActionHandler_2(Player* this, PlayState* play) {
                 if (!(this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR)) {
                     if (this->getItemId != GI_NONE) {
                         if (CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_A)) {
-                            GetItemEntry* giEntry = &sGetItemTable[-this->getItemId - 1];
+                            GetItemEntry* giEntry = Player_GetItemEntry(-this->getItemId);
                             EnBox* chest = (EnBox*)interactRangeActor;
 
                             if ((giEntry->itemId != ITEM_NONE) &&
@@ -9638,7 +9749,7 @@ s32 Player_ActionHandler_2(Player* this, PlayState* play) {
                                   (giEntry->field & GIFIELD_20)))) {
                                 this->getItemId =
                                     (giEntry->itemId == ITEM_MASK_CAPTAIN) ? -GI_RECOVERY_HEART : -GI_RUPEE_BLUE;
-                                giEntry = &sGetItemTable[-this->getItemId - 1];
+                                giEntry = Player_GetItemEntry(-this->getItemId);
                             }
 
                             if (GameInteractor_Should(VB_GIVE_ITEM_FROM_CHEST, true, chest)) {
@@ -11490,7 +11601,20 @@ void Player_Init(Actor* thisx, PlayState* play) {
         gSaveContext.save.isOwlSave = false;
     }
 
-    sStartModeFuncs[startMode](play, this);
+    // 3Ship [Hyrule] Arriving by Farore's Wind (OoT's PLAYER_START_MODE_FARORES_WIND, which MM gave to owls).
+    if (Hyrule_TakeFaroresWindArrival()) {
+        this->actor.draw = NULL;
+        Player_SetAction(play, this, Player_Action_FaroresWindArrive_Oot, 0);
+        this->stateFlags1 |= PLAYER_STATE1_20000000;
+    } else {
+        sStartModeFuncs[startMode](play, this);
+    }
+
+    // 3Ship [Hyrule] Nayru's Love lasts across scenes, as in OoT.
+    if (gSaveContext.nayrusLoveTimerOot != 0) {
+        gSaveContext.magicState = MAGIC_STATE_METER_FLASH_1;
+        Hyrule_SpawnSpell(play, this, HYRULE_SPELL_NAYRUS_LOVE);
+    }
 
     if ((this->actor.draw != NULL) && gSaveContext.save.hasTatl &&
         ((gSaveContext.gameMode == GAMEMODE_NORMAL) || (gSaveContext.gameMode == GAMEMODE_END_CREDITS)) &&
@@ -13122,6 +13246,12 @@ void Player_Update(Actor* thisx, PlayState* play) {
 
     this->stateFlags3 &= ~PLAYER_STATE3_10;
 
+    // 3Ship [Hyrule] OoT's masks and the Weird Egg (docs/OOT_ITEMS.md).
+    if (this->actor.id == ACTOR_PLAYER) {
+        Hyrule_UpdateMaskOot(play, this);
+        Hyrule_UpdateEggHatching(play);
+    }
+
     // This block is a leftover dog-following mechanic from OoT
     if (gSaveContext.dogParams < 0) {
         if (Object_GetSlot(&play->objectCtx, OBJECT_DOG) < 0) {
@@ -13190,6 +13320,11 @@ void Player_DrawGameplay(PlayState* play, Player* this, s32 lod, Gfx* cullDList,
     Player_DrawImpl(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount, lod,
                     this->transformation, 0, this->actor.shape.face, overrideLimbDraw, Player_PostLimbDrawGameplay,
                     &this->actor);
+
+    // 3Ship [Hyrule] OoT's masks, drawn on the head's matrix as OoT draws them.
+    if ((overrideLimbDraw == Player_OverrideLimbDrawGameplayDefault) && (this->actor.id == ACTOR_PLAYER)) {
+        Hyrule_DrawMaskOot(play, this);
+    }
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
@@ -14025,7 +14160,7 @@ s32 func_808482E0(PlayState* play, Player* this) {
     }
 
     if (this->av1.actionVar1 == 0) {
-        GetItemEntry* giEntry = &sGetItemTable[this->getItemId - 1];
+        GetItemEntry* giEntry = Player_GetItemEntry(this->getItemId);
 
         this->av1.actionVar1 = 1;
         Message_StartTextbox(play, giEntry->textId, &this->actor);
@@ -14302,6 +14437,8 @@ s32 Player_UpperAction_7(Player* this, PlayState* play) {
                     if (this->unk_B28 - 1 < 0) {
                         Ship_HandleConsoleCrashAsReset();
                         Player_PlaySfx(this, NA_SE_NONE);
+                    } else if (this->heldItemAction == PLAYER_IA_SLINGSHOT_Oot) {
+                        Player_PlaySfx(this, NA_SE_IT_SLING_FLICK);
                     } else {
                         Player_PlaySfx(this, D_8085D5FC[this->unk_B28 - 1]);
                     }
@@ -14422,6 +14559,16 @@ s32 Player_UpperAction_11(Player* this, PlayState* play) {
 }
 
 s32 Player_UpperAction_12(Player* this, PlayState* play) {
+    // 3Ship [Hyrule] OoT's Boomerang (OoT's func_80835884): aims from the start, then loops OoT's wait.
+    if (this->heldItemAction == PLAYER_IA_BOOMERANG_Oot) {
+        if (PlayerAnimation_Update(play, &this->skelAnimeUpper)) {
+            Player_SetUpperAction(play, this, Player_UpperAction_13);
+            PlayerAnimation_PlayLoop(play, &this->skelAnimeUpper, &gPlayerAnim_link_boom_throw_waitR);
+        }
+        func_80831010(this, play);
+        return true;
+    }
+
     if (PlayerAnimation_Update(play, &this->skelAnimeUpper)) {
         Player_SetUpperAction(play, this, Player_UpperAction_13);
         PlayerAnimation_PlayLoop(play, &this->skelAnimeUpper, &gPlayerAnim_pz_cutterwaitanim);
@@ -14437,7 +14584,14 @@ s32 Player_UpperAction_13(Player* this, PlayState* play) {
     func_80831010(this, play);
     if (!sPlayerHeldItemButtonIsHeldDown) {
         Player_SetUpperAction(play, this, Player_UpperAction_14);
-        PlayerAnimation_PlayOnce(play, &this->skelAnimeUpper, &gPlayerAnim_pz_cutterattack);
+        if (this->heldItemAction == PLAYER_IA_BOOMERANG_Oot) {
+            // 3Ship [Hyrule] OoT's throw, from the side Link leans to (unk_B40 is OoT's unk_870).
+            PlayerAnimation_PlayOnce(play, &this->skelAnimeUpper,
+                                     Hyrule_GetBoomerangAnim((this->unk_B40 < 0.5f) ? HYRULE_BOOMERANG_ANIM_THROW_R
+                                                                                     : HYRULE_BOOMERANG_ANIM_THROW_L));
+        } else {
+            PlayerAnimation_PlayOnce(play, &this->skelAnimeUpper, &gPlayerAnim_pz_cutterattack);
+        }
     }
     return true;
 }
@@ -14446,6 +14600,24 @@ s32 Player_UpperAction_14(Player* this, PlayState* play) {
     if (PlayerAnimation_Update(play, &this->skelAnimeUpper)) {
         Player_SetUpperAction(play, this, Player_UpperAction_15);
         this->unk_ACC = 0;
+    } else if (PlayerAnimation_OnFrame(&this->skelAnimeUpper, 6.0f) &&
+               (this->heldItemAction == PLAYER_IA_BOOMERANG_Oot)) {
+        // 3Ship [Hyrule] OoT's single Boomerang (OoT's func_808359FC).
+        this->zoraBoomerangActor = Hyrule_ThrowBoomerang(play, this);
+
+        if (this->zoraBoomerangActor != NULL) {
+            this->stateFlags1 |= PLAYER_STATE1_ZORA_BOOMERANG_THROWN;
+            this->stateFlags3 &= ~PLAYER_STATE3_ZORA_BOOMERANG_CAUGHT;
+
+            if (!Player_CheckHostileLockOn(this)) {
+                Player_SetParallel(this);
+            }
+
+            this->unk_D57 = 4;
+
+            Player_PlaySfx(this, NA_SE_IT_BOOMERANG_THROW);
+            Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_SWORD_N);
+        }
     } else if (PlayerAnimation_OnFrame(&this->skelAnimeUpper, 6.0f)) {
         Vec3f pos;
         s16 untargetedRotY;
@@ -14511,7 +14683,11 @@ s32 Player_UpperAction_15(Player* this, PlayState* play) {
 
     if (this->stateFlags3 & PLAYER_STATE3_ZORA_BOOMERANG_CAUGHT) {
         Player_SetUpperAction(play, this, Player_UpperAction_16);
-        PlayerAnimation_PlayOnce(play, &this->skelAnimeUpper, &gPlayerAnim_pz_cuttercatch);
+        // 3Ship [Hyrule] OoT's catch for OoT's Boomerang.
+        PlayerAnimation_PlayOnce(play, &this->skelAnimeUpper,
+                                 (this->heldItemAction == PLAYER_IA_BOOMERANG_Oot)
+                                     ? Hyrule_GetBoomerangAnim(HYRULE_BOOMERANG_ANIM_CATCH)
+                                     : &gPlayerAnim_pz_cuttercatch);
         this->stateFlags3 &= ~PLAYER_STATE3_ZORA_BOOMERANG_CAUGHT;
         Player_PlaySfx(this, NA_SE_PL_CATCH_BOOMERANG);
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_SWORD_N);
@@ -14532,6 +14708,161 @@ s32 Player_UpperAction_16(Player* this, PlayState* play) {
     }
     return true;
 }
+
+// #region 3Ship [Hyrule] OoT's spells: OoT's func_8083AF44, Player_Action_808507F4, Player_Action_8085063C and
+// Player_Action_8085076C. The spell's camera is MM's item camera, and Farore's Wind's point is HyruleMagic.c's.
+
+static PlayerAnimationHeader* sSpellStartAnims_Oot[HYRULE_SPELL_MAX] = {
+    &gPlayerAnim_link_magic_kaze1,
+    &gPlayerAnim_link_magic_honoo1,
+    &gPlayerAnim_link_magic_tamashii1,
+};
+
+static PlayerAnimationHeader* sSpellLoopAnims_Oot[HYRULE_SPELL_MAX] = {
+    &gPlayerAnim_link_magic_kaze2,
+    &gPlayerAnim_link_magic_honoo2,
+    &gPlayerAnim_link_magic_tamashii2,
+};
+
+static PlayerAnimationHeader* sSpellEndAnims_Oot[HYRULE_SPELL_MAX] = {
+    &gPlayerAnim_link_magic_kaze3,
+    &gPlayerAnim_link_magic_honoo3,
+    &gPlayerAnim_link_magic_tamashii3,
+};
+
+static u8 sSpellLoopFrames_Oot[HYRULE_SPELL_MAX] = { 70, 10, 10 };
+
+static AnimSfxEntry sSpellChargeSfx_Oot[] = {
+    ANIMSFX(ANIMSFX_TYPE_GENERAL, 20, NA_SE_PL_SKIP, CONTINUE),
+    ANIMSFX(ANIMSFX_TYPE_VOICE, 20, NA_SE_VO_LI_SWORD_N, CONTINUE),
+    ANIMSFX(ANIMSFX_TYPE_6, 26, 0, STOP),
+};
+
+static AnimSfxEntry sSpellSfx_Oot[HYRULE_SPELL_MAX][2] = {
+    {
+        ANIMSFX(ANIMSFX_TYPE_8, 20, 0, CONTINUE),
+        ANIMSFX(ANIMSFX_TYPE_VOICE, 30, NA_SE_VO_LI_MAGIC_FROL, STOP),
+    },
+    {
+        ANIMSFX(ANIMSFX_TYPE_8, 20, 0, CONTINUE),
+        ANIMSFX(ANIMSFX_TYPE_VOICE, 44, NA_SE_VO_LI_MAGIC_NALE, STOP),
+    },
+    {
+        ANIMSFX(ANIMSFX_TYPE_VOICE, 20, NA_SE_VO_LI_MAGIC_ATTACK, CONTINUE),
+        ANIMSFX(ANIMSFX_TYPE_GENERAL, 20, NA_SE_IT_SWORD_SWING_HARD, STOP),
+    },
+};
+
+void Player_StartCastingSpell_Oot(PlayState* play, Player* this, s32 spell) {
+    Player_SetAction_PreserveItemAction(play, this, Player_Action_CastSpell_Oot, 0);
+    this->av1.actionVar1 = spell;
+    Magic_Consume(play, Hyrule_GetSpellCost(spell), MAGIC_CONSUME_WAIT_PREVIEW);
+    PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, &gPlayerAnim_link_magic_tame, 0.83f);
+}
+
+void Player_Action_CastSpell_Oot(Player* this, PlayState* play) {
+    func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_ITEM_SHOW]);
+
+    if (PlayerAnimation_Update(play, &this->skelAnime)) {
+        if (this->av1.actionVar1 < 0) {
+            if ((this->itemAction == PLAYER_IA_NAYRUS_LOVE_Oot) || (gSaveContext.magicState == MAGIC_STATE_IDLE)) {
+                Player_StopCutscene(this);
+                this->stateFlags1 &= ~(PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000);
+                func_80836988(this, play);
+            }
+        } else {
+            if (this->av2.actionVar2 == 0) {
+                PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, sSpellStartAnims_Oot[this->av1.actionVar1],
+                                                 0.83f);
+
+                if (Hyrule_SpawnSpell(play, this, this->av1.actionVar1) != NULL) {
+                    this->stateFlags1 |= PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000;
+                    if ((this->av1.actionVar1 != HYRULE_SPELL_FARORES_WIND) || !Hyrule_IsFaroresWindSet()) {
+                        gSaveContext.magicState = MAGIC_STATE_CONSUME_SETUP;
+                    }
+                } else {
+                    Magic_Reset(play);
+                }
+            } else {
+                PlayerAnimation_PlayLoopSetSpeed(play, &this->skelAnime, sSpellLoopAnims_Oot[this->av1.actionVar1],
+                                                 0.83f);
+
+                if (this->av1.actionVar1 == HYRULE_SPELL_FARORES_WIND) {
+                    this->av2.actionVar2 = -10;
+                }
+            }
+
+            this->av2.actionVar2++;
+        }
+    } else {
+        if (this->av2.actionVar2 < 0) {
+            this->av2.actionVar2++;
+
+            if (this->av2.actionVar2 == 0) {
+                Hyrule_SetFaroresWind(play);
+                this->av2.actionVar2 = 2;
+            }
+        } else if (this->av1.actionVar1 >= 0) {
+            if (this->av2.actionVar2 == 0) {
+                Player_PlayAnimSfx(this, sSpellChargeSfx_Oot);
+            } else if (this->av2.actionVar2 == 1) {
+                Player_PlayAnimSfx(this, sSpellSfx_Oot[this->av1.actionVar1]);
+                if ((this->av1.actionVar1 == HYRULE_SPELL_DINS_FIRE) &&
+                    PlayerAnimation_OnFrame(&this->skelAnime, 30.0f)) {
+                    this->stateFlags1 &= ~(PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000);
+                }
+            } else if (sSpellLoopFrames_Oot[this->av1.actionVar1] < this->av2.actionVar2++) {
+                PlayerAnimation_PlayOnceSetSpeed(play, &this->skelAnime, sSpellEndAnims_Oot[this->av1.actionVar1],
+                                                 0.83f);
+                this->yaw = this->actor.shape.rot.y;
+                this->av1.actionVar1 = -1;
+            }
+        }
+    }
+
+    Player_StopHorizontalMovement(this);
+}
+
+void Player_Action_FaroresWindReturn_Oot(Player* this, PlayState* play) {
+    PlayerAnimation_Update(play, &this->skelAnime);
+    func_808323C0(this, play->playerCsIds[PLAYER_CS_ID_ITEM_SHOW]);
+
+    if (this->av2.actionVar2 == 0) {
+        Message_StartTextbox(play, TEXT_OOT(0x3B), &this->actor); // "Return to the Warp Point? / Dispel / Exit"
+        this->av2.actionVar2 = 1;
+        return;
+    }
+
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
+        if (play->msgCtx.choiceIndex == 0) {
+            Message_CloseTextbox(play);
+            Hyrule_ReturnToFaroresWind(play);
+            return;
+        }
+        if (play->msgCtx.choiceIndex == 1) {
+            Hyrule_DispelFaroresWind();
+        }
+        Message_CloseTextbox(play);
+        Player_StopCutscene(this);
+        this->stateFlags1 &= ~(PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000);
+        func_8085B384(this, play);
+    }
+}
+
+void Player_Action_FaroresWindArrive_Oot(Player* this, PlayState* play) {
+    if (this->av2.actionVar2 > 20) {
+        this->actor.draw = Player_Draw;
+        this->actor.world.pos.y += 60.0f;
+        this->stateFlags1 &= ~PLAYER_STATE1_20000000;
+        func_80833AA0(this, play);
+        return;
+    }
+
+    if (this->av2.actionVar2++ == 20) {
+        Hyrule_ArriveAtFaroresWind(play);
+    }
+}
+// #endregion
 
 void Player_Action_OwlSaveArrive(Player* this, PlayState* play) {
     PlayerAnimation_Update(play, &this->skelAnime);
@@ -18459,7 +18790,7 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play) {
             }
             Player_StartTalking(play, talkActor);
         } else {
-            GetItemEntry* giEntry = &sGetItemTable[D_8085D1A4[this->exchangeItemAction] - 1];
+            GetItemEntry* giEntry = Player_GetItemEntry(D_8085D1A4[this->exchangeItemAction]);
 
             if (Player_BottleFromIA(this, this->itemAction) <= PLAYER_BOTTLE_NONE) {
                 this->getItemDrawIdPlusOne = ABS_ALT(giEntry->gid);
@@ -18468,6 +18799,10 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play) {
             if (this->av2.actionVar2 == 0) {
                 if ((this->actor.textId != 0) && (this->actor.textId != 0xFFFF)) {
                     Message_StartTextbox(play, this->actor.textId, &this->actor);
+                }
+                // 3Ship [Hyrule] OoT's Cucco cries when shown.
+                if (this->itemAction == PLAYER_IA_CHICKEN_Oot) {
+                    Player_PlaySfx(this, NA_SE_EV_CHICKEN_CRY_M);
                 }
 
                 this->av2.actionVar2 = 1;
@@ -18484,7 +18819,7 @@ void Player_Action_ExchangeItem(Player* this, PlayState* play) {
             PlayerAnimation_OnFrame(&this->skelAnime, 36.0f)) {
             Player_SetModels(this, PLAYER_MODELGROUP_BOTTLE);
         } else if (PlayerAnimation_OnFrame(&this->skelAnime, 2.0f)) {
-            GetItemEntry* giEntry = &sGetItemTable[D_8085D1A4[this->itemAction] - 1];
+            GetItemEntry* giEntry = Player_GetItemEntry(D_8085D1A4[this->itemAction]);
 
             func_80838830(this, giEntry->objectId);
         }
@@ -21717,7 +22052,10 @@ PlayerItemAction func_8085B854(PlayState* play, Player* this, ItemId itemId) {
         itemAction = PLAYER_IA_NONE;
     }
 
-    if ((itemAction <= PLAYER_IA_NONE) || (itemAction >= PLAYER_IA_MAX)) {
+    // 3Ship [Hyrule] Of OoT's items, only the trade items have a get-item model to show (D_8085D1A4).
+    if ((itemAction <= PLAYER_IA_NONE) || (itemAction == PLAYER_IA_BOOMERANG_Oot) ||
+        ((itemAction >= PLAYER_IA_OOT_MIN) &&
+         !((itemAction >= PLAYER_IA_WEIRD_EGG_Oot) && (itemAction <= PLAYER_IA_LETTER_ZELDA_Oot)))) {
         return PLAYER_IA_MINUS1;
     }
 

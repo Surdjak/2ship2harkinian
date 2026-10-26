@@ -134,7 +134,7 @@ static s32 Inventory_GetDungeonIndexOot(PlayState* play) {
 }
 
 // Replaces an item on Link's C and D-pad buttons, as OoT does when an item in a slot changes.
-static void Inventory_ReplaceButtonItem(PlayState* play, u16 oldItem, u16 newItem) {
+void Inventory_ReplaceButtonItem(PlayState* play, u16 oldItem, u16 newItem) {
     s32 btn;
 
     if (oldItem == ITEM_NONE) {

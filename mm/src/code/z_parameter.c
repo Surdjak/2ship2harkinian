@@ -1,5 +1,6 @@
 #include "global.h"
 #include "HyruleInventory.h"
+#include "HyruleMagic.h"
 #include "HyrulePlayer.h"
 #include "HyruleKaleido.h"
 #include "PR/gs2dex.h"
@@ -3498,6 +3499,12 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
                                 gSaveContext.buttonStatus[i] = BTN_DISABLED;
                             }
                         }
+                    } else if (!Hyrule_IsSpellItemAllowed(play, GET_CUR_FORM_BTN_ITEM(i))) {
+                        // 3Ship [Hyrule] OoT's spells, by scene (docs/OOT_ITEMS.md).
+                        if (gSaveContext.buttonStatus[i] == BTN_ENABLED) {
+                            restoreHudVisibility = true;
+                            gSaveContext.buttonStatus[i] = BTN_DISABLED;
+                        }
                     } else if (interfaceCtx->restrictions.all == 0) {
                         if (!((GET_CUR_FORM_BTN_ITEM(i) >= ITEM_MOONS_TEAR) &&
                               (GET_CUR_FORM_BTN_ITEM(i) <= ITEM_PENDANT_OF_MEMORIES)) &&
@@ -3644,6 +3651,12 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
                                 restoreHudVisibility = true;
                                 gSaveContext.shipSaveContext.dpad.status[j] = BTN_DISABLED;
                             }
+                        }
+                    } else if (!Hyrule_IsSpellItemAllowed(play, DPAD_GET_CUR_FORM_BTN_ITEM(j))) {
+                        // 3Ship [Hyrule] OoT's spells, by scene (docs/OOT_ITEMS.md).
+                        if (gSaveContext.shipSaveContext.dpad.status[j] == BTN_ENABLED) {
+                            restoreHudVisibility = true;
+                            gSaveContext.shipSaveContext.dpad.status[j] = BTN_DISABLED;
                         }
                     } else if (interfaceCtx->restrictions.all == 0) {
                         if (!((DPAD_GET_CUR_FORM_BTN_ITEM(j) >= ITEM_MOONS_TEAR) &&
@@ -5224,7 +5237,11 @@ void Rupees_ChangeBy(s16 rupeeChange) {
 }
 
 void Inventory_ChangeAmmo(s16 item, s16 ammoChange) {
-    if (item == ITEM_DEKU_STICK) {
+    // 3Ship [Hyrule] OoT's Slingshot and its Deku Seeds.
+    if (item == ITEM_SLINGSHOT_Oot) {
+        AMMO_SLOT_OOT(SLOT_OOT_SLINGSHOT) =
+            CLAMP(AMMO_SLOT_OOT(SLOT_OOT_SLINGSHOT) + ammoChange, 0, CUR_CAPACITY(UPG_BULLET_BAG));
+    } else if (item == ITEM_DEKU_STICK) {
         AMMO(ITEM_DEKU_STICK) += ammoChange;
 
         if (AMMO(ITEM_DEKU_STICK) >= CUR_CAPACITY(UPG_DEKU_STICKS)) {

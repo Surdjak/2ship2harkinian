@@ -366,6 +366,7 @@ inline void to_json(json& j, const SaveInfo& saveInfo) {
         { "infTableOot", saveInfo.infTableOot },
         { "inventoryOot", saveInfo.inventoryOot },
         { "worldMapAreaDataOot", saveInfo.worldMapAreaDataOot },
+        { "faroresWindOot", saveInfo.faroresWindOot },
         { "regionsVisited", saveInfo.regionsVisited },
         { "worldMapCloudVisibility", saveInfo.worldMapCloudVisibility },
         { "unk_F40", saveInfo.unk_F40 },
@@ -407,6 +408,7 @@ inline void from_json(const json& j, SaveInfo& saveInfo) {
     j.at("infTableOot").get_to(saveInfo.infTableOot);
     j.at("inventoryOot").get_to(saveInfo.inventoryOot);
     j.at("worldMapAreaDataOot").get_to(saveInfo.worldMapAreaDataOot);
+    j.at("faroresWindOot").get_to(saveInfo.faroresWindOot);
     j.at("regionsVisited").get_to(saveInfo.regionsVisited);
     j.at("worldMapCloudVisibility").get_to(saveInfo.worldMapCloudVisibility);
     j.at("unk_F40").get_to(saveInfo.unk_F40);
@@ -428,6 +430,7 @@ inline void to_json(json& j, const Save& save) {
     j = json{
         { "entrance", save.entrance },
         { "equippedMask", save.equippedMask },
+        { "equippedMaskOot", save.equippedMaskOot }, // 3Ship [Hyrule]
         { "isFirstCycle", save.isFirstCycle },
         { "unk_06", save.unk_06 },
         { "linkAge", save.linkAge },
@@ -450,6 +453,7 @@ inline void to_json(json& j, const Save& save) {
 inline void from_json(const json& j, Save& save) {
     j.at("entrance").get_to(save.entrance);
     j.at("equippedMask").get_to(save.equippedMask);
+    j.at("equippedMaskOot").get_to(save.equippedMaskOot);
     j.at("isFirstCycle").get_to(save.isFirstCycle);
     j.at("unk_06").get_to(save.unk_06);
     j.at("linkAge").get_to(save.linkAge);

@@ -1,6 +1,8 @@
 // OoT's actor helpers from code (z_actor.c) that MM does not have. Ported from SoH.
 
 #include "HyruleActor.h"
+#include "HyruleInventory.h"
+#include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 
 static Gfx* func_80034B28(GraphicsContext* gfxCtx) {
     Gfx* displayList;
@@ -131,10 +133,33 @@ s16 Item00_FromOot(s16 ootType) {
         /* BOMBS_A */ 0x04,      /* ARROWS_SINGLE */ 0x05, /* HEART_PIECE */ 0x06,     /* HEART_CONTAINER */ 0x07,
         /* ARROWS_SMALL */ 0x05, /* ARROWS_MEDIUM */ 0x05, /* ARROWS_LARGE */ 0x08,    /* BOMBS_B */ 0x0B,
         /* NUTS */ 0x0C,         /* STICK */ 0x0D,         /* MAGIC_LARGE */ 0x0E,     /* MAGIC_SMALL */ 0x0F,
-        /* SEEDS */ 0x18,        /* SMALL_KEY */ 0x11,     /* FLEXIBLE */ 0x12,        /* RUPEE_ORANGE */ 0x13,
+        /* SEEDS */ 0x1E,        /* SMALL_KEY */ 0x11,     /* FLEXIBLE */ 0x12,        /* RUPEE_ORANGE */ 0x13,
         /* RUPEE_PURPLE */ 0x14, /* SHIELD_DEKU */ 0x16,   /* SHIELD_HYLIAN */ 0x16,   /* TUNIC_ZORA */ 0x18,
         /* TUNIC_GORON */ 0x18,  /* BOMBS_SPECIAL */ 0x04,
     };
 
     return ((ootType >= 0) && (ootType <= ITEM00_MAX_OOT)) ? sMmItem00[ootType] : ITEM00_NOTHING;
+}
+
+s16 Item00_ArrowsOrSeeds(s16 dropId) {
+    s32 hasBow = INV_CONTENT(ITEM_BOW) != ITEM_NONE;
+    s32 hasSlingshot = INV_CONTENT_SLOT_OOT(SLOT_OOT_SLINGSHOT) != ITEM_NONE;
+    s32 seeds;
+
+    if (hasBow && hasSlingshot) {
+        // The fuller one, by the share of its capacity.
+        seeds = AMMO_SLOT_OOT(SLOT_OOT_SLINGSHOT) * CUR_CAPACITY(UPG_QUIVER) <
+                AMMO(ITEM_BOW) * CUR_CAPACITY(UPG_BULLET_BAG);
+    } else {
+        seeds = hasSlingshot;
+    }
+
+    if (seeds) {
+        return ITEM00_DEKU_SEEDS_Oot;
+    }
+    return (dropId == ITEM00_DEKU_SEEDS_Oot) ? ITEM00_ARROWS_10 : dropId;
+}
+
+TexturePtr Item00_GetDekuSeedsTex(void) {
+    return (TexturePtr)gDropDekuSeedsTex;
 }

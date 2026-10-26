@@ -5,6 +5,8 @@
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include "overlays/actors/ovl_En_Elforg/z_en_elforg.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "HyruleActor.h"
+#include "HyruleInventory.h"
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
@@ -154,6 +156,7 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
         case ITEM00_MAGIC_JAR_SMALL:
         case ITEM00_DEKU_NUTS_10:
         case ITEM00_BOMBS_0:
+        case ITEM00_DEKU_SEEDS_Oot:
             Actor_SetScale(thisx, 0.03f);
             this->unk154 = 0.03f;
             shadowOffset = 320.0f;
@@ -289,6 +292,10 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
 
         case ITEM00_SMALL_KEY:
             Item_Give(play, ITEM_KEY_SMALL);
+            break;
+
+        case ITEM00_DEKU_SEEDS_Oot:
+            Item_Give(play, ITEM_SEEDS_Oot);
             break;
 
         case ITEM00_DEKU_NUTS_1:
@@ -639,6 +646,10 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
             Item_Give(play, ITEM_MAGIC_JAR_SMALL);
             break;
 
+        case ITEM00_DEKU_SEEDS_Oot:
+            Item_Give(play, ITEM_SEEDS_Oot);
+            break;
+
         case ITEM00_SHIELD_HERO:
             getItemId = GI_SHIELD_HERO;
             break;
@@ -764,6 +775,7 @@ void EnItem00_Draw(Actor* thisx, PlayState* play) {
             case ITEM00_SMALL_KEY:
             case ITEM00_DEKU_NUTS_10:
             case ITEM00_BOMBS_0:
+            case ITEM00_DEKU_SEEDS_Oot:
                 EnItem00_DrawSprite(this, play);
                 break;
 
@@ -854,7 +866,10 @@ void EnItem00_DrawSprite(EnItem00* this, PlayState* play) {
 
     POLY_OPA_DISP = Gfx_SetupDL66(POLY_OPA_DISP);
 
-    gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sItemDropTextures[texIndex]));
+    // 3Ship [Hyrule] OoT's Deku Seeds, where OoT kept them in this table.
+    gSPSegment(POLY_OPA_DISP++, 0x08,
+               Lib_SegmentedToVirtual((this->actor.params == ITEM00_DEKU_SEEDS_Oot) ? Item00_GetDekuSeedsTex()
+                                                                                   : sItemDropTextures[texIndex]));
 
     MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
 
@@ -897,6 +912,12 @@ void EnItem00_DrawHeartPiece(EnItem00* this, PlayState* play) {
 }
 
 s16 func_800A7650(s16 dropId) {
+    // 3Ship [Hyrule] Arrows or OoT's Deku Seeds, by the ammo Link carries.
+    if (((dropId >= ITEM00_ARROWS_30) && (dropId <= ITEM00_ARROWS_50)) || (dropId == ITEM00_ARROWS_10) ||
+        (dropId == ITEM00_DEKU_SEEDS_Oot)) {
+        dropId = Item00_ArrowsOrSeeds(dropId);
+    }
+
     if ((((dropId == ITEM00_BOMBS_A) || (dropId == ITEM00_BOMBS_0) || (dropId == ITEM00_BOMBS_B)) &&
          (INV_CONTENT(ITEM_BOMB) == ITEM_NONE)) ||
         (((dropId == ITEM00_ARROWS_10) || (dropId == ITEM00_ARROWS_30) || (dropId == ITEM00_ARROWS_40) ||
@@ -1424,6 +1445,12 @@ void Item_DropCollectibleRandom(PlayState* play, Actor* fromActor, Vec3f* spawnP
             } else if (AMMO(ITEM_BOW) < 6) {
                 params = 0xA0;
                 dropId = ITEM00_ARROWS_30;
+                dropQuantity = 1;
+            } else if ((INV_CONTENT_SLOT_OOT(SLOT_OOT_SLINGSHOT) != ITEM_NONE) &&
+                       (AMMO_SLOT_OOT(SLOT_OOT_SLINGSHOT) < 6)) {
+                // 3Ship [Hyrule] OoT's Deku Seeds, as OoT drops them for child Link.
+                params = 0xA0;
+                dropId = ITEM00_DEKU_SEEDS_Oot;
                 dropQuantity = 1;
             } else if (AMMO(ITEM_BOMB) < 6) {
                 params = 0xB0;

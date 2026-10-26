@@ -218,3 +218,47 @@ DamageTable* DamageTable_Get_Oot(s32 index) {
     }
     return &sDamageTablePresets[index];
 }
+
+s32 DamageTable_IsMm(DamageTable* damageTable) {
+    s32 i;
+
+    for (i = 32; i < ARRAY_COUNT(damageTable->attack); i++) {
+        if (damageTable->attack[i] != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// MM's creatures that are OoT's too, by what OoT's boomerang does to them there. The others, and every
+// MM-only creature, are stunned, as OoT's boomerang stuns most enemies.
+s32 DamageTable_GetOotBoomerangAttack(Actor* actor) {
+    switch (actor->id) {
+        // Damaged: Guay, Deku Baba, Wilted Deku Baba (dies to any hit), Mad Scrub, Keese, Octorok, Skulltulas
+        // on walls and Gold Skulltulas, Big Poe (OoT's Poes), Leever.
+        case ACTOR_EN_CROW:
+        case ACTOR_EN_DEKUBABA:
+        case ACTOR_EN_KAREBABA:
+        case ACTOR_EN_DEKUNUTS:
+        case ACTOR_EN_FIREFLY:
+        case ACTOR_EN_OKUTA:
+        case ACTOR_EN_SW:
+        case ACTOR_EN_BIGPO:
+        case ACTOR_EN_NEO_REEBA:
+            return 4; // DMG_ZORA_BOOMERANG
+
+        // Unaffected: Red Bubble, Freezard, ReDead and Gibdos, Shellblade, the Poe Sisters, Iron Knuckle.
+        case ACTOR_EN_BBFALL:
+        case ACTOR_EN_FZ:
+        case ACTOR_EN_RD:
+        case ACTOR_EN_RAILGIBUD:
+        case ACTOR_EN_TALK_GIBUD:
+        case ACTOR_EN_SB:
+        case ACTOR_EN_PO_SISTERS:
+        case ACTOR_EN_IK:
+            return -1;
+
+        default:
+            return 0; // DMG_DEKU_NUT
+    }
+}

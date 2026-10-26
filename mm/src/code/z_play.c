@@ -3,6 +3,7 @@
 #include "functions.h"
 #include "z64vismono.h"
 #include "z64visfbuf.h"
+#include "HyrulePlayer.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 
 // Variables are put before most headers as a hacky way to bypass bss reordering
@@ -2406,6 +2407,7 @@ void Play_Init(GameState* thisx) {
             gSaveContext.save.day++;
             gSaveContext.save.eventDayCount++;
             gSaveContext.dogIsLost = true;
+            Hyrule_OnNewDay(); // 3Ship [Hyrule] the Weird Egg hatches at dawn
             gSaveContext.nextDayTime = NEXT_TIME_DAY_SET;
         } else {
             gSaveContext.nextDayTime = NEXT_TIME_NIGHT_SET;

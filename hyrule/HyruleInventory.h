@@ -149,6 +149,9 @@ s32 Hyrule_OwnsGreatFairySword(void);
 // The Great Fairy's Sword stolen: no longer owned, and if worn, MM's own sword (or none) goes back on B.
 void Hyrule_LoseGreatFairySword(struct PlayState* play);
 
+// Replaces an item on Link's C and D-pad buttons, as OoT does when an item in a slot changes.
+void Inventory_ReplaceButtonItem(struct PlayState* play, u16 oldItem, u16 newItem);
+
 // OoT's items at the end of a cycle (docs/INVENTORY.md): ammo, bottle contents, trade items other than
 // masks and OoT's dungeon items reset; the rest is kept.
 void Hyrule_ResetInventoryOotForCycle(struct PlayState* play);

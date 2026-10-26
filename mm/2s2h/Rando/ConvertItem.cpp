@@ -5,14 +5,7 @@
 #include "2s2h/ShipInit.hpp"
 #include <cassert>
 
-// Copied from z_player.c, we could instead move this to a header file, idk
-typedef struct GetItemEntry {
-    /* 0x0 */ u8 itemId;
-    /* 0x1 */ u8 field; // various bit-packed data
-    /* 0x2 */ s8 gid;   // defines the draw id and chest opening animation
-    /* 0x3 */ u8 textId;
-    /* 0x4 */ u16 objectId;
-} GetItemEntry; // size = 0x6
+// 3Ship [Hyrule] GetItemEntry is in z64item.h now, widened for OoT's ids.
 #define GIFIELD_20 (1 << 5)
 #define GIFIELD_40 (1 << 6)
 

@@ -35,6 +35,10 @@ RENAMES = [
     (r"\bELEMTYPE_", "ELEM_MATERIAL_"),
     (r"\bTOUCH_ON\b", "ATELEM_ON"),
     (r"\bTOUCH_NONE\b", "ATELEM_NONE"),
+    (r"\bTOUCH_NEAREST\b", "ATELEM_NEAREST"),
+    (r"\bEffect_Delete\b", "Effect_Destroy"),
+    (r"\bActor_SetProjectileSpeed\b", "Actor_SetSpeeds"),
+    (r"\bMSGMODE_OCARINA_CORRECT_PLAYBACK\b", "MSGMODE_DISPLAY_SONG_PLAYED"),
     (r"\bTOUCH_SFX_", "ATELEM_SFX_"),
     (r"\bBUMP_ON\b", "ACELEM_ON"),
     (r"\bBUMP_NONE\b", "ACELEM_NONE"),
@@ -205,6 +209,8 @@ def convert(text, header):
         extra = '#include "HyruleFlags.h"\n#include "HyrulePort.h"\n#include "HyruleActor.h"\n'
         extra += '#include "z64quake.h"\n' if "Quake_" in text else ""
         extra += '#include "z64rumble.h"\n' if "Rumble_" in text else ""
+        # SoH's soh/ResourceManagerHelpers.h, dropped above; without it C assumes int and truncates pointers.
+        extra += '#include "2s2h/BenPort.h"\n' if "ResourceMgr_" in text else ""
         text = re.sub(r'(#include "[^"]+"\n)', lambda m: m.group(1) + extra, text, count=1)
     else:
         text = text.replace("#include <libultraship/libultra.h>\n", "")

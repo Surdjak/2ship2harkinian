@@ -578,8 +578,8 @@ static s16 EnKo_UpdateTalkState(PlayState* play, Actor* thisx) {
                         break;
                     case TEXT_OOT(0x1038):
                         this->actor.textId = (play->msgCtx.choiceIndex != 0)
-                                                 ? (play->msgCtx.choiceIndex == 1) ? 0x103A : 0x103B
-                                                 : 0x1039;
+                                                 ? (play->msgCtx.choiceIndex == 1) ? TEXT_OOT(0x103A) : TEXT_OOT(0x103B)
+                                                 : TEXT_OOT(0x1039);
                         Message_ContinueTextbox(play, this->actor.textId);
                         break;
                     case TEXT_OOT(0x103E):

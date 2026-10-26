@@ -120,7 +120,7 @@ typedef enum PlayerItemAction {
     /* 0x0E */ PLAYER_IA_BOMB = PLAYER_IA_EXPLOSIVE_MIN,
     /* 0x0F */ PLAYER_IA_POWDER_KEG,
     /* 0x10 */ PLAYER_IA_BOMBCHU,
-    /* 0x11 */ PLAYER_IA_11,
+    /* 0x11 */ PLAYER_IA_BOOMERANG_Oot, // 3Ship [Hyrule] was PLAYER_IA_11: OoT's Boomerang, which MM left unused
     /* 0x12 */ PLAYER_IA_DEKU_NUT,
     /* 0x13 */ PLAYER_IA_PICTOGRAPH_BOX,
     /* 0x14 */ PLAYER_IA_OCARINA,
@@ -190,7 +190,24 @@ typedef enum PlayerItemAction {
     /* 0x51 */ PLAYER_IA_MASK_DEKU,
     /* 0x51 */ PLAYER_IA_MASK_MAX = PLAYER_IA_MASK_DEKU,
     /* 0x52 */ PLAYER_IA_LENS_OF_TRUTH,
-    /* 0x53 */ PLAYER_IA_MAX
+    // 3Ship [Hyrule] OoT's items follow MM's (docs/OOT_ITEMS.md).
+    /* 0x53 */ PLAYER_IA_OOT_MIN, // and PLAYER_IA_BOOMERANG_Oot above
+    /* 0x53 */ PLAYER_IA_SLINGSHOT_Oot = PLAYER_IA_OOT_MIN,
+    /* 0x54 */ PLAYER_IA_FARORES_WIND_Oot, // OoT's spells, in HyruleSpell's order
+    /* 0x55 */ PLAYER_IA_NAYRUS_LOVE_Oot,
+    /* 0x56 */ PLAYER_IA_DINS_FIRE_Oot,
+    /* 0x57 */ PLAYER_IA_WEIRD_EGG_Oot, // OoT's child trade items, shown to people
+    /* 0x58 */ PLAYER_IA_CHICKEN_Oot,
+    /* 0x59 */ PLAYER_IA_LETTER_ZELDA_Oot,
+    /* 0x5A */ PLAYER_IA_MASK_KEATON_Oot, // OoT's masks, in OoT's PlayerMask order
+    /* 0x5B */ PLAYER_IA_MASK_SKULL_Oot,
+    /* 0x5C */ PLAYER_IA_MASK_SPOOKY_Oot,
+    /* 0x5D */ PLAYER_IA_MASK_BUNNY_Oot,
+    /* 0x5E */ PLAYER_IA_MASK_GORON_Oot,
+    /* 0x5F */ PLAYER_IA_MASK_ZORA_Oot,
+    /* 0x60 */ PLAYER_IA_MASK_GERUDO_Oot,
+    /* 0x61 */ PLAYER_IA_MASK_TRUTH_Oot,
+    /* 0x62 */ PLAYER_IA_MAX
 } PlayerItemAction;
 
 // Relies on B swords related item actions to be contiguous
@@ -1291,7 +1308,7 @@ typedef struct Player {
     /* 0xB0C */ f32 unk_B0C;
     /* 0xB10 */ f32 unk_B10[6];
     /* 0xB28 */ s16 unk_B28; // Burning stick timer?
-    /* 0xB2A */ s8 getItemDrawIdPlusOne;
+    /* 0xB2A */ s16 getItemDrawIdPlusOne; // 3Ship [Hyrule] was s8, for OoT's draw ids (GID_OOT_BASE). Offsets below are shifted.
     /* 0xB2B */ s8 unk_B2B;
     /* 0xB2C */ f32 windSpeed;
     /* 0xB30 */ s16 windAngleX;

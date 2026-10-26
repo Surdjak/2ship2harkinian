@@ -362,6 +362,8 @@ typedef enum ItemId {
 
 // 3Ship [Hyrule] An item that has an icon on a button: MM's below its special ids (ITEM_F0 and up), and OoT's.
 #define ITEM_HAS_BUTTON_ICON(item) (((item) < ITEM_F0) || ((item) >= ITEM_OOT_BASE))
+// 3Ship [Hyrule] No item to use: MM's ids from ITEM_FD to ITEM_NONE, which OoT's ids follow. Was `item >= ITEM_FD`.
+#define ITEM_IS_NONE(item) (((item) >= ITEM_FD) && ((item) < ITEM_OOT_BASE))
 
 #define BOTTLE_FIRST 0
 #define BOTTLE_MAX 6
@@ -554,7 +556,9 @@ typedef enum GetItemId {
     /* 0xB8 */ GI_TINGLE_MAP_GREAT_BAY,
     /* 0xB9 */ GI_TINGLE_MAP_STONE_TOWER,
     /* 0xBA */ GI_SHIP, // 2S2H [Enhancement] Added to enable custom item gives
-    /* 0xBB */ GI_MAX
+    /* 0xBB */ GI_MAX,
+    // 3Ship [Hyrule] OoT's get-item ids follow, from GI_OOT_BASE (above GI_MAX, which sizes MM's table).
+#include "tables/get_item_id_oot.h"
 } GetItemId;
 
 typedef enum GetItemDrawId {
@@ -677,7 +681,32 @@ typedef enum GetItemDrawId {
     /* 0x73 */ GID_CHATEAU,
     /* 0x74 */ GID_PICTOGRAPH_BOX,
     /* 0x75 */ GID_MASK_FIERCE_DEITY,
-    /* 0x76 */ GID_MAXIMUM // 2S2H [Port] Changed from GID_MAX because that's a reserved macro on MacOS(?)
+    /* 0x76 */ GID_MAXIMUM, // 2S2H [Port] Changed from GID_MAX because that's a reserved macro on MacOS(?)
+    // 3Ship [Hyrule] OoT's draw ids follow, from GID_OOT_BASE; they are 16-bit wherever they are stored.
+#include "tables/get_item_draw_id_oot.h"
 } GetItemDrawId;
+
+// 3Ship [Hyrule] Was in z_player.c (and copied in Rando/ConvertItem.cpp); widened for OoT's ids. MM's table is
+// z_player.c's sGetItemTable, OoT's hyrule/HyruleGetItem.c's; Player_GetItemEntry finds an id's entry.
+typedef struct GetItemEntry {
+    /* 0x0 */ u16 itemId;   // 3Ship [Hyrule] was u8
+    /* 0x2 */ u8 field;     // various bit-packed data
+    /* 0x4 */ s16 gid;      // defines the draw id and chest opening animation. 3Ship [Hyrule] was s8
+    /* 0x6 */ u16 textId;   // 3Ship [Hyrule] was u8: a message id; OoT's are TEXT_OOT ids
+    /* 0x8 */ u16 objectId;
+} GetItemEntry; // size = 0xA
+
+#define CHEST_ANIM_SHORT 0
+#define CHEST_ANIM_LONG 1
+
+// TODO: consider what to do with the NONEs: cannot use a zero-argument macro like OoT since the text id is involved.
+#define GET_ITEM(itemId, objectId, drawId, textId, field, chestAnim) \
+    { itemId, field, (chestAnim != CHEST_ANIM_SHORT ? 1 : -1) * (drawId + 1), textId, objectId }
+
+// The entry for a get-item id, MM's (1 to GI_MAX - 1) or OoT's (from GI_OOT_BASE + 1).
+GetItemEntry* Player_GetItemEntry(s32 getItemId);
+// OoT's get-item models, for draw ids from GID_OOT_BASE (hyrule/HyruleGetItemDraw.c).
+struct PlayState;
+void Hyrule_GetItemDrawOot(struct PlayState* play, s16 drawId);
 
 #endif

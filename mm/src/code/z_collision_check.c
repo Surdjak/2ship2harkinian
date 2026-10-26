@@ -1,4 +1,5 @@
 #include "z64collision_check.h"
+#include "HyruleActor.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
 #include "stdbool.h"
@@ -64,11 +65,26 @@ f32 CollisionCheck_GetDamageAndEffectOnElementAC(Collider* atCol, ColliderElemen
     if (acCol->actor->colChkInfo.damageTable != NULL) {
         dmgFlags = atElem->atDmgInfo.dmgFlags;
 
+        // 3Ship [Hyrule] The entry is the attack's highest bit, which is OoT's for OoT's attacks (DMG_FROM_OOT);
+        // MM's tables have nothing there, so they read MM's bits only, as in MM, when the attack has any.
+        if (((dmgFlags & 0xFFFFFFFF) != 0) && DamageTable_IsMm(acCol->actor->colChkInfo.damageTable)) {
+            dmgFlags &= 0xFFFFFFFF;
+        }
+
         for (i = 0; i < ARRAY_COUNT(acCol->actor->colChkInfo.damageTable->attack); i++) {
             if (dmgFlags == 1) {
                 break;
             }
             dmgFlags >>= 1;
+        }
+
+        // 3Ship [Hyrule] OoT's Boomerang does to MM's creatures what it does to them in OoT.
+        if ((atElem->atDmgInfo.dmgFlags & DMG_BOOMERANG_Oot) &&
+            DamageTable_IsMm(acCol->actor->colChkInfo.damageTable)) {
+            i = DamageTable_GetOotBoomerangAttack(acCol->actor);
+            if (i < 0) {
+                return 0.0f;
+            }
         }
 
         // #region 2S2H - Enhancements - Damage Multiplier and Effect

@@ -5,6 +5,7 @@
 
 #include "z64actor.h"
 #include "z64door.h"
+#include "HyruleMagic.h"
 
 #include "prevent_bss_reordering.h"
 #include "fault.h"
@@ -2648,6 +2649,7 @@ void Actor_InitContext(PlayState* play, ActorContext* actorCtx, ActorEntry* acto
     Actor_InitHalfDaysBit(actorCtx);
     // Fault_AddClient(&sActorFaultClient, (void*)Actor_PrintLists, actorCtx, NULL);
     Player_SpawnHorse(play, (Player*)actorCtx->actorLists[ACTORCAT_PLAYER].first);
+    Hyrule_InitFaroresWind(play); // 3Ship [Hyrule] OoT's func_8002FA60
 }
 
 /**
@@ -3478,6 +3480,8 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
     gSPBranchList(ref2, &tmp2[1]);
     POLY_XLU_DISP = &tmp2[1];
 
+    Hyrule_DrawFaroresWind(play); // 3Ship [Hyrule] OoT's Actor_DrawFaroresWindPointer
+
     if (!play->soaringCsOrSoTCsPlaying) {
         Lights_DrawGlow(play);
     }
@@ -3597,6 +3601,7 @@ void Actor_CleanupContext(ActorContext* actorCtx, PlayState* play) {
 
     Play_SaveCycleSceneFlags(play);
     ActorOverlayTable_Cleanup();
+    Hyrule_DestroyFaroresWind(play); // 3Ship [Hyrule] OoT's func_80030488
 }
 
 /**
@@ -4301,19 +4306,22 @@ void Actor_ChangeCategory(PlayState* play, ActorContext* actorCtx, Actor* actor,
 }
 
 // Damage flags for EnArrow
-u32 sArrowDmgFlags[] = {
+// 3Ship [Hyrule] u64, for OoT's damage types (z64collision_check.h). Was u32.
+u64 sArrowDmgFlags[] = {
     DMG_FIRE_ARROW,   // ARROW_TYPE_NORMAL_LIT
     DMG_NORMAL_ARROW, // ARROW_TYPE_NORMAL_HORSE
     DMG_NORMAL_ARROW, // ARROW_TYPE_NORMAL
     DMG_FIRE_ARROW,   // ARROW_TYPE_FIRE
     DMG_ICE_ARROW,    // ARROW_TYPE_ICE
     DMG_LIGHT_ARROW,  // ARROW_TYPE_LIGHT
-    DMG_DEKU_NUT,     // ARROW_TYPE_SLINGSHOT
+    // 3Ship [Hyrule] OoT's Slingshot: OoT's slingshot, and MM's Deku bubble as in DMG_FROM_OOT. Was the Deku Nut,
+    // which stuns.
+    DMG_DEKU_BUBBLE | DMG_SLINGSHOT_Oot, // ARROW_TYPE_SLINGSHOT
     DMG_DEKU_BUBBLE,  // ARROW_TYPE_DEKU_BUBBLE
     DMG_DEKU_NUT,     // ARROW_TYPE_DEKU_NUT
 };
 
-u32 Actor_GetArrowDmgFlags(s32 params) {
+u64 Actor_GetArrowDmgFlags(s32 params) {
     if ((params < 0) || (params >= ARRAY_COUNT(sArrowDmgFlags))) {
         return 0;
     }
@@ -4348,9 +4356,10 @@ Actor* func_800BC270(PlayState* play, Actor* actor, f32 distance, u64 dmgFlags) 
                 } else if (itemAction->id == ACTOR_EN_BOOM) {
                     speed = 12.0f;
                 } else {
-                    u32 arrowDmgFlags = Actor_GetArrowDmgFlags(itemAction->params);
+                    u64 arrowDmgFlags = Actor_GetArrowDmgFlags(itemAction->params);
 
-                    if (arrowDmgFlags == DMG_DEKU_NUT) {
+                    // 3Ship [Hyrule] OoT's seed flies at the Deku Nut's speed, as it did when it was one.
+                    if ((arrowDmgFlags == DMG_DEKU_NUT) || (arrowDmgFlags & DMG_SLINGSHOT_Oot)) {
                         speed = 80.0f;
                     } else if (arrowDmgFlags == DMG_DEKU_BUBBLE) {
                         speed = 60.0f;

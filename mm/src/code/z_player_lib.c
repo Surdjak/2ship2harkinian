@@ -796,7 +796,7 @@ ItemId Player_GetItemOnButton(PlayState* play, Player* player, EquipSlot slot) {
 
         GameInteractor_Should(VB_GET_ITEM_ON_BUTTON, item, slot, &item);
 
-        if (item >= ITEM_FD) {
+        if (ITEM_IS_NONE(item)) {
             return item;
         }
 
@@ -879,7 +879,7 @@ PlayerItemAction func_80123810(PlayState* play) {
             play->interfaceCtx.bButtonInterfaceDoAction = 0;
             Interface_SetHudVisibility(play->msgCtx.hudVisibility);
 
-            if ((itemId >= ITEM_FD) || ((itemAction = play->unk_18794(play, player, itemId)) <= PLAYER_IA_MINUS1)) {
+            if (ITEM_IS_NONE(itemId) || ((itemAction = play->unk_18794(play, player, itemId)) <= PLAYER_IA_MINUS1)) {
                 Audio_PlaySfx(NA_SE_SY_ERROR);
                 return PLAYER_IA_MINUS1;
             } else {
@@ -900,7 +900,7 @@ PlayerItemAction func_80123810(PlayState* play) {
                 play->interfaceCtx.bButtonInterfaceDoAction = 0;
                 Interface_SetHudVisibility(play->msgCtx.hudVisibility);
 
-                if ((itemId >= ITEM_FD) || ((itemAction = play->unk_18794(play, player, itemId)) <= PLAYER_IA_MINUS1)) {
+                if (ITEM_IS_NONE(itemId) || ((itemAction = play->unk_18794(play, player, itemId)) <= PLAYER_IA_MINUS1)) {
                     Audio_PlaySfx(NA_SE_SY_ERROR);
                     return PLAYER_IA_MINUS1;
                 } else {
@@ -936,7 +936,7 @@ u8 sActionModelGroups[PLAYER_IA_MAX] = {
     PLAYER_MODELGROUP_EXPLOSIVES,     // PLAYER_IA_BOMB
     PLAYER_MODELGROUP_EXPLOSIVES,     // PLAYER_IA_POWDER_KEG
     PLAYER_MODELGROUP_EXPLOSIVES,     // PLAYER_IA_BOMBCHU
-    PLAYER_MODELGROUP_8,              // PLAYER_IA_11
+    PLAYER_MODELGROUP_8,              // PLAYER_IA_BOOMERANG_Oot
     PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_DEKU_NUT
     PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_PICTOGRAPH_BOX
     PLAYER_MODELGROUP_INSTRUMENT,     // PLAYER_IA_OCARINA
@@ -1002,6 +1002,21 @@ u8 sActionModelGroups[PLAYER_IA_MAX] = {
     PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_ZORA
     PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_DEKU
     PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_LENS_OF_TRUTH
+    PLAYER_MODELGROUP_BOW,            // PLAYER_IA_SLINGSHOT_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_FARORES_WIND_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_NAYRUS_LOVE_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_DINS_FIRE_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_WEIRD_EGG_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_CHICKEN_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_LETTER_ZELDA_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_KEATON_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_SKULL_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_SPOOKY_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_BUNNY_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_GORON_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_ZORA_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_GERUDO_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_TRUTH_Oot
 };
 
 PlayerModelGroup Player_ActionToModelGroup(Player* player, PlayerItemAction itemAction) {
@@ -2625,6 +2640,10 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
                        (player->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN)) {
                 leftHandDLists = &gPlayerLeftHandOpenDLs[D_801F59E0];
                 sPlayerLeftHandType = PLAYER_MODELTYPE_LH_OPEN;
+            } else if ((sPlayerLeftHandType == PLAYER_MODELTYPE_LH_4) &&
+                       (player->transformation == PLAYER_FORM_HUMAN)) {
+                // 3Ship [Hyrule] OoT's Boomerang in child Link's fist (MM's LH_4 is OoT's LH_BOOMERANG).
+                leftHandDLists = Hyrule_GetHandHoldingBoomerangDLs();
             } else if ((player->leftHandType == PLAYER_MODELTYPE_LH_OPEN) && (player->actor.speed > 2.0f) &&
                        !(player->stateFlags1 & PLAYER_STATE1_8000000)) {
                 leftHandDLists = &gPlayerLeftHandClosedDLs[D_801F59E0];
@@ -2681,7 +2700,10 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
                     rot->z -= player->unk_B8C;
                 }
 
-                if (sPlayerRightHandType == PLAYER_MODELTYPE_RH_SHIELD) {
+                if ((sPlayerRightHandType == PLAYER_MODELTYPE_RH_BOW) && Hyrule_HoldsSlingshot(player)) {
+                    // 3Ship [Hyrule] OoT's Slingshot shares the Bow's models, but not its hand.
+                    rightHandDLists = Hyrule_GetHandHoldingSlingshotDLs();
+                } else if (sPlayerRightHandType == PLAYER_MODELTYPE_RH_SHIELD) {
                     if (player->transformation == PLAYER_FORM_HUMAN) {
                         // 3Ship [Hyrule] OoT's shields are not in MM's table.
                         if (Hyrule_GetHandHoldingShieldDLs(player->currentShield) != NULL) {
@@ -2770,6 +2792,9 @@ s32 Player_OverrideLimbDrawGameplayFirstPerson(PlayState* play, s32 limbIndex, G
         } else if (limbIndex == PLAYER_LIMB_RIGHT_HAND) {
             if (Player_IsHoldingHookshot(player)) {
                 *dList = sPlayerFirstPersonRightHandHookshotDLs[player->transformation];
+            } else if (Hyrule_HoldsSlingshot(player)) {
+                // 3Ship [Hyrule] OoT's Slingshot.
+                *dList = Hyrule_GetSlingshotFirstPersonDL();
             } else {
                 *dList = sPlayerFirstPersonRightHandDLs[player->transformation];
             }
@@ -3907,11 +3932,20 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                 static Vec3f D_801C0D98 = { -35.0f, -395.0f, 0.0f };
                 // Unused
                 static s32 D_801C0DA4 = 0;
+                // 3Ship [Hyrule] OoT's Slingshot has its own string, which also turns as it stretches (OoT).
+                s32 holdsSlingshot = Hyrule_HoldsSlingshot(player);
+                Gfx* stringDL = D_801C0D94;
+                Vec3f stringPos = D_801C0D98;
+
+                if (holdsSlingshot) {
+                    stringDL = Hyrule_GetSlingshotStringDL();
+                    Hyrule_GetSlingshotStringPos(&stringPos.x, &stringPos.y, &stringPos.z);
+                }
 
                 OPEN_DISPS(play->state.gfxCtx);
 
                 Matrix_Push();
-                Matrix_Translate(D_801C0D98.x, D_801C0D98.y, D_801C0D98.z, MTXMODE_APPLY);
+                Matrix_Translate(stringPos.x, stringPos.y, stringPos.z, MTXMODE_APPLY);
                 if ((player->stateFlags3 & PLAYER_STATE3_40) && (player->unk_B28 >= 0) && (player->unk_ACC < 0xB)) {
                     Vec3f sp20C;
                     f32 temp_fv0;
@@ -3931,9 +3965,12 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                     player->unk_B0C = -0.5f;
                 }
                 Matrix_Scale(1.0f, player->unk_B08, 1.0f, MTXMODE_APPLY);
+                if (holdsSlingshot) {
+                    Matrix_RotateZF(player->unk_B08 * -0.2f, MTXMODE_APPLY);
+                }
 
                 MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
-                gSPDisplayList(POLY_XLU_DISP++, D_801C0D94);
+                gSPDisplayList(POLY_XLU_DISP++, stringDL);
 
                 Matrix_Pop();
 
