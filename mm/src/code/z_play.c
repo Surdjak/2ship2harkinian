@@ -2393,6 +2393,7 @@ void Play_Init(GameState* thisx) {
     gSaveContext.sceneLayer = Hyrule_GetSceneLayer(gSaveContext.save.entrance, gSaveContext.sceneLayer);
 
     sceneLayer = gSaveContext.sceneLayer;
+    gSaveContext.sceneLayer = Hyrule_GetSceneLayerException(gSaveContext.save.entrance, gSaveContext.sceneLayer);
 
     s32 sceneIdAbsolute =
         Entrance_GetSceneIdAbsolute(((void)0, gSaveContext.save.entrance) + ((void)0, gSaveContext.sceneLayer));

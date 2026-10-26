@@ -741,6 +741,105 @@ void Player_RequestRumble(PlayState* play, Player* this, s32 sourceIntensity, s3
     }
 }
 
+// 3Ship [Hyrule] Adult Link's row (docs/ADULT_LINK.md): OoT's adult one, which MM scaled by 1.5 for Fierce Deity
+// (sPlayerAgeProperties[PLAYER_FORM_FIERCE_DEITY]); unk_98 and unk_9C, which OoT does not have, as child Link's.
+PlayerAgeProperties sAdultAgeProperties_Oot = {
+    // ceilingCheckHeight
+    56.0f,
+    // shadowScale
+    90.0f,
+    // unk_08
+    1.0f,
+    // unk_0C
+    111.0f,
+    // unk_10
+    70.0f,
+    // unk_14
+    79.4f,
+    // unk_18
+    59.0f,
+    // unk_1C
+    41.0f,
+    // unk_20
+    19.0f,
+    // unk_24
+    36.0f,
+    // unk_28
+    44.8f,
+    // unk_2C
+    56.0f,
+    // unk_30
+    68.0f,
+    // unk_34
+    70.0f,
+    // wallCheckRadius
+    18.0f,
+    // unk_3C
+    15.0f,
+    // unk_40
+    70.0f,
+    // unk_44
+    { 9, 0x123F, 0x167 },
+    {
+        { 8, 0x1256, 0x17C },
+        { 9, 0x17EA, 0x167 },
+        { 8, 0x1256, 0x17C },
+        { 9, 0x17EA, 0x167 },
+    },
+    {
+        { 9, 0x17EA, 0x167 },
+        { 9, 0x1E0D, 0x17C },
+        { 9, 0x17EA, 0x167 },
+        { 9, 0x1E0D, 0x17C },
+    },
+    {
+        { 8, 0x1256, 0x17C },
+        { 9, 0x17EA, 0x167 },
+        { -0x638, 0x1256, 0x17C },
+        { -0x637, 0x17EA, 0x167 },
+    },
+    // voiceSfxIdOffset
+    SFX_VOICE_BANK_SIZE * 0,
+    // surfaceSfxIdOffset
+    0x80,
+    // unk_98
+    22.0f,
+    // unk_9C
+    29.4343f,
+    // openChestAnim
+    &gPlayerAnim_link_demo_Tbox_open,
+    // timeTravelStartAnim
+    &gPlayerAnim_link_demo_back_to_past,
+    // timeTravelEndAnim
+    &gPlayerAnim_link_demo_return_to_past,
+    // unk_AC
+    &gPlayerAnim_link_normal_climb_startA,
+    // unk_B0
+    &gPlayerAnim_link_normal_climb_startB,
+    // unk_B4
+    {
+        &gPlayerAnim_link_normal_climb_upL,
+        &gPlayerAnim_link_normal_climb_upR,
+        &gPlayerAnim_link_normal_Fclimb_upL,
+        &gPlayerAnim_link_normal_Fclimb_upR,
+    },
+    // unk_C4
+    {
+        &gPlayerAnim_link_normal_Fclimb_sideL,
+        &gPlayerAnim_link_normal_Fclimb_sideR,
+    },
+    // unk_CC
+    {
+        &gPlayerAnim_link_normal_climb_endAL,
+        &gPlayerAnim_link_normal_climb_endAR,
+    },
+    // unk_D4
+    {
+        &gPlayerAnim_link_normal_climb_endBR,
+        &gPlayerAnim_link_normal_climb_endBL,
+    },
+};
+
 PlayerAgeProperties sPlayerAgeProperties[PLAYER_FORM_MAX] = {
     {
         // ceilingCheckHeight
@@ -1807,6 +1906,8 @@ void Player_AnimSfx_PlayFloorWalk(Player* this, f32 freqVolumeLerp) {
 
     if (this->currentMask == PLAYER_MASK_GIANT) {
         sfxId = NA_SE_PL_GIANT_WALK;
+    } else if (this->currentBoots == PLAYER_BOOTS_IRON_Oot) {
+        sfxId = NA_CODE_DIRT_DEEP; // 3Ship [Hyrule] OoT's NA_SE_PL_WALK_HEAVYBOOTS, the same id
     } else {
         sfxId = Player_GetFloorSfxByAge(this, NA_SE_PL_WALK_GROUND);
     }
@@ -2822,6 +2923,9 @@ void Player_ProcessFidgetAnimSfxList(Player* this, s32 fidgetAnimIndex) {
 PlayerAnimationHeader* func_8082EEE0(Player* this) {
     if (this->unk_B64 != 0) {
         return D_8085BE84[PLAYER_ANIMGROUP_damage_run][this->modelAnimType];
+    } else if (!(this->stateFlags1 & (PLAYER_STATE1_8000000 | PLAYER_STATE1_20000000)) &&
+               (this->currentBoots == PLAYER_BOOTS_IRON_Oot)) {
+        return Hyrule_GetHeavyRunAnim(this->modelAnimType); // 3Ship [Hyrule] OoT's heavy_run group
     } else {
         return D_8085BE84[PLAYER_ANIMGROUP_run][this->modelAnimType];
     }
@@ -3108,6 +3212,18 @@ PlayerItemAction Player_ItemToItemAction(Player* this, ItemId item) {
         return PLAYER_IA_FARORES_WIND_Oot + Hyrule_GetSpell(item);
     } else if ((item >= ITEM_WEIRD_EGG_Oot) && (item <= ITEM_MASK_TRUTH_Oot)) {
         return PLAYER_IA_WEIRD_EGG_Oot + (item - ITEM_WEIRD_EGG_Oot);
+    } else if ((item >= ITEM_POCKET_EGG_Oot) && (item <= ITEM_CLAIM_CHECK_Oot)) {
+        return PLAYER_IA_POCKET_EGG_Oot + (item - ITEM_POCKET_EGG_Oot);
+    } else if (item == ITEM_HAMMER_Oot) {
+        return PLAYER_IA_HAMMER_Oot;
+    } else if ((item == ITEM_HOOKSHOT_Oot) || (item == ITEM_LONGSHOT_Oot)) {
+        return PLAYER_IA_HOOKSHOT; // the reach is the item's (Hyrule_GetHookshotReach)
+    } else if (item == ITEM_SWORD_MASTER_Oot) {
+        // Adult Link's swords take MM's sword paths: the Master Sword the one-handed one, the Giant's Knife and
+        // Biggoron's Sword the two-handed one (the Great Fairy's Sword's).
+        return PLAYER_IA_SWORD_GILDED;
+    } else if ((item == ITEM_SWORD_BGS_Oot) || (item == ITEM_SWORD_KNIFE_Oot)) {
+        return PLAYER_IA_SWORD_TWO_HANDED;
     } else if (item >= ITEM_FD) {
         return PLAYER_IA_NONE;
     } else if (item == ITEM_FC) {
@@ -3220,6 +3336,18 @@ PlayerUpperActionFunc sItemActionUpdateFuncs[PLAYER_IA_MAX] = {
     Player_UpperAction_0,          // PLAYER_IA_MASK_ZORA_Oot
     Player_UpperAction_0,          // PLAYER_IA_MASK_GERUDO_Oot
     Player_UpperAction_0,          // PLAYER_IA_MASK_TRUTH_Oot
+    Player_UpperAction_1,          // PLAYER_IA_HAMMER_Oot
+    Player_UpperAction_0,          // PLAYER_IA_POCKET_EGG_Oot
+    Player_UpperAction_0,          // PLAYER_IA_POCKET_CUCCO_Oot
+    Player_UpperAction_0,          // PLAYER_IA_COJIRO_Oot
+    Player_UpperAction_0,          // PLAYER_IA_ODD_MUSHROOM_Oot
+    Player_UpperAction_0,          // PLAYER_IA_ODD_POTION_Oot
+    Player_UpperAction_0,          // PLAYER_IA_SAW_Oot
+    Player_UpperAction_0,          // PLAYER_IA_SWORD_BROKEN_Oot
+    Player_UpperAction_0,          // PLAYER_IA_PRESCRIPTION_Oot
+    Player_UpperAction_0,          // PLAYER_IA_FROG_Oot
+    Player_UpperAction_0,          // PLAYER_IA_EYEDROPS_Oot
+    Player_UpperAction_0,          // PLAYER_IA_CLAIM_CHECK_Oot
 };
 
 typedef void (*PlayerItemActionInitFunc)(PlayState*, Player*);
@@ -3323,6 +3451,18 @@ PlayerItemActionInitFunc sItemActionInitFuncs[PLAYER_IA_MAX] = {
     Player_InitDefaultIA,       // PLAYER_IA_MASK_ZORA_Oot
     Player_InitDefaultIA,       // PLAYER_IA_MASK_GERUDO_Oot
     Player_InitDefaultIA,       // PLAYER_IA_MASK_TRUTH_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_HAMMER_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_POCKET_EGG_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_POCKET_CUCCO_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_COJIRO_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_ODD_MUSHROOM_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_ODD_POTION_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_SAW_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_SWORD_BROKEN_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_PRESCRIPTION_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_FROG_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_EYEDROPS_Oot
+    Player_InitDefaultIA,       // PLAYER_IA_CLAIM_CHECK_Oot
 };
 
 void Player_InitDefaultIA(PlayState* play, Player* this) {
@@ -3593,12 +3733,14 @@ AttackAnimInfo sMeleeAttackAnimInfo[PLAYER_MWA_MAX] = {
       &gPlayerAnim_link_fighter_Lpower_jump_kiru_end, 1, 2 },
     // PLAYER_MWA_ZORA_JUMPKICK_FINISH
     { &gPlayerAnim_pz_jumpATend, &gPlayerAnim_pz_wait, &gPlayerAnim_link_normal_waitR_free, 1, 2 },
-    // PLAYER_MWA_BACKSLASH_RIGHT
-    { &gPlayerAnim_link_fighter_turn_kiruR, &gPlayerAnim_link_fighter_turn_kiruR_end,
-      &gPlayerAnim_link_fighter_turn_kiruR_end, 1, 5 },
-    // PLAYER_MWA_BACKSLASH_LEFT
-    { &gPlayerAnim_link_fighter_turn_kiruL, &gPlayerAnim_link_fighter_turn_kiruL_end,
-      &gPlayerAnim_link_fighter_turn_kiruL_end, 1, 4 },
+    // 3Ship [Hyrule] PLAYER_MWA_BACKSLASH_RIGHT and LEFT, unused by MM, are OoT's hammer swings
+    // (PLAYER_MWA_HAMMER_FORWARD_Oot and PLAYER_MWA_HAMMER_SIDE_Oot), with OoT's animations.
+    { (PlayerAnimationHeader*)HYRULE_ANIM_OOT("gPlayerAnim_link_hammer_hit"),
+      (PlayerAnimationHeader*)HYRULE_ANIM_OOT("gPlayerAnim_link_hammer_hit_end"),
+      (PlayerAnimationHeader*)HYRULE_ANIM_OOT("gPlayerAnim_link_hammer_hit_endR"), 3, 10 },
+    { (PlayerAnimationHeader*)HYRULE_ANIM_OOT("gPlayerAnim_link_hammer_side_hit"),
+      (PlayerAnimationHeader*)HYRULE_ANIM_OOT("gPlayerAnim_link_hammer_side_hit_end"),
+      (PlayerAnimationHeader*)HYRULE_ANIM_OOT("gPlayerAnim_link_hammer_side_hit_endR"), 2, 11 },
     // PLAYER_MWA_GORON_PUNCH_LEFT
     { &gPlayerAnim_pg_punchA, &gPlayerAnim_pg_punchAend, &gPlayerAnim_pg_punchAendR, 6, 8 },
     // PLAYER_MWA_GORON_PUNCH_RIGHT
@@ -3707,8 +3849,11 @@ void func_8082FA5C(PlayState* play, Player* this, PlayerMeleeWeaponState meleeWe
                 if (this->unk_ADD >= 3) {
                     voiceSfxId = NA_SE_VO_LI_SWORD_L;
                 } else {
-                    itemSfxId = (this->heldItemAction == PLAYER_IA_SWORD_TWO_HANDED) ? NA_SE_IT_HAMMER_SWING
-                                                                                     : NA_SE_IT_SWORD_SWING;
+                    // 3Ship [Hyrule] The broken Giant's Knife swings light (OoT's func_80833A20).
+                    itemSfxId =
+                        ((this->heldItemAction == PLAYER_IA_SWORD_TWO_HANDED) && !Hyrule_HoldsBrokenKnife(this))
+                            ? NA_SE_IT_HAMMER_SWING
+                            : NA_SE_IT_SWORD_SWING;
                 }
             }
         }
@@ -4682,7 +4827,7 @@ void Player_UseItem(PlayState* play, Player* this, ItemId item) {
     // 3Ship [Hyrule] Of OoT's items, only the trade items have a get-item model to show (D_8085D1A4).
     if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK) &&
         ((itemAction >= PLAYER_IA_OOT_MIN) || (itemAction == PLAYER_IA_BOOMERANG_Oot)) &&
-        !((itemAction >= PLAYER_IA_WEIRD_EGG_Oot) && (itemAction <= PLAYER_IA_LETTER_ZELDA_Oot))) {
+        !PLAYER_IA_IS_TRADE_Oot(itemAction)) {
         Audio_PlaySfx(NA_SE_SY_ERROR);
         return;
     }
@@ -4707,8 +4852,8 @@ void Player_UseItem(PlayState* play, Player* this, ItemId item) {
         if (var_v1 || (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK) && (itemAction != PLAYER_IA_NONE)) ||
             (itemAction == PLAYER_IA_OCARINA) ||
             ((itemAction > PLAYER_IA_BOTTLE_MIN) && itemAction < PLAYER_IA_MASK_MIN) ||
-            // 3Ship [Hyrule] OoT's child trade items are shown, as MM's trade items are.
-            ((itemAction >= PLAYER_IA_WEIRD_EGG_Oot) && (itemAction <= PLAYER_IA_LETTER_ZELDA_Oot)) ||
+            // 3Ship [Hyrule] OoT's trade items are shown, as MM's trade items are.
+            PLAYER_IA_IS_TRADE_Oot(itemAction) ||
             ((itemAction == PLAYER_IA_PICTOGRAPH_BOX) && (this->talkActor != NULL) &&
              (this->exchangeItemAction > PLAYER_IA_NONE))) {
             if (var_v1) {
@@ -4890,6 +5035,7 @@ bool Player_UpdateUpperBody(Player* this, PlayState* play) {
         func_8082DAD4(this);
         this->yaw = this->actor.shape.rot.y;
         this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
+        this->hoverBootsTimerOot = 0; // 3Ship [Hyrule]
         this->unk_AA6_rotFlags |= UNKAA6_ROT_FOCUS_X | UNKAA6_ROT_FOCUS_Y | UNKAA6_ROT_UPPER_X;
         Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_LASH);
         return true;
@@ -5777,6 +5923,20 @@ PlayerMeleeWeaponAnimation func_808335F4(Player* this) {
     PlayerMeleeWeaponAnimation meleeWeaponAnim;
 
     controlStickDirection = this->controlStickDirections[this->controlStickDataIndex];
+    // 3Ship [Hyrule] The Megaton Hammer swings forward or to the side, never in combos or spins (OoT's
+    // func_80837818).
+    if (this->heldItemAction == PLAYER_IA_HAMMER_Oot) {
+        static s8 sHammerAnims[] = {
+            PLAYER_MWA_HAMMER_FORWARD_Oot, // PLAYER_STICK_DIR_FORWARD
+            PLAYER_MWA_HAMMER_SIDE_Oot,    // PLAYER_STICK_DIR_LEFT
+            PLAYER_MWA_HAMMER_FORWARD_Oot, // PLAYER_STICK_DIR_BACKWARD
+            PLAYER_MWA_HAMMER_SIDE_Oot,    // PLAYER_STICK_DIR_RIGHT
+        };
+
+        this->unk_ADD = 0;
+        return sHammerAnims[(controlStickDirection <= PLAYER_STICK_DIR_NONE) ? PLAYER_STICK_DIR_FORWARD
+                                                                              : controlStickDirection];
+    }
     if ((this->transformation == PLAYER_FORM_ZORA) || (this->transformation == PLAYER_FORM_GORON)) {
         s8* meleeWeaponAnims = (this->transformation == PLAYER_FORM_ZORA) ? D_8085D094[0] : D_8085D094[1];
         s32 unk_ADD = this->unk_ADD;
@@ -5861,9 +6021,17 @@ void func_8083375C(Player* this, PlayerMeleeWeaponAnimation meleeWeaponAnim) {
         ((meleeWeaponAnim >= PLAYER_MWA_FLIPSLASH_START) && (meleeWeaponAnim <= PLAYER_MWA_ZORA_JUMPKICK_FINISH))
             ? ((this->transformation == PLAYER_FORM_HUMAN) ? dmgInfo->dmgHumanStrong : dmgInfo->dmgTransformedStrong)
             : ((this->transformation == PLAYER_FORM_HUMAN) ? dmgInfo->dmgHumanNormal : dmgInfo->dmgTransformedNormal);
+    // 3Ship [Hyrule] OoT's damage types, and adult Link's swords.
+    u64 dmgFlags = dmgInfo->dmgFlags;
 
-    func_80833728(this, 0, dmgInfo->dmgFlags, damage);
-    func_80833728(this, 1, dmgInfo->dmgFlags, damage);
+    if (this->actor.id == ACTOR_PLAYER) {
+        Hyrule_SetSwordDamage(this, (meleeWeaponAnim >= PLAYER_MWA_FLIPSLASH_START) &&
+                                        (meleeWeaponAnim <= PLAYER_MWA_ZORA_JUMPKICK_FINISH),
+                              &dmgFlags, &damage);
+    }
+
+    func_80833728(this, 0, dmgFlags, damage);
+    func_80833728(this, 1, dmgFlags, damage);
 }
 
 void func_80833864(PlayState* play, Player* this, PlayerMeleeWeaponAnimation meleeWeaponAnim) {
@@ -6052,6 +6220,7 @@ void func_80833B18(PlayState* play, Player* this, s32 arg2, f32 speed, f32 veloc
                 Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_FALL_L);
             }
             this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
+            this->hoverBootsTimerOot = 0; // 3Ship [Hyrule]
         } else if ((this->speedXZ > 4.0f) && !Player_CheckHostileLockOn(this)) {
             this->unk_B64 = 20;
 
@@ -6387,6 +6556,7 @@ s32 func_80834600(Player* this, PlayState* play) {
 void func_80834CD0(Player* this, f32 arg1, u16 sfxId) {
     this->actor.velocity.y = arg1 * sWaterSpeedFactor;
     this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
+    this->hoverBootsTimerOot = 0; // 3Ship [Hyrule]
 
     if (sfxId != NA_SE_NONE) {
         Player_AnimSfx_PlayFloorJump(this);
@@ -7733,6 +7903,13 @@ void func_8083827C(Player* this, PlayState* play) {
             return;
         }
 
+        // 3Ship [Hyrule] The Hover Boots hold Link up over the edge for a moment (OoT's Player_HandleFallingOffLedge).
+        if (this->hoverBootsTimerOot != 0) {
+            this->actor.velocity.y = 1.0f;
+            sPrevFloorProperty = FLOOR_PROPERTY_9;
+            return;
+        }
+
         temp_t0 = BINANG_SUB(this->yaw, this->actor.shape.rot.y);
         Player_SetAction(play, this, Player_Action_25, 1);
         func_8082DD2C(play, this);
@@ -8010,6 +8187,18 @@ u16 D_8085D1A4[PLAYER_IA_MAX] = {
     GI_NONE,                // PLAYER_IA_MASK_ZORA_Oot: worn, not shown
     GI_NONE,                // PLAYER_IA_MASK_GERUDO_Oot: worn, not shown
     GI_NONE,                // PLAYER_IA_MASK_TRUTH_Oot: worn, not shown
+    GI_NONE,                // PLAYER_IA_HAMMER_Oot
+    GI_POCKET_EGG_Oot,      // PLAYER_IA_POCKET_EGG_Oot
+    GI_POCKET_CUCCO_Oot,    // PLAYER_IA_POCKET_CUCCO_Oot
+    GI_COJIRO_Oot,          // PLAYER_IA_COJIRO_Oot
+    GI_ODD_MUSHROOM_Oot,    // PLAYER_IA_ODD_MUSHROOM_Oot
+    GI_ODD_POTION_Oot,      // PLAYER_IA_ODD_POTION_Oot
+    GI_SAW_Oot,             // PLAYER_IA_SAW_Oot
+    GI_SWORD_BROKEN_Oot,    // PLAYER_IA_SWORD_BROKEN_Oot
+    GI_PRESCRIPTION_Oot,    // PLAYER_IA_PRESCRIPTION_Oot
+    GI_FROG_Oot,            // PLAYER_IA_FROG_Oot
+    GI_EYEDROPS_Oot,        // PLAYER_IA_EYEDROPS_Oot
+    GI_CLAIM_CHECK_Oot,     // PLAYER_IA_CLAIM_CHECK_Oot
 };
 
 PlayerAnimationHeader* D_8085D1F8[] = {
@@ -8369,6 +8558,7 @@ void func_808395F0(PlayState* play, Player* this, PlayerMeleeWeaponAnimation mel
     this->yaw = this->actor.shape.rot.y;
     this->actor.velocity.y = yVelocity;
     this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
+    this->hoverBootsTimerOot = 0; // 3Ship [Hyrule]
     Player_AnimSfx_PlayFloorJump(this);
     Player_AnimSfx_PlayVoice(this, NA_SE_VO_LI_SWORD_L);
 }
@@ -8718,7 +8908,9 @@ s32 Player_ActionHandler_8(Player* this, PlayState* play) {
         if (!(this->stateFlags1 & PLAYER_STATE1_400000) &&
             (Player_GetMeleeWeaponHeld(this) != PLAYER_MELEEWEAPON_NONE)) {
             if ((this->unk_ADC > 0) && (((this->transformation == PLAYER_FORM_ZORA)) ||
-                                        ((this->unk_ADC == 1) && (this->heldItemAction != PLAYER_IA_DEKU_STICK)))) {
+                                        ((this->unk_ADC == 1) && (this->heldItemAction != PLAYER_IA_DEKU_STICK) &&
+                                         !Hyrule_HoldsBrokenKnife(this) &&
+                                         (this->heldItemAction != PLAYER_IA_HAMMER_Oot)))) { // 3Ship [Hyrule] as OoT
                 if (this->transformation == PLAYER_FORM_ZORA) {
                     func_80830E30(this, play);
                 } else {
@@ -9392,7 +9584,7 @@ void func_8083BF54(PlayState* play, Player* this) {
                                  ? (ABS_ALT(this->unk_B8A) * -0.004f) + (this->unk_B48 * -0.38f)
                                  : this->actor.velocity.y);
 
-            if ((var_fv1 > -1.0f) || ((this->currentBoots == PLAYER_BOOTS_ZORA_UNDERWATER) &&
+            if ((var_fv1 > -1.0f) || (PLAYER_BOOTS_WALKS_UNDERWATER(this->currentBoots) && // 3Ship [Hyrule]
                                       (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND))) {
                 if (Rand_ZeroOne() < 0.2f) {
                     numBubbles = 1;
@@ -9715,7 +9907,7 @@ s32 Player_ActionHandler_2(Player* this, PlayState* play) {
                         func_80838830(this, giEntry->objectId);
 
                         if (!(this->stateFlags2 & PLAYER_STATE2_400) ||
-                            (this->currentBoots == PLAYER_BOOTS_ZORA_UNDERWATER)) {
+                            PLAYER_BOOTS_WALKS_UNDERWATER(this->currentBoots)) { // 3Ship [Hyrule]
                             Player_StopCutscene(this);
                             Player_SetupWaitForPutAwayWithCs(play, this, func_80837C78,
                                                              play->playerCsIds[PLAYER_CS_ID_ITEM_GET]);
@@ -9868,7 +10060,7 @@ s32 Player_ActionHandler_9(Player* this, PlayState* play) {
 
 s32 func_8083D860(Player* this, PlayState* play) {
     if ((this->yDistToLedge >= 79.0f) &&
-        (!(this->stateFlags1 & PLAYER_STATE1_8000000) || (this->currentBoots == PLAYER_BOOTS_ZORA_UNDERWATER) ||
+        (!(this->stateFlags1 & PLAYER_STATE1_8000000) || PLAYER_BOOTS_WALKS_UNDERWATER(this->currentBoots) || // 3Ship
          (this->actor.depthInWater < this->ageProperties->unk_2C))) {
         s32 var_t0 = (sPlayerTouchedWallFlags & WALL_FLAG_3) ? 2 : 0;
         s32 temp_t2 = sPlayerTouchedWallFlags & WALL_FLAG_1;
@@ -10275,7 +10467,11 @@ void func_8083EA44(Player* this, f32 arg1) {
 
     sp24 = func_8083E9C4(this->unk_B38, arg1, 29.0f, 10.0f);
 
-    if (sp24 || func_8083E9C4(this->unk_B38, arg1, 29.0f, 24.0f)) {
+    // 3Ship [Hyrule] The Hover Boots hum while they float (OoT's func_8084029C).
+    if ((this->currentBoots == PLAYER_BOOTS_HOVER_Oot) && !(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
+        (this->hoverBootsTimerOot != 0)) {
+        Actor_PlaySfx_Flagged2(&this->actor, NA_SE_PL_HOBBERBOOTS_LV - SFX_FLAG);
+    } else if (sp24 || func_8083E9C4(this->unk_B38, arg1, 29.0f, 24.0f)) {
         Player_AnimSfx_PlayFloorWalk(this, this->speedXZ);
         if (this->speedXZ > 4.0f) {
             this->stateFlags2 |= PLAYER_STATE2_8;
@@ -10745,6 +10941,7 @@ bool func_8083FFEC(PlayState* play, Player* this) {
 void func_80840094(PlayState* play, Player* this) {
     func_8083FF30(play, this);
     func_8083FFEC(play, this);
+    Hyrule_WearGiantsKnife(play, this); // 3Ship [Hyrule]
 }
 
 PlayerAnimationHeader* D_8085D294[] = {
@@ -10819,13 +11016,19 @@ s32 func_808401F4(PlayState* play, Player* this) {
                             if (!SurfaceType_IsIgnoredByEntities(&play->colCtx, poly, bgId) &&
                                 (SurfaceType_GetFloorType(&play->colCtx, poly, bgId) != FLOOR_TYPE_6) &&
                                 !func_800B90AC(play, &this->actor, poly, bgId, &pos)) {
-                                if (this->transformation == PLAYER_FORM_GORON) {
+                                // 3Ship [Hyrule] OoT's hammer hitting a wall or the floor, which Goron Link's punch
+                                // took over in MM: a quake, and the hammer's ground pound for switches and the like.
+                                if ((this->transformation == PLAYER_FORM_GORON) ||
+                                    (this->heldItemAction == PLAYER_IA_HAMMER_Oot)) {
                                     MtxF sp64;
                                     Vec3s actorRot;
                                     DynaPolyActor* temp_v0;
 
                                     func_8082DF2C(play);
                                     Player_RequestQuakeAndRumble(play, this, NA_SE_IT_HAMMER_HIT);
+                                    if (this->heldItemAction == PLAYER_IA_HAMMER_Oot) {
+                                        play->actorCtx.unk2 = 4;
+                                    }
                                     if (this->transformation == PLAYER_FORM_GORON) {
                                         Actor_SetPlayerImpact(play, PLAYER_IMPACT_BONK, 2, 100.0f,
                                                               &this->actor.world.pos);
@@ -11457,6 +11660,10 @@ void Player_Init(Actor* thisx, PlayState* play) {
     }
 
     this->ageProperties = &sPlayerAgeProperties[this->transformation];
+    // 3Ship [Hyrule] Adult Link: human Link at adult age (docs/ADULT_LINK.md).
+    if (Hyrule_IsAdultPlayer(this)) {
+        this->ageProperties = &sAdultAgeProperties_Oot;
+    }
 
     this->itemAction = PLAYER_IA_NONE;
     this->heldItemAction = PLAYER_IA_NONE;
@@ -11465,7 +11672,8 @@ void Player_Init(Actor* thisx, PlayState* play) {
     Player_UseItem(play, this, ITEM_NONE);
     Player_SetEquipmentData(play, this);
     this->prevBoots = this->currentBoots;
-    Player_InitCommon(this, play, gPlayerSkeletons[this->transformation]);
+    Player_InitCommon(this, play,
+                      Hyrule_IsAdultPlayer(this) ? Hyrule_GetAdultSkeleton() : gPlayerSkeletons[this->transformation]);
 
     if (this->actor.shape.rot.z != 0) {
         EffectTireMark* tireMark;
@@ -11915,6 +12123,24 @@ void Player_UpdateInterface(PlayState* play, Player* this) {
 }
 
 s32 func_808430E0(Player* this) {
+    // 3Ship [Hyrule] OoT's Player_UpdateHoverBoots, which MM's Deku hovering replaced: off solid ground, the Hover
+    // Boots float for 19 frames; on water, sand, quicksand and the like, they never touch it.
+    s32 canHoverOnGround = (this->currentBoots == PLAYER_BOOTS_HOVER_Oot) &&
+                           ((this->actor.depthInWater >= 0.0f) || (func_808340AC(sPlayerFloorType) >= 0) ||
+                            func_808340D4(sPlayerFloorType));
+
+    if ((this->currentBoots == PLAYER_BOOTS_HOVER_Oot) && (this->hoverBootsTimerOot != 0)) {
+        this->hoverBootsTimerOot--;
+    } else {
+        this->hoverBootsTimerOot = 0;
+    }
+    if (canHoverOnGround && (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && (this->hoverBootsTimerOot != 0)) {
+        this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
+    }
+    if ((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !canHoverOnGround) {
+        this->hoverBootsTimerOot = 19;
+    }
+
     if ((this->transformation == PLAYER_FORM_DEKU) && (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
         func_8083784C(this)) {
         this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
@@ -12034,7 +12260,9 @@ void Player_ProcessSceneCollision(PlayState* play, Player* this) {
         if (sPlayerConveyorSpeedIndex != CONVEYOR_SPEED_DISABLED) {
             sPlayerIsOnFloorConveyor = SurfaceType_IsFloorConveyor(&play->colCtx, floorPoly, this->actor.floorBgId);
 
-            if ((!sPlayerIsOnFloorConveyor && (this->actor.depthInWater > 20.0f)) ||
+            // 3Ship [Hyrule] Water currents do not move the Iron Boots (OoT).
+            if ((!sPlayerIsOnFloorConveyor && (this->actor.depthInWater > 20.0f) &&
+                 (this->currentBoots != PLAYER_BOOTS_IRON_Oot)) ||
                 (sPlayerIsOnFloorConveyor && (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND))) {
                 sPlayerConveyorYaw = CONVEYOR_DIRECTION_TO_BINANG(
                     SurfaceType_GetConveyorDirection(&play->colCtx, floorPoly, this->actor.floorBgId));
@@ -12556,8 +12784,11 @@ void func_80844784(PlayState* play, Player* this) {
     s16 temp_v0;
     f32 temp_fv0_2;
 
-    if ((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && (sPlayerFloorType == FLOOR_TYPE_5) &&
-        (this->currentBoots < PLAYER_BOOTS_ZORA_UNDERWATER)) {
+    // 3Ship [Hyrule] The Hover Boots slide everywhere out of water, as on ice (OoT).
+    if (((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && (sPlayerFloorType == FLOOR_TYPE_5) &&
+         (this->currentBoots < PLAYER_BOOTS_ZORA_UNDERWATER)) ||
+        ((this->currentBoots == PLAYER_BOOTS_HOVER_Oot) &&
+         !(this->stateFlags1 & (PLAYER_STATE1_8000000 | PLAYER_STATE1_20000000)))) {
         var_a3 = this->yaw;
         var_fv0 = this->speedXZ;
         temp_v0 = this->actor.world.rot.y - var_a3;
@@ -12793,7 +13024,8 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         s32 pad;
 
         if (this->currentBoots != this->prevBoots) {
-            if (this->currentBoots == PLAYER_BOOTS_ZORA_UNDERWATER) {
+            // 3Ship [Hyrule] The Iron Boots sink and lift Link as Zora Link's underwater walk does (OoT's own).
+            if (PLAYER_BOOTS_WALKS_UNDERWATER(this->currentBoots)) {
                 if (this->stateFlags1 & PLAYER_STATE1_8000000) {
                     func_8082DC64(play, this);
                     if (this->ageProperties->unk_2C < this->actor.depthInWater) {
@@ -12801,7 +13033,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                     }
                 }
             } else if ((this->stateFlags1 & PLAYER_STATE1_8000000) &&
-                       ((this->prevBoots == PLAYER_BOOTS_ZORA_UNDERWATER) ||
+                       (PLAYER_BOOTS_WALKS_UNDERWATER(this->prevBoots) ||
                         (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND))) {
                 func_8083B930(play, this);
                 this->stateFlags2 &= ~PLAYER_STATE2_400;
@@ -12866,7 +13098,8 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         }
 
         Player_HandleExitsAndVoids(play, this, this->actor.floorPoly, this->actor.floorBgId);
-        if (sPlayerConveyorSpeedIndex != CONVEYOR_SPEED_DISABLED) {
+        // 3Ship [Hyrule] Conveyors do not move the Iron Boots (OoT).
+        if ((sPlayerConveyorSpeedIndex != CONVEYOR_SPEED_DISABLED) && (this->currentBoots != PLAYER_BOOTS_IRON_Oot)) {
             f32 conveyorSpeed;
             s32 pad2;
 
@@ -13324,6 +13557,9 @@ void Player_DrawGameplay(PlayState* play, Player* this, s32 lod, Gfx* cullDList,
     // 3Ship [Hyrule] OoT's masks, drawn on the head's matrix as OoT draws them.
     if ((overrideLimbDraw == Player_OverrideLimbDrawGameplayDefault) && (this->actor.id == ACTOR_PLAYER)) {
         Hyrule_DrawMaskOot(play, this);
+    }
+    if (this->actor.id == ACTOR_PLAYER) {
+        Hyrule_DrawHoverBootsGlow(play, this);
     }
 
     CLOSE_DISPS(play->state.gfxCtx);
@@ -14164,7 +14400,11 @@ s32 func_808482E0(PlayState* play, Player* this) {
 
         this->av1.actionVar1 = 1;
         Message_StartTextbox(play, giEntry->textId, &this->actor);
-        Item_Give(play, giEntry->itemId);
+        if (this->getItemId == GI_SWORD_KNIFE_Oot) { // 3Ship [Hyrule] see Hyrule_GiveGiantsKnife
+            Hyrule_GiveGiantsKnife();
+        } else {
+            Item_Give(play, giEntry->itemId);
+        }
 
         if ((this->getItemId >= GI_MASK_DEKU) && (this->getItemId <= GI_MASK_KAFEIS_MASK)) {
             Audio_PlayFanfare(NA_BGM_GET_NEW_MASK);
@@ -19202,6 +19442,21 @@ void Player_Action_84(Player* this, PlayState* play) {
             }
             this->stateFlags3 |= PLAYER_STATE3_8;
         }
+    } else if (this->heldItemAction == PLAYER_IA_HAMMER_Oot) {
+        // 3Ship [Hyrule] OoT's hammer striking the ground in front: a quake and a shockwave (OoT's
+        // Player_Action_808502D0).
+        if (((this->meleeWeaponAnimation == PLAYER_MWA_HAMMER_FORWARD_Oot) &&
+             PlayerAnimation_OnFrame(&this->skelAnime, 7.0f)) ||
+            ((this->meleeWeaponAnimation == PLAYER_MWA_JUMPSLASH_FINISH) &&
+             PlayerAnimation_OnFrame(&this->skelAnime, 2.0f))) {
+            Vec3f shockwavePos;
+
+            if (Hyrule_GetHammerGroundPos(play, this, &shockwavePos)) {
+                Player_RequestQuakeAndRumble(play, this, NA_SE_IT_HAMMER_HIT);
+                play->actorCtx.unk2 = 4;
+                EffectSsBlast_SpawnWhiteShockwave(play, &shockwavePos, &gZeroVec3f, &gZeroVec3f);
+            }
+        }
     } else if (((this->transformation == PLAYER_FORM_ZORA) &&
                 (this->meleeWeaponAnimation != PLAYER_MWA_ZORA_PUNCH_KICK) &&
                 (this->meleeWeaponAnimation != PLAYER_MWA_ZORA_JUMPKICK_FINISH)) ||
@@ -19592,8 +19847,8 @@ void Player_Action_90(Player* this, PlayState* play) {
 
         gSaveContext.save.equippedMask = this->currentMask = PLAYER_MASK_NONE;
 
-        this->currentBoots = PLAYER_BOOTS_HYLIAN;
-        this->prevBoots = PLAYER_BOOTS_HYLIAN;
+        this->currentBoots = Hyrule_IsAdultPlayer(this) ? Hyrule_GetAdultBoots() : PLAYER_BOOTS_HYLIAN; // 3Ship
+        this->prevBoots = this->currentBoots;
         func_80123140(play, this);
         func_8085B384(this, play);
     }
@@ -22055,7 +22310,7 @@ PlayerItemAction func_8085B854(PlayState* play, Player* this, ItemId itemId) {
     // 3Ship [Hyrule] Of OoT's items, only the trade items have a get-item model to show (D_8085D1A4).
     if ((itemAction <= PLAYER_IA_NONE) || (itemAction == PLAYER_IA_BOOMERANG_Oot) ||
         ((itemAction >= PLAYER_IA_OOT_MIN) &&
-         !((itemAction >= PLAYER_IA_WEIRD_EGG_Oot) && (itemAction <= PLAYER_IA_LETTER_ZELDA_Oot)))) {
+         !PLAYER_IA_IS_TRADE_Oot(itemAction))) {
         return PLAYER_IA_MINUS1;
     }
 

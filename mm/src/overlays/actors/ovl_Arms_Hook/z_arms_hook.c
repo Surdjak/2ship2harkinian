@@ -8,6 +8,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "objects/object_link_child/object_link_child.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "HyrulePlayer.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
@@ -78,7 +79,8 @@ void ArmsHook_Wait(ArmsHook* this, PlayState* play) {
         ArmsHook_SetupAction(this, ArmsHook_Shoot);
         Actor_SetSpeeds(&this->actor, 20.0f);
         this->actor.parent = &GET_PLAYER(play)->actor;
-        this->timer = 26;
+        this->timer = Hyrule_GetHookshotReach(GET_PLAYER(play)); // 3Ship [Hyrule] was 26
+
     }
 }
 

@@ -90,7 +90,13 @@ f32 CollisionCheck_GetDamageAndEffectOnElementAC(Collider* atCol, ColliderElemen
         // #region 2S2H - Enhancements - Damage Multiplier and Effect
         if ((GameInteractor_Should(VB_DAMAGE_MULTIPLIER, true, i, acCol->actor->colChkInfo.damageTable, &damage,
                                    sDamageMultipliers))) {
-            damage *= sDamageMultipliers[acCol->actor->colChkInfo.damageTable->attack[i] & 0xF];
+            // 3Ship [Hyrule] OoT's tables give the damage itself, as OoT's
+            // CollisionCheck_GetDamageAndEffectOnBumper reads them; MM's give a multiplier of the attack's.
+            if (DamageTable_IsMm(acCol->actor->colChkInfo.damageTable)) {
+                damage *= sDamageMultipliers[acCol->actor->colChkInfo.damageTable->attack[i] & 0xF];
+            } else {
+                damage = acCol->actor->colChkInfo.damageTable->attack[i] & 0xF;
+            }
         }
 
         if ((GameInteractor_Should(VB_DAMAGE_EFFECT, true, i, acCol->actor->colChkInfo.damageTable, effect,

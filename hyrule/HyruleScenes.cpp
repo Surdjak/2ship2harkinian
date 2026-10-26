@@ -2,6 +2,8 @@
 #include "HyruleIds.h"
 #include "HyrulePort.h"
 #include "HyrulePanorama.h"
+#include "HyruleInventory.h"
+#include "HyruleFlags.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -68,7 +70,8 @@ void LoadOotArchive() {
 }
 
 // For tests and quick checks: HYRULE_BOOT_ENTRANCE=<entrance> skips the title screen and starts a debug
-// save at that entrance, the same way map select does. HYRULE_BOOT_TIME=<hhmm> sets the time of day.
+// save at that entrance, the same way map select does. HYRULE_BOOT_TIME=<hhmm> sets the time of day, and
+// HYRULE_BOOT_ADULT=1 starts as adult Link.
 void BootToEntrance() {
     const char* value = std::getenv("HYRULE_BOOT_ENTRANCE");
     if (value == nullptr || value[0] == '\0') {
@@ -77,7 +80,9 @@ void BootToEntrance() {
     u32 entrance = (u32)std::strtoul(value, nullptr, 0);
     const char* timeValue = std::getenv("HYRULE_BOOT_TIME");
     s32 time = (timeValue != nullptr && timeValue[0] != '\0') ? std::atoi(timeValue) : -1;
-    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnConsoleLogoUpdate>([entrance, time]() {
+    const char* adultValue = std::getenv("HYRULE_BOOT_ADULT");
+    bool adult = (adultValue != nullptr) && (adultValue[0] == '1');
+    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnConsoleLogoUpdate>([entrance, time, adult]() {
         static bool sBooted = false;
         if (sBooted) {
             return;
@@ -91,6 +96,10 @@ void BootToEntrance() {
         MapSelect_LoadGame((MapSelectState*)gGameState, entrance, 0);
         if (time >= 0) {
             gSaveContext.save.time = CLOCK_TIME(time / 100, time % 100);
+        }
+        if (adult) {
+            Hyrule_ItemGive(nullptr, ITEM_SWORD_MASTER_Oot);
+            Hyrule_SetAge(true);
         }
     });
 }
@@ -137,12 +146,35 @@ extern "C" s32 Hyrule_GetSceneLayer(u32 entrance, s32 mmSceneLayer) {
     if (mmSceneLayer != 0) {
         return SCENE_LAYER_CUTSCENE_FIRST_OOT + mmSceneLayer - 1;
     }
-    // OoT's Kokiri Forest and Hyrule Field exceptions depend on adult Link and the spiritual stones.
-    // TODO: port them with adult Link and OoT's quest items.
     if (LINK_IS_ADULT_OOT) {
         return IS_DAY_OOT ? SCENE_LAYER_ADULT_DAY_OOT : SCENE_LAYER_ADULT_NIGHT_OOT;
     }
     return IS_DAY_OOT ? SCENE_LAYER_CHILD_DAY_OOT : SCENE_LAYER_CHILD_NIGHT_OOT;
+}
+
+extern "C" s32 Hyrule_GetSceneLayerException(u32 entrance, s32 sceneLayer) {
+    // OoT's scene ids.
+    static constexpr s32 kHyruleField = 0x51;
+    static constexpr s32 kKokiriForest = 0x55;
+    s32 ootScene;
+
+    if (!IsOotEntrance(entrance) || (sceneLayer >= SCENE_LAYER_CUTSCENE_FIRST_OOT)) {
+        return sceneLayer;
+    }
+    ootScene = Hyrule_GetOotSceneId(Entrance_GetSceneIdAbsolute(entrance));
+    if ((ootScene == kHyruleField) && LINK_IS_CHILD_OOT) {
+        // Child Link sees Hyrule Field's night layer, Zelda's escape, once he has the three spiritual stones.
+        return (Hyrule_CheckQuestItemOot(QUEST_KOKIRI_EMERALD_Oot) && Hyrule_CheckQuestItemOot(QUEST_GORON_RUBY_Oot) &&
+                Hyrule_CheckQuestItemOot(QUEST_ZORA_SAPPHIRE_Oot))
+                   ? SCENE_LAYER_CHILD_NIGHT_OOT
+                   : SCENE_LAYER_CHILD_DAY_OOT;
+    }
+    if ((ootScene == kKokiriForest) && LINK_IS_ADULT_OOT) {
+        // Adult Link's Kokiri Forest is overrun until the Forest Temple is cleared, day and night.
+        return GET_EVENTCHKINF_OOT(EVENTCHKINF_USED_FOREST_TEMPLE_BLUE_WARP_Oot) ? SCENE_LAYER_ADULT_NIGHT_OOT
+                                                                                 : SCENE_LAYER_ADULT_DAY_OOT;
+    }
+    return sceneLayer;
 }
 
 extern "C" u8 Hyrule_SkyboxFromOot(u8 ootSkyboxId) {

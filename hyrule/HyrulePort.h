@@ -5,9 +5,9 @@
 #include "HyruleScenesPending.h"
 #include "HyruleInventory.h"
 
-// There is no adult Link yet, and MM's Link is child-sized, so OoT's age checks see a child.
-#define LINK_IS_ADULT_OOT false
-#define LINK_IS_CHILD_OOT true
+// Link's age (docs/ADULT_LINK.md): adult Link is human Link at adult age, as in OoT.
+#define LINK_IS_ADULT_OOT (gSaveContext.save.saveInfo.isAdultOot != 0)
+#define LINK_IS_CHILD_OOT (!LINK_IS_ADULT_OOT)
 
 // OoT's quest status and inventory, in the shared inventory (HyruleInventory.h).
 #define CHECK_QUEST_ITEM_OOT(item) Hyrule_CheckQuestItemOot(item)

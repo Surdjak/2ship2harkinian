@@ -336,7 +336,18 @@ typedef struct InventoryOot {
     s8 dungeonKeys[19];  // OoT's small keys, by OoT dungeon
     u32 gsFlags[6];      // OoT's Gold Skulltula flags, a byte per area
     s16 gsTokens;        // OoT's Gold Skulltula tokens
+    s16 knifeHealth;     // hits the Giant's Knife has left before it breaks (OoT's swordHealth)
 } InventoryOot;
+
+// the current ones when his age changes, as OoT swaps childEquips and adultEquips.
+typedef struct AgeEquipsOot {
+    u16 buttonItems[4]; // B and C, as ItemEquips' human row
+    u8 cButtonSlots[4];
+    u16 dpadItems[4];
+    u8 dpadSlots[4];
+    u16 equipment;
+    u8 set; // false until he has been that age
+} AgeEquipsOot;
 
 typedef struct SaveInfo {
     /* 0x000 */ SavePlayerData playerData;
@@ -381,9 +392,13 @@ typedef struct SaveInfo {
     /*       */ InventoryOot inventoryOot; // 3Ship [Hyrule]
     /*       */ u32 worldMapAreaDataOot;   // 3Ship [Hyrule] OoT's areas visited, which clear Hyrule's map clouds
     /*       */ RespawnData faroresWindOot; // 3Ship [Hyrule] Farore's Wind's warp point (OoT's fw), set while data != 0
+    /*       */ u8 isAdultOot; // 3Ship [Hyrule] adult Link (docs/ADULT_LINK.md), as OoT's linkAge
+    /*       */ AgeEquipsOot otherAgeEquipsOot; // 3Ship [Hyrule] the other age's buttons and equipment
 } SaveInfo;
 
 // #region 2S2H
+// 3Ship [Hyrule] Human Link's buttons and equipment for the age he is not (docs/ADULT_LINK.md, A3): swapped with
+
 typedef struct DpadSaveInfo {
     u16 dpadItems[4][4]; // 3Ship [Hyrule] was u8
     u8 dpadSlots[4][4];

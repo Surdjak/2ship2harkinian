@@ -10,7 +10,11 @@
 
 static const s16 sSpellCosts[HYRULE_SPELL_MAX] = { 12, 24, 12 }; // OoT's sMagicSpellCosts[3-5]
 
-static const s16 sSpellActorIds[HYRULE_SPELL_MAX] = { ACTOR_MAGIC_WIND_Oot, ACTOR_MAGIC_DARK_Oot, ACTOR_MAGIC_FIRE_Oot };
+static const s16 sSpellActorIds[HYRULE_SPELL_MAX] = {
+    ACTOR_MAGIC_WIND_Oot,
+    ACTOR_MAGIC_DARK_Oot,
+    ACTOR_MAGIC_FIRE_Oot,
+};
 
 // OoT's sRestrictionFlags (z_parameter.c) for its spells: OoT scene, Farore's Wind, Din's Fire and Nayru's Love,
 // non-zero when not allowed. Scenes missing allow both.

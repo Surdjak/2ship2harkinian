@@ -191,8 +191,9 @@ void Hyrule_SyncEquipmentOwnership(void) {
     u8 sword = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD);
 
     // MM owns one sword at a time (Kokiri, Razor or Gilded; Fierce Deity's is a mask's): the one worn, or none
-    // while the smithy or a thief has it. While an OoT sword is worn, the MM one owned stays as it was.
-    if (sword <= EQUIP_VALUE_SWORD_GILDED) {
+    // while the smithy or a thief has it. While an OoT sword is worn, or Link is adult (MM's swords are child
+    // Link's), the MM one owned stays as it was.
+    if ((sword <= EQUIP_VALUE_SWORD_GILDED) && !LINK_IS_ADULT_OOT) {
         INVENTORY_OOT.equipmentOwned &= ~mmSwordBits;
         if (sword != EQUIP_VALUE_SWORD_NONE) {
             INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, sMmSwords[sword - EQUIP_VALUE_SWORD_KOKIRI]);
@@ -258,11 +259,15 @@ u16 Hyrule_ItemGive(PlayState* play, u16 item) {
     } else if (item == ITEM_SWORD_MASTER_Oot) {
         INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_MASTER);
     } else if (item == ITEM_SWORD_KNIFE_Oot) {
-        INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KNIFE);
+        // OoT's ITEM_SWORD_KNIFE is the broken Giant's Knife.
+        INVENTORY_OOT.equipmentOwned &= ~EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KNIFE);
+        INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KNIFE_BROKEN);
     } else if (item == ITEM_SWORD_BGS_Oot) {
-        // Biggoron's Sword replaces the Giant's Knife, broken or not.
+        // Biggoron's Sword replaces the Giant's Knife, broken or not. Medigoron's Giant's Knife is the same item
+        // in OoT (Hyrule_GiveGiantsKnife).
         INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_BIGGORON);
-        INVENTORY_OOT.equipmentOwned &= ~EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KNIFE_BROKEN);
+        INVENTORY_OOT.equipmentOwned &= ~(EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KNIFE) |
+                                          EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KNIFE_BROKEN));
     } else if (item == ITEM_SHIELD_DEKU_Oot) {
         INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SHIELD, EQUIP_OWNED_SHIELD_DEKU);
     } else if (item == ITEM_SHIELD_HYLIAN_Oot) {
@@ -462,6 +467,10 @@ void Hyrule_ResetInventoryOotForCycle(PlayState* play) {
 }
 
 u16* Hyrule_GetSlotContent(s16 slot) {
+    // The Hookshot's slot holds MM's Hookshot for child Link and OoT's Hookshot or Longshot for adult Link (D3).
+    if ((slot == SLOT_HOOKSHOT) && LINK_IS_ADULT_OOT) {
+        return &INVENTORY_OOT.hookshotAdult;
+    }
     if ((slot >= 0) && (slot < ARRAY_COUNT(gSaveContext.save.saveInfo.inventory.items))) {
         return &gSaveContext.save.saveInfo.inventory.items[slot];
     }
@@ -493,6 +502,155 @@ s32 Hyrule_IsOotItemUsableByForm(s32 form, u16 item) {
     return form == PLAYER_FORM_HUMAN;
 }
 
+s32 Hyrule_IsItemUsableAtAge(u16 item) {
+    switch (item) {
+        case ITEM_SLINGSHOT_Oot:
+        case ITEM_BOOMERANG_Oot:
+        case ITEM_DEKU_STICK:
+        case ITEM_WEIRD_EGG_Oot:
+        case ITEM_CHICKEN_Oot:
+        case ITEM_LETTER_ZELDA_Oot:
+            return LINK_IS_CHILD_OOT;
+        case ITEM_HAMMER_Oot:
+        case ITEM_HOOKSHOT_Oot:
+        case ITEM_LONGSHOT_Oot:
+            return LINK_IS_ADULT_OOT;
+        default:
+            if ((item >= ITEM_POCKET_EGG_Oot) && (item <= ITEM_CLAIM_CHECK_Oot)) {
+                return LINK_IS_ADULT_OOT;
+            }
+            return true;
+    }
+}
+
+// The sword an age wears by default: the Master Sword for adult Link, MM's sword owned for child Link.
+static u8 Hyrule_GetDefaultSwordValue(s32 adult) {
+    if (!adult) {
+        return Hyrule_GetOwnedMmSwordValue();
+    }
+    return CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_MASTER) ? EQUIP_VALUE_SWORD_MASTER_Oot
+                                                                              : EQUIP_VALUE_SWORD_NONE;
+}
+
+// An age's first buttons and equipment, as OoT's Inventory_SwapAgeEquipment gives adult Link his: his sword,
+// the Hylian Shield (or the Hero's Shield, the one both ages wear), the Kokiri tunic and boots, and Deku Nuts,
+// Bombs and the ocarina on C-left, C-down and C-right; nothing on the D-pad.
+static void Hyrule_InitAgeEquips(s32 adult) {
+    static const struct {
+        u8 button;
+        u8 slot;
+    } sCItems[] = { { EQUIP_SLOT_C_LEFT, SLOT_DEKU_NUT }, { EQUIP_SLOT_C_DOWN, SLOT_BOMB },
+                    { EQUIP_SLOT_C_RIGHT, SLOT_OCARINA } };
+    u8 sword = Hyrule_GetDefaultSwordValue(adult);
+    u8 shield = EQUIP_VALUE_SHIELD_NONE;
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        BUTTON_ITEM_EQUIP(0, i) = ITEM_NONE;
+        C_SLOT_EQUIP(0, i) = SLOT_NONE;
+        DPAD_BUTTON_ITEM_EQUIP(0, i) = ITEM_NONE;
+        DPAD_SLOT_EQUIP(0, i) = SLOT_NONE;
+    }
+    for (i = 0; i < ARRAY_COUNT(sCItems); i++) {
+        u16 item = *Hyrule_GetSlotContent(sCItems[i].slot);
+
+        if (item != ITEM_NONE) {
+            BUTTON_ITEM_EQUIP(0, sCItems[i].button) = item;
+            C_SLOT_EQUIP(0, sCItems[i].button) = sCItems[i].slot;
+        }
+    }
+    if (CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_SHIELD, EQUIP_OWNED_SHIELD_HYLIAN)) {
+        shield = EQUIP_VALUE_SHIELD_HYLIAN_Oot;
+    } else if (CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_SHIELD, EQUIP_OWNED_SHIELD_HERO)) {
+        shield = EQUIP_VALUE_SHIELD_HERO;
+    }
+    BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_B) = Hyrule_SwordValueToItem(sword);
+    gSaveContext.save.saveInfo.equips.equipment = (sword << (EQUIP_TYPE_SWORD * 4)) |
+                                                  (shield << (EQUIP_TYPE_SHIELD * 4)) |
+                                                  (EQUIP_VALUE_TUNIC_KOKIRI << (EQUIP_TYPE_TUNIC * 4)) |
+                                                  (EQUIP_VALUE_BOOTS_KOKIRI_Oot << (EQUIP_TYPE_BOOTS_Oot * 4));
+}
+
+void Hyrule_SetAge(s32 adult) {
+    AgeEquipsOot* other = &gSaveContext.save.saveInfo.otherAgeEquipsOot;
+    AgeEquipsOot current;
+    s32 i;
+
+    adult = (adult != 0);
+    if (adult == LINK_IS_ADULT_OOT) {
+        return;
+    }
+    // Human Link's row: B and the C-buttons (which MM's other bodies share), the D-pad and the equipment.
+    Hyrule_SyncEquipmentOwnership();
+    for (i = 0; i < 4; i++) {
+        current.buttonItems[i] = BUTTON_ITEM_EQUIP(0, i);
+        current.cButtonSlots[i] = C_SLOT_EQUIP(0, i);
+        current.dpadItems[i] = DPAD_BUTTON_ITEM_EQUIP(0, i);
+        current.dpadSlots[i] = DPAD_SLOT_EQUIP(0, i);
+    }
+    current.equipment = gSaveContext.save.saveInfo.equips.equipment;
+    current.set = true;
+
+    gSaveContext.save.saveInfo.isAdultOot = adult;
+    if (!other->set) {
+        Hyrule_InitAgeEquips(adult);
+    } else {
+        for (i = 0; i < 4; i++) {
+            BUTTON_ITEM_EQUIP(0, i) = other->buttonItems[i];
+            C_SLOT_EQUIP(0, i) = other->cButtonSlots[i];
+            DPAD_BUTTON_ITEM_EQUIP(0, i) = other->dpadItems[i];
+            DPAD_SLOT_EQUIP(0, i) = other->dpadSlots[i];
+        }
+        gSaveContext.save.saveInfo.equips.equipment = other->equipment;
+        // What a slot holds may have changed at the other age (bottles, trade items, the end of a cycle), and the
+        // Hookshot's slot holds each age's own: the buttons show it now, as OoT refreshes its bottles and trade
+        // items.
+        for (i = 0; i < 4; i++) {
+            u16* content = (i != EQUIP_SLOT_B) ? Hyrule_GetSlotContent(C_SLOT_EQUIP(0, i)) : NULL;
+
+            if (content != NULL) {
+                BUTTON_ITEM_EQUIP(0, i) = *content;
+                if (*content == ITEM_NONE) {
+                    C_SLOT_EQUIP(0, i) = SLOT_NONE;
+                }
+            }
+            content = Hyrule_GetSlotContent(DPAD_SLOT_EQUIP(0, i));
+            if (content != NULL) {
+                DPAD_BUTTON_ITEM_EQUIP(0, i) = *content;
+                if (*content == ITEM_NONE) {
+                    DPAD_SLOT_EQUIP(0, i) = SLOT_NONE;
+                }
+            }
+        }
+    }
+    *other = current;
+}
+
+void Hyrule_ResetOtherAgeSwordForCycle(void) {
+    AgeEquipsOot* child = &gSaveContext.save.saveInfo.otherAgeEquipsOot;
+    u8 sword;
+
+    if (!LINK_IS_ADULT_OOT || !child->set) {
+        return;
+    }
+    // Sram_SaveEndOfCycle's sword fix-up on child Link's stored row; MM's sword owned follows it, as
+    // Hyrule_SyncEquipmentOwnership has it.
+    sword = child->equipment & 0xF;
+    if (sword <= EQUIP_VALUE_SWORD_RAZOR) {
+        sword = ((STOLEN_ITEM_1 >= ITEM_SWORD_GILDED) || (STOLEN_ITEM_2 >= ITEM_SWORD_GILDED))
+                    ? EQUIP_VALUE_SWORD_GILDED
+                    : EQUIP_VALUE_SWORD_KOKIRI;
+        child->equipment = (child->equipment & ~0xF) | sword;
+        child->buttonItems[EQUIP_SLOT_B] = Hyrule_SwordValueToItem(sword);
+        INVENTORY_OOT.equipmentOwned &= ~(EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KOKIRI) |
+                                          EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_RAZOR) |
+                                          EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_GILDED));
+        INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, (sword == EQUIP_VALUE_SWORD_GILDED)
+                                                                              ? EQUIP_OWNED_SWORD_GILDED
+                                                                              : EQUIP_OWNED_SWORD_KOKIRI);
+    }
+}
+
 void Hyrule_GiveGreatFairySword(void) {
     INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_GREAT_FAIRY);
 }
@@ -505,7 +663,7 @@ void Hyrule_LoseGreatFairySword(PlayState* play) {
     INVENTORY_OOT.equipmentOwned &= ~EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_GREAT_FAIRY);
 
     if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) == EQUIP_VALUE_SWORD_GREAT_FAIRY_Oot) {
-        u8 sword = Hyrule_GetOwnedMmSwordValue();
+        u8 sword = Hyrule_GetDefaultSwordValue(LINK_IS_ADULT_OOT);
 
         SET_EQUIP_VALUE(EQUIP_TYPE_SWORD, sword);
         BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_B) = Hyrule_SwordValueToItem(sword); // human Link's B
@@ -513,4 +671,10 @@ void Hyrule_LoseGreatFairySword(PlayState* play) {
             Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
         }
     }
+}
+
+void Hyrule_GiveGiantsKnife(void) {
+    INVENTORY_OOT.equipmentOwned &= ~EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KNIFE_BROKEN);
+    INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KNIFE);
+    INVENTORY_OOT.knifeHealth = 8;
 }

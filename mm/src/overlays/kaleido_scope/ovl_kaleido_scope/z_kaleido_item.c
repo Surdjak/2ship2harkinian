@@ -196,8 +196,12 @@ static u16 KaleidoScope_GetItemCellContent(s16 cell) {
     return KaleidoScope_GetItemSlotContent(KaleidoScope_GetItemCellSlot(cell));
 }
 
-// gPlayerFormSlotRestrictions for any item page slot; OoT's are for human Link.
+// gPlayerFormSlotRestrictions for any item page slot; OoT's are for human Link, and human Link's age has its
+// own items (Hyrule_IsItemUsableAtAge).
 static u8 KaleidoScope_IsItemSlotUsable(s16 slot) {
+    if ((GET_PLAYER_FORM == PLAYER_FORM_HUMAN) && !Hyrule_IsItemUsableAtAge(KaleidoScope_GetItemSlotContent(slot))) {
+        return false;
+    }
     if (slot < ITEM_NUM_SLOTS) {
         return gPlayerFormSlotRestrictions[GET_PLAYER_FORM][slot];
     }

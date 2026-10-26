@@ -74,8 +74,8 @@ static const EquipCell sEquipCells[EQUIP_ROWS][EQUIP_COLS - 1] = {
               BODY_CHILD | BODY_ADULT } } },
         { 3,
           { { EQUIP_OWNED_SWORD_BIGGORON, EQUIP_VALUE_SWORD_BIGGORON_Oot, ITEM_SWORD_BGS_Oot, BODY_ADULT },
-            { EQUIP_OWNED_SWORD_KNIFE, EQUIP_VALUE_SWORD_KNIFE_Oot, ITEM_SWORD_KNIFE_Oot, BODY_ADULT },
-            { EQUIP_OWNED_SWORD_KNIFE_BROKEN, EQUIP_VALUE_SWORD_KNIFE_Oot, ITEM_SWORD_BROKEN_Oot, BODY_ADULT } } },
+            { EQUIP_OWNED_SWORD_KNIFE, EQUIP_VALUE_SWORD_KNIFE_Oot, ITEM_SWORD_BGS_Oot, BODY_ADULT },
+            { EQUIP_OWNED_SWORD_KNIFE_BROKEN, EQUIP_VALUE_SWORD_KNIFE_Oot, ITEM_SWORD_KNIFE_Oot, BODY_ADULT } } },
     },
     {
         { 3,
@@ -702,6 +702,12 @@ static void Hyrule_KaleidoUpdateEquipCursor(PlayState* play) {
     row = pauseCtx->cursorYIndex[PAUSE_EQUIP];
     col = pauseCtx->cursorXIndex[PAUSE_EQUIP];
     pauseCtx->cursorItem[PAUSE_EQUIP] = Hyrule_GetCellItem(row, col);
+    // Biggoron's Sword is OoT's ITEM_SWORD_BGS, as the Giant's Knife is; OoT names it by the index its name has,
+    // ITEM_HEART_PIECE_2's.
+    if ((row == 0) && (col != 0) && (Hyrule_GetCellPiece(row, col) != NULL) &&
+        (Hyrule_GetCellPiece(row, col)->owned == EQUIP_OWNED_SWORD_BIGGORON)) {
+        pauseCtx->cursorItem[PAUSE_EQUIP] = ITEM_HEART_PIECE_2_Oot;
+    }
     pauseCtx->cursorSlot[PAUSE_EQUIP] = pauseCtx->cursorPoint[PAUSE_EQUIP];
 
     if (pauseCtx->cursorPoint[PAUSE_EQUIP] != oldCursorPoint) {

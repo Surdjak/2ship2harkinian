@@ -2,6 +2,7 @@
 #include "HyruleInventory.h"
 #include "HyruleMagic.h"
 #include "HyrulePlayer.h"
+#include "HyrulePort.h"
 #include "z64horse.h"
 #include "overlays/gamestates/ovl_file_choose/z_file_select.h"
 #include <string.h>
@@ -614,7 +615,9 @@ void Sram_SaveEndOfCycle(PlayState* play) {
         gSaveContext.save.saveInfo.playerData.health = 0x30;
     }
 
-    if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) <= EQUIP_VALUE_SWORD_RAZOR) {
+    // 3Ship [Hyrule] Adult Link wears no MM sword: the fix-up is for child Link's stored equipment.
+    Hyrule_ResetOtherAgeSwordForCycle();
+    if (!LINK_IS_ADULT_OOT && (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) <= EQUIP_VALUE_SWORD_RAZOR)) {
         SET_EQUIP_VALUE(EQUIP_TYPE_SWORD, EQUIP_VALUE_SWORD_KOKIRI);
 
         if (CUR_FORM == 0) {

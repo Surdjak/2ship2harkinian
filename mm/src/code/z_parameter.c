@@ -656,6 +656,9 @@ u8 gPlayerFormItemRestrictions[PLAYER_FORM_MAX][114] = {
 };
 
 u8 Inventory_IsItemUsableByForm(s32 form, u16 item) {
+    if ((form == PLAYER_FORM_HUMAN) && !Hyrule_IsItemUsableAtAge(item)) {
+        return false;
+    }
     if (item >= ITEM_OOT_BASE) {
         return Hyrule_IsOotItemUsableByForm(form, item);
     }
@@ -9979,7 +9982,9 @@ void Interface_Update(PlayState* play) {
 
     // Update environmental hazard timer
     if (gSaveContext.timerStates[TIMER_ID_ENV_HAZARD] == TIMER_STATE_OFF) {
-        if ((sEnvHazard == PLAYER_ENV_HAZARD_HOTROOM) || (sEnvHazard == PLAYER_ENV_HAZARD_UNDERWATER_FREE)) {
+        // 3Ship [Hyrule] Standing on the bottom in the Iron Boots too, as in OoT.
+        if ((sEnvHazard == PLAYER_ENV_HAZARD_HOTROOM) || (sEnvHazard == PLAYER_ENV_HAZARD_UNDERWATER_FLOOR) ||
+            (sEnvHazard == PLAYER_ENV_HAZARD_UNDERWATER_FREE)) {
             if (CUR_FORM != PLAYER_FORM_ZORA) {
                 if (play->gameOverCtx.state == GAMEOVER_INACTIVE) {
                     if ((gSaveContext.save.saveInfo.playerData.health >> 1) != 0) {

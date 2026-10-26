@@ -90,11 +90,11 @@ become fades of the same color and speed.
   MM entrances (`Hyrule_ExitFromOot`). An exit into a scene that is not loaded yet leads back to the
   spawn Link came in at.
 - **Scene layers:** for OoT entrances, `Play_Init` picks the layer as OoT does
-  (`Hyrule_GetSceneLayer`): child day or night (OoT's day is 6:30 to 18:00, MM's `isNight`), and
-  cutscenes from layer 4. OoT's adult layers and its two exceptions (adult Kokiri Forest after the
-  Forest Temple, child Hyrule Field with the three spiritual stones) wait for adult Link and OoT's
-  quest items. The exit fade and the transition setup use the same layer, and a missing adult night
-  layer falls back to adult day.
+  (`Hyrule_GetSceneLayer`): child or adult (`LINK_IS_ADULT_OOT`), day or night (OoT's day is 6:30 to
+  18:00, MM's `isNight`), and cutscenes from layer 4; then OoT's two exceptions
+  (`Hyrule_GetSceneLayerException`): adult Kokiri Forest's layer 3 only after the Forest Temple, and child
+  Hyrule Field's layer 1 with the three spiritual stones. The exit fade and the transition setup use the layer
+  before the exceptions, as OoT does, and a missing adult night layer falls back to adult day.
 - **Skyboxes:** OoT's normal sky and cutscene map use MM's, and the prerendered rooms' panoramas are
   drawn by `HyrulePanorama.c` (below). OoT's bazaar, market and overcast skies are not ported and show
   nothing (`Hyrule_SkyboxFromOot`).

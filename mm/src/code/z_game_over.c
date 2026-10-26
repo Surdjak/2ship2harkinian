@@ -5,6 +5,7 @@
 #include "functions.h"
 #include "variables.h"
 #include "macros.h"
+#include "HyrulePlayer.h"
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 
@@ -30,6 +31,7 @@ void GameOver_Update(PlayState* play) {
     switch (gameOverCtx->state) {
         case GAMEOVER_DEATH_START:
             Message_CloseTextbox(play);
+            Hyrule_RevertSpoilingItemsOot(play); // 3Ship [Hyrule]
 
             for (timerId = 0; timerId < TIMER_ID_MAX; timerId++) {
                 gSaveContext.timerStates[timerId] = TIMER_STATE_OFF;

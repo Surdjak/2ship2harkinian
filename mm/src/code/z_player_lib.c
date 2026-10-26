@@ -5,6 +5,7 @@
 
 #include "global.h"
 #include "HyrulePlayer.h"
+#include "HyruleIds.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
 #include "objects/gameplay_keep/gameplay_keep.h"
@@ -534,6 +535,49 @@ s16 D_801BFE14[PLAYER_BOOTS_MAX][18] = {
         200,  // IREG(69)
         130,  // MREG(95)
     },
+    // 3Ship [Hyrule] OoT's sBootData rows for adult Link's boots, with REG(39) at OoT's 1.2.
+    // PLAYER_BOOTS_KOKIRI_ADULT_Oot
+    {
+        200,  // REG(19)
+        1000, // REG(30)
+        300,  // REG(32)
+        700,  // REG(34)
+        550,  // REG(35)
+        270,  // REG(36)
+        600,  // REG(37)
+        350,  // REG(38)
+        120,  // REG(39)
+        800,  // R_DECELERATE_RATE
+        600,  // R_RUN_SPEED_LIMIT
+        -100, // REG(68)
+        600,  // REG(69)
+        590,  // IREG(66)
+        750,  // IREG(67)
+        125,  // IREG(68)
+        200,  // IREG(69)
+        130,  // MREG(95)
+    },
+    // PLAYER_BOOTS_HOVER_Oot
+    {
+        200,  // REG(19)
+        1000, // REG(30)
+        300,  // REG(32)
+        700,  // REG(34)
+        550,  // REG(35)
+        270,  // REG(36)
+        600,  // REG(37)
+        600,  // REG(38)
+        120,  // REG(39)
+        800,  // R_DECELERATE_RATE
+        550,  // R_RUN_SPEED_LIMIT
+        -100, // REG(68)
+        600,  // REG(69)
+        540,  // IREG(66)
+        270,  // IREG(67)
+        25,   // IREG(68)
+        0,    // IREG(69)
+        130,  // MREG(95)
+    },
     // PLAYER_BOOTS_ZORA_UNDERWATER
     {
         200,  // REG(19)
@@ -597,6 +641,48 @@ s16 D_801BFE14[PLAYER_BOOTS_MAX][18] = {
         0,   // IREG(69)
         80,  // MREG(95)
     },
+    // PLAYER_BOOTS_IRON_Oot
+    {
+        200,  // REG(19)
+        1000, // REG(30)
+        300,  // REG(32)
+        700,  // REG(34)
+        550,  // REG(35)
+        270,  // REG(36)
+        1000, // REG(37)
+        0,    // REG(38)
+        120,  // REG(39)
+        800,  // R_DECELERATE_RATE
+        300,  // R_RUN_SPEED_LIMIT
+        -160, // REG(68)
+        600,  // REG(69)
+        590,  // IREG(66)
+        750,  // IREG(67)
+        125,  // IREG(68)
+        200,  // IREG(69)
+        130,  // MREG(95)
+    },
+    // PLAYER_BOOTS_IRON_UNDERWATER_Oot
+    {
+        80,   // REG(19)
+        800,  // REG(30)
+        150,  // REG(32)
+        700,  // REG(34)
+        480,  // REG(35)
+        270,  // REG(36)
+        600,  // REG(37)
+        50,   // REG(38)
+        120,  // REG(39)
+        800,  // R_DECELERATE_RATE
+        550,  // R_RUN_SPEED_LIMIT
+        -40,  // REG(68)
+        400,  // REG(69)
+        540,  // IREG(66)
+        270,  // IREG(67)
+        25,   // IREG(68)
+        0,    // IREG(69)
+        80,   // MREG(95)
+    },
 };
 
 // OoT's Player_SetBootData
@@ -620,6 +706,10 @@ void func_80123140(PlayState* play, Player* player) {
         }
         if (player->transformation == PLAYER_FORM_GORON) {
             REG(48) = 200;
+        }
+        if (player->currentBoots == PLAYER_BOOTS_IRON_Oot) { // 3Ship [Hyrule] OoT's Player_SetBootData
+            REG(27) = 500;
+            REG(48) = 100;
         }
     } else if (currentBoots == PLAYER_BOOTS_GIANT) {
         REG(48) = 170;
@@ -900,7 +990,8 @@ PlayerItemAction func_80123810(PlayState* play) {
                 play->interfaceCtx.bButtonInterfaceDoAction = 0;
                 Interface_SetHudVisibility(play->msgCtx.hudVisibility);
 
-                if (ITEM_IS_NONE(itemId) || ((itemAction = play->unk_18794(play, player, itemId)) <= PLAYER_IA_MINUS1)) {
+                if (ITEM_IS_NONE(itemId) ||
+                    ((itemAction = play->unk_18794(play, player, itemId)) <= PLAYER_IA_MINUS1)) {
                     Audio_PlaySfx(NA_SE_SY_ERROR);
                     return PLAYER_IA_MINUS1;
                 } else {
@@ -1017,6 +1108,18 @@ u8 sActionModelGroups[PLAYER_IA_MAX] = {
     PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_ZORA_Oot
     PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_GERUDO_Oot
     PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_MASK_TRUTH_Oot
+    PLAYER_MODELGROUP_TWO_HAND_SWORD, // PLAYER_IA_HAMMER_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_POCKET_EGG_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_POCKET_CUCCO_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_COJIRO_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_ODD_MUSHROOM_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_ODD_POTION_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_SAW_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_SWORD_BROKEN_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_PRESCRIPTION_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_FROG_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_EYEDROPS_Oot
+    PLAYER_MODELGROUP_DEFAULT,        // PLAYER_IA_CLAIM_CHECK_Oot
 };
 
 PlayerModelGroup Player_ActionToModelGroup(Player* player, PlayerItemAction itemAction) {
@@ -1049,13 +1152,13 @@ typedef struct {
     /* 0x2 */ u16 textId;
 } EnvHazardTextTriggerEntry; // size = 0x4
 
-// These textIds are OoT remnants. The corresponding text entries are not present in this game, and so these don't point
-// to anything relevant.
+// 3Ship [Hyrule] OoT's texts (MM's ids were OoT remnants that pointed to nothing): it's hot in here, and you can't
+// breathe underwater in those boots.
 EnvHazardTextTriggerEntry sEnvHazardTextTriggers[] = {
-    { ENV_HAZARD_TEXT_TRIGGER_HOTROOM, 0x26FC },    // PLAYER_ENV_HAZARD_HOTROOM - 1
-    { ENV_HAZARD_TEXT_TRIGGER_UNDERWATER, 0x26FD }, // PLAYER_ENV_HAZARD_UNDERWATER_FLOOR - 1
-    { 0, 0 },                                       // PLAYER_ENV_HAZARD_SWIMMING - 1
-    { ENV_HAZARD_TEXT_TRIGGER_UNDERWATER, 0x26FD }, // PLAYER_ENV_HAZARD_UNDERWATER_FREE - 1
+    { ENV_HAZARD_TEXT_TRIGGER_HOTROOM, TEXT_OOT(0x3040) },    // PLAYER_ENV_HAZARD_HOTROOM - 1
+    { ENV_HAZARD_TEXT_TRIGGER_UNDERWATER, TEXT_OOT(0x401D) }, // PLAYER_ENV_HAZARD_UNDERWATER_FLOOR - 1
+    { 0, 0 },                                                 // PLAYER_ENV_HAZARD_SWIMMING - 1
+    { ENV_HAZARD_TEXT_TRIGGER_UNDERWATER, TEXT_OOT(0x401D) }, // PLAYER_ENV_HAZARD_UNDERWATER_FREE - 1
 };
 
 PlayerModelIndices gPlayerModelTypes[PLAYER_MODELGROUP_MAX] = {
@@ -1587,7 +1690,9 @@ void Player_SetEquipmentData(PlayState* play, Player* player) {
         player->currentShield = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD);
         if ((player->transformation != PLAYER_FORM_ZORA) || ((player->currentBoots != PLAYER_BOOTS_ZORA_LAND) &&
                                                              (player->currentBoots != PLAYER_BOOTS_ZORA_UNDERWATER))) {
-            player->currentBoots = D_801BFF90[player->transformation];
+            // 3Ship [Hyrule] Adult Link's boots are the equipment page's.
+            player->currentBoots = Hyrule_IsAdultPlayer(player) ? Hyrule_GetAdultBoots()
+                                                                : D_801BFF90[player->transformation];
         }
         Player_SetModelGroup(player, Player_ActionToModelGroup(player, player->heldItemAction));
         func_80123140(play, player);
@@ -1711,14 +1816,16 @@ void Player_RemoveMask(PlayState* play) {
 bool Player_HasMirrorShieldEquipped(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return (player->transformation == PLAYER_FORM_HUMAN) && (player->currentShield == PLAYER_SHIELD_MIRROR_SHIELD);
+    // 3Ship [Hyrule] OoT's Mirror Shield reflects light too.
+    return (player->transformation == PLAYER_FORM_HUMAN) && ((player->currentShield == PLAYER_SHIELD_MIRROR_SHIELD) ||
+                                                             (player->currentShield == PLAYER_SHIELD_MIRROR_Oot));
 }
 
 bool Player_IsHoldingMirrorShield(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     return (player->transformation == PLAYER_FORM_HUMAN) && (player->rightHandType == PLAYER_MODELTYPE_RH_SHIELD) &&
-           (player->currentShield == PLAYER_SHIELD_MIRROR_SHIELD);
+           ((player->currentShield == PLAYER_SHIELD_MIRROR_SHIELD) || (player->currentShield == PLAYER_SHIELD_MIRROR_Oot));
 }
 
 bool Player_IsHoldingHookshot(Player* player) {
@@ -1749,6 +1856,9 @@ PlayerBButtonSword Player_GetHeldBButtonSword(Player* player) {
 PlayerMeleeWeapon Player_MeleeWeaponFromIA(PlayerItemAction itemAction) {
     PlayerMeleeWeapon weapon = GET_MELEE_WEAPON_FROM_IA(itemAction);
 
+    if (itemAction == PLAYER_IA_HAMMER_Oot) {
+        return PLAYER_MELEEWEAPON_SWORD_TWO_HANDED; // 3Ship [Hyrule] the Megaton Hammer swings as one
+    }
     if ((weapon > PLAYER_MELEEWEAPON_NONE) && (weapon < PLAYER_MELEEWEAPON_MAX)) {
         return weapon;
     }
@@ -1762,7 +1872,8 @@ PlayerMeleeWeapon Player_GetMeleeWeaponHeld(Player* player) {
 
 s32 Player_IsHoldingTwoHandedWeapon(Player* player) {
     // Relies on the itemActions for two-handed weapons being contiguous.
-    if ((player->heldItemAction >= PLAYER_IA_SWORD_TWO_HANDED) && (player->heldItemAction <= PLAYER_IA_DEKU_STICK)) {
+    if (((player->heldItemAction >= PLAYER_IA_SWORD_TWO_HANDED) && (player->heldItemAction <= PLAYER_IA_DEKU_STICK)) ||
+        (player->heldItemAction == PLAYER_IA_HAMMER_Oot)) { // 3Ship [Hyrule]
         return true;
     }
 
@@ -1820,7 +1931,14 @@ s32 Player_GetEnvironmentalHazard(PlayState* play) {
 
     if (play->roomCtx.curRoom.environmentType == ROOM_ENV_HOT) {
         envHazard = PLAYER_ENV_HAZARD_HOTROOM - 1;
-    } else if ((player->transformation != PLAYER_FORM_ZORA) && (player->underwaterTimer > 80)) {
+    } else if (Hyrule_IsAdultPlayer(player) && (player->underwaterTimer > 80) &&
+               ((player->currentBoots == PLAYER_BOOTS_IRON_Oot) || (player->underwaterTimer >= 300))) {
+        // 3Ship [Hyrule] OoT's rule for adult Link: deep underwater, the Iron Boots on the bottom or long enough.
+        envHazard = ((player->currentBoots == PLAYER_BOOTS_IRON_Oot) && (player->actor.bgCheckFlags & BGCHECKFLAG_GROUND))
+                        ? (PLAYER_ENV_HAZARD_UNDERWATER_FLOOR - 1)
+                        : (PLAYER_ENV_HAZARD_UNDERWATER_FREE - 1);
+    } else if (!Hyrule_IsAdultPlayer(player) && (player->transformation != PLAYER_FORM_ZORA) &&
+               (player->underwaterTimer > 80)) {
         envHazard = PLAYER_ENV_HAZARD_UNDERWATER_FREE - 1;
     } else if (player->stateFlags1 & PLAYER_STATE1_8000000) {
         if ((player->transformation == PLAYER_FORM_ZORA) && (player->currentBoots >= PLAYER_BOOTS_ZORA_UNDERWATER) &&
@@ -1835,8 +1953,15 @@ s32 Player_GetEnvironmentalHazard(PlayState* play) {
 
     triggerEntry = &sEnvHazardTextTriggers[envHazard];
     if (!Player_InCsMode(play)) {
+        // 3Ship [Hyrule] OoT's conditions: the heat without the Goron Tunic, the water in the Iron Boots without the
+        // Zora Tunic.
         if ((triggerEntry->flag) && !(gSaveContext.envHazardTextTriggerFlags & triggerEntry->flag) &&
-            (envHazard == (PLAYER_ENV_HAZARD_HOTROOM - 1))) {
+            (((envHazard == (PLAYER_ENV_HAZARD_HOTROOM - 1)) &&
+              (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_TUNIC) != EQUIP_VALUE_TUNIC_GORON)) ||
+             (((envHazard == (PLAYER_ENV_HAZARD_UNDERWATER_FLOOR - 1)) ||
+               (envHazard == (PLAYER_ENV_HAZARD_UNDERWATER_FREE - 1))) &&
+              (player->currentBoots == PLAYER_BOOTS_IRON_Oot) &&
+              (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_TUNIC) != EQUIP_VALUE_TUNIC_ZORA)))) {
             Message_StartTextbox(play, triggerEntry->textId, NULL);
             gSaveContext.envHazardTextTriggerFlags |= triggerEntry->flag;
         }
@@ -2124,6 +2249,11 @@ void Player_DrawImpl(PlayState* play, void** skeleton, Vec3s* jointTable, s32 dL
 
     POLY_OPA_DISP = &gfx[2];
 
+    // 3Ship [Hyrule] Adult Link's face and tunic colour (OoT's Player_DrawImpl).
+    if ((actor != NULL) && Hyrule_IsAdultPlayer((Player*)actor)) {
+        POLY_OPA_DISP = Hyrule_SetupAdultDraw(POLY_OPA_DISP, eyeIndex, mouthIndex);
+    }
+
     D_801F59E0 = playerForm * 2;
     // 2S2H [Port] Disable LOD when a custom player model is used
     if (Player_IsCustomLinkModel((Player*)actor)) {
@@ -2131,6 +2261,13 @@ void Player_DrawImpl(PlayState* play, void** skeleton, Vec3s* jointTable, s32 dL
     }
     sPlayerLod = lod;
     SkelAnime_DrawFlexLod(play, skeleton, jointTable, dListCount, overrideLimbDraw, postLimbDraw, actor, lod);
+
+    // 3Ship [Hyrule] Adult Link's Iron and Hover Boots (OoT's Player_DrawImpl).
+    if ((actor != NULL) && Hyrule_IsAdultPlayer((Player*)actor) &&
+        (overrideLimbDraw != Player_OverrideLimbDrawGameplayFirstPerson) &&
+        (overrideLimbDraw != Player_OverrideLimbDrawGameplayCrawling)) {
+        Hyrule_DrawAdultBoots(play);
+    }
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
@@ -2630,6 +2767,12 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
     Player* player = (Player*)actor;
 
     if (!Player_OverrideLimbDrawGameplayCommon(play, limbIndex, dList, pos, rot, &player->actor)) {
+        // 3Ship [Hyrule] Adult Link's hands, sheath and waist are OoT's (docs/ADULT_LINK.md).
+        if (Hyrule_IsAdultPlayer(player) &&
+            Hyrule_OverrideLimbDrawAdult(player, limbIndex, dList, sPlayerLod, &sPlayerLeftHandType,
+                                         &sPlayerRightHandType)) {
+            return false;
+        }
         if (limbIndex == PLAYER_LIMB_LEFT_HAND) {
             Gfx** leftHandDLists = player->leftHandDLists;
             EquipValueSword swordEquipValue;
@@ -2783,6 +2926,9 @@ s32 Player_OverrideLimbDrawGameplayFirstPerson(PlayState* play, s32 limbIndex, G
     if (!Player_OverrideLimbDrawGameplayCommon(play, limbIndex, dList, pos, rot, actor)) {
         if (player->unk_AA5 != PLAYER_UNKAA5_3) {
             *dList = NULL;
+        } else if (Hyrule_IsAdultPlayer(player)) {
+            // 3Ship [Hyrule] Adult Link's arms are OoT's.
+            *dList = Hyrule_GetAdultFirstPersonDL(player, limbIndex);
         } else if (limbIndex == PLAYER_LIMB_LEFT_FOREARM) {
             *dList = sPlayerFirstPersonLeftForearmDLs[player->transformation];
         } else if (limbIndex == PLAYER_LIMB_LEFT_HAND) {
@@ -3940,6 +4086,9 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                 if (holdsSlingshot) {
                     stringDL = Hyrule_GetSlingshotStringDL();
                     Hyrule_GetSlingshotStringPos(&stringPos.x, &stringPos.y, &stringPos.z);
+                } else if (Hyrule_IsAdultPlayer(player)) {
+                    stringDL = Hyrule_GetAdultBowStringDL();
+                    Hyrule_GetAdultBowStringPos(&stringPos.x, &stringPos.y, &stringPos.z);
                 }
 
                 OPEN_DISPS(play->state.gfxCtx);
@@ -4097,6 +4246,12 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
             }
         }
     } else if (limbIndex == PLAYER_LIMB_HEAD) {
+        // 3Ship [Hyrule] Masks fit adult Link's head.
+        s32 isAdult = Hyrule_IsAdultPlayer(player);
+
+        if (isAdult) {
+            Hyrule_SetAdultHeadMatrix();
+        }
         if (((*dList1 != NULL) && ((u32)player->currentMask != PLAYER_MASK_NONE)) &&
             (((player->transformation == PLAYER_FORM_HUMAN) &&
               ((!BEN_ANIM_EQUAL(player->skelAnime.animation, gPlayerAnim_cl_setmask)) ||
@@ -4108,6 +4263,12 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                 s32 maskMinusOne = player->currentMask - 1;
 
                 OPEN_DISPS(play->state.gfxCtx);
+
+                if (isAdult) {
+                    Matrix_Push();
+                    Hyrule_FitMaskToAdultHead();
+                    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
+                }
 
                 if (player->currentMask == PLAYER_MASK_COUPLE) {
                     Player_DrawCouplesMask(play, player);
@@ -4145,6 +4306,10 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                 }
 
                 gSPDisplayList(POLY_OPA_DISP++, D_801C0B20[maskMinusOne]);
+
+                if (isAdult) {
+                    Matrix_Pop();
+                }
 
                 CLOSE_DISPS(play->state.gfxCtx);
             }
@@ -4317,7 +4482,8 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
             }
         }
     } else if (limbIndex == PLAYER_LIMB_SHEATH) {
-        if ((*dList1 != NULL) && (player->transformation == PLAYER_FORM_HUMAN) &&
+        // 3Ship [Hyrule] Adult Link's sheath carries his shield (Hyrule_OverrideLimbDrawAdult).
+        if ((*dList1 != NULL) && (player->transformation == PLAYER_FORM_HUMAN) && !Hyrule_IsAdultPlayer(player) &&
             (player->currentShield != PLAYER_SHIELD_NONE) &&
             ((player->sheathType == PLAYER_MODELTYPE_SHEATH_14) ||
              (player->sheathType == PLAYER_MODELTYPE_SHEATH_15))) {

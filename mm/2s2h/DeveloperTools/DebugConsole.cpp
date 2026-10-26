@@ -16,6 +16,7 @@ extern "C" {
 #include "overlays/gamestates/ovl_file_choose/z_file_select.h"
 #include "overlays/gamestates/ovl_title/z_title.h"
 }
+#include "HyruleInventory.h"
 
 #define CMD_REGISTER Ship::Context::GetRawInstance()->GetConsole()->AddCommand
 // TODO: Commands should be using the output passed in.
@@ -241,6 +242,27 @@ static bool ReloadHandler(std::shared_ptr<Ship::Console> Console, const std::vec
     return 0;
 }
 
+// 3Ship [Hyrule] Sets Link's age (docs/ADULT_LINK.md, A2: a developer toggle until the Temple of Time), then
+// reloads the map so Player takes his body.
+static bool AgeHandler(std::shared_ptr<Ship::Console> Console, const std::vector<std::string>& args,
+                       std::string* output) {
+    if (gPlayState == nullptr) {
+        ERROR_MESSAGE("gPlayState == nullptr");
+        return 1;
+    }
+    if ((args.size() > 1) && (args[1] != "child") && (args[1] != "adult")) {
+        ERROR_MESSAGE("Usage: age [child|adult]");
+        return 1;
+    }
+    bool adult = (args.size() > 1) ? (args[1] == "adult") : !gSaveContext.save.saveInfo.isAdultOot;
+    // Until the Temple of Time's pedestal, an adult gets the Master Sword the way OoT's pull gives it.
+    if (adult) {
+        Hyrule_ItemGive(gPlayState, ITEM_SWORD_MASTER_Oot);
+    }
+    Hyrule_SetAge(adult);
+    return ReloadHandler(Console, args, output);
+}
+
 static bool FileSelectHandler(std::shared_ptr<Ship::Console> Console, const std::vector<std::string>& args,
                               std::string* output) {
     if (gPlayState != nullptr) {
@@ -268,6 +290,9 @@ void DebugConsole_Init(void) {
     // Map & Location
     CMD_REGISTER("void", { VoidHandler, "Voids out of the current map." });
     CMD_REGISTER("reload", { ReloadHandler, "Reloads the current map." });
+    CMD_REGISTER("age", { AgeHandler,
+                          "Makes Link a child or an adult, or switches, and reloads the current map.",
+                          { { "child|adult", Ship::ArgumentType::TEXT, true } } });
     CMD_REGISTER("entrance", { EntranceHandler,
                                "Sends player to the entered entrance (hex)",
                                { { "entrance", Ship::ArgumentType::NUMBER } } });

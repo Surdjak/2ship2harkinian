@@ -54,11 +54,17 @@ typedef enum PlayerBoots {
     /* 1 */ PLAYER_BOOTS_HYLIAN,
     /* 2 */ PLAYER_BOOTS_GIANT,
     /* 3 */ PLAYER_BOOTS_DEKU,
-    /* 4 */ PLAYER_BOOTS_ZORA_LAND,
-    /* 5 */ PLAYER_BOOTS_ZORA_UNDERWATER,
-    /* 6 */ PLAYER_BOOTS_GORON,
-    /* 7 */ PLAYER_BOOTS_7,
-    /* 8 */ PLAYER_BOOTS_MAX
+    /*  4 */ PLAYER_BOOTS_ZORA_LAND,
+    // 3Ship [Hyrule] Adult Link's boots (docs/ADULT_LINK.md). MM's Player treats boots from ZORA_UNDERWATER on as
+    // heavy, and uses the next row underwater: OoT's light boots come before them, the Iron Boots after.
+    /*  5 */ PLAYER_BOOTS_KOKIRI_ADULT_Oot,
+    /*  6 */ PLAYER_BOOTS_HOVER_Oot,
+    /*  7 */ PLAYER_BOOTS_ZORA_UNDERWATER,
+    /*  8 */ PLAYER_BOOTS_GORON,
+    /*  9 */ PLAYER_BOOTS_7,
+    /* 10 */ PLAYER_BOOTS_IRON_Oot,
+    /* 11 */ PLAYER_BOOTS_IRON_UNDERWATER_Oot, // the Iron Boots' row in water
+    /* 12 */ PLAYER_BOOTS_MAX
 } PlayerBoots;
 
 typedef enum PlayerStrength {
@@ -207,8 +213,29 @@ typedef enum PlayerItemAction {
     /* 0x5F */ PLAYER_IA_MASK_ZORA_Oot,
     /* 0x60 */ PLAYER_IA_MASK_GERUDO_Oot,
     /* 0x61 */ PLAYER_IA_MASK_TRUTH_Oot,
-    /* 0x62 */ PLAYER_IA_MAX
+    /* 0x62 */ PLAYER_IA_HAMMER_Oot, // OoT's Megaton Hammer, on MM's two-handed weapon path
+    /* 0x63 */ PLAYER_IA_POCKET_EGG_Oot, // OoT's adult trade items, shown to people
+    /* 0x64 */ PLAYER_IA_POCKET_CUCCO_Oot,
+    /* 0x65 */ PLAYER_IA_COJIRO_Oot,
+    /* 0x66 */ PLAYER_IA_ODD_MUSHROOM_Oot,
+    /* 0x67 */ PLAYER_IA_ODD_POTION_Oot,
+    /* 0x68 */ PLAYER_IA_SAW_Oot,
+    /* 0x69 */ PLAYER_IA_SWORD_BROKEN_Oot,
+    /* 0x6A */ PLAYER_IA_PRESCRIPTION_Oot,
+    /* 0x6B */ PLAYER_IA_FROG_Oot,
+    /* 0x6C */ PLAYER_IA_EYEDROPS_Oot,
+    /* 0x6D */ PLAYER_IA_CLAIM_CHECK_Oot,
+    /* 0x6E */ PLAYER_IA_MAX
 } PlayerItemAction;
+
+// 3Ship [Hyrule] OoT's hammer swings, in two attacks MM does not use.
+#define PLAYER_MWA_HAMMER_FORWARD_Oot PLAYER_MWA_BACKSLASH_RIGHT
+#define PLAYER_MWA_HAMMER_SIDE_Oot PLAYER_MWA_BACKSLASH_LEFT
+
+// 3Ship [Hyrule] OoT's trade items, which Link shows to people as MM's are.
+#define PLAYER_IA_IS_TRADE_Oot(itemAction)                                                          \
+    ((((itemAction) >= PLAYER_IA_WEIRD_EGG_Oot) && ((itemAction) <= PLAYER_IA_LETTER_ZELDA_Oot)) || \
+     (((itemAction) >= PLAYER_IA_POCKET_EGG_Oot) && ((itemAction) <= PLAYER_IA_CLAIM_CHECK_Oot)))
 
 // Relies on B swords related item actions to be contiguous
 #define GET_B_SWORD_FROM_IA(itemAction) ((itemAction) - PLAYER_IA_SWORD_MIN + 1)
@@ -1374,6 +1401,7 @@ typedef struct Player {
     /* 0xD6A */ s8 unk_D6A;
     /* 0xD6B */ u8 unk_D6B;
     /* 0xD6C */ Vec3f unk_D6C; // previous body part 0 position
+    /*       */ s16 hoverBootsTimerOot; // 3Ship [Hyrule] OoT's hoverBootsTimer: frames left floating
 } Player; // size = 0xD78
 #ifdef __cplusplus
 }

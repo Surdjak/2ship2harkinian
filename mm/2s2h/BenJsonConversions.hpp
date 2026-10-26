@@ -12,6 +12,23 @@ extern "C" {
 
 using json = nlohmann::json;
 
+inline void to_json(json& j, const AgeEquipsOot& equips) {
+    j = json{
+        { "buttonItems", equips.buttonItems }, { "cButtonSlots", equips.cButtonSlots },
+        { "dpadItems", equips.dpadItems },     { "dpadSlots", equips.dpadSlots },
+        { "equipment", equips.equipment },     { "set", equips.set },
+    };
+}
+
+inline void from_json(const json& j, AgeEquipsOot& equips) {
+    j.at("buttonItems").get_to(equips.buttonItems);
+    j.at("cButtonSlots").get_to(equips.cButtonSlots);
+    j.at("dpadItems").get_to(equips.dpadItems);
+    j.at("dpadSlots").get_to(equips.dpadSlots);
+    j.at("equipment").get_to(equips.equipment);
+    j.at("set").get_to(equips.set);
+}
+
 inline void to_json(json& j, const DpadSaveInfo& dpadEquips) {
     j = json{
         { "dpadItems", dpadEquips.dpadItems },
@@ -222,6 +239,7 @@ inline void to_json(json& j, const InventoryOot& inventory) {
         { "dungeonKeys", inventory.dungeonKeys },
         { "gsFlags", inventory.gsFlags },
         { "gsTokens", inventory.gsTokens },
+        { "knifeHealth", inventory.knifeHealth },
     };
 }
 
@@ -236,6 +254,7 @@ inline void from_json(const json& j, InventoryOot& inventory) {
     j.at("dungeonKeys").get_to(inventory.dungeonKeys);
     j.at("gsFlags").get_to(inventory.gsFlags);
     j.at("gsTokens").get_to(inventory.gsTokens);
+    j.at("knifeHealth").get_to(inventory.knifeHealth);
 }
 
 inline void to_json(json& j, const PermanentSceneFlags& permanentSceneFlags) {
@@ -367,6 +386,8 @@ inline void to_json(json& j, const SaveInfo& saveInfo) {
         { "inventoryOot", saveInfo.inventoryOot },
         { "worldMapAreaDataOot", saveInfo.worldMapAreaDataOot },
         { "faroresWindOot", saveInfo.faroresWindOot },
+        { "isAdultOot", saveInfo.isAdultOot },
+        { "otherAgeEquipsOot", saveInfo.otherAgeEquipsOot },
         { "regionsVisited", saveInfo.regionsVisited },
         { "worldMapCloudVisibility", saveInfo.worldMapCloudVisibility },
         { "unk_F40", saveInfo.unk_F40 },
@@ -409,6 +430,8 @@ inline void from_json(const json& j, SaveInfo& saveInfo) {
     j.at("inventoryOot").get_to(saveInfo.inventoryOot);
     j.at("worldMapAreaDataOot").get_to(saveInfo.worldMapAreaDataOot);
     j.at("faroresWindOot").get_to(saveInfo.faroresWindOot);
+    j.at("isAdultOot").get_to(saveInfo.isAdultOot);
+    j.at("otherAgeEquipsOot").get_to(saveInfo.otherAgeEquipsOot);
     j.at("regionsVisited").get_to(saveInfo.regionsVisited);
     j.at("worldMapCloudVisibility").get_to(saveInfo.worldMapCloudVisibility);
     j.at("unk_F40").get_to(saveInfo.unk_F40);

@@ -4,6 +4,7 @@
 
 #include "global.h"
 #include "HyrulePausePlayer.h"
+#include "HyrulePlayer.h"
 
 #define PAUSE_PLAYER_WIDTH 64
 #define PAUSE_PLAYER_HEIGHT 112
@@ -29,6 +30,9 @@ static const PausePlayerPose sPoses[PLAYER_FORM_MAX] = {
     { { 2.0f, -130.0f, -150.0f }, 0.046f }, // PLAYER_FORM_HUMAN
 };
 
+// Adult Link (docs/ADULT_LINK.md), as OoT stands him when he is not holding up the Master Sword.
+static const PausePlayerPose sAdultPose = { { 25.0f, -228.0f, 60.0f }, 0.056f };
+
 void Hyrule_DrawPausePlayer(PlayState* play) {
     static Vp sViewport = { (PAUSE_PLAYER_WIDTH / 2) << 2, (PAUSE_PLAYER_HEIGHT / 2) << 2, G_MAXZ / 2, 0,
                             (PAUSE_PLAYER_WIDTH / 2) << 2, (PAUSE_PLAYER_HEIGHT / 2) << 2, G_MAXZ / 2, 0 };
@@ -38,7 +42,7 @@ void Hyrule_DrawPausePlayer(PlayState* play) {
     static Player sSavedPlayer;
     static Vec3s sJointTable[PLAYER_LIMB_MAX + 1];
     Player* player = GET_PLAYER(play);
-    const PausePlayerPose* pose = &sPoses[player->transformation];
+    const PausePlayerPose* pose = Hyrule_IsAdultPlayer(player) ? &sAdultPose : &sPoses[player->transformation];
     Mtx* perspMtx = GRAPH_ALLOC(play->state.gfxCtx, sizeof(Mtx));
     Mtx* lookAtMtx = GRAPH_ALLOC(play->state.gfxCtx, sizeof(Mtx));
     Vec3s rot = { 0, 32300, 0 };

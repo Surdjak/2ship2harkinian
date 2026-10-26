@@ -118,7 +118,8 @@ void Hyrule_InitInventoryOot(void);
 u16 Hyrule_ItemGive(struct PlayState* play, u16 item);
 u16 Hyrule_ItemCheckObtainability(u16 item);
 
-// What an item slot holds, for MM's slots (items and masks) and OoT's (SLOT_OOT_*) alike; NULL for others.
+// What an item slot holds, for MM's slots (items and masks) and OoT's (SLOT_OOT_*) alike; NULL for others. The
+// Hookshot's slot is adult Link's own (InventoryOot.hookshotAdult) while he is adult.
 u16* Hyrule_GetSlotContent(s16 slot);
 // The child trade slot's next OoT mask after the one it holds, among those owned (SoH's Mask Select); ITEM_NONE
 // if it holds no mask or no other is owned.
@@ -126,6 +127,20 @@ u16 Hyrule_GetNextChildTradeMask(void);
 
 // Whether a body can use an OoT item: human Link only, until Player uses them per body.
 s32 Hyrule_IsOotItemUsableByForm(s32 form, u16 item);
+
+// OoT's items by age (docs/ADULT_LINK.md, A4): the Slingshot, Boomerang, Deku Sticks and child trade items are
+// child Link's; the Megaton Hammer, OoT's Hookshot and Longshot and the adult trade items are adult Link's. MM's
+// items, masks included, and the rest fit both.
+s32 Hyrule_IsItemUsableAtAge(u16 item);
+
+// Makes Link a child or an adult (SaveInfo.isAdultOot). Each age keeps its own B, C and D-pad buttons and
+// equipment (SaveInfo.otherAgeEquipsOot holds the other's), as OoT's Inventory_SwapAgeEquipment does; an age's
+// first ones are OoT's. Reload the scene after.
+void Hyrule_SetAge(s32 adult);
+
+// At the end of a cycle while Link is adult: MM's sword fix-up (the Razor Sword back to the Kokiri Sword) on
+// child Link's stored equipment.
+void Hyrule_ResetOtherAgeSwordForCycle(void);
 
 // OoT's INV_CONTENT: what is in an OoT item's slot, as an OoT item id (ITEM_NONE if empty).
 u16 Hyrule_InvContentOot(u16 item);
@@ -140,6 +155,10 @@ void Hyrule_SetGsFlagsOot(s32 index, u8 value);
 // Records MM's sword and shield, which MM keeps only as what is worn, as owned (MM's one sword replacing the
 // others).
 void Hyrule_SyncEquipmentOwnership(void);
+
+// Medigoron's Giant's Knife (GI_SWORD_KNIFE_Oot), which OoT gives as ITEM_SWORD_BGS with Biggoron's Sword and tells
+// apart by its get-item id: owned whole, with OoT's 8 hits (swordHealth).
+void Hyrule_GiveGiantsKnife(void);
 
 // The Great Fairy's Sword is equipment rather than an item (docs/INVENTORY.md): Item_Give records it as owned,
 // and it is worn from the equipment page.

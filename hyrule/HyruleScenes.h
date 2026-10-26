@@ -54,6 +54,10 @@ u8 Hyrule_SkyboxFromOot(u8 ootSkyboxId);
 // The scene layer to load for an entrance: MM's unchanged, OoT's chosen as OoT does. mmSceneLayer is 0,
 // or 1 + the cutscene index as MM computes it.
 s32 Hyrule_GetSceneLayer(u32 entrance, s32 mmSceneLayer);
+// OoT's exceptions to that layer, applied after it as in OoT's Play_Init (the transition type still takes the
+// layer above): Hyrule Field for child Link by the spiritual stones, and Kokiri Forest for adult Link by the Forest
+// Temple.
+s32 Hyrule_GetSceneLayerException(u32 entrance, s32 sceneLayer);
 
 #ifdef __cplusplus
 }
