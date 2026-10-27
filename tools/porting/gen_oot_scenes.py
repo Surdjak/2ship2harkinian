@@ -44,6 +44,12 @@ SCENES = [
     "SCENE_GROTTOS",
     "SCENE_FAIRYS_FOUNTAIN",
     "SCENE_HYRULE_FIELD",
+    "SCENE_KAKARIKO_VILLAGE",
+    "SCENE_ZORAS_RIVER",
+    "SCENE_LAKE_HYLIA",
+    "SCENE_GERUDO_VALLEY",
+    "SCENE_LON_LON_RANCH",
+    "SCENE_DEATH_MOUNTAIN_TRAIL",
 ]
 
 # Human-readable names that the enum name spells badly.

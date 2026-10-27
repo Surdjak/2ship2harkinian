@@ -600,6 +600,474 @@ static EntranceTableEntry* sHyruleFieldOotEntranceTable[] = {
     sHyruleFieldOotEntrance17,
 };
 
+static EntranceTableEntry sKakarikoVillageOotEntrance0[] = {
+    /* 0x0DB */ { SCENE_KAKARIKO_VILLAGE_Oot, 0, 0x4183 },
+    /* 0x0DC */ { SCENE_KAKARIKO_VILLAGE_Oot, 0, 0x4102 },
+    /* 0x0DD */ { SCENE_KAKARIKO_VILLAGE_Oot, 0, 0x4183 },
+    /* 0x0DE */ { SCENE_KAKARIKO_VILLAGE_Oot, 0, 0x4102 },
+    /* 0x0DF */ { SCENE_KAKARIKO_VILLAGE_Oot, 0, 0x4204 },
+    /* 0x0E0 */ { SCENE_KAKARIKO_VILLAGE_Oot, 0, 0x4306 },
+    /* 0x0E1 */ { SCENE_KAKARIKO_VILLAGE_Oot, 0, 0xC306 },
+    /* 0x0E2 */ { SCENE_KAKARIKO_VILLAGE_Oot, 0, 0x4306 },
+    /* 0x0E3 */ { SCENE_KAKARIKO_VILLAGE_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance1[] = {
+    /* 0x191 */ { SCENE_KAKARIKO_VILLAGE_Oot, 1, 0x4183 },
+    /* 0x192 */ { SCENE_KAKARIKO_VILLAGE_Oot, 1, 0x4102 },
+    /* 0x193 */ { SCENE_KAKARIKO_VILLAGE_Oot, 1, 0x4183 },
+    /* 0x194 */ { SCENE_KAKARIKO_VILLAGE_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance2[] = {
+    /* 0x195 */ { SCENE_KAKARIKO_VILLAGE_Oot, 2, 0x4183 },
+    /* 0x196 */ { SCENE_KAKARIKO_VILLAGE_Oot, 2, 0x4102 },
+    /* 0x197 */ { SCENE_KAKARIKO_VILLAGE_Oot, 2, 0x4183 },
+    /* 0x198 */ { SCENE_KAKARIKO_VILLAGE_Oot, 2, 0x4102 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance3[] = {
+    /* 0x201 */ { SCENE_KAKARIKO_VILLAGE_Oot, 3, 0x4202 },
+    /* 0x202 */ { SCENE_KAKARIKO_VILLAGE_Oot, 3, 0x4202 },
+    /* 0x203 */ { SCENE_KAKARIKO_VILLAGE_Oot, 3, 0x4202 },
+    /* 0x204 */ { SCENE_KAKARIKO_VILLAGE_Oot, 3, 0x4202 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance4[] = {
+    /* 0x2A6 */ { SCENE_KAKARIKO_VILLAGE_Oot, 4, 0x4102 },
+    /* 0x2A7 */ { SCENE_KAKARIKO_VILLAGE_Oot, 4, 0x4102 },
+    /* 0x2A8 */ { SCENE_KAKARIKO_VILLAGE_Oot, 4, 0x4102 },
+    /* 0x2A9 */ { SCENE_KAKARIKO_VILLAGE_Oot, 4, 0x4102 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance5[] = {
+    /* 0x345 */ { SCENE_KAKARIKO_VILLAGE_Oot, 5, 0x4202 },
+    /* 0x346 */ { SCENE_KAKARIKO_VILLAGE_Oot, 5, 0x4202 },
+    /* 0x347 */ { SCENE_KAKARIKO_VILLAGE_Oot, 5, 0x4202 },
+    /* 0x348 */ { SCENE_KAKARIKO_VILLAGE_Oot, 5, 0x4202 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance6[] = {
+    /* 0x349 */ { SCENE_KAKARIKO_VILLAGE_Oot, 6, 0x4202 },
+    /* 0x34A */ { SCENE_KAKARIKO_VILLAGE_Oot, 6, 0x4202 },
+    /* 0x34B */ { SCENE_KAKARIKO_VILLAGE_Oot, 6, 0x4202 },
+    /* 0x34C */ { SCENE_KAKARIKO_VILLAGE_Oot, 6, 0x4202 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance7[] = {
+    /* 0x34D */ { SCENE_KAKARIKO_VILLAGE_Oot, 7, 0x4202 },
+    /* 0x34E */ { SCENE_KAKARIKO_VILLAGE_Oot, 7, 0x4202 },
+    /* 0x34F */ { SCENE_KAKARIKO_VILLAGE_Oot, 7, 0x4202 },
+    /* 0x350 */ { SCENE_KAKARIKO_VILLAGE_Oot, 7, 0x4202 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance8[] = {
+    /* 0x351 */ { SCENE_KAKARIKO_VILLAGE_Oot, 8, 0x4202 },
+    /* 0x352 */ { SCENE_KAKARIKO_VILLAGE_Oot, 8, 0x4202 },
+    /* 0x353 */ { SCENE_KAKARIKO_VILLAGE_Oot, 8, 0x4202 },
+    /* 0x354 */ { SCENE_KAKARIKO_VILLAGE_Oot, 8, 0x4202 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance9[] = {
+    /* 0x44B */ { SCENE_KAKARIKO_VILLAGE_Oot, 9, 0x4204 },
+    /* 0x44C */ { SCENE_KAKARIKO_VILLAGE_Oot, 9, 0x4204 },
+    /* 0x44D */ { SCENE_KAKARIKO_VILLAGE_Oot, 9, 0x4204 },
+    /* 0x44E */ { SCENE_KAKARIKO_VILLAGE_Oot, 9, 0x4204 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance10[] = {
+    /* 0x463 */ { SCENE_KAKARIKO_VILLAGE_Oot, 10, 0x4202 },
+    /* 0x464 */ { SCENE_KAKARIKO_VILLAGE_Oot, 10, 0x4202 },
+    /* 0x465 */ { SCENE_KAKARIKO_VILLAGE_Oot, 10, 0x4202 },
+    /* 0x466 */ { SCENE_KAKARIKO_VILLAGE_Oot, 10, 0x4202 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance11[] = {
+    /* 0x4EE */ { SCENE_KAKARIKO_VILLAGE_Oot, 11, 0x4202 },
+    /* 0x4EF */ { SCENE_KAKARIKO_VILLAGE_Oot, 11, 0x4202 },
+    /* 0x4F0 */ { SCENE_KAKARIKO_VILLAGE_Oot, 11, 0x4202 },
+    /* 0x4F1 */ { SCENE_KAKARIKO_VILLAGE_Oot, 11, 0x4202 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance12[] = {
+    /* 0x4FF */ { SCENE_KAKARIKO_VILLAGE_Oot, 12, 0x4202 },
+    /* 0x500 */ { SCENE_KAKARIKO_VILLAGE_Oot, 12, 0x4202 },
+    /* 0x501 */ { SCENE_KAKARIKO_VILLAGE_Oot, 12, 0x4202 },
+    /* 0x502 */ { SCENE_KAKARIKO_VILLAGE_Oot, 12, 0x4202 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance13[] = {
+    /* 0x513 */ { SCENE_KAKARIKO_VILLAGE_Oot, 13, 0x4183 },
+    /* 0x514 */ { SCENE_KAKARIKO_VILLAGE_Oot, 13, 0x4102 },
+    /* 0x515 */ { SCENE_KAKARIKO_VILLAGE_Oot, 13, 0x4183 },
+    /* 0x516 */ { SCENE_KAKARIKO_VILLAGE_Oot, 13, 0x4102 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance14[] = {
+    /* 0x554 */ { SCENE_KAKARIKO_VILLAGE_Oot, 14, 0x4183 },
+    /* 0x555 */ { SCENE_KAKARIKO_VILLAGE_Oot, 14, 0x4102 },
+    /* 0x556 */ { SCENE_KAKARIKO_VILLAGE_Oot, 14, 0x4183 },
+    /* 0x557 */ { SCENE_KAKARIKO_VILLAGE_Oot, 14, 0x4102 },
+};
+
+static EntranceTableEntry sKakarikoVillageOotEntrance15[] = {
+    /* 0x5DC */ { SCENE_KAKARIKO_VILLAGE_Oot, 15, 0x4183 },
+    /* 0x5DD */ { SCENE_KAKARIKO_VILLAGE_Oot, 15, 0x4102 },
+    /* 0x5DE */ { SCENE_KAKARIKO_VILLAGE_Oot, 15, 0x4183 },
+    /* 0x5DF */ { SCENE_KAKARIKO_VILLAGE_Oot, 15, 0x4102 },
+};
+
+static EntranceTableEntry* sKakarikoVillageOotEntranceTable[] = {
+    sKakarikoVillageOotEntrance0,
+    sKakarikoVillageOotEntrance1,
+    sKakarikoVillageOotEntrance2,
+    sKakarikoVillageOotEntrance3,
+    sKakarikoVillageOotEntrance4,
+    sKakarikoVillageOotEntrance5,
+    sKakarikoVillageOotEntrance6,
+    sKakarikoVillageOotEntrance7,
+    sKakarikoVillageOotEntrance8,
+    sKakarikoVillageOotEntrance9,
+    sKakarikoVillageOotEntrance10,
+    sKakarikoVillageOotEntrance11,
+    sKakarikoVillageOotEntrance12,
+    sKakarikoVillageOotEntrance13,
+    sKakarikoVillageOotEntrance14,
+    sKakarikoVillageOotEntrance15,
+};
+
+static EntranceTableEntry sZorasRiverOotEntrance0[] = {
+    /* 0x0EA */ { SCENE_ZORAS_RIVER_Oot, 0, 0xC183 },
+    /* 0x0EB */ { SCENE_ZORAS_RIVER_Oot, 0, 0xC102 },
+    /* 0x0EC */ { SCENE_ZORAS_RIVER_Oot, 0, 0xC183 },
+    /* 0x0ED */ { SCENE_ZORAS_RIVER_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry sZorasRiverOotEntrance1[] = {
+    /* 0x199 */ { SCENE_ZORAS_RIVER_Oot, 1, 0xC183 },
+    /* 0x19A */ { SCENE_ZORAS_RIVER_Oot, 1, 0xC183 },
+    /* 0x19B */ { SCENE_ZORAS_RIVER_Oot, 1, 0xC183 },
+    /* 0x19C */ { SCENE_ZORAS_RIVER_Oot, 1, 0xC183 },
+};
+
+static EntranceTableEntry sZorasRiverOotEntrance2[] = {
+    /* 0x19D */ { SCENE_ZORAS_RIVER_Oot, 2, 0x4183 },
+    /* 0x19E */ { SCENE_ZORAS_RIVER_Oot, 2, 0x4102 },
+    /* 0x19F */ { SCENE_ZORAS_RIVER_Oot, 2, 0x4183 },
+    /* 0x1A0 */ { SCENE_ZORAS_RIVER_Oot, 2, 0x4102 },
+};
+
+static EntranceTableEntry sZorasRiverOotEntrance3[] = {
+    /* 0x1D9 */ { SCENE_ZORAS_RIVER_Oot, 3, 0xC183 },
+    /* 0x1DA */ { SCENE_ZORAS_RIVER_Oot, 3, 0xC102 },
+    /* 0x1DB */ { SCENE_ZORAS_RIVER_Oot, 3, 0xC183 },
+    /* 0x1DC */ { SCENE_ZORAS_RIVER_Oot, 3, 0xC102 },
+};
+
+static EntranceTableEntry sZorasRiverOotEntrance4[] = {
+    /* 0x1DD */ { SCENE_ZORAS_RIVER_Oot, 4, 0x4285 },
+    /* 0x1DE */ { SCENE_ZORAS_RIVER_Oot, 4, 0x4285 },
+    /* 0x1DF */ { SCENE_ZORAS_RIVER_Oot, 4, 0x4285 },
+    /* 0x1E0 */ { SCENE_ZORAS_RIVER_Oot, 4, 0x4285 },
+};
+
+static EntranceTableEntry* sZorasRiverOotEntranceTable[] = {
+    sZorasRiverOotEntrance0,
+    sZorasRiverOotEntrance1,
+    sZorasRiverOotEntrance2,
+    sZorasRiverOotEntrance3,
+    sZorasRiverOotEntrance4,
+};
+
+static EntranceTableEntry sLakeHyliaOotEntrance0[] = {
+    /* 0x102 */ { SCENE_LAKE_HYLIA_Oot, 0, 0xC183 },
+    /* 0x103 */ { SCENE_LAKE_HYLIA_Oot, 0, 0xC102 },
+    /* 0x104 */ { SCENE_LAKE_HYLIA_Oot, 0, 0xC183 },
+    /* 0x105 */ { SCENE_LAKE_HYLIA_Oot, 0, 0xC102 },
+    /* 0x106 */ { SCENE_LAKE_HYLIA_Oot, 0, 0x4183 },
+    /* 0x107 */ { SCENE_LAKE_HYLIA_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry sLakeHyliaOotEntrance1[] = {
+    /* 0x219 */ { SCENE_LAKE_HYLIA_Oot, 1, 0x4183 },
+    /* 0x21A */ { SCENE_LAKE_HYLIA_Oot, 1, 0x4102 },
+    /* 0x21B */ { SCENE_LAKE_HYLIA_Oot, 1, 0x4183 },
+    /* 0x21C */ { SCENE_LAKE_HYLIA_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry sLakeHyliaOotEntrance2[] = {
+    /* 0x21D */ { SCENE_LAKE_HYLIA_Oot, 2, 0x4993 },
+    /* 0x21E */ { SCENE_LAKE_HYLIA_Oot, 2, 0x4102 },
+    /* 0x21F */ { SCENE_LAKE_HYLIA_Oot, 2, 0x4993 },
+    /* 0x220 */ { SCENE_LAKE_HYLIA_Oot, 2, 0x4102 },
+};
+
+static EntranceTableEntry sLakeHyliaOotEntrance3[] = {
+    /* 0x3C8 */ { SCENE_LAKE_HYLIA_Oot, 3, 0x4183 },
+    /* 0x3C9 */ { SCENE_LAKE_HYLIA_Oot, 3, 0x4183 },
+    /* 0x3CA */ { SCENE_LAKE_HYLIA_Oot, 3, 0x4183 },
+    /* 0x3CB */ { SCENE_LAKE_HYLIA_Oot, 3, 0x4183 },
+};
+
+static EntranceTableEntry sLakeHyliaOotEntrance4[] = {
+    /* 0x3CC */ { SCENE_LAKE_HYLIA_Oot, 4, 0x4202 },
+    /* 0x3CD */ { SCENE_LAKE_HYLIA_Oot, 4, 0x4202 },
+    /* 0x3CE */ { SCENE_LAKE_HYLIA_Oot, 4, 0x4202 },
+    /* 0x3CF */ { SCENE_LAKE_HYLIA_Oot, 4, 0x4202 },
+};
+
+static EntranceTableEntry sLakeHyliaOotEntrance5[] = {
+    /* 0x4E6 */ { SCENE_LAKE_HYLIA_Oot, 5, 0x4102 },
+    /* 0x4E7 */ { SCENE_LAKE_HYLIA_Oot, 5, 0x4102 },
+    /* 0x4E8 */ { SCENE_LAKE_HYLIA_Oot, 5, 0x4102 },
+    /* 0x4E9 */ { SCENE_LAKE_HYLIA_Oot, 5, 0x4102 },
+};
+
+static EntranceTableEntry sLakeHyliaOotEntrance6[] = {
+    /* 0x309 */ { SCENE_LAKE_HYLIA_Oot, 6, 0x4202 },
+    /* 0x30A */ { SCENE_LAKE_HYLIA_Oot, 6, 0x4202 },
+    /* 0x30B */ { SCENE_LAKE_HYLIA_Oot, 6, 0x4202 },
+    /* 0x30C */ { SCENE_LAKE_HYLIA_Oot, 6, 0x4202 },
+};
+
+static EntranceTableEntry sLakeHyliaOotEntrance7[] = {
+    /* 0x560 */ { SCENE_LAKE_HYLIA_Oot, 7, 0x4285 },
+    /* 0x561 */ { SCENE_LAKE_HYLIA_Oot, 7, 0x4285 },
+    /* 0x562 */ { SCENE_LAKE_HYLIA_Oot, 7, 0x4285 },
+    /* 0x563 */ { SCENE_LAKE_HYLIA_Oot, 7, 0x4285 },
+};
+
+static EntranceTableEntry sLakeHyliaOotEntrance8[] = {
+    /* 0x604 */ { SCENE_LAKE_HYLIA_Oot, 8, 0x4102 },
+    /* 0x605 */ { SCENE_LAKE_HYLIA_Oot, 8, 0x4102 },
+    /* 0x606 */ { SCENE_LAKE_HYLIA_Oot, 8, 0x4102 },
+    /* 0x607 */ { SCENE_LAKE_HYLIA_Oot, 8, 0x4102 },
+};
+
+static EntranceTableEntry sLakeHyliaOotEntrance9[] = {
+    /* 0x60C */ { SCENE_LAKE_HYLIA_Oot, 9, 0x4183 },
+    /* 0x60D */ { SCENE_LAKE_HYLIA_Oot, 9, 0x4183 },
+    /* 0x60E */ { SCENE_LAKE_HYLIA_Oot, 9, 0x4183 },
+    /* 0x60F */ { SCENE_LAKE_HYLIA_Oot, 9, 0x4183 },
+};
+
+static EntranceTableEntry* sLakeHyliaOotEntranceTable[] = {
+    sLakeHyliaOotEntrance0,
+    sLakeHyliaOotEntrance1,
+    sLakeHyliaOotEntrance2,
+    sLakeHyliaOotEntrance3,
+    sLakeHyliaOotEntrance4,
+    sLakeHyliaOotEntrance5,
+    sLakeHyliaOotEntrance6,
+    sLakeHyliaOotEntrance7,
+    sLakeHyliaOotEntrance8,
+    sLakeHyliaOotEntrance9,
+};
+
+static EntranceTableEntry sGerudoValleyOotEntrance0[] = {
+    /* 0x117 */ { SCENE_GERUDO_VALLEY_Oot, 0, 0x4183 },
+    /* 0x118 */ { SCENE_GERUDO_VALLEY_Oot, 0, 0x4102 },
+    /* 0x119 */ { SCENE_GERUDO_VALLEY_Oot, 0, 0x4183 },
+    /* 0x11A */ { SCENE_GERUDO_VALLEY_Oot, 0, 0x4102 },
+    /* 0x11B */ { SCENE_GERUDO_VALLEY_Oot, 0, 0xC60A },
+    /* 0x11C */ { SCENE_GERUDO_VALLEY_Oot, 0, 0xC50A },
+    /* 0x11D */ { SCENE_GERUDO_VALLEY_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry sGerudoValleyOotEntrance1[] = {
+    /* 0x1A5 */ { SCENE_GERUDO_VALLEY_Oot, 1, 0x4183 },
+    /* 0x1A6 */ { SCENE_GERUDO_VALLEY_Oot, 1, 0x4102 },
+    /* 0x1A7 */ { SCENE_GERUDO_VALLEY_Oot, 1, 0x4183 },
+    /* 0x1A8 */ { SCENE_GERUDO_VALLEY_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry sGerudoValleyOotEntrance2[] = {
+    /* 0x229 */ { SCENE_GERUDO_VALLEY_Oot, 2, 0xC183 },
+    /* 0x22A */ { SCENE_GERUDO_VALLEY_Oot, 2, 0xC102 },
+    /* 0x22B */ { SCENE_GERUDO_VALLEY_Oot, 2, 0xC183 },
+    /* 0x22C */ { SCENE_GERUDO_VALLEY_Oot, 2, 0xC102 },
+};
+
+static EntranceTableEntry sGerudoValleyOotEntrance3[] = {
+    /* 0x22D */ { SCENE_GERUDO_VALLEY_Oot, 3, 0xC183 },
+    /* 0x22E */ { SCENE_GERUDO_VALLEY_Oot, 3, 0xC102 },
+    /* 0x22F */ { SCENE_GERUDO_VALLEY_Oot, 3, 0xC183 },
+    /* 0x230 */ { SCENE_GERUDO_VALLEY_Oot, 3, 0xC102 },
+};
+
+static EntranceTableEntry sGerudoValleyOotEntrance4[] = {
+    /* 0x3D0 */ { SCENE_GERUDO_VALLEY_Oot, 4, 0x4202 },
+    /* 0x3D1 */ { SCENE_GERUDO_VALLEY_Oot, 4, 0x4202 },
+    /* 0x3D2 */ { SCENE_GERUDO_VALLEY_Oot, 4, 0x4202 },
+    /* 0x3D3 */ { SCENE_GERUDO_VALLEY_Oot, 4, 0x4202 },
+};
+
+static EntranceTableEntry* sGerudoValleyOotEntranceTable[] = {
+    sGerudoValleyOotEntrance0,
+    sGerudoValleyOotEntrance1,
+    sGerudoValleyOotEntrance2,
+    sGerudoValleyOotEntrance3,
+    sGerudoValleyOotEntrance4,
+};
+
+static EntranceTableEntry sLonLonRanchOotEntrance0[] = {
+    /* 0x157 */ { SCENE_LON_LON_RANCH_Oot, 0, 0x4183 },
+    /* 0x158 */ { SCENE_LON_LON_RANCH_Oot, 0, 0x4102 },
+    /* 0x159 */ { SCENE_LON_LON_RANCH_Oot, 0, 0x4183 },
+    /* 0x15A */ { SCENE_LON_LON_RANCH_Oot, 0, 0x4102 },
+    /* 0x15B */ { SCENE_LON_LON_RANCH_Oot, 0, 0x4204 },
+    /* 0x15C */ { SCENE_LON_LON_RANCH_Oot, 0, 0x4285 },
+    /* 0x15D */ { SCENE_LON_LON_RANCH_Oot, 0, 0xC102 },
+    /* 0x15E */ { SCENE_LON_LON_RANCH_Oot, 0, 0xC102 },
+    /* 0x15F */ { SCENE_LON_LON_RANCH_Oot, 0, 0xC102 },
+    /* 0x160 */ { SCENE_LON_LON_RANCH_Oot, 0, 0xC102 },
+    /* 0x161 */ { SCENE_LON_LON_RANCH_Oot, 0, 0xC102 },
+    /* 0x162 */ { SCENE_LON_LON_RANCH_Oot, 0, 0xC102 },
+    /* 0x163 */ { SCENE_LON_LON_RANCH_Oot, 0, 0xC102 },
+    /* 0x164 */ { SCENE_LON_LON_RANCH_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry sLonLonRanchOotEntrance1[] = {
+    /* 0x2AE */ { SCENE_LON_LON_RANCH_Oot, 1, 0x0183 },
+    /* 0x2AF */ { SCENE_LON_LON_RANCH_Oot, 1, 0x0102 },
+    /* 0x2B0 */ { SCENE_LON_LON_RANCH_Oot, 1, 0x0183 },
+    /* 0x2B1 */ { SCENE_LON_LON_RANCH_Oot, 1, 0x0102 },
+};
+
+static EntranceTableEntry sLonLonRanchOotEntrance2[] = {
+    /* 0x2E2 */ { SCENE_LON_LON_RANCH_Oot, 2, 0x4183 },
+    /* 0x2E3 */ { SCENE_LON_LON_RANCH_Oot, 2, 0x4102 },
+    /* 0x2E4 */ { SCENE_LON_LON_RANCH_Oot, 2, 0x4183 },
+    /* 0x2E5 */ { SCENE_LON_LON_RANCH_Oot, 2, 0x4102 },
+};
+
+static EntranceTableEntry sLonLonRanchOotEntrance3[] = {
+    /* 0x2E6 */ { SCENE_LON_LON_RANCH_Oot, 3, 0x4183 },
+    /* 0x2E7 */ { SCENE_LON_LON_RANCH_Oot, 3, 0x4102 },
+    /* 0x2E8 */ { SCENE_LON_LON_RANCH_Oot, 3, 0x4183 },
+    /* 0x2E9 */ { SCENE_LON_LON_RANCH_Oot, 3, 0x4102 },
+};
+
+static EntranceTableEntry sLonLonRanchOotEntrance4[] = {
+    /* 0x378 */ { SCENE_LON_LON_RANCH_Oot, 4, 0x4202 },
+    /* 0x379 */ { SCENE_LON_LON_RANCH_Oot, 4, 0x4202 },
+    /* 0x37A */ { SCENE_LON_LON_RANCH_Oot, 4, 0x4202 },
+    /* 0x37B */ { SCENE_LON_LON_RANCH_Oot, 4, 0x4202 },
+};
+
+static EntranceTableEntry sLonLonRanchOotEntrance5[] = {
+    /* 0x42F */ { SCENE_LON_LON_RANCH_Oot, 5, 0x4202 },
+    /* 0x430 */ { SCENE_LON_LON_RANCH_Oot, 5, 0x4202 },
+    /* 0x431 */ { SCENE_LON_LON_RANCH_Oot, 5, 0x4202 },
+    /* 0x432 */ { SCENE_LON_LON_RANCH_Oot, 5, 0x4202 },
+};
+
+static EntranceTableEntry sLonLonRanchOotEntrance6[] = {
+    /* 0x4CA */ { SCENE_LON_LON_RANCH_Oot, 6, 0x0104 },
+    /* 0x4CB */ { SCENE_LON_LON_RANCH_Oot, 6, 0x0104 },
+    /* 0x4CC */ { SCENE_LON_LON_RANCH_Oot, 6, 0x0104 },
+    /* 0x4CD */ { SCENE_LON_LON_RANCH_Oot, 6, 0x0104 },
+};
+
+static EntranceTableEntry sLonLonRanchOotEntrance7[] = {
+    /* 0x4CE */ { SCENE_LON_LON_RANCH_Oot, 7, 0x0285 },
+    /* 0x4CF */ { SCENE_LON_LON_RANCH_Oot, 7, 0x0285 },
+    /* 0x4D0 */ { SCENE_LON_LON_RANCH_Oot, 7, 0x0285 },
+    /* 0x4D1 */ { SCENE_LON_LON_RANCH_Oot, 7, 0x0285 },
+};
+
+static EntranceTableEntry sLonLonRanchOotEntrance8[] = {
+    /* 0x558 */ { SCENE_LON_LON_RANCH_Oot, 8, 0x0204 },
+    /* 0x559 */ { SCENE_LON_LON_RANCH_Oot, 8, 0x0204 },
+    /* 0x55A */ { SCENE_LON_LON_RANCH_Oot, 8, 0x0204 },
+    /* 0x55B */ { SCENE_LON_LON_RANCH_Oot, 8, 0x0204 },
+};
+
+static EntranceTableEntry sLonLonRanchOotEntrance9[] = {
+    /* 0x55C */ { SCENE_LON_LON_RANCH_Oot, 9, 0x0102 },
+    /* 0x55D */ { SCENE_LON_LON_RANCH_Oot, 9, 0x0102 },
+    /* 0x55E */ { SCENE_LON_LON_RANCH_Oot, 9, 0x0102 },
+    /* 0x55F */ { SCENE_LON_LON_RANCH_Oot, 9, 0x0102 },
+};
+
+static EntranceTableEntry sLonLonRanchOotEntrance10[] = {
+    /* 0x5D4 */ { SCENE_LON_LON_RANCH_Oot, 10, 0x4202 },
+    /* 0x5D5 */ { SCENE_LON_LON_RANCH_Oot, 10, 0x4202 },
+    /* 0x5D6 */ { SCENE_LON_LON_RANCH_Oot, 10, 0x4202 },
+    /* 0x5D7 */ { SCENE_LON_LON_RANCH_Oot, 10, 0x4202 },
+};
+
+static EntranceTableEntry* sLonLonRanchOotEntranceTable[] = {
+    sLonLonRanchOotEntrance0,
+    sLonLonRanchOotEntrance1,
+    sLonLonRanchOotEntrance2,
+    sLonLonRanchOotEntrance3,
+    sLonLonRanchOotEntrance4,
+    sLonLonRanchOotEntrance5,
+    sLonLonRanchOotEntrance6,
+    sLonLonRanchOotEntrance7,
+    sLonLonRanchOotEntrance8,
+    sLonLonRanchOotEntrance9,
+    sLonLonRanchOotEntrance10,
+};
+
+static EntranceTableEntry sDeathMountainTrailOotEntrance0[] = {
+    /* 0x13D */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 0, 0x4183 },
+    /* 0x13E */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 0, 0x4102 },
+    /* 0x13F */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 0, 0x4183 },
+    /* 0x140 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 0, 0x4102 },
+    /* 0x141 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 0, 0xC50A },
+    /* 0x142 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 0, 0x4183 },
+    /* 0x143 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 0, 0x4102 },
+    /* 0x144 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 0, 0xC102 },
+    /* 0x145 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 0, 0xC183 },
+    /* 0x146 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 0, 0xC183 },
+};
+
+static EntranceTableEntry sDeathMountainTrailOotEntrance1[] = {
+    /* 0x1B9 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 1, 0x4183 },
+    /* 0x1BA */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 1, 0x4102 },
+    /* 0x1BB */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 1, 0x4183 },
+    /* 0x1BC */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry sDeathMountainTrailOotEntrance2[] = {
+    /* 0x1BD */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 2, 0x4183 },
+    /* 0x1BE */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 2, 0x4102 },
+    /* 0x1BF */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 2, 0x4183 },
+    /* 0x1C0 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 2, 0x4102 },
+};
+
+static EntranceTableEntry sDeathMountainTrailOotEntrance3[] = {
+    /* 0x242 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 3, 0x4183 },
+    /* 0x243 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 3, 0x4102 },
+    /* 0x244 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 3, 0x4183 },
+    /* 0x245 */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 3, 0x4102 },
+};
+
+static EntranceTableEntry sDeathMountainTrailOotEntrance4[] = {
+    /* 0x45B */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 4, 0x4102 },
+    /* 0x45C */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 4, 0x4102 },
+    /* 0x45D */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 4, 0x4102 },
+    /* 0x45E */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 4, 0x4102 },
+};
+
+static EntranceTableEntry sDeathMountainTrailOotEntrance5[] = {
+    /* 0x47A */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 5, 0x4202 },
+    /* 0x47B */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 5, 0x4202 },
+    /* 0x47C */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 5, 0x4202 },
+    /* 0x47D */ { SCENE_DEATH_MOUNTAIN_TRAIL_Oot, 5, 0x4202 },
+};
+
+static EntranceTableEntry* sDeathMountainTrailOotEntranceTable[] = {
+    sDeathMountainTrailOotEntrance0,
+    sDeathMountainTrailOotEntrance1,
+    sDeathMountainTrailOotEntrance2,
+    sDeathMountainTrailOotEntrance3,
+    sDeathMountainTrailOotEntrance4,
+    sDeathMountainTrailOotEntrance5,
+};
+
 // The entrance scenes from ENTR_SCENE_KOKIRI_FOREST_Oot on, in order.
 #define HYRULE_SCENE_ENTRANCES \
     /* 0x6E */ SCENE_ENTRANCE(sKokiriForestOotEntranceTable, "SCENE_KOKIRI_FOREST"), \
@@ -613,4 +1081,11 @@ static EntranceTableEntry* sHyruleFieldOotEntranceTable[] = {
     /* 0x76 */ SCENE_ENTRANCE(sSacredForestMeadowOotEntranceTable, "SCENE_SACRED_FOREST_MEADOW"), \
     /* 0x77 */ SCENE_ENTRANCE(sGrottosOotEntranceTable, "SCENE_GROTTOS"), \
     /* 0x78 */ SCENE_ENTRANCE(sFairysFountainOotEntranceTable, "SCENE_FAIRYS_FOUNTAIN"), \
-    /* 0x79 */ SCENE_ENTRANCE(sHyruleFieldOotEntranceTable, "SCENE_HYRULE_FIELD"),
+    /* 0x79 */ SCENE_ENTRANCE(sHyruleFieldOotEntranceTable, "SCENE_HYRULE_FIELD"), \
+    /* 0x7A */ SCENE_ENTRANCE(sKakarikoVillageOotEntranceTable, "SCENE_KAKARIKO_VILLAGE"), \
+    /* 0x7B */ SCENE_ENTRANCE(sZorasRiverOotEntranceTable, "SCENE_ZORAS_RIVER"), \
+    /* 0x7C */ SCENE_ENTRANCE(sLakeHyliaOotEntranceTable, "SCENE_LAKE_HYLIA"), \
+    /* 0x7D */ SCENE_ENTRANCE(sGerudoValleyOotEntranceTable, "SCENE_GERUDO_VALLEY"), \
+    /* 0x7E */ SCENE_ENTRANCE(sLonLonRanchOotEntranceTable, "SCENE_LON_LON_RANCH"), \
+    /* 0x7F */ SCENE_ENTRANCE_NONE(), \
+    /* 0x80 */ SCENE_ENTRANCE(sDeathMountainTrailOotEntranceTable, "SCENE_DEATH_MOUNTAIN_TRAIL"),
