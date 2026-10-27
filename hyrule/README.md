@@ -204,6 +204,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 14 | Grottos: `Door_Ana` (grotto holes), `En_Torch` (the grotto chest) |
 | 15 | Hyrule Field: `En_Wood02` (trees and bushes), `En_Peehat` (Peahats), `Obj_Hamishi` (adult rocks), `Bg_Spot00_Break` (broken fences) |
 | 16 | `En_Encount1` (enemy spawner), `En_Skb` (Stalchildren), `En_Reeba` (Leevers), `En_Tite` (Tektites) |
+| 17 | Kakariko to Death Mountain scenery: `En_River_Sound` (river, waterfall and other place sounds), `Obj_Kibako2` (big crates), `En_Hata` (flag), `Bg_Bombwall` (bombable walls), `Bg_Spot16_Doughnut` (Death Mountain's cloud ring), Kakariko's `Bg_Spot01_Fusya` (windmill), `Bg_Spot01_Idohashira`, `Bg_Spot01_Idomizu` and `Bg_Spot01_Idosoko` (the well's beam, water and stone), `Bg_Spot01_Objects2` (buildings under construction), `Bg_Gate_Shutter` (Death Mountain gate), `Bg_Spot03_Taki` (Zora's River waterfall), `Bg_Spot09_Obj` (Gerudo Valley's bridges and tent), `Bg_Umajump` (horse jumps), `Bg_Ingate` (Lon Lon Ranch gate), `Obj_Syokudai` (torches) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -364,6 +365,20 @@ frames (their spots differ, as they are random). OoT's `BodyBreak` (the parts an
 
 Not yet: the grottos' business scrubs, cows, fish, bees, Redeads, Tektites and Dampé's hole. The rainbow
 hexagon under the exit light is OoT's own (SoH shows it too).
+
+Wave 17 was checked against SoH at each of the six scenes' first spawn (child, and adult in Kakariko and
+Gerudo Valley): with Link puppeted from SoH's run, the same ported actors are there in the same places on every
+frame; Death Mountain's cloud ring turns on SoH's frames until it leaves the camera, which differs. Notes:
+
+- `En_River_Sound` uses MM's names for OoT's river audio, which MM kept: `Audio_PlaySfx_River`,
+  `Audio_LowerMainBgmVolume`, and `func_801A09D4` for the Lost Woods' Saria's Song that grows near the right path.
+- The torches take MM's arrows (`En_Arrow`) and light them as MM's torches do; the Deku Stick flame is MM's
+  Player `unk_B28`. OoT's camera glances (`OnePointCutscene_Attention`, the waterfall's `OnePointCutscene_Init`)
+  are left out.
+- MM's `LINK_AGE_IN_YEARS` reads MM's adult transformation, so ported code uses `LINK_AGE_IN_YEARS_OOT`
+  (`HyrulePort.h`): the bridges and well water follow OoT's age.
+- The well beam and the cloud ring's eruption follow OoT's cutscene cues (MM's `actorCues`), which only OoT's
+  cutscenes give; those are not played yet.
 
 ## Text
 

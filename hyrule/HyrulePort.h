@@ -8,6 +8,8 @@
 // Link's age (docs/ADULT_LINK.md): adult Link is human Link at adult age, as in OoT.
 #define LINK_IS_ADULT_OOT (gSaveContext.save.saveInfo.isAdultOot != 0)
 #define LINK_IS_CHILD_OOT (!LINK_IS_ADULT_OOT)
+// MM's LINK_AGE_IN_YEARS reads MM's LINK_IS_ADULT (a transformation), not OoT's age.
+#define LINK_AGE_IN_YEARS_OOT (LINK_IS_ADULT_OOT ? YEARS_ADULT : YEARS_CHILD)
 
 // OoT's quest status and inventory, in the shared inventory (HyruleInventory.h).
 #define CHECK_QUEST_ITEM_OOT(item) Hyrule_CheckQuestItemOot(item)

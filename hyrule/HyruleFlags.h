@@ -21,6 +21,8 @@
 #define GET_EVENTINF_OOT(flag) OOT_FLAG_GET(gSaveContext.eventInfOot, flag)
 #define SET_EVENTINF_OOT(flag) OOT_FLAG_SET(gSaveContext.eventInfOot, flag)
 #define CLEAR_EVENTINF_OOT(flag) OOT_FLAG_CLEAR(gSaveContext.eventInfOot, flag)
+// SoH's multi-line GET_EVENTCHKINF_CARPENTERS_FREE_ALL: all four carpenters freed from the Gerudo.
+#define GET_EVENTCHKINF_CARPENTERS_FREE_ALL_OOT()     ((gSaveContext.save.saveInfo.eventChkInfOot[9] & 0xF) == 0xF)
 
 
 #define EVENTCHKINF_FIRST_SPOKE_TO_MIDO_Oot 0x02
