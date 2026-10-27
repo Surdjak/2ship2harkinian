@@ -59,6 +59,7 @@ Gfx** Hyrule_GetHandHoldingBoomerangDLs(void);
 // 5 Goron, 6 Zora, 7 Gerudo, 8 Truth.
 #define PLAYER_MASK_NONE_Oot 0
 #define PLAYER_MASK_KEATON_Oot 1
+#define PLAYER_MASK_SKULL_Oot 2
 #define PLAYER_MASK_BUNNY_Oot 4
 #define PLAYER_MASK_TRUTH_Oot 8
 // The OoT mask Link wears, for OoT's actors (OoT's Player_GetMask).

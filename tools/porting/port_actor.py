@@ -160,6 +160,29 @@ RENAMES = [
     (r"\bfunc_8003EBF8\(", "DynaPoly_DisableCollision("),
     (r"\bfunc_8003EC50\(", "DynaPoly_EnableCollision("),
     (r"\bfunc_800F436C\(", "Audio_PlaySfx_AtPosWithFreq("),
+    # SoH's savestate field lists.
+    (r"#define \w+_SHIP_SAVESTATE_FIELDS\(F\)(?:[^\n]*\\\n)*[^\n]*\n\s*", ""),
+    (r"SHIP_SAVESTATE_DEFINE\([^)]*\)\n\s*", ""),
+    (r"\bview\.lookAt\b", "view.at"),
+    # OoT's roomCtx.unk_74 (data cutscenes and actors pass to the scene draw config) is MM's unk7A.
+    (r"\broomCtx\.unk_74\b", "roomCtx.unk7A"),
+    (r"\benvCtx\.adjAmbientColor\b", "envCtx.adjLightSettings.ambientColor"),
+    (r"\benvCtx\.adjLight1Color\b", "envCtx.adjLightSettings.light1Color"),
+    (r"\benvCtx\.adjFogColor\b", "envCtx.adjLightSettings.fogColor"),
+    (r"\benvCtx\.adjFogNear\b", "envCtx.adjLightSettings.fogNear"),
+    (r"\benvCtx\.adjFogFar\b", "envCtx.adjLightSettings.zFar"),
+    (r"\bdyna\.unk_150\b", "dyna.pushForce"),
+    (r"\bdyna\.unk_158\b", "dyna.yRotation"),
+    (r"\bPLAYER_STATE2_MOVING_DYNAPOLY\b", "PLAYER_STATE2_10"),
+    (r"\b(actorLists\[[^\]]+\])\.head\b", r"\1.first"),
+    (r"\bActor_MoveXYZ\(", "Actor_MoveWithoutGravity("),
+    (r"\bActor_SetPlayerKnockbackSmallNoDamage\(", "func_800B8E1C("),
+    (r"\bActor_SetPlayerKnockbackSmall\(", "func_800B8DD4("),
+    (r"\bfunc_800287AC\(", "func_800B12F0("),
+    (r"\bfunc_8002DEEC\(", "func_800B7200("),
+    (r"\bfunc_8002F5C4\(", "func_800B8C20("),
+    (r"\bfunc_80033C30\(", "func_800BC620("),
+    (r"\bfunc_800435D8\(", "DynaPolyActor_ValidateMove("),
     (r"\bObject_GetIndex\(", "Object_GetSlot("),
     (r"\bobjectCtx\.status\[", "objectCtx.slots["),
     # OoT's DynaPolyMoveFlag has MM's bits: 1 carries actors on top, 2 turns them.
@@ -172,7 +195,7 @@ RENAMES = [
     (r"\bBgCheck_EntityRaycastFloor4\(", "BgCheck_EntityRaycastFloor5("),
     (r"\bActor_MoveXZGravity\(", "Actor_MoveWithGravity("),
     (r"\bAudio_PlayActorSound2\(", "Actor_PlaySfx("),
-    (r"\bGfx_SetupDL_(\d+)(Opa|Xlu)\(", r"Gfx_SetupDL\1_\2("),
+    (r"\bGfx_SetupDL_(\d+)(Opa|Xlu)(\d?)\(", r"Gfx_SetupDL\1_\2\3("),
     # OoT's damage flash fog (z_eff_ss_dead.c) and floor-aligned matrix, under MM's names.
     (r"\bfunc_80026230\(", "func_800AE2A0("),
     (r"\bfunc_80026400\(", "func_800AE434("),
@@ -199,6 +222,7 @@ RENAMES = [
     (r"\bFlags_SetItemGetInf\((\w+)\)", r"SET_ITEMGETINF_OOT(\1_Oot)"),
     (r"\bFlags_GetEventInf\((\w+)\)", r"GET_EVENTINF_OOT(\1_Oot)"),
     (r"\bFlags_SetEventInf\((\w+)\)", r"SET_EVENTINF_OOT(\1_Oot)"),
+    (r"\b((?:EVENTCHKINF|INFTABLE|ITEMGETINF|EVENTINF)_[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\b(ACTOR_(?!FLAG_)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\b(OBJECT_(?!GAMEPLAY_KEEP\b)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\bOBJECT_GAMEPLAY_KEEP\b", "GAMEPLAY_KEEP"),
@@ -331,7 +355,9 @@ def strip_enhancement_ifs(text):
 def convert(text, header):
     out = []
     for line in text.splitlines():
-        if DROP_LINE.match(line):
+        if line.strip() == '#include "soh/frame_interpolation.h"':
+            line = '#include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"'
+        elif DROP_LINE.match(line):
             continue
         if TEXT_LINE.search(line) and not line.lstrip().startswith("//"):
             line = TEXT_ID.sub(r"TEXT_OOT(\1)", line)

@@ -205,6 +205,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 15 | Hyrule Field: `En_Wood02` (trees and bushes), `En_Peehat` (Peahats), `Obj_Hamishi` (adult rocks), `Bg_Spot00_Break` (broken fences) |
 | 16 | `En_Encount1` (enemy spawner), `En_Skb` (Stalchildren), `En_Reeba` (Leevers), `En_Tite` (Tektites) |
 | 17 | Kakariko to Death Mountain scenery: `En_River_Sound` (river, waterfall and other place sounds), `Obj_Kibako2` (big crates), `En_Hata` (flag), `Bg_Bombwall` (bombable walls), `Bg_Spot16_Doughnut` (Death Mountain's cloud ring), Kakariko's `Bg_Spot01_Fusya` (windmill), `Bg_Spot01_Idohashira`, `Bg_Spot01_Idomizu` and `Bg_Spot01_Idosoko` (the well's beam, water and stone), `Bg_Spot01_Objects2` (buildings under construction), `Bg_Gate_Shutter` (Death Mountain gate), `Bg_Spot03_Taki` (Zora's River waterfall), `Bg_Spot09_Obj` (Gerudo Valley's bridges and tent), `Bg_Umajump` (horse jumps), `Bg_Ingate` (Lon Lon Ranch gate), `Obj_Syokudai` (torches) |
+| 18 | Their creatures and contraptions: `En_Niw` (cuccos) and `En_Attack_Niw` (the angry swarm), `Obj_Mure` (groups of fish, bugs and butterflies) with `En_Fish`, `En_Insect` and `En_Butte`, `Obj_Makekinsuta` (soft soil), `En_Crow` (Guays), `En_Cow`, `En_Bombf` (bomb flowers), `Bg_Spot16_Bombstone` (Dodongo's Cavern boulder), `En_Encount2` and `En_Fire_Rock` (Death Mountain's falling rocks), `Bg_Spot06_Objects` (Lake Hylia's water and lock), `Bg_Spot15_Rrbox` (pushable crates) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -379,6 +380,19 @@ frame; Death Mountain's cloud ring turns on SoH's frames until it leaves the cam
   (`HyrulePort.h`): the bridges and well water follow OoT's age.
 - The well beam and the cloud ring's eruption follow OoT's cutscene cues (MM's `actorCues`), which only OoT's
   cutscenes give; those are not played yet.
+
+Wave 18 was checked the same way, adding adult runs at Lake Hylia and Death Mountain Trail: the same actors are in
+the same places as SoH's, except that the cuccos wander to random spots (RNG) and adult Lake Hylia's Guays
+take off at once, where SoH holds them through its first-visit cutscene, which is not played here. A cucco
+made angry (under gdb) brings up to six attack cuccos, which hit Link seven times in the next 770 frames. Notes:
+
+- `En_Butte`'s fairy is MM's `En_Elf` (`FAIRY_TYPE_2`, OoT's `FAIRY_HEAL_TIMED`); OoT's `En_Elf` is not ported.
+- `En_Cow` reads MM's `gHorsePlayedEponasSong`, OoT's `DREG(53)`; the Guays' Skull Mask is OoT's
+  (`Player_GetMaskOot`).
+- `Bg_Spot15_Rrbox`'s three crates at Lon Lon Ranch are in one of its cutscene layers, so they are built but not
+  seen in play yet.
+- `En_Weather_Tag` (OoT's clouds and rain) is left out: it drives OoT's weather in the environment code, which
+  MM changed; that is work of its own.
 
 ## Text
 
