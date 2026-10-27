@@ -247,3 +247,21 @@ void func_8002829C(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, C
                    Color_RGBA8* envColor, s16 scale, s16 scaleStep) {
     EffectSsDust_Spawn(play, 0, pos, velocity, accel, primColor, envColor, scale, scaleStep, 10, 0);
 }
+
+Actor* func_80033684(PlayState* play, Actor* explosiveActor) {
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_EXPLOSIVES].first;
+
+    while (actor != NULL) {
+        if ((actor == explosiveActor) || (actor->params != 1)) {
+            actor = actor->next;
+        } else {
+            if (Actor_WorldDistXYZToActor(explosiveActor, actor) <= (actor->shape.rot.z * 10) + 80.0f) {
+                return actor;
+            } else {
+                actor = actor->next;
+            }
+        }
+    }
+
+    return NULL;
+}

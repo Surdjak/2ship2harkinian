@@ -185,6 +185,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 9 | `En_Sw` (Skulltulas and Gold Skulltulas) |
 | 10 | `Obj_Tsubo` (pots); chests (`En_Box`) map to MM's own, see Actor and object ids |
 | 11 | Kokiri Forest's creatures: `En_Karebaba` (Withered Deku Babas), `En_Dekubaba` (Deku Babas), `En_Dekunuts` (Mad Scrubs) and their `En_Nutsball` nuts, `En_Okuta` (Octoroks) |
+| 12 | `En_St` (Big Skulltula), `Obj_Mure3` (rupee circle), `En_Gs` (Gossip Stones), `Obj_Bombiwa` (bombable boulders), `En_Tana` (shop shelves) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -300,6 +301,18 @@ Octorok's rock back and kills it. A Mad Scrub's nut hits the same edge of the gr
   OoT's rule (the Deku Shield, or the Hylian Shield in adult Link's hand) is kept.
 - MM has no ring of fire (`EffectSsFCircle`) for a Mad Scrub burnt by fire, so it is left out.
 - Navi's enemy information is not given; MM's Tatl hints do not cover OoT enemies yet.
+
+Wave 12 was checked with one hand-written puppet log driving both SoH and this fork through adult Kokiri
+Forest: the Big Skulltula, the rupee circle and its seven rupees (MM's `En_Item00`), and the Gossip Stone
+match SoH on every frame, apart from the circle removing its rupees by the camera's distance (ten frames
+apart, as with `Obj_Mure2`). The shop shelves match SoH's shop run.
+
+- Talking to a Gossip Stone shows OoT's text, and its own message with MM's or OoT's Mask of Truth.
+- OoT's ocarina is not ported, so Gossip Stones hear MM's, as MM's own stones do: Epona's Song and the Song of
+  Time bring a healing fairy and the Song of Storms a big one, MM's `En_Elf` with the same fairy types. OoT's
+  Saria's Song, Zelda's Lullaby and Sun's Song wait for OoT's songs.
+- Boulders break when one of MM's bombs explodes next to them (`func_80033684`, OoT's search for an
+  exploding bomb, works on MM's `En_Bom`) or under the Megaton Hammer.
 
 ## Text
 

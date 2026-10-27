@@ -71,3 +71,6 @@ void EffectSsEnIce_SpawnFlyingVec3f(PlayState* play, Actor* actor, Vec3f* pos, s
 // OoT's dust variant 0 with a 10-frame life (z_effect_soft_sprite_old_init.c).
 void func_8002829C(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor,
                    Color_RGBA8* envColor, s16 scale, s16 scaleStep);
+
+// An exploding bomb (MM's En_Bom with params 1, as OoT's) whose blast reaches the actor, or NULL.
+Actor* func_80033684(PlayState* play, Actor* explosiveActor);
