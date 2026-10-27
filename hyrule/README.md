@@ -147,8 +147,6 @@ Not yet:
 - **Slopes:** at Death Mountain Trail's spawn from Kakariko, once Link has control MM's Player slides down the
   path and back out into Kakariko, where OoT's stands; the two games' slope or floor-type handling differs there.
   OoT's first-visit scene cutscenes (the trail's 200-frame introduction) are not played.
-- **Hyrule Field's music:** OoT's field sequence (0x02) is a logic sequence steered by OoT's audio code, and MM's
-  sequence player jumps out of it; until that driver is ported, Hyrule Field plays its nature ambience.
 - **Scene effects:** OoT's scene draw configs (z_scene_table.c) run for OoT scenes through MM's
   `SCENE_DRAW_CFG_HYRULE_OOT` (`HyruleSceneDraw.c`), but only those of the scenes loaded so far (Kokiri Forest,
   the Lost Woods, the grottos, the fairy fountain, calm water); the others draw as MM's default.
@@ -401,6 +399,14 @@ Kokiri Forest plays its theme by day (`HYRULE_BOOT_TIME=1200` with the boot shor
 night ambience at night (`HYRULE_BOOT_TIME=2200`). Checked against SoH's Kokiri Forest at 22:00
 (`HARNESS_TIME=2200`): the ambience's spectrum matches SoH's (correlation 0.94 over 24 bands; against
 the daytime music, 0.3).
+
+Hyrule Field's music (OoT sequence 0x02) is a program that copies its segments (OoT sequences 0x03-0x17:
+intro, segments, enemy and idle) into two buffers of its own data with the seq player's "load sequence"
+instruction (0xB0), choosing them by the mode Player writes to IO port 2 (moving, still or enemy). MM still has
+OoT's code for that mode (`Audio_SetSequenceMode`). The seq player adds `SEQ_OOT_BASE` to the sequence ids of
+that instruction and of "start sequence" (0xC4) when the running sequence is OoT's, and `AudioLoad_SlowLoadSeq`
+now checks the sequence map instead of the table count the port never sets (as SoH does). Checked: standing
+still plays the idle segments and running the field segments; at night the field plays its ambience.
 
 ## Event flags
 

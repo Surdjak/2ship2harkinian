@@ -1848,6 +1848,14 @@ exit_loop:
     }
 }
 
+// 3Ship [Hyrule] Sequence ids in an OoT sequence's script are OoT's, which are loaded at SEQ_OOT_BASE.
+static s32 AudioScript_GetScriptSeqId(SequencePlayer* seqPlayer, u8 seqId) {
+    if (seqPlayer->seqId >= SEQ_OOT_BASE && seqPlayer->seqId < SEQ_OOT_BASE + 0x100) {
+        return SEQ_OOT(seqId);
+    }
+    return seqId;
+}
+
 void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
     u8 cmd;
     u8 cmdLowBits;
@@ -2119,7 +2127,7 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                         }
 
                         cmdLowBits = AudioScript_ScriptReadU8(seqScript);
-                        AudioLoad_SyncInitSeqPlayer(cmd, cmdLowBits, 0);
+                        AudioLoad_SyncInitSeqPlayer(cmd, AudioScript_GetScriptSeqId(seqPlayer, cmdLowBits), 0);
                         if (cmd == (u8)seqPlayer->playerIndex) {
                             return;
                         }
@@ -2182,7 +2190,8 @@ void AudioScript_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
                     cmd = AudioScript_ScriptReadU8(seqScript);
                     temp = AudioScript_ScriptReadS16(seqScript);
                     data2 = &seqPlayer->seqData[temp];
-                    AudioLoad_SlowLoadSeq(cmd, data2, &seqPlayer->seqScriptIO[cmdLowBits]);
+                    AudioLoad_SlowLoadSeq(AudioScript_GetScriptSeqId(seqPlayer, cmd), data2,
+                                          &seqPlayer->seqScriptIO[cmdLowBits]);
                     break;
 
                 case 0x60: // seqPlayer: async load

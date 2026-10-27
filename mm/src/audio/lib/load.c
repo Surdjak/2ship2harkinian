@@ -1567,7 +1567,9 @@ s32 AudioLoad_SlowLoadSeq(s32 seqId, u8* ramAddr, s8* isDone) {
     AudioTable* seqTable;
     size_t size;
 
-    if (seqId >= gAudioCtx.numSequences) {
+    // 3Ship [Hyrule] The port never sets numSequences or the sequence table, so check the map instead (as SoH does).
+    // OoT's Hyrule Field program loads its segments with this.
+    if (seqId < 0 || (size_t)seqId >= gSequenceMapSize || gSequenceMap[seqId] == NULL) {
         *isDone = 0;
         return -1;
     }
@@ -1603,7 +1605,7 @@ s32 AudioLoad_SlowLoadSeq(s32 seqId, u8* ramAddr, s8* isDone) {
     SequenceData sData = ResourceMgr_LoadSeqByName(gSequenceMap[seqId]);
     size = sData.seqDataSize;
     slowLoad->curDevAddr = sData.seqData;
-    slowLoad->medium = seqTable->entries[seqId].medium;
+    slowLoad->medium = sData.medium;
 
     slowLoad->curRamAddr = ramAddr;
     slowLoad->status = LOAD_STATUS_START;
@@ -1611,7 +1613,7 @@ s32 AudioLoad_SlowLoadSeq(s32 seqId, u8* ramAddr, s8* isDone) {
     slowLoad->ramAddr = ramAddr;
     slowLoad->seqOrFontId = seqId;
 
-    if (slowLoad->medium == MEDIUM_UNK) {
+    if (slowLoad->medium == MEDIUM_UNK && seqTable != NULL) {
         slowLoad->unkMediumParam = seqTable->unkMediumParam;
     }
 
