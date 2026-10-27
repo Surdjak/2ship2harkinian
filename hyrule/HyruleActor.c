@@ -163,3 +163,87 @@ s16 Item00_ArrowsOrSeeds(s16 dropId) {
 TexturePtr Item00_GetDekuSeedsTex(void) {
     return (TexturePtr)gDropDekuSeedsTex;
 }
+
+// OoT's drop flag for one hit element: also freezes the actor for magic ice and fire (with freezeFlag), and
+// tells OoT's other arrows and Din's apart. Masks go through DMG_FROM_OOT, so MM's own arrows count too.
+static s32 Actor_GetDropFlag_Oot(Actor* actor, ColliderElement* elem, s32 freezeFlag) {
+    ColliderElement* acHitElem = elem->acHitElem;
+    u64 dmgFlags;
+
+    if (acHitElem == NULL) {
+        return 0x00;
+    }
+    dmgFlags = acHitElem->atDmgInfo.dmgFlags;
+    if (freezeFlag && (dmgFlags & DMG_FROM_OOT(0x10060000))) {
+        actor->freezeTimer = acHitElem->atDmgInfo.damage;
+        return 0x00;
+    }
+    if (dmgFlags & DMG_FROM_OOT(0x0800)) {
+        return 0x01;
+    }
+    if (dmgFlags & DMG_FROM_OOT(0x1000)) {
+        return 0x02;
+    }
+    if (dmgFlags & DMG_FROM_OOT(0x4000)) {
+        return 0x04;
+    }
+    if (dmgFlags & DMG_FROM_OOT(0x8000)) {
+        return 0x08;
+    }
+    if (dmgFlags & DMG_FROM_OOT(0x10000)) {
+        return 0x10;
+    }
+    if (dmgFlags & DMG_FROM_OOT(0x2000)) {
+        return 0x20;
+    }
+    if (dmgFlags & DMG_FROM_OOT(0x80000)) {
+        if (freezeFlag) {
+            actor->freezeTimer = acHitElem->atDmgInfo.damage;
+        }
+        return 0x40;
+    }
+    return 0x00;
+}
+
+void Actor_SetDropFlag_Oot(Actor* actor, ColliderElement* elem, s32 freezeFlag) {
+    actor->dropFlag = Actor_GetDropFlag_Oot(actor, elem, freezeFlag);
+}
+
+void Actor_SetDropFlagJntSph_Oot(Actor* actor, ColliderJntSph* jntSph, s32 freezeFlag) {
+    s32 i;
+
+    actor->dropFlag = 0x00;
+    for (i = jntSph->count - 1; i >= 0; i--) {
+        actor->dropFlag |= Actor_GetDropFlag_Oot(actor, &jntSph->elements[i].base, freezeFlag);
+    }
+}
+
+void EffectSsDeadDb_Spawn_Oot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, s16 scaleStep,
+                              s16 primR, s16 primG, s16 primB, s16 primA, s16 envR, s16 envG, s16 envB, s16 unused,
+                              s32 life, s16 playSound) {
+    Color_RGBA8 prim = { primR, primG, primB, primA };
+    Color_RGBA8 env = { envR, envG, envB, 0 };
+
+    EffectSsDeadDb_Spawn(play, pos, velocity, accel, &prim, &env, scale, scaleStep, life);
+    if (playSound) {
+        // OoT's flame plays it on its second frame; MM's actors play it with the flame.
+        SoundSource_PlaySfxAtFixedWorldPos(play, pos, life, NA_SE_EN_EXTINCT);
+    }
+}
+
+// MM's, in z_effect_soft_sprite_old_init.c without a prototype in MM's headers.
+void EffectSsEnIce_SpawnFlying(PlayState* play, Actor* actor, Vec3f* pos, Color_RGBA8* prim, Color_RGBA8* env,
+                               f32 scale);
+
+void EffectSsEnIce_SpawnFlyingVec3f(PlayState* play, Actor* actor, Vec3f* pos, s16 primR, s16 primG, s16 primB,
+                                    s16 primA, s16 envR, s16 envG, s16 envB, f32 scale) {
+    Color_RGBA8 prim = { primR, primG, primB, primA };
+    Color_RGBA8 env = { envR, envG, envB, 0 };
+
+    EffectSsEnIce_SpawnFlying(play, actor, pos, &prim, &env, scale);
+}
+
+void func_8002829C(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor,
+                   Color_RGBA8* envColor, s16 scale, s16 scaleStep) {
+    EffectSsDust_Spawn(play, 0, pos, velocity, accel, primColor, envColor, scale, scaleStep, 10, 0);
+}

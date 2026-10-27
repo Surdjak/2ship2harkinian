@@ -6,7 +6,10 @@
 What it does (each a plain text rewrite):
 - ActorInit becomes an ActorProfile named <Name>_Oot_Profile, with _Oot actor and object ids; OoT's
   gameplay_keep becomes MM's GAMEPLAY_KEEP, which is always loaded.
-- Actor and object ids elsewhere get the _Oot suffix, and SoH asset includes point at assets/oot/.
+- Actor, object, item and get-item ids elsewhere get the _Oot suffix, and SoH asset includes point at
+  assets/oot/.
+- OoT sound effects MM has under another name at the same id take MM's name, damage tables become
+  DMG_TABLE_FROM_OOT, and Navi's enemy info (which MM's Tatl hints lack) is left out with a PORT: note.
 - Actor_UpdateBgCheckInfo flags with OoT's floor-and-water check (4) gain MM's water check (0x400).
 - Collider, init chain and actor field names change to MM's (COL_MATERIAL_, ATELEM_, cullingVolume*,
   terminalVelocity, speed, depthInWater, objectSlot, attentionRangeType, lockOnArrowOffset...).
@@ -76,9 +79,24 @@ RENAMES = [
     (r"\bactorCtx\.unk_02\b", "actorCtx.unk2"),
     (r"\bPLAYER_STATE1_CLIMBING_LADDER\b", "PLAYER_STATE1_200000"),
     (r"\b(elements\[[^]]+\])\.info\.", r"\1.base."),
-    (r"\bcollider\.info\.", "collider.elem."),
-    (r"\.toucher\.", ".atDmgInfo."),
-    (r"\.bumper\.", ".acDmgInfo."),
+    (r"\b(\w*[cC]ollider)\.info\b", r"\1.elem"),
+    (r"\.colType\b", ".colMaterial"),
+    (r"\b(actor|thisx)(\.|->)speedXZ\b", r"\1\2speed"),
+    (r"\byDistToPlayer\b", "playerHeightRel"),
+    # MM's Tatl hints do not cover OoT enemies: init chains keep their shape with no hint.
+    (r"\bICHAIN_S8\(naviEnemyId, (\w+), (ICHAIN_\w+)\),",
+     r"ICHAIN_U8(hintId, TATL_HINT_ID_NONE, \2), // PORT: OoT's Navi enemy info \1"),
+    (r"^([ \t]*)this->actor\.naviEnemyId = (\w+);(?: //)?", r"\1// PORT: OoT gives Navi enemy info \2;"),
+    (r"\bActor_SetDropFlag(JntSph)?\(", r"Actor_SetDropFlag\1_Oot("),
+    (r"\bEffectSsDeadDb_Spawn\(", "EffectSsDeadDb_Spawn_Oot("),
+    (r"\bPLAYER_SHIELD_(DEKU|HYLIAN|MIRROR)\b", r"PLAYER_SHIELD_\1_Oot"),
+    (r"\bITEM00_NUTS\b", "ITEM00_DEKU_NUTS_1"),
+    (r"\bITEM00_STICK\b", "ITEM00_DEKU_STICK"),
+    (r"\bITEM00_HEART\b", "ITEM00_RECOVERY_HEART"),
+    (r"\bITEM00_SEEDS\b", "ITEM00_DEKU_SEEDS_Oot"),
+    (r"\b(GI_(?!NONE\b|MAX\b)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
+    (r"(\.|->)toucher\.", r"\1atDmgInfo."),
+    (r"(\.|->)bumper\.", r"\1acDmgInfo."),
     (r"\.toucherFlags\b", ".atElemFlags"),
     (r"\.bumperFlags\b", ".acElemFlags"),
     (r"\bacHitInfo\b", "acHitElem"),
@@ -92,7 +110,9 @@ RENAMES = [
     (r"\bMatrix_RotateX\(([^;]*), MTXMODE_NEW\);", r"Matrix_RotateXFNew(\1);"),
     (r"\bMatrix_RotateY\(([^;]*), (MTXMODE_\w+)\);", r"Matrix_RotateYF(\1, \2);"),
     (r"\bMatrix_RotateZ\(([^;]*), (MTXMODE_\w+)\);", r"Matrix_RotateZF(\1, \2);"),
-    (r"\bgSPMatrix\((POLY_\w+_DISP\+\+), MATRIX_NEWMTX\(([^)]*)\),\s*G_MTX_NOPUSH \| G_MTX_LOAD \| G_MTX_MODELVIEW\);",
+    # In any order of the three flags.
+    (r"\bgSPMatrix\((POLY_\w+_DISP\+\+), MATRIX_NEWMTX\(([^)]*)\),\s*"
+     r"(?=[^;]*G_MTX_LOAD)(?=[^;]*G_MTX_MODELVIEW)(?:G_MTX_(?:NOPUSH|LOAD|MODELVIEW)(?: \| )?){2,3}\);",
      r"MATRIX_FINALIZE_AND_LOAD(\1, \2);"),
     (r"\bAudio_PlaySfxGeneral\((\w+), &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,\s*&gSfxDefaultFreqAndVolScale, "
      r"&gSfxDefaultReverb\);", r"Audio_PlaySfx(\1);"),
@@ -102,8 +122,12 @@ RENAMES = [
     (r"\bBgCheck_EntityRaycastFloor4\(", "BgCheck_EntityRaycastFloor5("),
     (r"\bActor_MoveXZGravity\(", "Actor_MoveWithGravity("),
     (r"\bAudio_PlayActorSound2\(", "Actor_PlaySfx("),
-    (r"\bGfx_SetupDL_25Opa\(", "Gfx_SetupDL25_Opa("),
-    (r"\bGfx_SetupDL_25Xlu\(", "Gfx_SetupDL25_Xlu("),
+    (r"\bGfx_SetupDL_(\d+)(Opa|Xlu)\(", r"Gfx_SetupDL\1_\2("),
+    # OoT's damage flash fog (z_eff_ss_dead.c) and floor-aligned matrix, under MM's names.
+    (r"\bfunc_80026230\(", "func_800AE2A0("),
+    (r"\bfunc_80026400\(", "func_800AE434("),
+    (r"\bfunc_80026608\(", "func_800AE5A0("),
+    (r"\bfunc_80038A28\(", "func_800C0094("),
     (r"\bAnimation_ChangeByInfo\(", "Actor_ChangeAnimationByInfo("),
     (r"\bACTOR_FLAG_GRASS_DESTROYED\b", "ACTOR_FLAG_800"),
     (r"\bplay->sceneNum\b", "play->sceneId"),
@@ -137,6 +161,21 @@ PROFILE = re.compile(
     r"const ActorInit (\w+)_InitVars = \{\s*(\w+),\s*(\w+),\s*(\w+),\s*(\w+),\s*sizeof\((\w+)\),\s*"
     r"(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),"
     r"\s*(?:\(ActorResetFunc\))?(\w+),?\s*\};")
+
+
+def sfx_renames(soh_root):
+    """OoT sound effects MM has under another name, by id (MM renamed many: OoT's NA_SE_EN_DEKU_JR_MOUTH is
+    MM's NA_SE_EN_MIZUBABA1_MOUTH). Names MM has are kept, as they are MM's sound of the same name."""
+    define = re.compile(r"#define (NA_SE_\w+) (0x[0-9A-Fa-f]+)")
+    mm = dict(define.findall(open(os.path.join(HERE, "..", "..", "mm", "include", "sfx.h")).read()))
+    by_id = {}
+    for name, value in mm.items():
+        by_id.setdefault(int(value, 16), name)
+    oot = define.findall(open(os.path.join(soh_root, "include", "sfx.h")).read())
+    return {name: by_id[int(value, 16)] for name, value in oot if name not in mm and int(value, 16) in by_id}
+
+
+SFX_RENAMES = {}
 
 
 def profile(m):
@@ -192,7 +231,11 @@ def convert(text, header):
     text = re.sub(r"\n[ \t]*// \"[^\n]*\"(?=\n[ \t]*osSyncPrintf)", "", text)
     text = re.sub(r"\n[ \t]*osSyncPrintf\((?:[^;]|\n)*?\);", "", text)
     for pattern, repl in RENAMES:
-        text = re.sub(pattern, repl, text)
+        text = re.sub(pattern, repl, text, flags=re.M)
+    text = re.sub(r"\bNA_SE_\w+\b", lambda m: SFX_RENAMES.get(m.group(0), m.group(0)), text)
+    # OoT damage tables (32 entries) become MM's 64 with DMG_TABLE_FROM_OOT.
+    text = re.sub(r"(DamageTable \w+ = )\{\n((?:[ \t]*(?:/\*[^*]*\*/ )?DMG_ENTRY\([^)]*\),\n){32})\};",
+                  lambda m: m.group(1) + "DMG_TABLE_FROM_OOT(\n" + m.group(2).rstrip(",\n") + "\n);", text)
     text = strip_game_interactor(text)
     # OoT's background check flag 4 covers floor and water; MM checks water only with 0x400.
     text = re.sub(r"(Actor_UpdateBgCheckInfo\((?:[^;()]|\([^()]*\))*, )(0x[0-9A-Fa-f]+|\d+)\)",
@@ -209,6 +252,7 @@ def convert(text, header):
         extra = '#include "HyruleFlags.h"\n#include "HyrulePort.h"\n#include "HyruleActor.h"\n'
         extra += '#include "z64quake.h"\n' if "Quake_" in text else ""
         extra += '#include "z64rumble.h"\n' if "Rumble_" in text else ""
+        extra += '#include "HyrulePlayer.h"\n' if re.search(r"\bPLAYER_SHIELD_\w+_Oot\b", text) else ""
         # SoH's soh/ResourceManagerHelpers.h, dropped above; without it C assumes int and truncates pointers.
         extra += '#include "2s2h/BenPort.h"\n' if "ResourceMgr_" in text else ""
         text = re.sub(r'(#include "[^"]+"\n)', lambda m: m.group(1) + extra, text, count=1)
@@ -223,11 +267,12 @@ def main():
     parser.add_argument("soh_actor_dir", help="SoH's soh/src/overlays/actors/ovl_<Name> directory")
     args = parser.parse_args()
     src = os.path.normpath(args.soh_actor_dir)
+    SFX_RENAMES.update(sfx_renames(os.path.join(src, "..", "..", "..", "..")))
     out = os.path.join(OUT_ROOT, os.path.basename(src))
     os.makedirs(out, exist_ok=True)
     review = re.compile(r"GameInteractor|CVar|IS_RANDO|Randomizer|gSaveContext\.ship|Sfx_Play|Audio_Play|"
                         r"Player_SetCsAction|func_8002DF54|dmgFlags|"
-                        r"Item_Drop|ITEM00_|MATRIX_NEWMTX|#include \"overlays/")
+                        r"Item_Drop|ITEM00_|MATRIX_NEWMTX|#include \"overlays/|\.table\[")
     for name in sorted(os.listdir(src)):
         if not name.endswith((".c", ".h")):
             continue

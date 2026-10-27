@@ -135,7 +135,7 @@ Forest keeps its overrun layer day and night until the Forest Temple is cleared,
 shows Zelda's escape layer once he has the three spiritual stones. Every ported scene (Kokiri Forest, its houses
 and shop, the Lost Woods) loads its adult layers by day and night; their ported actors behave by age as in OoT
 (the Kokiri hide in their houses until adult Link has the Forest Medallion). Adult Kokiri Forest's Octoroks,
-Deku Babas, Mad Scrubs and Gossip Stone are not ported yet.
+Deku Babas and Mad Scrubs came with actor wave 11 (hyrule/README.md); its Gossip Stone is not ported yet.
 
 ## Decisions
 

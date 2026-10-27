@@ -130,6 +130,18 @@ void RegisterHarness() {
         });
     }
 
+    // HARNESS_ADULT=1 makes the loaded save's Link an adult, his equipment swapped as the Temple of Time does, to
+    // look at a scene's adult layer. The run then differs from its recording.
+    const char* adultValue = std::getenv("HARNESS_ADULT");
+    if (adultValue != nullptr && std::atoi(adultValue) != 0) {
+        GameInteractor::Instance->RegisterGameHook<GameInteractor::OnLoadGame>([](int32_t fileNum) {
+            if (LINK_IS_CHILD) {
+                Inventory_SwapAgeEquipment();
+                gSaveContext.linkAge = LINK_AGE_ADULT;
+            }
+        });
+    }
+
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnGameFrameUpdate>([]() {
         HarnessFrameState state;
         CaptureState(state);

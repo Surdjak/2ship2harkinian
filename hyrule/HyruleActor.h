@@ -53,3 +53,21 @@ void func_80034BA0(PlayState* play, SkelAnime* skelAnime, OverrideLimbDraw overr
                    PostLimbDraw postLimbDraw, Actor* actor, s16 alpha);
 void func_80034CC4(PlayState* play, SkelAnime* skelAnime, OverrideLimbDraw overrideLimbDraw,
                    PostLimbDraw postLimbDraw, Actor* actor, s16 alpha);
+
+// OoT's Actor_SetDropFlag and Actor_SetDropFlagJntSph: OoT's drop flags, and with freezeFlag, magic ice and fire
+// freeze the actor (its freezeTimer).
+void Actor_SetDropFlag_Oot(Actor* actor, ColliderElement* elem, s32 freezeFlag);
+void Actor_SetDropFlagJntSph_Oot(Actor* actor, ColliderJntSph* jntSph, s32 freezeFlag);
+
+// OoT's EffectSsDeadDb_Spawn (an enemy's death flame), with OoT's colour components and optional sound.
+void EffectSsDeadDb_Spawn_Oot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, s16 scaleStep,
+                              s16 primR, s16 primG, s16 primB, s16 primA, s16 envR, s16 envG, s16 envB, s16 unused,
+                              s32 life, s16 playSound);
+
+// OoT's flying ice shards on a frozen actor (MM's En_Ice effect, flying type).
+void EffectSsEnIce_SpawnFlyingVec3f(PlayState* play, Actor* actor, Vec3f* pos, s16 primR, s16 primG, s16 primB,
+                                    s16 primA, s16 envR, s16 envG, s16 envB, f32 scale);
+
+// OoT's dust variant 0 with a 10-frame life (z_effect_soft_sprite_old_init.c).
+void func_8002829C(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor,
+                   Color_RGBA8* envColor, s16 scale, s16 scaleStep);

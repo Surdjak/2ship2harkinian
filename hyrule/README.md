@@ -184,6 +184,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 8 | `En_Goroiwa` (rolling boulder) |
 | 9 | `En_Sw` (Skulltulas and Gold Skulltulas) |
 | 10 | `Obj_Tsubo` (pots); chests (`En_Box`) map to MM's own, see Actor and object ids |
+| 11 | Kokiri Forest's creatures: `En_Karebaba` (Withered Deku Babas), `En_Dekubaba` (Deku Babas), `En_Dekunuts` (Mad Scrubs) and their `En_Nutsball` nuts, `En_Okuta` (Octoroks) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -280,6 +281,25 @@ Wave 10's pots, and the Kokiri, collectibles, message spots and item spots in th
 match SoH booted at each entrance (`HARNESS_ENTRANCE`) on every frame of the run, about 340 each. Held
 next to a pot in the Know-It-All Brothers' house, human Link lifts it, throws it, and it breaks and drops
 its green rupee. Pots use `object_tsubo`, or `gameplay_dangeon_keep` in dungeons.
+
+Wave 11's creatures were checked against SoH booted at the same entrance with adult Link
+(`HARNESS_ADULT`), its Link puppeting this fork's. The Octoroks surface, fire and sink, the Mad Scrubs
+pop up and fire, and the Deku Babas wait and lunge on the same frames and at the same positions as in
+SoH, until the two cameras differ: MM, like OoT, only updates an actor inside the camera's culling
+volume, and MM's camera frames a knocked-back Link differently, so an Octorok or a Deku Baba pauses on
+frames where SoH's runs, or the reverse. Held next to them, child Link cuts a Withered Deku Baba's head
+off and adult Link kills a Deku Baba (it drops a Deku Nut); with his shield up, adult Link sends an
+Octorok's rock back and kills it. A Mad Scrub's nut hits the same edge of the ground as in SoH.
+
+- Their damage tables and AC masks are OoT's, through `DMG_TABLE_FROM_OOT` and `DMG_FROM_OOT`. The Deku
+  Baba sets its Master jump slash entry by Link's age on each spawn: OoT changed the shared table once
+  per overlay load, and 2Ship never reloads it.
+- OoT's drop flags (`Actor_SetDropFlag_Oot`) also freeze them for magic ice and fire; their random drops
+  come from MM's tables (see the grass above).
+- MM's Hero's Shield, which takes the Deku Shield's place, sends rocks and nuts back as it does in MM;
+  OoT's rule (the Deku Shield, or the Hylian Shield in adult Link's hand) is kept.
+- MM has no ring of fire (`EffectSsFCircle`) for a Mad Scrub burnt by fire, so it is left out.
+- Navi's enemy information is not given; MM's Tatl hints do not cover OoT enemies yet.
 
 ## Text
 
