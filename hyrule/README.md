@@ -64,6 +64,7 @@ entrance indices to MM entrances (`HyruleOotEntrances.inc`). To add a scene, app
 | Mido's House | `SCENE_MIDOS_HOUSE_Oot` (0x76) | `0xE600` |
 | Saria's House | `SCENE_SARIAS_HOUSE_Oot` (0x77) | `0xE800` |
 | Lost Woods | `SCENE_LOST_WOODS_Oot` (0x78) | `0xEA00` |
+| Sacred Forest Meadow | `SCENE_SACRED_FOREST_MEADOW_Oot` (0x79) | `0xEC00` |
 
 To go there:
 

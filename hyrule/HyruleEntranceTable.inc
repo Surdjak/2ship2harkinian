@@ -280,6 +280,43 @@ static EntranceTableEntry* sLostWoodsOotEntranceTable[] = {
     sLostWoodsOotEntrance9,
 };
 
+static EntranceTableEntry sSacredForestMeadowOotEntrance0[] = {
+    /* 0x0FC */ { SCENE_SACRED_FOREST_MEADOW_Oot, 0, 0xC102 },
+    /* 0x0FD */ { SCENE_SACRED_FOREST_MEADOW_Oot, 0, 0xC102 },
+    /* 0x0FE */ { SCENE_SACRED_FOREST_MEADOW_Oot, 0, 0xC102 },
+    /* 0x0FF */ { SCENE_SACRED_FOREST_MEADOW_Oot, 0, 0xC102 },
+    /* 0x100 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 0, 0x4183 },
+    /* 0x101 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 0, 0x4000 },
+};
+
+static EntranceTableEntry sSacredForestMeadowOotEntrance1[] = {
+    /* 0x215 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 1, 0x4912 },
+    /* 0x216 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 1, 0x4102 },
+    /* 0x217 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 1, 0x4912 },
+    /* 0x218 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry sSacredForestMeadowOotEntrance2[] = {
+    /* 0x600 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 2, 0x4912 },
+    /* 0x601 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 2, 0x4102 },
+    /* 0x602 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 2, 0x4912 },
+    /* 0x603 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 2, 0x4102 },
+};
+
+static EntranceTableEntry sSacredForestMeadowOotEntrance3[] = {
+    /* 0x608 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 3, 0x4183 },
+    /* 0x609 */ { SCENE_SACRED_FOREST_MEADOW_Oot, 3, 0x4183 },
+    /* 0x60A */ { SCENE_SACRED_FOREST_MEADOW_Oot, 3, 0x4183 },
+    /* 0x60B */ { SCENE_SACRED_FOREST_MEADOW_Oot, 3, 0x4183 },
+};
+
+static EntranceTableEntry* sSacredForestMeadowOotEntranceTable[] = {
+    sSacredForestMeadowOotEntrance0,
+    sSacredForestMeadowOotEntrance1,
+    sSacredForestMeadowOotEntrance2,
+    sSacredForestMeadowOotEntrance3,
+};
+
 // The entrance scenes from ENTR_SCENE_KOKIRI_FOREST_Oot on, in order.
 #define HYRULE_SCENE_ENTRANCES \
     /* 0x6E */ SCENE_ENTRANCE(sKokiriForestOotEntranceTable, "SCENE_KOKIRI_FOREST"), \
@@ -289,4 +326,5 @@ static EntranceTableEntry* sLostWoodsOotEntranceTable[] = {
     /* 0x72 */ SCENE_ENTRANCE(sTwinsHouseOotEntranceTable, "SCENE_TWINS_HOUSE"), \
     /* 0x73 */ SCENE_ENTRANCE(sMidosHouseOotEntranceTable, "SCENE_MIDOS_HOUSE"), \
     /* 0x74 */ SCENE_ENTRANCE(sSariasHouseOotEntranceTable, "SCENE_SARIAS_HOUSE"), \
-    /* 0x75 */ SCENE_ENTRANCE(sLostWoodsOotEntranceTable, "SCENE_LOST_WOODS"),
+    /* 0x75 */ SCENE_ENTRANCE(sLostWoodsOotEntranceTable, "SCENE_LOST_WOODS"), \
+    /* 0x76 */ SCENE_ENTRANCE(sSacredForestMeadowOotEntranceTable, "SCENE_SACRED_FOREST_MEADOW"),

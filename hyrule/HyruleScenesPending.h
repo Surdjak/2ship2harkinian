@@ -86,7 +86,6 @@
 #define SCENE_KAKARIKO_VILLAGE_Oot (-2 - 0x52)
 #define SCENE_GRAVEYARD_Oot (-2 - 0x53)
 #define SCENE_ZORAS_RIVER_Oot (-2 - 0x54)
-#define SCENE_SACRED_FOREST_MEADOW_Oot (-2 - 0x56)
 #define SCENE_LAKE_HYLIA_Oot (-2 - 0x57)
 #define SCENE_ZORAS_DOMAIN_Oot (-2 - 0x58)
 #define SCENE_ZORAS_FOUNTAIN_Oot (-2 - 0x59)
