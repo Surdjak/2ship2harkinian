@@ -386,5 +386,118 @@ void EffectSsEnIce_SpawnFlyingVec3s(PlayState* play, Actor* actor, Vec3s* pos, s
 
 void EffectSsDeadSound_SpawnStationary(PlayState* play, Vec3f* pos, u16 sfxId, s16 lowerPriority, s16 repeatMode,
                                        s32 life) {
-    SoundSource_PlaySfxAtFixedWorldPos(play, pos, life, sfxId);
+    // OoT's callers pass the actor's projected position, which the effect keeps after the actor is gone; the sound
+    // system holds on to the pointer, so it plays from a copy.
+    static Vec3f sPositions[8];
+    static s32 sNext = 0;
+    Vec3f* copy = &sPositions[sNext];
+
+    sNext = (sNext + 1) % ARRAY_COUNT(sPositions);
+    Math_Vec3f_Copy(copy, pos);
+    Audio_PlaySfx_AtPos(copy, sfxId);
+}
+
+void BodyBreak_Alloc(BodyBreak* bodyBreak, s32 count, PlayState* play) {
+    u32 matricesSize;
+    u32 dListsSize;
+    u32 objectIdsSize;
+
+    matricesSize = (count + 1) * sizeof(*bodyBreak->matrices);
+    bodyBreak->matrices = ZeldaArena_Malloc(matricesSize);
+
+    if (bodyBreak->matrices != NULL) {
+        dListsSize = (count + 1) * sizeof(*bodyBreak->dLists);
+        bodyBreak->dLists = ZeldaArena_Malloc(dListsSize);
+
+        if (bodyBreak->dLists != NULL) {
+            objectIdsSize = (count + 1) * sizeof(*bodyBreak->objectIds);
+            bodyBreak->objectIds = ZeldaArena_Malloc(objectIdsSize);
+
+            if (bodyBreak->objectIds != NULL) {
+                memset((u8*)bodyBreak->matrices, 0, matricesSize);
+                memset((u8*)bodyBreak->dLists, 0, dListsSize);
+                memset((u8*)bodyBreak->objectIds, 0, objectIdsSize);
+                bodyBreak->val = 1;
+                return;
+            }
+        }
+    }
+
+    if (bodyBreak->matrices != NULL) {
+        ZeldaArena_Free(bodyBreak->matrices);
+    }
+    if (bodyBreak->dLists != NULL) {
+        ZeldaArena_Free(bodyBreak->dLists);
+    }
+    if (bodyBreak->objectIds != NULL) {
+        ZeldaArena_Free(bodyBreak->objectIds);
+    }
+}
+
+void BodyBreak_SetInfo(BodyBreak* bodyBreak, s32 limbIndex, s32 minLimbIndex, s32 maxLimbIndex, u32 count, Gfx** dList,
+                       s16 objectId) {
+    PlayState* play = Effect_GetPlayState();
+
+    if ((play->actorCtx.freezeFlashTimer == 0) && (bodyBreak->val > 0)) {
+        if ((limbIndex >= minLimbIndex) && (limbIndex <= maxLimbIndex) && (*dList != NULL)) {
+            bodyBreak->dLists[bodyBreak->val] = *dList;
+            Matrix_Get(&bodyBreak->matrices[bodyBreak->val]);
+            bodyBreak->objectIds[bodyBreak->val] = objectId;
+            bodyBreak->val++;
+        }
+
+        if (limbIndex != bodyBreak->prevLimbIndex) {
+            bodyBreak->count++;
+        }
+
+        if ((u32)bodyBreak->count >= count) {
+            bodyBreak->count = bodyBreak->val - 1;
+            bodyBreak->val = BODYBREAK_STATUS_READY;
+        }
+    }
+
+    bodyBreak->prevLimbIndex = limbIndex;
+}
+
+s32 BodyBreak_SpawnParts(Actor* actor, BodyBreak* bodyBreak, PlayState* play, s16 type) {
+    EnPart* spawnedEnPart;
+    MtxF* mtx;
+    s16 objectSlot;
+
+    if (bodyBreak->val != BODYBREAK_STATUS_READY) {
+        return false;
+    }
+
+    while (bodyBreak->count > 0) {
+        Matrix_Put(&bodyBreak->matrices[bodyBreak->count]);
+        Matrix_Scale(1.0f / actor->scale.x, 1.0f / actor->scale.y, 1.0f / actor->scale.z, MTXMODE_APPLY);
+        Matrix_Get(&bodyBreak->matrices[bodyBreak->count]);
+
+        if (bodyBreak->objectIds[bodyBreak->count] >= 0) {
+            objectSlot = bodyBreak->objectIds[bodyBreak->count];
+        } else {
+            objectSlot = actor->objectSlot;
+        }
+
+        mtx = &bodyBreak->matrices[bodyBreak->count];
+
+        spawnedEnPart = (EnPart*)Actor_SpawnAsChild(&play->actorCtx, actor, play, ACTOR_EN_PART_Oot, mtx->xw, mtx->yw,
+                                                    mtx->zw, 0, 0, objectSlot, type);
+
+        if (spawnedEnPart != NULL) {
+            Matrix_MtxFToYXZRot(&bodyBreak->matrices[bodyBreak->count], &spawnedEnPart->actor.shape.rot, false);
+            spawnedEnPart->displayList = bodyBreak->dLists[bodyBreak->count];
+            spawnedEnPart->actor.scale = actor->scale;
+        }
+
+        bodyBreak->count--;
+    }
+
+    bodyBreak->val = BODYBREAK_STATUS_FINISHED;
+
+    ZeldaArena_Free(bodyBreak->matrices);
+    ZeldaArena_Free(bodyBreak->dLists);
+    ZeldaArena_Free(bodyBreak->objectIds);
+
+    return true;
 }

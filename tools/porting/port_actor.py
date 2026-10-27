@@ -21,7 +21,8 @@ What it does (each a plain text rewrite):
   else that needs a decision, are listed at the end for review.
 - Functions become static.
 
-Data files that the actor #includes (such as z_en_kanban_gfx.c) need renaming by hand, since every .c
+Includes of OoT actors that are ported (or named in PORTING=ovl_A,ovl_B) use a relative path, since MM may have an
+actor of the same name. Data files that the actor #includes (such as z_en_kanban_gfx.c) need renaming by hand, since every .c
 file under hyrule/ is compiled.
 
 The result needs a build and a review: semantic differences (Player cutscene actions, sound effects,
@@ -84,7 +85,7 @@ RENAMES = [
     (r"\bIS_NIGHT\b", "IS_NIGHT_OOT"),
     (r"\bactorCtx\.unk_02\b", "actorCtx.unk2"),
     (r"\bPLAYER_STATE1_CLIMBING_LADDER\b", "PLAYER_STATE1_200000"),
-    (r"\b(elements\[[^]]+\])\.info\.", r"\1.base."),
+    (r"\b(elements\[[^]]+\])\.info\b", r"\1.base"),
     (r"\b(\w*[cC]ollider|col\w*|cyl|hitbox)(\[[^]]*\])?(\.|->)info\b", r"\1\2\3elem"),
     (r"\bColliderInfo\b", "ColliderElement"),
     (r"\bBUMP_(\w+)", r"ACELEM_\1"),
@@ -98,6 +99,7 @@ RENAMES = [
     (r"\bICHAIN_S8\(naviEnemyId, (\w+), (ICHAIN_\w+)\),",
      r"ICHAIN_U8(hintId, TATL_HINT_ID_NONE, \2), // PORT: OoT's Navi enemy info \1"),
     (r"^([ \t]*)(?:this->actor\.|thisx->)naviEnemyId = (\w+);(?: //)?", r"\1// PORT: OoT gives Navi enemy info \2;"),
+    (r"^([ \t]*)(?:this->actor\.|thisx->)naviEnemyId \+= (\w+);", r"\1// PORT: OoT gives Navi the enemy info \2 further on."),
     (r"\bActor_SetDropFlag(JntSph)?\(", r"Actor_SetDropFlag\1_Oot("),
     (r"\bEffectSsDeadDb_Spawn\(", "EffectSsDeadDb_Spawn_Oot("),
     (r"\bPLAYER_SHIELD_(DEKU|HYLIAN|MIRROR)\b", r"PLAYER_SHIELD_\1_Oot"),
@@ -117,6 +119,9 @@ RENAMES = [
     (r"\bPlayer_PlaySfx\(&GET_PLAYER\(play\)->actor, ", "Player_PlaySfx(GET_PLAYER(play), "),
     (r"\bPLAYER_STATE1_IN_ITEM_CS\b", "PLAYER_STATE1_10000000"),
     (r"\bPLAYER_STATE1_DAMAGED\b", "PLAYER_STATE1_4000000"),
+    (r"\bPLAYER_STATE1_IN_WATER\b", "PLAYER_STATE1_8000000"),
+    (r"\bPLAYER_STATE1_ON_HORSE\b", "PLAYER_STATE1_800000"),
+    (r"\bPLAYER_STATE1_FLOOR_DISABLED\b", "PLAYER_STATE1_80000000"),
     (r"\bPLAYER_STATE2_GRABBED_BY_ENEMY\b", "PLAYER_STATE2_80"),
     (r"\bACTORCAT_EXPLOSIVE\b", "ACTORCAT_EXPLOSIVES"),
     (r"\bPLAYER_STATE1_IN_CUTSCENE\b", "PLAYER_STATE1_20000000"),
@@ -176,7 +181,8 @@ RENAMES = [
     (r"\b(ITEM_(?!NONE\b)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
 ]
 # Lines that are SoH-only and dropped when they stand alone.
-DROP_LINE = re.compile(r"^\s*#include \"(vt\.h|soh/[^\"]+)\"\s*$|^\s*#include <libultraship/bridge/[^>]+>\s*$")
+DROP_LINE = re.compile(r"^\s*#include \"(vt\.h|soh/[^\"]+|overlays/effects/ovl_Effect_Ss_Dead_Sound/[^\"]+)\"\s*$|"
+                       r"^\s*#include <libultraship/bridge/[^>]+>\s*$")
 TEXT_ID = re.compile(r"\b(0x[1-7][0-9A-Fa-f]{3})\b")
 TEXT_LINE = re.compile(r"\breturn\b|\bcase\b|textId\b")
 PROFILE = re.compile(
@@ -198,6 +204,14 @@ def sfx_renames(soh_root):
 
 
 SFX_RENAMES = {}
+
+
+def PORTED_ACTOR(ovl):
+    """Whether an OoT actor is ported (or being ported) under hyrule/overlays/actors."""
+    return os.path.isdir(os.path.join(OUT_ROOT, ovl)) or ovl in PORTING
+
+
+PORTING = set()
 
 
 def profile(m):
@@ -265,7 +279,7 @@ def _dedent(block, indent):
 def strip_enhancement_ifs(text):
     """SoH enhancements are off by default: an if whose condition is one (or its negation) keeps the branch
     vanilla takes, and a `&& !enhancement` clause goes. The comments right above such an if go with it."""
-    text = re.sub(r" && !" + CVAR_OFF, "", text)
+    text = re.sub(r"\s*&&\s*!" + CVAR_OFF, "", text)
     head = re.compile(r"\n((?:[ \t]*//[^\n]*\n)*)([ \t]*)if \((!?)" + CVAR_OFF + r"\) \{")
     while True:
         m = head.search(text)
@@ -301,6 +315,10 @@ def convert(text, header):
     text = re.sub(r'#include "objects/(\w+)/(\w+)\.h"', r'#include "assets/oot/objects/\1/\2.h"', text)
     text = re.sub(r'#include <objects/(\w+)/(\w+)\.h>', r'#include "assets/oot/objects/\1/\2.h"', text)
     text = re.sub(r'#include "overlays/(ovl_\w+)/(\w+)\.h"', r'#include "assets/oot/overlays/\1/\2.h"', text)
+    # Another ported OoT actor's header: by relative path, since MM may have an actor of the same name.
+    text = re.sub(r'#include "overlays/actors/(ovl_\w+)/(\w+\.h)"',
+                  lambda m: f'#include "../{m.group(1)}/{m.group(2)}"'
+                  if PORTED_ACTOR(m.group(1)) else m.group(0), text)
     # One-line debug prints.
     text = re.sub(r"\n[ \t]*// \"[^\n]*\"(?=\n[ \t]*osSyncPrintf)", "", text)
     text = re.sub(r"\n[ \t]*osSyncPrintf\((?:[^;]|\n)*?\);", "", text)
@@ -334,6 +352,8 @@ def convert(text, header):
     else:
         text = text.replace("#include <libultraship/libultra.h>\n", "")
         text = re.sub(r"#ifndef (\w+)_H\n#define \1_H", r"#ifndef \1_OOT_H\n#define \1_OOT_H", text, count=1)
+        if "BodyBreak" in text:  # OoT's, in HyruleActor.h
+            text = text.replace('#include "global.h"\n', '#include "global.h"\n#include "HyruleActor.h"\n', 1)
     return text
 
 
@@ -343,6 +363,7 @@ def main():
     args = parser.parse_args()
     src = os.path.normpath(args.soh_actor_dir)
     SFX_RENAMES.update(sfx_renames(os.path.join(src, "..", "..", "..", "..")))
+    PORTING.update(a.strip() for a in os.environ.get("PORTING", "").split(",") if a.strip())
     out = os.path.join(OUT_ROOT, os.path.basename(src))
     os.makedirs(out, exist_ok=True)
     review = re.compile(r"GameInteractor|CVar|IS_RANDO|Randomizer|gSaveContext\.ship|Sfx_Play|Audio_Play|"

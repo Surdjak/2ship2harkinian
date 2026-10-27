@@ -8,6 +8,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleActor.h"
+#include "../ovl_En_Encount1/z_en_encount1.h"
 #include "assets/oot/objects/object_wf/object_wf.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
@@ -265,7 +266,15 @@ static void EnWf_Destroy(Actor* thisx, PlayState* play) {
         Audio_RestorePrevBgm();
     }
 
-    // PORT: OoT's En_Encount1, which spawns Wolfos in Hyrule Field and counts them down here, is not ported.
+    if (this->actor.parent != NULL) {
+        EnEncount1* parent = (EnEncount1*)this->actor.parent;
+
+        if (parent->actor.update != NULL) {
+            if (parent->curNumSpawn > 0) {
+                parent->curNumSpawn--;
+            }
+        }
+    }
 }
 
 static s32 EnWf_ChangeAction(PlayState* play, EnWf* this, s16 mustChoose) {

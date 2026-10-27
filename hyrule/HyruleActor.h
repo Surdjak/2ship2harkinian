@@ -4,6 +4,20 @@
 
 #include "global.h"
 
+// OoT's BodyBreak (z64actor.h): an enemy's limbs, recorded as it draws, burst into OoT's En_Part pieces when it dies.
+typedef struct BodyBreak {
+    /* 0x00 */ MtxF* matrices;
+    /* 0x04 */ s16* objectIds;
+    /* 0x08 */ s16 count;
+    /* 0x0C */ Gfx** dLists;
+    /* 0x10 */ s32 val; // used for various purposes: both a status indicator and counter
+    /* 0x14 */ s32 prevLimbIndex;
+} BodyBreak;
+
+#define BODYBREAK_OBJECT_DEFAULT -1 // use the same object as the actor
+#define BODYBREAK_STATUS_READY -1
+#define BODYBREAK_STATUS_FINISHED 0
+
 // Fades alpha in or out by Player's distance (the camera's in cutscenes) and enables attention to match.
 s16 Actor_UpdateAlphaByDistance(Actor* actor, PlayState* play, s16 alpha, f32 radius);
 
@@ -93,6 +107,15 @@ Actor* Actor_GetProjectileActor(PlayState* play, Actor* refActor, f32 radius);
 void EffectSsEnIce_SpawnFlyingVec3s(PlayState* play, Actor* actor, Vec3s* pos, s16 primR, s16 primG, s16 primB,
                                     s16 primA, s16 envR, s16 envG, s16 envB, f32 scale);
 
-// OoT's EffectSsDeadSound (a sound held at a spot): MM has no such effect, so the sound plays from the spot.
+// OoT's EffectSsDeadSound (a sound held at a projected position): MM has no such effect, so the sound plays once
+// from a copy of that position.
+#define DEADSOUND_REPEAT_MODE_OFF 0
+#define DEADSOUND_REPEAT_MODE_ON 1
 void EffectSsDeadSound_SpawnStationary(PlayState* play, Vec3f* pos, u16 sfxId, s16 lowerPriority, s16 repeatMode,
                                        s32 life);
+
+// OoT's BodyBreak functions (z_actor.c).
+void BodyBreak_Alloc(BodyBreak* bodyBreak, s32 count, PlayState* play);
+void BodyBreak_SetInfo(BodyBreak* bodyBreak, s32 limbIndex, s32 minLimbIndex, s32 maxLimbIndex, u32 count, Gfx** dList,
+                       s16 objectId);
+s32 BodyBreak_SpawnParts(Actor* actor, BodyBreak* bodyBreak, PlayState* play, s16 type);

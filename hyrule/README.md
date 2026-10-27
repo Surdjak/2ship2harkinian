@@ -197,6 +197,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 13 | Sacred Forest Meadow: `En_Wf` (Wolfos), `En_Mb` (Moblins), `Bg_Spot05_Soko` (maze walls and gate), `Bg_Mjin` (warp pads); `En_Part` (OoT's flying enemy parts and flames) |
 | 14 | Grottos: `Door_Ana` (grotto holes), `En_Torch` (the grotto chest) |
 | 15 | Hyrule Field: `En_Wood02` (trees and bushes), `En_Peehat` (Peahats), `Obj_Hamishi` (adult rocks), `Bg_Spot00_Break` (broken fences) |
+| 16 | `En_Encount1` (enemy spawner), `En_Skb` (Stalchildren), `En_Reeba` (Leevers), `En_Tite` (Tektites) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -332,8 +333,7 @@ child Link's front slashes bounce off the Wolfos' guard as in OoT.
 
 - OoT's `En_Part` is ported for the parts and flames enemies leave (`func_800358DC`, the Moblin's club flames); MM's
   own `En_Part` is a different actor.
-- The Wolfos' spawner in Hyrule Field (`En_Encount1`) is not ported, so it does not count them down; the
-  miniboss music for the gate's Wolfos uses MM's `Audio_PlayBgm_StorePrevBgm`.
+- The miniboss music for the gate's Wolfos uses MM's `Audio_PlayBgm_StorePrevBgm`.
 - OoT's camera glance at the opening gate (`OnePointCutscene_Attention`) is left out.
 
 Wave 14 opens OoT's grottos. MM's grottos are OoT's design: a hole stores where Link fell in, and what the grotto
@@ -350,6 +350,11 @@ positions on every frame, and with both Links puppeted to a Peahat, it rises and
 SoH's for 900 frames. A Peahat larva bursts as MM's bomb (`En_Bom`, whose rotation and timer match OoT's), and
 OoT's held death sound (`EffectSsDeadSound`) plays from its spot. The castle drawbridge (`Bg_Spot00_Hanebasi`)
 waits for OoT's day and night: it closes on OoT's clock and puts Link out of the market at nightfall.
+
+Wave 16's spawner raises Hyrule Field's Stalchildren at night as in SoH: with both Links puppeted along the same
+path at 22:00, two rise beside Link at once, sink when he walks off and two more rise where he stops, on SoH's
+frames (their spots differ, as they are random). OoT's `BodyBreak` (the parts an enemy bursts into) is in
+`HyruleActor.c`, spawning OoT's `En_Part`; the Wolfos the spawner raises count back down when they die.
 
 Not yet: the grottos' business scrubs, cows, fish, bees, Redeads, Tektites and Dampé's hole. The rainbow
 hexagon under the exit light is OoT's own (SoH shows it too).
