@@ -144,9 +144,8 @@ Not yet:
 - **Actors:** only some waves are ported, so other OoT actors in room lists do not appear.
 - **Scenes:** only the ones above; exits into others lead back to the spawn Link came in at.
 - **OoT sound effects:** the OoT-only sound effects are not played yet (see Audio).
-- **Slopes:** at Death Mountain Trail's spawn from Kakariko, once Link has control MM's Player slides down the
-  path and back out into Kakariko, where OoT's stands; the two games' slope or floor-type handling differs there.
-  OoT's first-visit scene cutscenes (the trail's 200-frame introduction) are not played.
+- **Entrance cutscenes:** OoT's first-visit scene cutscenes (Death Mountain Trail's 200-frame introduction) are
+  not played.
 - **Scene effects:** OoT's scene draw configs (z_scene_table.c) run for OoT scenes through MM's
   `SCENE_DRAW_CFG_HYRULE_OOT` (`HyruleSceneDraw.c`), but only those of the scenes loaded so far (Kokiri Forest,
   the Lost Woods, the grottos, the fairy fountain, calm water); the others draw as MM's default.
@@ -377,6 +376,10 @@ at `TEXT_OOT_BASE`.
 The text itself is converted at extraction (`OotToMm::ConvertMessage`). Textbox types are kept, which
 works for signs (type 1 is the wooden board in both games); OoT's other types, colours and icons are
 not checked yet.
+
+Scene wind: MM's Player is blown by the scene's environment wind (scene command 0x05) from 50 up; OoT's only
+sways flags with it (En_Hata). Player ignores it in OoT scenes, or Death Mountain Trail's (130) blows Link back
+down into Kakariko.
 
 ## Audio
 
