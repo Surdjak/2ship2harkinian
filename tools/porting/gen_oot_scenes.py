@@ -40,6 +40,8 @@ SCENES = [
     "SCENE_SARIAS_HOUSE",
     "SCENE_LOST_WOODS",
     "SCENE_SACRED_FOREST_MEADOW",
+    "SCENE_GROTTOS",
+    "SCENE_FAIRYS_FOUNTAIN",
 ]
 
 # Human-readable names that the enum name spells badly.
@@ -49,6 +51,7 @@ NAMES = {
     "SCENE_TWINS_HOUSE": "Twins' House",
     "SCENE_MIDOS_HOUSE": "Mido's House",
     "SCENE_SARIAS_HOUSE": "Saria's House",
+    "SCENE_FAIRYS_FOUNTAIN": "Fairy's Fountain",
 }
 
 FIRST_SCENE_ID = 0x71  # after MM's SCENE_ALLEY

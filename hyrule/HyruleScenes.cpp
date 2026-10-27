@@ -132,6 +132,12 @@ extern "C" u32 Hyrule_EntranceFromOot(u16 ootEntrance) {
 }
 
 extern "C" u32 Hyrule_ExitFromOot(u16 ootEntrance) {
+    // OoT's ENTR_RETURN_GROTTO, the exit out of grottos and fairy fountains, is MM's 0xFFFF: back to the hole Link
+    // fell in (RESPAWN_MODE_UNK_3).
+    static constexpr u16 kOotReturnGrotto = 0x7FFF;
+    if (ootEntrance == kOotReturnGrotto) {
+        return 0xFFFF;
+    }
     u32 entrance = Hyrule_EntranceFromOot(ootEntrance);
     // An exit into a scene that is not loaded yet leads back to the spawn Link came in at.
     return (entrance != HYRULE_ENTRANCE_NONE) ? entrance : (gSaveContext.save.entrance & ~0xF);

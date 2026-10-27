@@ -65,6 +65,8 @@ entrance indices to MM entrances (`HyruleOotEntrances.inc`). To add a scene, app
 | Saria's House | `SCENE_SARIAS_HOUSE_Oot` (0x77) | `0xE800` |
 | Lost Woods | `SCENE_LOST_WOODS_Oot` (0x78) | `0xEA00` |
 | Sacred Forest Meadow | `SCENE_SACRED_FOREST_MEADOW_Oot` (0x79) | `0xEC00` |
+| Grottos | `SCENE_GROTTOS_Oot` (0x7A) | `0xEE00` |
+| Fairy's Fountain | `SCENE_FAIRYS_FOUNTAIN_Oot` (0x7B) | `0xF000` |
 
 To go there:
 
@@ -188,6 +190,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 11 | Kokiri Forest's creatures: `En_Karebaba` (Withered Deku Babas), `En_Dekubaba` (Deku Babas), `En_Dekunuts` (Mad Scrubs) and their `En_Nutsball` nuts, `En_Okuta` (Octoroks) |
 | 12 | `En_St` (Big Skulltula), `Obj_Mure3` (rupee circle), `En_Gs` (Gossip Stones), `Obj_Bombiwa` (bombable boulders), `En_Tana` (shop shelves) |
 | 13 | Sacred Forest Meadow: `En_Wf` (Wolfos), `En_Mb` (Moblins), `Bg_Spot05_Soko` (maze walls and gate), `Bg_Mjin` (warp pads); `En_Part` (OoT's flying enemy parts and flames) |
+| 14 | Grottos: `Door_Ana` (grotto holes), `En_Torch` (the grotto chest) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -326,6 +329,18 @@ child Link's front slashes bounce off the Wolfos' guard as in OoT.
 - The Wolfos' spawner in Hyrule Field (`En_Encount1`) is not ported, so it does not count them down; the
   miniboss music for the gate's Wolfos uses MM's `Audio_PlayBgm_StorePrevBgm`.
 - OoT's camera glance at the opening gate (`OnePointCutscene_Attention`) is left out.
+
+Wave 14 opens OoT's grottos. MM's grottos are OoT's design: a hole stores where Link fell in, and what the grotto
+holds, as a return point (OoT's `RESPAWN_MODE_RETURN`, MM's `RESPAWN_MODE_UNK_3`), and the grotto's exit
+(OoT's `ENTR_RETURN_GROTTO`, MM's 0xFFFF) brings him back up out of the hole. So OoT's `Door_Ana` keeps its
+return point where MM's Player and `En_Torch` read it, its grotto entrances go through `Hyrule_EntranceFromOot`, and
+the exit lists translate OoT's return exit to MM's. `En_Torch` spawns MM's chest (`En_Box`) with MM's get items.
+In the Lost Woods, after a bomb breaks the boulder on it, child Link falls into the hole, lands in the grotto
+with its chest (a blue rupee, as in OoT), grass and Gossip Stone, and walking into the exit light brings him back
+up out of the hole. Holes opened by the Song of Storms open on MM's (OoT's storm flag is not ported).
+
+Not yet: the grottos' business scrubs, cows, fish, bees, Redeads, Tektites and Dampé's hole, and OoT's
+scene draw configs (the exit light shows untextured).
 
 ## Text
 

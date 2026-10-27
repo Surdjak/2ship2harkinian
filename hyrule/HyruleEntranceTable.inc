@@ -317,6 +317,132 @@ static EntranceTableEntry* sSacredForestMeadowOotEntranceTable[] = {
     sSacredForestMeadowOotEntrance3,
 };
 
+static EntranceTableEntry sGrottosOotEntrance0[] = {
+    /* 0x03F */ { SCENE_GROTTOS_Oot, 0, 0x4102 },
+    /* 0x040 */ { SCENE_GROTTOS_Oot, 0, 0x4102 },
+    /* 0x041 */ { SCENE_GROTTOS_Oot, 0, 0x4102 },
+    /* 0x042 */ { SCENE_GROTTOS_Oot, 0, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance1[] = {
+    /* 0x598 */ { SCENE_GROTTOS_Oot, 1, 0x4102 },
+    /* 0x599 */ { SCENE_GROTTOS_Oot, 1, 0x4102 },
+    /* 0x59A */ { SCENE_GROTTOS_Oot, 1, 0x4102 },
+    /* 0x59B */ { SCENE_GROTTOS_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance2[] = {
+    /* 0x59C */ { SCENE_GROTTOS_Oot, 2, 0x4102 },
+    /* 0x59D */ { SCENE_GROTTOS_Oot, 2, 0x4102 },
+    /* 0x59E */ { SCENE_GROTTOS_Oot, 2, 0x4102 },
+    /* 0x59F */ { SCENE_GROTTOS_Oot, 2, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance3[] = {
+    /* 0x5A0 */ { SCENE_GROTTOS_Oot, 3, 0x4102 },
+    /* 0x5A1 */ { SCENE_GROTTOS_Oot, 3, 0x4102 },
+    /* 0x5A2 */ { SCENE_GROTTOS_Oot, 3, 0x4102 },
+    /* 0x5A3 */ { SCENE_GROTTOS_Oot, 3, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance4[] = {
+    /* 0x5A4 */ { SCENE_GROTTOS_Oot, 4, 0x4102 },
+    /* 0x5A5 */ { SCENE_GROTTOS_Oot, 4, 0x4102 },
+    /* 0x5A6 */ { SCENE_GROTTOS_Oot, 4, 0x4102 },
+    /* 0x5A7 */ { SCENE_GROTTOS_Oot, 4, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance5[] = {
+    /* 0x5A8 */ { SCENE_GROTTOS_Oot, 5, 0x4103 },
+    /* 0x5A9 */ { SCENE_GROTTOS_Oot, 5, 0x4103 },
+    /* 0x5AA */ { SCENE_GROTTOS_Oot, 5, 0x4103 },
+    /* 0x5AB */ { SCENE_GROTTOS_Oot, 5, 0x4103 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance6[] = {
+    /* 0x5AC */ { SCENE_GROTTOS_Oot, 6, 0x4102 },
+    /* 0x5AD */ { SCENE_GROTTOS_Oot, 6, 0x4102 },
+    /* 0x5AE */ { SCENE_GROTTOS_Oot, 6, 0x4102 },
+    /* 0x5AF */ { SCENE_GROTTOS_Oot, 6, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance7[] = {
+    /* 0x5B0 */ { SCENE_GROTTOS_Oot, 7, 0x4102 },
+    /* 0x5B1 */ { SCENE_GROTTOS_Oot, 7, 0x4102 },
+    /* 0x5B2 */ { SCENE_GROTTOS_Oot, 7, 0x4102 },
+    /* 0x5B3 */ { SCENE_GROTTOS_Oot, 7, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance8[] = {
+    /* 0x5B4 */ { SCENE_GROTTOS_Oot, 8, 0x4102 },
+    /* 0x5B5 */ { SCENE_GROTTOS_Oot, 8, 0x4102 },
+    /* 0x5B6 */ { SCENE_GROTTOS_Oot, 8, 0x4102 },
+    /* 0x5B7 */ { SCENE_GROTTOS_Oot, 8, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance9[] = {
+    /* 0x5B8 */ { SCENE_GROTTOS_Oot, 9, 0x4102 },
+    /* 0x5B9 */ { SCENE_GROTTOS_Oot, 9, 0x4102 },
+    /* 0x5BA */ { SCENE_GROTTOS_Oot, 9, 0x4102 },
+    /* 0x5BB */ { SCENE_GROTTOS_Oot, 9, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance10[] = {
+    /* 0x5BC */ { SCENE_GROTTOS_Oot, 10, 0x4102 },
+    /* 0x5BD */ { SCENE_GROTTOS_Oot, 10, 0x4102 },
+    /* 0x5BE */ { SCENE_GROTTOS_Oot, 10, 0x4102 },
+    /* 0x5BF */ { SCENE_GROTTOS_Oot, 10, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance11[] = {
+    /* 0x5C0 */ { SCENE_GROTTOS_Oot, 11, 0x4102 },
+    /* 0x5C1 */ { SCENE_GROTTOS_Oot, 11, 0x4102 },
+    /* 0x5C2 */ { SCENE_GROTTOS_Oot, 11, 0x4102 },
+    /* 0x5C3 */ { SCENE_GROTTOS_Oot, 11, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance12[] = {
+    /* 0x5C4 */ { SCENE_GROTTOS_Oot, 12, 0x4102 },
+    /* 0x5C5 */ { SCENE_GROTTOS_Oot, 12, 0x4102 },
+    /* 0x5C6 */ { SCENE_GROTTOS_Oot, 12, 0x4102 },
+    /* 0x5C7 */ { SCENE_GROTTOS_Oot, 12, 0x4102 },
+};
+
+static EntranceTableEntry sGrottosOotEntrance13[] = {
+    /* 0x5FC */ { SCENE_GROTTOS_Oot, 13, 0x4102 },
+    /* 0x5FD */ { SCENE_GROTTOS_Oot, 13, 0x4102 },
+    /* 0x5FE */ { SCENE_GROTTOS_Oot, 13, 0x4102 },
+    /* 0x5FF */ { SCENE_GROTTOS_Oot, 13, 0x4102 },
+};
+
+static EntranceTableEntry* sGrottosOotEntranceTable[] = {
+    sGrottosOotEntrance0,
+    sGrottosOotEntrance1,
+    sGrottosOotEntrance2,
+    sGrottosOotEntrance3,
+    sGrottosOotEntrance4,
+    sGrottosOotEntrance5,
+    sGrottosOotEntrance6,
+    sGrottosOotEntrance7,
+    sGrottosOotEntrance8,
+    sGrottosOotEntrance9,
+    sGrottosOotEntrance10,
+    sGrottosOotEntrance11,
+    sGrottosOotEntrance12,
+    sGrottosOotEntrance13,
+};
+
+static EntranceTableEntry sFairysFountainOotEntrance0[] = {
+    /* 0x36D */ { SCENE_FAIRYS_FOUNTAIN_Oot, 0, 0x4183 },
+    /* 0x36E */ { SCENE_FAIRYS_FOUNTAIN_Oot, 0, 0x4183 },
+    /* 0x36F */ { SCENE_FAIRYS_FOUNTAIN_Oot, 0, 0x4183 },
+    /* 0x370 */ { SCENE_FAIRYS_FOUNTAIN_Oot, 0, 0x4183 },
+};
+
+static EntranceTableEntry* sFairysFountainOotEntranceTable[] = {
+    sFairysFountainOotEntrance0,
+};
+
 // The entrance scenes from ENTR_SCENE_KOKIRI_FOREST_Oot on, in order.
 #define HYRULE_SCENE_ENTRANCES \
     /* 0x6E */ SCENE_ENTRANCE(sKokiriForestOotEntranceTable, "SCENE_KOKIRI_FOREST"), \
@@ -327,4 +453,6 @@ static EntranceTableEntry* sSacredForestMeadowOotEntranceTable[] = {
     /* 0x73 */ SCENE_ENTRANCE(sMidosHouseOotEntranceTable, "SCENE_MIDOS_HOUSE"), \
     /* 0x74 */ SCENE_ENTRANCE(sSariasHouseOotEntranceTable, "SCENE_SARIAS_HOUSE"), \
     /* 0x75 */ SCENE_ENTRANCE(sLostWoodsOotEntranceTable, "SCENE_LOST_WOODS"), \
-    /* 0x76 */ SCENE_ENTRANCE(sSacredForestMeadowOotEntranceTable, "SCENE_SACRED_FOREST_MEADOW"),
+    /* 0x76 */ SCENE_ENTRANCE(sSacredForestMeadowOotEntranceTable, "SCENE_SACRED_FOREST_MEADOW"), \
+    /* 0x77 */ SCENE_ENTRANCE(sGrottosOotEntranceTable, "SCENE_GROTTOS"), \
+    /* 0x78 */ SCENE_ENTRANCE(sFairysFountainOotEntranceTable, "SCENE_FAIRYS_FOUNTAIN"),
