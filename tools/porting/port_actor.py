@@ -91,7 +91,8 @@ RENAMES = [
     (r"\bTOUCH_(\w+)", r"ATELEM_\1"),
     (r"\.elemType\b", ".elemMaterial"),
     (r"\.colType\b", ".colMaterial"),
-    (r"\b(actor|thisx)(\.|->)speedXZ\b", r"\1\2speed"),
+    (r"\b(actor|thisx|rideActor)(\.|->)speedXZ\b", r"\1\2speed"),
+    (r"->linearVelocity\b", "->speedXZ"),  # Player's
     (r"\byDistToPlayer\b", "playerHeightRel"),
     # MM's Tatl hints do not cover OoT enemies: init chains keep their shape with no hint.
     (r"\bICHAIN_S8\(naviEnemyId, (\w+), (ICHAIN_\w+)\),",

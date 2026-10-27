@@ -196,6 +196,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 12 | `En_St` (Big Skulltula), `Obj_Mure3` (rupee circle), `En_Gs` (Gossip Stones), `Obj_Bombiwa` (bombable boulders), `En_Tana` (shop shelves) |
 | 13 | Sacred Forest Meadow: `En_Wf` (Wolfos), `En_Mb` (Moblins), `Bg_Spot05_Soko` (maze walls and gate), `Bg_Mjin` (warp pads); `En_Part` (OoT's flying enemy parts and flames) |
 | 14 | Grottos: `Door_Ana` (grotto holes), `En_Torch` (the grotto chest) |
+| 15 | Hyrule Field: `En_Wood02` (trees and bushes), `En_Peehat` (Peahats), `Obj_Hamishi` (adult rocks), `Bg_Spot00_Break` (broken fences) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -343,6 +344,12 @@ the exit lists translate OoT's return exit to MM's. `En_Torch` spawns MM's chest
 In the Lost Woods, after a bomb breaks the boulder on it, child Link falls into the hole, lands in the grotto
 with its chest (a blue rupee, as in OoT), grass and Gossip Stone, and walking into the exit light brings him back
 up out of the hole. Holes opened by the Song of Storms open on MM's (OoT's storm flag is not ported).
+
+Wave 15 was checked against SoH in Hyrule Field at each age: the trees, Peahats, rocks and fences match SoH's
+positions on every frame, and with both Links puppeted to a Peahat, it rises and flies at Link within a unit of
+SoH's for 900 frames. A Peahat larva bursts as MM's bomb (`En_Bom`, whose rotation and timer match OoT's), and
+OoT's held death sound (`EffectSsDeadSound`) plays from its spot. The castle drawbridge (`Bg_Spot00_Hanebasi`)
+waits for OoT's day and night: it closes on OoT's clock and puts Link out of the market at nightfall.
 
 Not yet: the grottos' business scrubs, cows, fish, bees, Redeads, Tektites and Dampé's hole. The rainbow
 hexagon under the exit light is OoT's own (SoH shows it too).

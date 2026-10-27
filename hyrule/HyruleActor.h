@@ -92,3 +92,7 @@ Actor* Actor_GetProjectileActor(PlayState* play, Actor* refActor, f32 radius);
 // EffectSsEnIce_SpawnFlyingVec3f for a Vec3s position.
 void EffectSsEnIce_SpawnFlyingVec3s(PlayState* play, Actor* actor, Vec3s* pos, s16 primR, s16 primG, s16 primB,
                                     s16 primA, s16 envR, s16 envG, s16 envB, f32 scale);
+
+// OoT's EffectSsDeadSound (a sound held at a spot): MM has no such effect, so the sound plays from the spot.
+void EffectSsDeadSound_SpawnStationary(PlayState* play, Vec3f* pos, u16 sfxId, s16 lowerPriority, s16 repeatMode,
+                                       s32 life);

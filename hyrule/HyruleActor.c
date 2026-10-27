@@ -383,3 +383,8 @@ void EffectSsEnIce_SpawnFlyingVec3s(PlayState* play, Actor* actor, Vec3s* pos, s
 
     EffectSsEnIce_SpawnFlyingVec3f(play, actor, &posF, primR, primG, primB, primA, envR, envG, envB, scale);
 }
+
+void EffectSsDeadSound_SpawnStationary(PlayState* play, Vec3f* pos, u16 sfxId, s16 lowerPriority, s16 repeatMode,
+                                       s32 life) {
+    SoundSource_PlaySfxAtFixedWorldPos(play, pos, life, sfxId);
+}
