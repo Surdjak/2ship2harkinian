@@ -2,6 +2,8 @@
 
 #include "HyruleActor.h"
 #include "HyruleInventory.h"
+#include "overlays/actors/ovl_Arms_Hook/z_arms_hook.h"
+#include "overlays/actors/ovl_En_Part/z_en_part.h" // OoT's, in hyrule/
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 
 static Gfx* func_80034B28(GraphicsContext* gfxCtx) {
@@ -264,4 +266,120 @@ Actor* func_80033684(PlayState* play, Actor* explosiveActor) {
     }
 
     return NULL;
+}
+
+s32 func_8002DDE4(PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    return player->stateFlags2 & PLAYER_STATE2_8;
+}
+
+s32 func_800354B4(PlayState* play, Actor* actor, f32 range, s16 arg3, s16 arg4, s16 arg5) {
+    Player* player = GET_PLAYER(play);
+    s16 var1;
+    s16 var2;
+
+    var1 = (s16)(actor->yawTowardsPlayer + 0x8000) - player->actor.shape.rot.y;
+    var2 = actor->yawTowardsPlayer - arg5;
+
+    if ((actor->xzDistToPlayer <= range) && (player->meleeWeaponState != 0) && (arg4 >= ABS(var1)) &&
+        (arg3 >= ABS(var2))) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void func_800355B8(PlayState* play, Vec3f* pos) {
+    static Vec3f sVelocity = { 0.0f, -1.5f, 0.0f };
+    static Vec3f sAccel = { 0.0f, -0.2f, 0.0f };
+    Color_RGBA8 color1 = { 200, 160, 120, 0 };
+    Color_RGBA8 color2 = { 130, 90, 50, 0 };
+
+    EffectSsKirakira_SpawnSmall(play, pos, &sVelocity, &sAccel, &color1, &color2);
+}
+
+Actor* func_800358DC(Actor* actor, Vec3f* spawnPos, Vec3s* spawnRot, f32* arg3, s32 timer, s16* unused, PlayState* play,
+                     s16 params, s32 arg8) {
+    EnPart* spawnedEnPart;
+
+    spawnedEnPart = (EnPart*)Actor_SpawnAsChild(&play->actorCtx, actor, play, ACTOR_EN_PART_Oot, spawnPos->x,
+                                                spawnPos->y, spawnPos->z, spawnRot->x, spawnRot->y, actor->objectSlot,
+                                                params);
+    if (spawnedEnPart != NULL) {
+        spawnedEnPart->actor.scale = actor->scale;
+        spawnedEnPart->actor.speed = arg3[0];
+        spawnedEnPart->displayList = arg8;
+        spawnedEnPart->action = 2;
+        spawnedEnPart->timer = timer;
+        spawnedEnPart->rotZ = arg3[1];
+        spawnedEnPart->rotZSpeed = arg3[2];
+        return &spawnedEnPart->actor;
+    }
+
+    return NULL;
+}
+
+void func_800359B8(Actor* actor, s16 arg1, Vec3s* arg2) {
+    f32 sp44;
+    f32 sp40;
+    f32 sp3C;
+    f32 sp38;
+    f32 sp34;
+    f32 sp30;
+    f32 sp2C;
+    f32 sp28;
+    f32 sp24;
+    CollisionPoly* floorPoly;
+
+    if (actor->floorPoly != NULL) {
+        floorPoly = actor->floorPoly;
+        sp44 = COLPOLY_GET_NORMAL(floorPoly->normal.x);
+        sp40 = COLPOLY_GET_NORMAL(floorPoly->normal.y);
+        sp3C = COLPOLY_GET_NORMAL(floorPoly->normal.z);
+
+        sp38 = Math_SinS(arg1);
+        sp34 = Math_CosS(arg1);
+        sp28 = (-(sp44 * sp38) - (sp3C * sp34));
+        arg2->x = -(s16)(Math_FAtan2F(sp28 * sp40, 1.0f) * (32768 / M_PI));
+
+        sp2C = Math_SinS(arg1 - 16375);
+        sp30 = Math_CosS(arg1 - 16375);
+        sp24 = (-(sp44 * sp2C) - (sp3C * sp30));
+        arg2->z = -(s16)(Math_FAtan2F(sp24 * sp40, 1.0f) * (32768 / M_PI));
+    }
+}
+
+Actor* Actor_GetProjectileActor(PlayState* play, Actor* refActor, f32 radius) {
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_ITEMACTION].first;
+    Vec3f spA8;
+    Vec3f sp90;
+    Vec3f sp84;
+
+    // MM's Hookshot and arrows. OoT also skipped an arrow whose unk_210.x is 0, which (SoH notes) is about never.
+    while (actor != NULL) {
+        if (((actor->id != ACTOR_ARMS_HOOK) && (actor->id != ACTOR_EN_ARROW)) || (actor == refActor) ||
+            (Math_Vec3f_DistXYZ(&refActor->world.pos, &actor->world.pos) > radius) ||
+            ((actor->id == ACTOR_ARMS_HOOK) && (((ArmsHook*)actor)->timer == 0))) {
+            actor = actor->next;
+            continue;
+        }
+        spA8.x = actor->world.pos.x + Math_SinS(actor->world.rot.y) * (actor->speed * 10.0f);
+        spA8.y = actor->world.pos.y + actor->velocity.y + (actor->gravity * 10.0f);
+        spA8.z = actor->world.pos.z + Math_CosS(actor->world.rot.y) * (actor->speed * 10.0f);
+        if (CollisionCheck_CylSideVsLineSeg(refActor->colChkInfo.cylRadius, refActor->colChkInfo.cylHeight, 0.0f,
+                                            &refActor->world.pos, &actor->world.pos, &spA8, &sp90, &sp84)) {
+            return actor;
+        }
+        actor = actor->next;
+    }
+
+    return NULL;
+}
+
+void EffectSsEnIce_SpawnFlyingVec3s(PlayState* play, Actor* actor, Vec3s* pos, s16 primR, s16 primG, s16 primB,
+                                    s16 primA, s16 envR, s16 envG, s16 envB, f32 scale) {
+    Vec3f posF = { pos->x, pos->y, pos->z };
+
+    EffectSsEnIce_SpawnFlyingVec3f(play, actor, &posF, primR, primG, primB, primA, envR, envG, envB, scale);
 }

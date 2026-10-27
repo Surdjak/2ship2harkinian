@@ -187,6 +187,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 10 | `Obj_Tsubo` (pots); chests (`En_Box`) map to MM's own, see Actor and object ids |
 | 11 | Kokiri Forest's creatures: `En_Karebaba` (Withered Deku Babas), `En_Dekubaba` (Deku Babas), `En_Dekunuts` (Mad Scrubs) and their `En_Nutsball` nuts, `En_Okuta` (Octoroks) |
 | 12 | `En_St` (Big Skulltula), `Obj_Mure3` (rupee circle), `En_Gs` (Gossip Stones), `Obj_Bombiwa` (bombable boulders), `En_Tana` (shop shelves) |
+| 13 | Sacred Forest Meadow: `En_Wf` (Wolfos), `En_Mb` (Moblins), `Bg_Spot05_Soko` (maze walls and gate), `Bg_Mjin` (warp pads); `En_Part` (OoT's flying enemy parts and flames) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -314,6 +315,17 @@ apart, as with `Obj_Mure2`). The shop shelves match SoH's shop run.
   Saria's Song, Zelda's Lullaby and Sun's Song wait for OoT's songs.
 - Boulders break when one of MM's bombs explodes next to them (`func_80033684`, OoT's search for an
   exploding bomb, works on MM's `En_Bom`) or under the Megaton Hammer.
+
+Wave 13 was checked with one puppet log driving SoH and this fork through the meadow at each age: the maze walls,
+the gate and the warp pad match SoH on every frame. The Wolfos and the Moblins behave alike until their first
+random wait, since OoT's and MM's random number generators draw different values. Adult Link kills a spear Moblin;
+child Link's front slashes bounce off the Wolfos' guard as in OoT.
+
+- OoT's `En_Part` is ported for the parts and flames enemies leave (`func_800358DC`, the Moblin's club flames); MM's
+  own `En_Part` is a different actor.
+- The Wolfos' spawner in Hyrule Field (`En_Encount1`) is not ported, so it does not count them down; the
+  miniboss music for the gate's Wolfos uses MM's `Audio_PlayBgm_StorePrevBgm`.
+- OoT's camera glance at the opening gate (`OnePointCutscene_Attention`) is left out.
 
 ## Text
 

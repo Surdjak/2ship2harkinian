@@ -15,7 +15,8 @@ What it does (each a plain text rewrite):
   terminalVelocity, speed, depthInWater, objectSlot, attentionRangeType, lockOnArrowOffset...).
 - OoT flags use HyruleFlags.h, OoT text ids in returns, cases and textId assignments get TEXT_OOT, and
   OoT age checks use HyrulePort.h.
-- Debug prints are removed, SoH's GameInteractor_Should(VB_..., cond) hooks become (cond), and OoT's
+- Debug prints are removed, SoH's GameInteractor_Should(VB_..., cond) hooks become (cond), ifs on SoH's
+  enhancements keep vanilla's branch, and OoT's
   matrix, allocation, segment and default-sound calls become MM's. SoH's cvars and stats, and anything
   else that needs a decision, are listed at the end for review.
 - Functions become static.
@@ -71,6 +72,9 @@ RENAMES = [
     (r"\bActor_SetPlayerKnockbackLarge\(", "func_800B8D50("),
     (r"\bActor_SetPlayerKnockbackLargeNoDamage\(", "func_800B8D98("),
     (r"\bSfx_PlaySfxCentered\(", "Audio_PlaySfx("),
+    # OoT's miniboss music start and stop.
+    (r"\bfunc_800F5ACC\(", "Audio_PlayBgm_StorePrevBgm("),
+    (r"\bfunc_800F5B58\(", "Audio_RestorePrevBgm("),
     (r"\bDamageTable_Get\(", "DamageTable_Get_Oot("),
     (r"\bIS_DAY\b", "IS_DAY_OOT"),
     (r"\bGET_GS_FLAGS\(", "GET_GS_FLAGS_OOT("),
@@ -81,7 +85,7 @@ RENAMES = [
     (r"\bactorCtx\.unk_02\b", "actorCtx.unk2"),
     (r"\bPLAYER_STATE1_CLIMBING_LADDER\b", "PLAYER_STATE1_200000"),
     (r"\b(elements\[[^]]+\])\.info\.", r"\1.base."),
-    (r"\b(\w*[cC]ollider|col\w*|cyl)(\[[^]]*\])?(\.|->)info\b", r"\1\2\3elem"),
+    (r"\b(\w*[cC]ollider|col\w*|cyl|hitbox)(\[[^]]*\])?(\.|->)info\b", r"\1\2\3elem"),
     (r"\bColliderInfo\b", "ColliderElement"),
     (r"\bBUMP_(\w+)", r"ACELEM_\1"),
     (r"\bTOUCH_(\w+)", r"ATELEM_\1"),
@@ -92,7 +96,7 @@ RENAMES = [
     # MM's Tatl hints do not cover OoT enemies: init chains keep their shape with no hint.
     (r"\bICHAIN_S8\(naviEnemyId, (\w+), (ICHAIN_\w+)\),",
      r"ICHAIN_U8(hintId, TATL_HINT_ID_NONE, \2), // PORT: OoT's Navi enemy info \1"),
-    (r"^([ \t]*)this->actor\.naviEnemyId = (\w+);(?: //)?", r"\1// PORT: OoT gives Navi enemy info \2;"),
+    (r"^([ \t]*)(?:this->actor\.|thisx->)naviEnemyId = (\w+);(?: //)?", r"\1// PORT: OoT gives Navi enemy info \2;"),
     (r"\bActor_SetDropFlag(JntSph)?\(", r"Actor_SetDropFlag\1_Oot("),
     (r"\bEffectSsDeadDb_Spawn\(", "EffectSsDeadDb_Spawn_Oot("),
     (r"\bPLAYER_SHIELD_(DEKU|HYLIAN|MIRROR)\b", r"PLAYER_SHIELD_\1_Oot"),
@@ -111,6 +115,9 @@ RENAMES = [
     (r"\batHitInfo\b", "atHitElem"),
     (r"\bPlayer_PlaySfx\(&GET_PLAYER\(play\)->actor, ", "Player_PlaySfx(GET_PLAYER(play), "),
     (r"\bPLAYER_STATE1_IN_ITEM_CS\b", "PLAYER_STATE1_10000000"),
+    (r"\bPLAYER_STATE1_DAMAGED\b", "PLAYER_STATE1_4000000"),
+    (r"\bPLAYER_STATE2_GRABBED_BY_ENEMY\b", "PLAYER_STATE2_80"),
+    (r"\bACTORCAT_EXPLOSIVE\b", "ACTORCAT_EXPLOSIVES"),
     (r"\bPLAYER_STATE1_IN_CUTSCENE\b", "PLAYER_STATE1_20000000"),
     (r"\bVIRTUAL_TO_PHYSICAL\(", "OS_K0_TO_PHYSICAL("),
     (r"\bGraph_Alloc\(", "GRAPH_ALLOC("),
@@ -125,6 +132,12 @@ RENAMES = [
     (r"\bAudio_PlaySfxGeneral\((\w+), &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,\s*&gSfxDefaultFreqAndVolScale, "
      r"&gSfxDefaultReverb\);", r"Audio_PlaySfx(\1);"),
     (r"\bObject_GetIndex\(", "Object_GetSlot("),
+    (r"\bobjectCtx\.status\[", "objectCtx.slots["),
+    # OoT's DynaPolyMoveFlag has MM's bits: 1 carries actors on top, 2 turns them.
+    (r"\bDPM_UNK3\b", "DYNA_TRANSFORM_POS | DYNA_TRANSFORM_ROT_Y"),
+    (r"\bDPM_PLAYER\b", "DYNA_TRANSFORM_POS"),
+    (r"\bDPM_ENEMY\b", "DYNA_TRANSFORM_ROT_Y"),
+    (r"\bDPM_UNK\b", "0"),
     # OoT's Floor5 (with play) is MM's Floor5_2, and OoT's Floor4 is MM's Floor5; in that order.
     (r"\bBgCheck_EntityRaycastFloor5\(", "BgCheck_EntityRaycastFloor5_2("),
     (r"\bBgCheck_EntityRaycastFloor4\(", "BgCheck_EntityRaycastFloor5("),
@@ -223,6 +236,58 @@ def strip_game_interactor(text):
         i = k
 
 
+CVAR_OFF = r"CVarGetInteger\(CVAR_ENHANCEMENT\(\"[A-Za-z.]+\"\), 0\)"
+
+
+def _block_end(text, i):
+    """Index just past the brace block that opens at text[i] ('{')."""
+    depth = 0
+    for k in range(i, len(text)):
+        if text[k] == "{":
+            depth += 1
+        elif text[k] == "}":
+            depth -= 1
+            if depth == 0:
+                return k + 1
+    raise ValueError("unbalanced braces")
+
+
+def _dedent(block, indent):
+    lines = block.split("\n")
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    while lines and not lines[-1].strip():
+        lines.pop()
+    return "\n".join(l[4:] if l.startswith(indent + "    ") else l for l in lines) + "\n"
+
+
+def strip_enhancement_ifs(text):
+    """SoH enhancements are off by default: an if whose condition is one (or its negation) keeps the branch
+    vanilla takes, and a `&& !enhancement` clause goes. The comments right above such an if go with it."""
+    text = re.sub(r" && !" + CVAR_OFF, "", text)
+    head = re.compile(r"\n((?:[ \t]*//[^\n]*\n)*)([ \t]*)if \((!?)" + CVAR_OFF + r"\) \{")
+    while True:
+        m = head.search(text)
+        if not m:
+            return text
+        indent, negated = m.group(2), m.group(3) == "!"
+        open_brace = m.end() - 1
+        end = _block_end(text, open_brace)
+        then_block = text[open_brace + 1:end - 1]
+        else_block = None
+        rest = re.match(r" else \{", text[end:])
+        if rest:
+            else_open = end + rest.end() - 1
+            else_end = _block_end(text, else_open)
+            else_block = text[else_open + 1:else_end - 1]
+            end = else_end
+        kept = then_block if negated else else_block
+        replacement = "\n" + (_dedent(kept, indent) if kept and kept.strip() else "")
+        if text[end:end + 1] == "\n":  # the kept branch brings its own
+            end += 1
+        text = text[:m.start()] + replacement + text[end:]
+
+
 def convert(text, header):
     out = []
     for line in text.splitlines():
@@ -245,6 +310,7 @@ def convert(text, header):
     text = re.sub(r"(DamageTable \w+ = )\{\n((?:[ \t]*(?:/\*[^*]*\*/ )?DMG_ENTRY\([^)]*\),\n){32})\};",
                   lambda m: m.group(1) + "DMG_TABLE_FROM_OOT(\n" + m.group(2).rstrip(",\n") + "\n);", text)
     text = strip_game_interactor(text)
+    text = strip_enhancement_ifs(text)
     # OoT's background check flag 4 covers floor and water; MM checks water only with 0x400.
     text = re.sub(r"(Actor_UpdateBgCheckInfo\((?:[^;()]|\([^()]*\))*, )(0x[0-9A-Fa-f]+|\d+)\)",
                   lambda m: m.group(0) if not (int(m.group(2), 0) & 4) else

@@ -74,3 +74,21 @@ void func_8002829C(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, C
 
 // An exploding bomb (MM's En_Bom with params 1, as OoT's) whose blast reaches the actor, or NULL.
 Actor* func_80033684(PlayState* play, Actor* explosiveActor);
+
+// OoT's helpers from z_actor.c for ported enemies, unchanged but for MM's names.
+// Whether Player's footstep flag is set.
+s32 func_8002DDE4(PlayState* play);
+// Whether Player swings a sword within range, facing the actor, inside the given angles.
+s32 func_800354B4(PlayState* play, Actor* actor, f32 range, s16 arg3, s16 arg4, s16 arg5);
+// OoT's small falling dust sparkle.
+void func_800355B8(PlayState* play, Vec3f* pos);
+// Spawns one of OoT's En_Part pieces (flying parts, flames) as the actor's child.
+Actor* func_800358DC(Actor* actor, Vec3f* spawnPos, Vec3s* spawnRot, f32* arg3, s32 timer, s16* unused, PlayState* play,
+                     s16 params, s32 arg8);
+// Tilts a rotation to the actor's floor polygon.
+void func_800359B8(Actor* actor, s16 arg1, Vec3s* arg2);
+// A Hookshot or arrow about to hit the actor within radius, or NULL.
+Actor* Actor_GetProjectileActor(PlayState* play, Actor* refActor, f32 radius);
+// EffectSsEnIce_SpawnFlyingVec3f for a Vec3s position.
+void EffectSsEnIce_SpawnFlyingVec3s(PlayState* play, Actor* actor, Vec3s* pos, s16 primR, s16 primG, s16 primB,
+                                    s16 primA, s16 envR, s16 envG, s16 envB, f32 scale);
