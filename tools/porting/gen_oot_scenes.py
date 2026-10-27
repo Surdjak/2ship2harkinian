@@ -43,6 +43,7 @@ SCENES = [
     "SCENE_SACRED_FOREST_MEADOW",
     "SCENE_GROTTOS",
     "SCENE_FAIRYS_FOUNTAIN",
+    "SCENE_HYRULE_FIELD",
 ]
 
 # Human-readable names that the enum name spells badly.

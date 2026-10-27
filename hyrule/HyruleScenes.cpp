@@ -255,6 +255,13 @@ extern "C" void Hyrule_AfterSceneCommands(PlayState* play) {
     // not have. TODO: build one from OoT's camera cutscenes when OoT actors need them.
     CutsceneManager_Init(play, nullptr, 0);
 
+    // OoT's Hyrule Field music (sequence 0x02) is a logic sequence that OoT's audio code steers; MM's sequence player
+    // jumps out of it and crashes. TODO: port OoT's field music driver. Until then Hyrule Field plays its nature
+    // ambience day and night, as OoT does at night.
+    static constexpr u8 kOotFieldLogicSeq = 0x02;
+    if (play->sceneSequences.seqId == kOotFieldLogicSeq) {
+        play->sceneSequences.seqId = NA_BGM_NO_MUSIC;
+    }
     // The scene's sound settings hold OoT's sequence id; OoT's sequences are loaded at SEQ_OOT_BASE.
     if (play->sceneSequences.seqId != NA_BGM_NO_MUSIC) {
         play->sceneSequences.seqId = SEQ_OOT(play->sceneSequences.seqId);

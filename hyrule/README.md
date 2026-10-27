@@ -67,6 +67,7 @@ entrance indices to MM entrances (`HyruleOotEntrances.inc`). To add a scene, app
 | Sacred Forest Meadow | `SCENE_SACRED_FOREST_MEADOW_Oot` (0x79) | `0xEC00` |
 | Grottos | `SCENE_GROTTOS_Oot` (0x7A) | `0xEE00` |
 | Fairy's Fountain | `SCENE_FAIRYS_FOUNTAIN_Oot` (0x7B) | `0xF000` |
+| Hyrule Field | `SCENE_HYRULE_FIELD_Oot` (0x7C) | `0xF200` |
 
 To go there:
 
@@ -137,6 +138,8 @@ Not yet:
 - **Actors:** only some waves are ported, so other OoT actors in room lists do not appear.
 - **Scenes:** only the ones above; exits into others lead back to the spawn Link came in at.
 - **OoT sound effects:** the OoT-only sound effects are not played yet (see Audio).
+- **Hyrule Field's music:** OoT's field sequence (0x02) is a logic sequence steered by OoT's audio code, and MM's
+  sequence player jumps out of it; until that driver is ported, Hyrule Field plays its nature ambience.
 - **Scene effects:** OoT's scene draw configs (z_scene_table.c) run for OoT scenes through MM's
   `SCENE_DRAW_CFG_HYRULE_OOT` (`HyruleSceneDraw.c`), but only those of the scenes loaded so far (Kokiri Forest,
   the Lost Woods, the grottos, the fairy fountain, calm water); the others draw as MM's default.

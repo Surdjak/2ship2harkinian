@@ -80,7 +80,6 @@
 #define SCENE_POTION_SHOP_GRANNY_Oot (-2 - 0x4E)
 #define SCENE_GANON_BOSS_Oot (-2 - 0x4F)
 #define SCENE_HOUSE_OF_SKULLTULA_Oot (-2 - 0x50)
-#define SCENE_HYRULE_FIELD_Oot (-2 - 0x51)
 #define SCENE_KAKARIKO_VILLAGE_Oot (-2 - 0x52)
 #define SCENE_GRAVEYARD_Oot (-2 - 0x53)
 #define SCENE_ZORAS_RIVER_Oot (-2 - 0x54)

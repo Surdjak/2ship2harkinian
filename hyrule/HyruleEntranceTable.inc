@@ -443,6 +443,163 @@ static EntranceTableEntry* sFairysFountainOotEntranceTable[] = {
     sFairysFountainOotEntrance0,
 };
 
+static EntranceTableEntry sHyruleFieldOotEntrance0[] = {
+    /* 0x0CD */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4183 },
+    /* 0x0CE */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4102 },
+    /* 0x0CF */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4183 },
+    /* 0x0D0 */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4102 },
+    /* 0x0D1 */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4202 },
+    /* 0x0D2 */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4306 },
+    /* 0x0D3 */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4306 },
+    /* 0x0D4 */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4306 },
+    /* 0x0D5 */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4183 },
+    /* 0x0D6 */ { SCENE_HYRULE_FIELD_Oot, 0, 0xC102 },
+    /* 0x0D7 */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4306 },
+    /* 0x0D8 */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4183 },
+    /* 0x0D9 */ { SCENE_HYRULE_FIELD_Oot, 0, 0x4387 },
+    /* 0x0DA */ { SCENE_HYRULE_FIELD_Oot, 0, 0xC183 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance1[] = {
+    /* 0x17D */ { SCENE_HYRULE_FIELD_Oot, 1, 0x4183 },
+    /* 0x17E */ { SCENE_HYRULE_FIELD_Oot, 1, 0x4102 },
+    /* 0x17F */ { SCENE_HYRULE_FIELD_Oot, 1, 0x4183 },
+    /* 0x180 */ { SCENE_HYRULE_FIELD_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance2[] = {
+    /* 0x181 */ { SCENE_HYRULE_FIELD_Oot, 2, 0xC183 },
+    /* 0x182 */ { SCENE_HYRULE_FIELD_Oot, 2, 0xC102 },
+    /* 0x183 */ { SCENE_HYRULE_FIELD_Oot, 2, 0xC183 },
+    /* 0x184 */ { SCENE_HYRULE_FIELD_Oot, 2, 0xC102 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance3[] = {
+    /* 0x185 */ { SCENE_HYRULE_FIELD_Oot, 3, 0x4102 },
+    /* 0x186 */ { SCENE_HYRULE_FIELD_Oot, 3, 0x4102 },
+    /* 0x187 */ { SCENE_HYRULE_FIELD_Oot, 3, 0x4102 },
+    /* 0x188 */ { SCENE_HYRULE_FIELD_Oot, 3, 0x4102 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance4[] = {
+    /* 0x189 */ { SCENE_HYRULE_FIELD_Oot, 4, 0xC183 },
+    /* 0x18A */ { SCENE_HYRULE_FIELD_Oot, 4, 0xC102 },
+    /* 0x18B */ { SCENE_HYRULE_FIELD_Oot, 4, 0xC183 },
+    /* 0x18C */ { SCENE_HYRULE_FIELD_Oot, 4, 0xC102 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance5[] = {
+    /* 0x18D */ { SCENE_HYRULE_FIELD_Oot, 5, 0x4183 },
+    /* 0x18E */ { SCENE_HYRULE_FIELD_Oot, 5, 0x4102 },
+    /* 0x18F */ { SCENE_HYRULE_FIELD_Oot, 5, 0x4183 },
+    /* 0x190 */ { SCENE_HYRULE_FIELD_Oot, 5, 0x4102 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance6[] = {
+    /* 0x1F9 */ { SCENE_HYRULE_FIELD_Oot, 6, 0x4183 },
+    /* 0x1FA */ { SCENE_HYRULE_FIELD_Oot, 6, 0x4102 },
+    /* 0x1FB */ { SCENE_HYRULE_FIELD_Oot, 6, 0x4183 },
+    /* 0x1FC */ { SCENE_HYRULE_FIELD_Oot, 6, 0x4102 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance7[] = {
+    /* 0x1FD */ { SCENE_HYRULE_FIELD_Oot, 7, 0x4183 },
+    /* 0x1FE */ { SCENE_HYRULE_FIELD_Oot, 7, 0x4102 },
+    /* 0x1FF */ { SCENE_HYRULE_FIELD_Oot, 7, 0x4183 },
+    /* 0x200 */ { SCENE_HYRULE_FIELD_Oot, 7, 0x4102 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance8[] = {
+    /* 0x27A */ { SCENE_HYRULE_FIELD_Oot, 8, 0xC183 },
+    /* 0x27B */ { SCENE_HYRULE_FIELD_Oot, 8, 0xC102 },
+    /* 0x27C */ { SCENE_HYRULE_FIELD_Oot, 8, 0xC183 },
+    /* 0x27D */ { SCENE_HYRULE_FIELD_Oot, 8, 0xC102 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance9[] = {
+    /* 0x27E */ { SCENE_HYRULE_FIELD_Oot, 9, 0x4183 },
+    /* 0x27F */ { SCENE_HYRULE_FIELD_Oot, 9, 0x4183 },
+    /* 0x280 */ { SCENE_HYRULE_FIELD_Oot, 9, 0x4183 },
+    /* 0x281 */ { SCENE_HYRULE_FIELD_Oot, 9, 0x4183 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance10[] = {
+    /* 0x282 */ { SCENE_HYRULE_FIELD_Oot, 10, 0x4183 },
+    /* 0x283 */ { SCENE_HYRULE_FIELD_Oot, 10, 0x4183 },
+    /* 0x284 */ { SCENE_HYRULE_FIELD_Oot, 10, 0x4183 },
+    /* 0x285 */ { SCENE_HYRULE_FIELD_Oot, 10, 0x4183 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance11[] = {
+    /* 0x28A */ { SCENE_HYRULE_FIELD_Oot, 11, 0x4285 },
+    /* 0x28B */ { SCENE_HYRULE_FIELD_Oot, 11, 0x4202 },
+    /* 0x28C */ { SCENE_HYRULE_FIELD_Oot, 11, 0x4285 },
+    /* 0x28D */ { SCENE_HYRULE_FIELD_Oot, 11, 0x4202 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance12[] = {
+    /* 0x28E */ { SCENE_HYRULE_FIELD_Oot, 12, 0x4285 },
+    /* 0x28F */ { SCENE_HYRULE_FIELD_Oot, 12, 0x4202 },
+    /* 0x290 */ { SCENE_HYRULE_FIELD_Oot, 12, 0x4285 },
+    /* 0x291 */ { SCENE_HYRULE_FIELD_Oot, 12, 0x4202 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance13[] = {
+    /* 0x292 */ { SCENE_HYRULE_FIELD_Oot, 13, 0x4285 },
+    /* 0x293 */ { SCENE_HYRULE_FIELD_Oot, 13, 0x4202 },
+    /* 0x294 */ { SCENE_HYRULE_FIELD_Oot, 13, 0x4285 },
+    /* 0x295 */ { SCENE_HYRULE_FIELD_Oot, 13, 0x4202 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance14[] = {
+    /* 0x311 */ { SCENE_HYRULE_FIELD_Oot, 14, 0xC183 },
+    /* 0x312 */ { SCENE_HYRULE_FIELD_Oot, 14, 0xC183 },
+    /* 0x313 */ { SCENE_HYRULE_FIELD_Oot, 14, 0xC183 },
+    /* 0x314 */ { SCENE_HYRULE_FIELD_Oot, 14, 0xC183 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance15[] = {
+    /* 0x476 */ { SCENE_HYRULE_FIELD_Oot, 15, 0x4285 },
+    /* 0x477 */ { SCENE_HYRULE_FIELD_Oot, 15, 0x4202 },
+    /* 0x478 */ { SCENE_HYRULE_FIELD_Oot, 15, 0x4285 },
+    /* 0x479 */ { SCENE_HYRULE_FIELD_Oot, 15, 0x4202 },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance16[] = {
+    /* 0x50F */ { SCENE_HYRULE_FIELD_Oot, 16, 0x458B },
+    /* 0x510 */ { SCENE_HYRULE_FIELD_Oot, 16, 0x458B },
+    /* 0x511 */ { SCENE_HYRULE_FIELD_Oot, 16, 0x458B },
+    /* 0x512 */ { SCENE_HYRULE_FIELD_Oot, 16, 0x458B },
+};
+
+static EntranceTableEntry sHyruleFieldOotEntrance17[] = {
+    /* 0x594 */ { SCENE_HYRULE_FIELD_Oot, 17, 0x4183 },
+    /* 0x595 */ { SCENE_HYRULE_FIELD_Oot, 17, 0x4102 },
+    /* 0x596 */ { SCENE_HYRULE_FIELD_Oot, 17, 0x4183 },
+    /* 0x597 */ { SCENE_HYRULE_FIELD_Oot, 17, 0x4102 },
+};
+
+static EntranceTableEntry* sHyruleFieldOotEntranceTable[] = {
+    sHyruleFieldOotEntrance0,
+    sHyruleFieldOotEntrance1,
+    sHyruleFieldOotEntrance2,
+    sHyruleFieldOotEntrance3,
+    sHyruleFieldOotEntrance4,
+    sHyruleFieldOotEntrance5,
+    sHyruleFieldOotEntrance6,
+    sHyruleFieldOotEntrance7,
+    sHyruleFieldOotEntrance8,
+    sHyruleFieldOotEntrance9,
+    sHyruleFieldOotEntrance10,
+    sHyruleFieldOotEntrance11,
+    sHyruleFieldOotEntrance12,
+    sHyruleFieldOotEntrance13,
+    sHyruleFieldOotEntrance14,
+    sHyruleFieldOotEntrance15,
+    sHyruleFieldOotEntrance16,
+    sHyruleFieldOotEntrance17,
+};
+
 // The entrance scenes from ENTR_SCENE_KOKIRI_FOREST_Oot on, in order.
 #define HYRULE_SCENE_ENTRANCES \
     /* 0x6E */ SCENE_ENTRANCE(sKokiriForestOotEntranceTable, "SCENE_KOKIRI_FOREST"), \
@@ -455,4 +612,5 @@ static EntranceTableEntry* sFairysFountainOotEntranceTable[] = {
     /* 0x75 */ SCENE_ENTRANCE(sLostWoodsOotEntranceTable, "SCENE_LOST_WOODS"), \
     /* 0x76 */ SCENE_ENTRANCE(sSacredForestMeadowOotEntranceTable, "SCENE_SACRED_FOREST_MEADOW"), \
     /* 0x77 */ SCENE_ENTRANCE(sGrottosOotEntranceTable, "SCENE_GROTTOS"), \
-    /* 0x78 */ SCENE_ENTRANCE(sFairysFountainOotEntranceTable, "SCENE_FAIRYS_FOUNTAIN"),
+    /* 0x78 */ SCENE_ENTRANCE(sFairysFountainOotEntranceTable, "SCENE_FAIRYS_FOUNTAIN"), \
+    /* 0x79 */ SCENE_ENTRANCE(sHyruleFieldOotEntranceTable, "SCENE_HYRULE_FIELD"),
