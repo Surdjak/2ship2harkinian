@@ -137,7 +137,9 @@ Not yet:
 - **Actors:** only some waves are ported, so other OoT actors in room lists do not appear.
 - **Scenes:** only the ones above; exits into others lead back to the spawn Link came in at.
 - **OoT sound effects:** the OoT-only sound effects are not played yet (see Audio).
-- **Scene effects:** OoT's per-scene animated textures are not drawn.
+- **Scene effects:** OoT's scene draw configs (z_scene_table.c) run for OoT scenes through MM's
+  `SCENE_DRAW_CFG_HYRULE_OOT` (`HyruleSceneDraw.c`), but only those of the scenes loaded so far (Kokiri Forest,
+  the Lost Woods, the grottos, the fairy fountain, calm water); the others draw as MM's default.
 - **Cameras:** OoT settings with no MM counterpart (crawlspaces, magic beans, fishing, boss arenas,
   some temple rooms) use a general MM setting.
 - **MM-only scene commands:** the actor cutscene list (0x1B) is started empty. The other MM-only
@@ -339,8 +341,8 @@ In the Lost Woods, after a bomb breaks the boulder on it, child Link falls into 
 with its chest (a blue rupee, as in OoT), grass and Gossip Stone, and walking into the exit light brings him back
 up out of the hole. Holes opened by the Song of Storms open on MM's (OoT's storm flag is not ported).
 
-Not yet: the grottos' business scrubs, cows, fish, bees, Redeads, Tektites and Dampé's hole, and OoT's
-scene draw configs (the exit light shows untextured).
+Not yet: the grottos' business scrubs, cows, fish, bees, Redeads, Tektites and Dampé's hole. The rainbow
+hexagon under the exit light is OoT's own (SoH shows it too).
 
 ## Text
 

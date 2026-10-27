@@ -786,7 +786,8 @@ typedef enum {
     /* 4 */ SCENE_DRAW_CFG_UNUSED_4,
     /* 5 */ SCENE_DRAW_CFG_UNUSED_5,
     /* 6 */ SCENE_DRAW_CFG_GREAT_BAY_TEMPLE,
-    /* 7 */ SCENE_DRAW_CFG_MAT_ANIM_MANUAL_STEP
+    /* 7 */ SCENE_DRAW_CFG_MAT_ANIM_MANUAL_STEP,
+    /* 8 */ SCENE_DRAW_CFG_HYRULE_OOT // 3Ship [Hyrule] OoT's scene draw configs (hyrule/HyruleSceneDraw.c)
 } SceneDrawConfigIds;
 
 // TODO: make ZAPD use this enum for `SCENE_CMD_SPECIAL_FILES`

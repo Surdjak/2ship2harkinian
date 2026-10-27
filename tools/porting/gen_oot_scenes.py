@@ -13,7 +13,8 @@ table is built from OoT's entrance table:
 - The flags keep OoT's layout, which is MM's: continue BGM, title card, end and start transitions.
   OoT's circle transitions do not exist in MM and become fades of the same color and speed.
 
-It also writes each scene's OoT id (for what OoT indexes by scene, such as dungeon keys), and the map
+It also writes each scene's OoT id (for what OoT indexes by scene, such as dungeon keys) and OoT draw config
+(drawn by hyrule/HyruleSceneDraw.c through MM's SCENE_DRAW_CFG_HYRULE_OOT), and the map
 from each OoT entrance index to an MM entrance, for OoT exits; entrances into
 scenes not listed here map to HYRULE_ENTRANCE_NONE. HyruleScenesPending.h is rewritten without the
 listed scenes.
@@ -59,7 +60,7 @@ FIRST_ENTRANCE_SCENE_ID = 0x6E  # after MM's ENTR_SCENE_LAUNDRY_POOL
 RESERVED_ENTRANCE_SCENE_ID = 0x7F  # entrances 0xFE00-0xFFFF are Player's "return" exits
 FIRST_MAP_SELECT_INDEX = 102  # after MM's scenes in Better Map Select
 
-SCENE_ENTRY = re.compile(r"^/\* (0x[0-9A-Fa-f]+) \*/ DEFINE_SCENE\((\w+),\s*\w+,\s*(\w+)")
+SCENE_ENTRY = re.compile(r"^/\* (0x[0-9A-Fa-f]+) \*/ DEFINE_SCENE\((\w+),\s*\w+,\s*(\w+),\s*(\w+)")
 ENTRANCE_ENTRY = re.compile(
     r"^/\* (0x[0-9A-Fa-f]+) \*/ DEFINE_ENTRANCE\((\w+), (\w+), (\d+), (true|false), (true|false), "
     r"(TRANS_TYPE_\w+(?:\([^)]*\))?), (TRANS_TYPE_\w+(?:\([^)]*\))?)\)$"
@@ -99,12 +100,12 @@ def human(enum):
 
 
 def soh_scenes(soh_dir):
-    """Maps each OoT scene enum to its file name and OoT id."""
+    """Maps each OoT scene enum to its file name, OoT id and OoT draw config (SDC_*)."""
     files = {}
     for line in open(os.path.join(soh_dir, "scene_table.h")):
         m = SCENE_ENTRY.match(line.strip())
         if m:
-            files[m.group(3)] = (m.group(2), int(m.group(1), 16))
+            files[m.group(3)] = (m.group(2), int(m.group(1), 16), m.group(4))
     return files
 
 
@@ -154,7 +155,7 @@ def gen_scene_table(files):
     for i, scene in enumerate(SCENES):
         lines.append(f"// {human(scene)}")
         lines.append(
-            f"/* 0x{FIRST_SCENE_ID + i:02X} */ DEFINE_SCENE({files[scene][0]}, {scene}_Oot, 0, SCENE_DRAW_CFG_DEFAULT, "
+            f"/* 0x{FIRST_SCENE_ID + i:02X} */ DEFINE_SCENE({files[scene][0]}, {scene}_Oot, 0, SCENE_DRAW_CFG_HYRULE_OOT, "
             f"RESTRICTIONS_NONE, PERSISTENT_CYCLE_FLAGS_NONE, {scene[len('SCENE_'):]}_Oot, "
             f"{FIRST_MAP_SELECT_INDEX + i}, \"{human(scene)} (OoT)\")")
     return "\n".join(lines) + "\n"
@@ -249,6 +250,15 @@ def gen_oot_scene_ids(files):
     return "\n".join(lines) + "\n"
 
 
+def gen_oot_scene_draw_configs(files):
+    lines = [
+        "// 3Ship [Hyrule] OoT's scene draw config (SDC_*) for each OoT scene in the scene table, from",
+        "// SCENE_KOKIRI_FOREST_Oot on; included by hyrule/HyruleSceneDraw.c. " + GENERATED.format("scene_table.h"),
+    ]
+    lines.extend(f"/* {scene}_Oot */ {files[scene][2]}," for scene in SCENES)
+    return "\n".join(lines) + "\n"
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("soh_tables", help="SoH's soh/include/tables directory")
@@ -263,6 +273,7 @@ def main():
         os.path.join("hyrule", "HyruleEntranceTable.inc"): gen_entrance_table(groups, ids),
         os.path.join("hyrule", "HyruleOotEntrances.inc"): gen_oot_entrance_map(groups, ids),
         os.path.join("hyrule", "HyruleOotSceneIds.inc"): gen_oot_scene_ids(files),
+        os.path.join("hyrule", "HyruleOotSceneDrawConfigs.inc"): gen_oot_scene_draw_configs(files),
     }
     for path, text in outputs.items():
         with open(os.path.join(ROOT, path), "w") as f:

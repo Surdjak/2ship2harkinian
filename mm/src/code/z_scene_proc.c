@@ -1,5 +1,6 @@
 #include "prevent_bss_reordering.h"
 #include "global.h"
+#include "HyruleSceneDraw.h" // 3Ship [Hyrule]
 #include "BenPort.h"
 #include "2s2h/BenGui/CosmeticEditor.h"
 #include <string.h>
@@ -36,6 +37,7 @@ void Scene_Draw(PlayState* play) {
         Scene_DrawConfig5, // unused
         Scene_DrawConfigGreatBayTemple,
         Scene_DrawConfigMatAnimManualStep,
+        Hyrule_SceneDrawOot, // 3Ship [Hyrule]
     };
 
     sceneDrawConfigHandlers[play->sceneConfig](play);
