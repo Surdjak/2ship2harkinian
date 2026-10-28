@@ -286,6 +286,16 @@ void Harness_LogState(const HarnessFrameState& state) {
     if (state.hasPlayer) {
         line["player"] = PlayerToJson(state.player);
     }
+    if (state.env.valid) {
+        const HarnessEnv& e = state.env;
+        line["env"] = {
+            { "skybox", { e.skyboxConfig, e.changeSkyboxNextConfig, e.changeSkyboxState } },
+            { "light", { e.lightConfig, e.changeLightNextConfig, e.changeLightEnabled } },
+            { "weather", e.weatherMode },
+            { "precip", { e.precipitation[0], e.precipitation[1], e.precipitation[2], e.precipitation[3] } },
+            { "lightning", e.lightning },
+        };
+    }
     line["actors"] = actors;
     line["flagHashes"] = flagHashes;
     if (!flagData.empty()) {

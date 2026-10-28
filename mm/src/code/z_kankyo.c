@@ -25,6 +25,8 @@ typedef struct {
 #include "global.h"
 #include "sys_cfb.h"
 #include "BenPort.h"
+#include "HyruleScenes.h"
+#include "HyrulePort.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "objects/gameplay_field_keep/gameplay_field_keep.h"
 
@@ -798,6 +800,50 @@ void Environment_Init(PlayState* play2, EnvironmentContext* envCtx, s32 arg2) {
     } else {
         gWeatherMode = WEATHER_MODE_CLEAR;
         Environment_StopStormNatureAmbience(play);
+    }
+
+    // 3Ship [Hyrule] OoT's weather modes (En_Weather_Tag's, WEATHER_MODE_OOT) are kept only through an exit
+    // (retainWeatherMode) into an OoT scene. There, outside the cutscene layers, a kept mode brings back its sky,
+    // light and precipitation at once, as OoT's Environment_Init does.
+    if (gWeatherMode >= WEATHER_MODE_OOT(0)) {
+        if (!gSaveContext.retainWeatherMode || (Hyrule_GetOotSceneId(play->sceneId) < 0)) {
+            gWeatherMode = WEATHER_MODE_CLEAR;
+        } else if (gSaveContext.sceneLayer < 4) {
+            u8 lightConfig = 0;
+
+            switch (gWeatherMode - WEATHER_MODE_OOT(0)) {
+                case 1:
+                    lightConfig = 3;
+                    break;
+                case 2:
+                case 3:
+                case 4:
+                    lightConfig = 2;
+                    break;
+                case 5:
+                    lightConfig = 4;
+                    break;
+                default:
+                    break;
+            }
+            if (lightConfig != 0) {
+                envCtx->skyboxConfig = envCtx->changeSkyboxNextConfig = 1;
+                envCtx->lightConfig = envCtx->changeLightNextConfig = lightConfig;
+                play->envCtx.precipitation[PRECIP_SNOW_MAX] = 0;
+                play->envCtx.precipitation[PRECIP_SNOW_CUR] = 0;
+            }
+            if (play->skyboxId == SKYBOX_NORMAL_SKY) {
+                if (gWeatherMode == WEATHER_MODE_OOT(3)) {
+                    play->envCtx.precipitation[PRECIP_SNOW_CUR] = play->envCtx.precipitation[PRECIP_SNOW_MAX] = 0x40;
+                } else if (gWeatherMode == WEATHER_MODE_OOT(4)) {
+                    play->envCtx.precipitation[PRECIP_RAIN_MAX] = 0x14;
+                    play->envCtx.precipitation[PRECIP_RAIN_CUR] = 0x14;
+                } else if (gWeatherMode == WEATHER_MODE_OOT(5)) {
+                    play->envCtx.precipitation[PRECIP_RAIN_MAX] = 0x1E;
+                    play->envCtx.precipitation[PRECIP_RAIN_CUR] = 0x1E;
+                }
+            }
+        }
     }
 
     gInterruptSongOfStorms = false;
@@ -2198,7 +2244,9 @@ void Environment_DrawRain(PlayState* play, View* view, GraphicsContext* gfxCtx) 
                 Environment_DrawRainImpl(play, view, gfxCtx);
             }
         } else if (!(GET_ACTIVE_CAM(play)->stateFlags & CAM_STATE_UNDERWATER)) {
-            if ((Environment_GetStormState(play) != STORM_STATE_OFF) &&
+            // 3Ship [Hyrule] OoT's scenes rain whenever En_Weather_Tag makes it rain: OoT's Environment_DrawRain has no
+            // storm state.
+            if (((Environment_GetStormState(play) != STORM_STATE_OFF) || (Hyrule_GetOotSceneId(play->sceneId) >= 0)) &&
                 (play->envCtx.precipitation[PRECIP_SNOW_CUR] == 0)) {
                 Environment_DrawRainImpl(play, view, gfxCtx);
             }

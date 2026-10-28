@@ -120,8 +120,7 @@ static u16 Inventory_GetMmItem(u16 item) {
     return (mmItem != 0) ? mmItem : ITEM_NONE;
 }
 
-// OoT indexes dungeon items by dungeon scene; boss rooms count as their dungeon.
-static s32 Inventory_GetDungeonIndexOot(PlayState* play) {
+s32 Inventory_GetDungeonIndexOot(PlayState* play) {
     s32 ootScene = (play != NULL) ? Hyrule_GetOotSceneId(play->sceneId) : -1;
 
     if ((ootScene >= 0x00) && (ootScene <= 0x0D)) { // SCENE_DEKU_TREE to SCENE_INSIDE_GANONS_CASTLE

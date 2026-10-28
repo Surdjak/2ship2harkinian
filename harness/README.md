@@ -102,7 +102,8 @@ while Link is in a cutscene) can part from the recording at that point.
 
 A puppet log can also be written by hand to hold Player in one place, such as in front of an NPC,
 while `HARNESS_REPLAY` presses buttons: one line per scene frame with `gs`, `scene`, `sf` and a
-`player` object (`pos`, `rot`, `speedXZ`, `yaw`).
+`player` object (`pos`, `rot`, `speedXZ`, `yaw`). When the puppet log ends, Player goes back to where its own
+movement left it.
 
 ## State log
 
@@ -112,6 +113,9 @@ Each line is one logic frame:
 - **`gs`, `scene`, `room`, `sf`:** where the game is, with `sf` counting frames since the scene was entered.
 - **`rng`:** the game's PRNG state.
 - **`player`:** position, shape rotation, forward speed, yaw, state flags and form (MM transformation; OoT `linkAge`).
+- **`env`:** the weather: the skybox and light configs (current, next, and the change state or flag), OoT's weather
+  mode (this fork logs its `WEATHER_MODE_OOT` values as OoT's), the rain and snow counts, and the lightning mode.
+  `statediff.py` compares it only when both logs have it.
 - **`actors`:** every actor with category, id, params, room, flags, position and shape rotation.
 - **`flagHashes`:** a hash of each save flag block every frame. The block's bytes are written under
   `flags` only on frames where it changes. This fork logs OoT's flags under SoH's names (`eventChkInf`,

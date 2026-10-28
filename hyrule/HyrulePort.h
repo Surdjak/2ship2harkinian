@@ -17,6 +17,11 @@
 // Link cannot offer OoT's trade items yet: they need a C-button, which needs the pause menu (EXCH_ITEM_NONE).
 #define ACTOR_GET_PLAYER_EXCHANGE_ITEM_ID_OOT(play) 0
 
+// OoT's weather modes (En_Weather_Tag's, 1 to 5) in MM's gWeatherMode, past MM's own: MM's Environment_Init
+// would act on them as its own when it keeps the weather (retainWeatherMode or a respawn), and clears them
+// otherwise, as OoT's clears its own.
+#define WEATHER_MODE_OOT(mode) (0x10 + (mode))
+
 // OoT's day and night are MM's.
 #define IS_DAY_OOT (!gSaveContext.save.isNight)
 #define IS_NIGHT_OOT (gSaveContext.save.isNight)

@@ -64,6 +64,21 @@ struct HarnessActor {
     int16_t rot[3];
 };
 
+// The weather, as OoT's EnvironmentContext names it (MM kept the names and layout). Logged when the adapter sets
+// valid, so logs from before it existed still compare.
+struct HarnessEnv {
+    bool valid = false;
+    uint8_t skyboxConfig;
+    uint8_t changeSkyboxNextConfig;
+    uint8_t changeSkyboxState;
+    uint8_t lightConfig;
+    uint8_t changeLightNextConfig;
+    uint8_t changeLightEnabled;
+    uint8_t weatherMode; // OoT's gWeatherMode
+    uint8_t precipitation[4]; // rain max and current, snow current and max
+    uint8_t lightning; // OoT's lightningMode, MM's lightningState
+};
+
 struct HarnessFlagBlock {
     std::string name;
     std::vector<uint8_t> data;
@@ -77,6 +92,7 @@ struct HarnessFrameState {
     uint32_t rng = 0;
     bool hasPlayer = false;
     HarnessPlayer player = {};
+    HarnessEnv env = {};
     std::vector<HarnessActor> actors;
     std::vector<HarnessFlagBlock> flags;
 };

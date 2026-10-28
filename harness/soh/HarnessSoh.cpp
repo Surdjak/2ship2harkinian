@@ -47,6 +47,18 @@ void CaptureState(HarnessFrameState& state) {
     state.sceneFrame = sSceneFrame;
     AddFlags(state, "liveSceneFlags", play->actorCtx.flags);
 
+    HarnessEnv& e = state.env;
+    e.valid = true;
+    e.skyboxConfig = play->envCtx.unk_17;
+    e.changeSkyboxNextConfig = play->envCtx.unk_18;
+    e.changeSkyboxState = play->envCtx.unk_19;
+    e.lightConfig = play->envCtx.unk_1F;
+    e.changeLightNextConfig = play->envCtx.unk_20;
+    e.changeLightEnabled = play->envCtx.unk_21;
+    e.weatherMode = gWeatherMode;
+    memcpy(e.precipitation, play->envCtx.unk_EE, sizeof(e.precipitation));
+    e.lightning = play->envCtx.lightningMode;
+
     Player* player = GET_PLAYER(play);
     if (player != nullptr) {
         state.hasPlayer = true;

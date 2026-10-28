@@ -10,7 +10,7 @@ import argparse
 import json
 import sys
 
-SECTIONS = ("gs", "scene", "room", "rng", "player", "actors", "flags")
+SECTIONS = ("gs", "scene", "room", "rng", "player", "env", "actors", "flags")
 
 
 def load(path):
@@ -85,6 +85,8 @@ def compare(a, b, ignore, ids, ordered, limit):
         elif section == "flags":
             diff_flags({k: v for k, v in a["flags"].items() if f"flags.{k}" not in ignore},
                        {k: v for k, v in b["flags"].items() if f"flags.{k}" not in ignore}, diffs, limit)
+        elif section == "env" and ("env" not in a or "env" not in b):
+            continue  # logs from before the environment was logged
         else:
             diff_values(a.get(section), b.get(section), section, diffs, limit)
     return diffs

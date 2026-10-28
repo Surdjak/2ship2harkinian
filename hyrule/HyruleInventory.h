@@ -168,6 +168,10 @@ s32 Hyrule_OwnsGreatFairySword(void);
 // The Great Fairy's Sword stolen: no longer owned, and if worn, MM's own sword (or none) goes back on B.
 void Hyrule_LoseGreatFairySword(struct PlayState* play);
 
+// OoT's dungeon index for dungeon items and small keys (OoT's mapIndex): the dungeon's scene, boss rooms
+// counting as their dungeon, or -1 outside dungeons.
+s32 Inventory_GetDungeonIndexOot(struct PlayState* play);
+
 // Replaces an item on Link's C and D-pad buttons, as OoT does when an item in a slot changes.
 void Inventory_ReplaceButtonItem(struct PlayState* play, u16 oldItem, u16 newItem);
 

@@ -11,6 +11,7 @@
 extern "C" {
 #include "variables.h"
 #include "rand.h"
+#include "HyrulePort.h"
 }
 
 namespace {
@@ -46,6 +47,19 @@ void CaptureState(HarnessFrameState& state) {
     state.room = play->roomCtx.curRoom.num;
     state.sceneFrame = sSceneFrame;
     AddFlags(state, "liveSceneFlags", play->actorCtx.sceneFlags);
+
+    HarnessEnv& e = state.env;
+    e.valid = true;
+    e.skyboxConfig = play->envCtx.skyboxConfig;
+    e.changeSkyboxNextConfig = play->envCtx.changeSkyboxNextConfig;
+    e.changeSkyboxState = play->envCtx.changeSkyboxState;
+    e.lightConfig = play->envCtx.lightConfig;
+    e.changeLightNextConfig = play->envCtx.changeLightNextConfig;
+    e.changeLightEnabled = play->envCtx.changeLightEnabled;
+    // 3Ship [Hyrule] OoT's weather modes are kept past MM's (WEATHER_MODE_OOT); log them as OoT's.
+    e.weatherMode = (gWeatherMode >= WEATHER_MODE_OOT(0)) ? gWeatherMode - WEATHER_MODE_OOT(0) : gWeatherMode;
+    memcpy(e.precipitation, play->envCtx.precipitation, sizeof(e.precipitation));
+    e.lightning = play->envCtx.lightningState;
 
     Player* player = GET_PLAYER(play);
     if (player != nullptr) {
