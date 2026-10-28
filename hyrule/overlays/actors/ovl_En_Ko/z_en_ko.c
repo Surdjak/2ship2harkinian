@@ -498,14 +498,14 @@ static u16 EnKo_GetTextId(PlayState* play, Actor* thisx) {
     if (ENKO_TYPE == ENKO_TYPE_CHILD_0 || ENKO_TYPE == ENKO_TYPE_CHILD_2 || ENKO_TYPE == ENKO_TYPE_CHILD_3 ||
         ENKO_TYPE == ENKO_TYPE_CHILD_4 || ENKO_TYPE == ENKO_TYPE_CHILD_7 || ENKO_TYPE == ENKO_TYPE_CHILD_8 ||
         ENKO_TYPE == ENKO_TYPE_CHILD_11) {
-        faceReaction = Text_GetFaceReaction(play, 0x13);
+        faceReaction = Text_GetFaceReactionOot(play, 0x13);
     }
     if (ENKO_TYPE == ENKO_TYPE_CHILD_1 || ENKO_TYPE == ENKO_TYPE_CHILD_5 || ENKO_TYPE == ENKO_TYPE_CHILD_6 ||
         ENKO_TYPE == ENKO_TYPE_CHILD_9 || ENKO_TYPE == ENKO_TYPE_CHILD_10) {
-        faceReaction = Text_GetFaceReaction(play, 0x14);
+        faceReaction = Text_GetFaceReactionOot(play, 0x14);
     }
     if (ENKO_TYPE == ENKO_TYPE_CHILD_FADO) {
-        faceReaction = Text_GetFaceReaction(play, 0x12);
+        faceReaction = Text_GetFaceReactionOot(play, 0x12);
     }
     if (faceReaction != 0) {
         return faceReaction;
@@ -977,7 +977,7 @@ static void func_80A9877C(EnKo* this, PlayState* play) {
         ENKO_TYPE == ENKO_TYPE_CHILD_FADO && IN_LOST_WOODS(play)) {
         this->actor.textId = INV_CONTENT_OOT(ITEM_TRADE_ADULT_Oot) > ITEM_ODD_POTION_Oot ? TEXT_OOT(0x10B9) : TEXT_OOT(0x10DF);
 
-        if (ACTOR_GET_PLAYER_EXCHANGE_ITEM_ID_OOT(play) == ENKO_TYPE_CHILD_9) {
+        if (Actor_GetPlayerExchangeItemIdOot(play) == ENKO_TYPE_CHILD_9) {
             this->actor.textId = (GET_INFTABLE_OOT(INFTABLE_BC_Oot)) ? TEXT_OOT(0x10B8) : TEXT_OOT(0x10B7);
             this->unk_210 = 0;
         }

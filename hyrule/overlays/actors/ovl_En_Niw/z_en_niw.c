@@ -1117,7 +1117,7 @@ static void EnNiw_Draw(Actor* thisx, PlayState* play) {
     GraphicsContext* gfxCtx = play->state.gfxCtx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, EnNiw_OverrideLimbDraw, NULL, this);
+    SkelAnime_DrawSkeletonOpaOot(play, &this->skelAnime, EnNiw_OverrideLimbDraw, NULL, this);
 
     if (this->actionFunc == func_80AB6450) {
         func_800BC620(&this->actor.world.pos, &scale, 255, play);

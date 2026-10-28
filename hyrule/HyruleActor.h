@@ -14,9 +14,22 @@ typedef struct BodyBreak {
     /* 0x14 */ s32 prevLimbIndex;
 } BodyBreak;
 
+// OoT's animation table entry (z64.h); MM's AnimationInfo also has a play speed and a start frame.
+typedef struct AnimationFrameCountInfo {
+    /* 0x00 */ AnimationHeader* animation;
+    /* 0x04 */ f32 frameCount;
+    /* 0x08 */ u8 mode;
+    /* 0x0C */ f32 morphFrames;
+} AnimationFrameCountInfo;
+
 #define BODYBREAK_OBJECT_DEFAULT -1 // use the same object as the actor
 #define BODYBREAK_STATUS_READY -1
 #define BODYBREAK_STATUS_FINISHED 0
+
+// SoH's SkelAnime_DrawSkeletonOpa: draws a normal or a flexible skeleton (MM's SkelAnime keeps dListCount only for
+// flexible ones), so that ported actors need not know which theirs is.
+void SkelAnime_DrawSkeletonOpaOot(PlayState* play, SkelAnime* skelAnime, OverrideLimbDrawOpa overrideLimbDraw,
+                                  PostLimbDrawOpa postLimbDraw, void* arg);
 
 // Fades alpha in or out by Player's distance (the camera's in cutscenes) and enables attention to match.
 s16 Actor_UpdateAlphaByDistance(Actor* actor, PlayState* play, s16 alpha, f32 radius);

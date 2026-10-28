@@ -1535,7 +1535,7 @@ static void EnMb_Draw(Actor* thisx, PlayState* play) {
     EnMb* this = (EnMb*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, NULL, EnMb_PostLimbDraw, thisx);
+    SkelAnime_DrawSkeletonOpaOot(play, &this->skelAnime, NULL, EnMb_PostLimbDraw, thisx);
 
     if (thisx->params != ENMB_TYPE_CLUB) {
         if (this->attack > ENMB_ATTACK_NONE) {

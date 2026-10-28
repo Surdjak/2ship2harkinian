@@ -366,7 +366,7 @@ static s16 func_80AAAC78(EnMd* this, PlayState* play) {
 }
 
 static u16 EnMd_GetTextKokiriForest(PlayState* play, EnMd* this) {
-    u16 reactionText = Text_GetFaceReaction(play, 0x11);
+    u16 reactionText = Text_GetFaceReactionOot(play, 0x11);
 
     if (reactionText != 0) {
         return reactionText;

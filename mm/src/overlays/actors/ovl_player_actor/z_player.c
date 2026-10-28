@@ -8283,10 +8283,14 @@ s32 Player_ActionHandler_13(Player* this, PlayState* play) {
                     this->itemAction = heldItemTemp;
                     this->csId = CS_ID_NONE;
 
-                    if ((talkActor != NULL) && (((this->exchangeItemAction == PLAYER_IA_MAGIC_BEANS) &&
-                                                 (this->itemAction == PLAYER_IA_MAGIC_BEANS)) ||
-                                                ((this->exchangeItemAction != PLAYER_IA_MAGIC_BEANS) &&
-                                                 (this->exchangeItemAction > PLAYER_IA_NONE)))) {
+                    // 3Ship [Hyrule] An OoT actor takes only what it asked for, by OoT's rule.
+                    if ((talkActor != NULL) &&
+                        ((talkActor->id >= ACTOR_OOT_BASE)
+                             ? Hyrule_IsExchangeAcceptedOot(this->exchangeItemAction, this->itemAction)
+                             : (((this->exchangeItemAction == PLAYER_IA_MAGIC_BEANS) &&
+                                 (this->itemAction == PLAYER_IA_MAGIC_BEANS)) ||
+                                ((this->exchangeItemAction != PLAYER_IA_MAGIC_BEANS) &&
+                                 (this->exchangeItemAction > PLAYER_IA_NONE))))) {
                         this->stateFlags1 |= (PLAYER_STATE1_20000000 | PLAYER_STATE1_TALKING);
                         if (this->exchangeItemAction == PLAYER_IA_MAGIC_BEANS) {
                             Inventory_ChangeAmmo(ITEM_MAGIC_BEANS, -1);

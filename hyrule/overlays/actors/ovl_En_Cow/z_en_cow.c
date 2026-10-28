@@ -384,12 +384,12 @@ static void EnCow_Draw(Actor* thisx, PlayState* play) {
     EnCow* this = (EnCow*)thisx;
 
     Gfx_SetupDL37_Opa(play->state.gfxCtx);
-    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, EnCow_OverrideLimbDraw, EnCow_PostLimbDraw, this);
+    SkelAnime_DrawSkeletonOpaOot(play, &this->skelAnime, EnCow_OverrideLimbDraw, EnCow_PostLimbDraw, this);
 }
 
 static void EnCow_DrawTail(Actor* thisx, PlayState* play) {
     EnCow* this = (EnCow*)thisx;
 
     Gfx_SetupDL37_Opa(play->state.gfxCtx);
-    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, NULL, NULL, this);
+    SkelAnime_DrawSkeletonOpaOot(play, &this->skelAnime, NULL, NULL, this);
 }

@@ -1281,7 +1281,7 @@ static void EnDekubaba_Draw(Actor* thisx, PlayState* play) {
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
     if (this->actionFunc != EnDekubaba_DeadStickDrop) {
-        SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, NULL, EnDekubaba_PostLimbDraw, this);
+        SkelAnime_DrawSkeletonOpaOot(play, &this->skelAnime, NULL, EnDekubaba_PostLimbDraw, this);
 
         if (this->actionFunc == EnDekubaba_Wait) {
             EnDekubaba_DrawStemRetracted(this, play);

@@ -207,6 +207,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 17 | Kakariko to Death Mountain scenery: `En_River_Sound` (river, waterfall and other place sounds), `Obj_Kibako2` (big crates), `En_Hata` (flag), `Bg_Bombwall` (bombable walls), `Bg_Spot16_Doughnut` (Death Mountain's cloud ring), Kakariko's `Bg_Spot01_Fusya` (windmill), `Bg_Spot01_Idohashira`, `Bg_Spot01_Idomizu` and `Bg_Spot01_Idosoko` (the well's beam, water and stone), `Bg_Spot01_Objects2` (buildings under construction), `Bg_Gate_Shutter` (Death Mountain gate), `Bg_Spot03_Taki` (Zora's River waterfall), `Bg_Spot09_Obj` (Gerudo Valley's bridges and tent), `Bg_Umajump` (horse jumps), `Bg_Ingate` (Lon Lon Ranch gate), `Obj_Syokudai` (torches) |
 | 18 | Their creatures and contraptions: `En_Niw` (cuccos) and `En_Attack_Niw` (the angry swarm), `Obj_Mure` (groups of fish, bugs and butterflies) with `En_Fish`, `En_Insect` and `En_Butte`, `Obj_Makekinsuta` (soft soil), `En_Crow` (Guays), `En_Cow`, `En_Bombf` (bomb flowers), `Bg_Spot16_Bombstone` (Dodongo's Cavern boulder), `En_Encount2` and `En_Fire_Rock` (Death Mountain's falling rocks), `Bg_Spot06_Objects` (Lake Hylia's water and lock), `Bg_Spot15_Rrbox` (pushable crates) |
 | 19 | `En_Door` (doors with handles) and `En_Weather_Tag` (clouds, rain, snow and storms near Link) |
+| 20 | Kakariko's people: `En_Heishi2` (the Death Mountain gate guard, and OoT's other guards), `En_Heishi4` (guards), `En_Toryo` (the boss carpenter), `En_Daiku_Kakariko` (carpenters), `En_Ani` (the man on the roof), `En_Niw_Lady` (the cucco lady), `En_Hy` (townsfolk); `Bg_Spot15_Saku` (Hyrule Castle's gate, which a guard opens) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -415,6 +416,25 @@ Notes:
   leaving Kakariko while cloudy starts Hyrule Field cloudy). MM draws rain only in its storm, so
   `Environment_DrawRain` draws it in OoT's scenes whenever there is some, as OoT does. The skies are MM's (MM's
   config 1 is its cloudy second day).
+
+Wave 20 was checked the same way: the people are SoH's, in the same places, in child and adult Kakariko and at
+Lon Lon Ranch, and adult Kakariko's match on every frame. In child Kakariko a guard turns toward Link before SoH's
+does (the puppet does not copy Player's cutscene state) and the walking carpenters run up to 1.3 units apart (floor
+heights). Under gdb, each one Link faces answers A with OoT's text, and child Link showing Zelda's Letter to the gate
+guard gets OoT's reply and opens the Death Mountain gate. Notes:
+
+- OoT's actors ask for and read exchange items (OoT's `ExchangeItemID`, `HyrulePlayer.h`), which map to MM's item
+  actions both ways (`Hyrule_ExchangeItemToActionOot`, `Actor_GetPlayerExchangeItemIdOot`). MM's Player gives any
+  item to an actor that asked for one; for OoT's actors it keeps OoT's rule (`Hyrule_IsExchangeAcceptedOot`): only
+  the item asked for, a Big Poe for a Poe, and anything for Blue Fire. Ruto's Letter cannot be shown yet.
+- OoT's people react to OoT's masks with OoT's texts (`Text_GetFaceReactionOot`); the Kokiri and Mido used MM's
+  function before, which reads MM's masks.
+- SoH's `SkelAnime_DrawSkeletonOpa` draws flexible skeletons as such; the port tool had made it MM's
+  `SkelAnime_DrawOpa`, which draws the townsfolk's bodies as torn triangles. Ported actors now use
+  `SkelAnime_DrawSkeletonOpaOot` (`HyruleActor.h`), which picks by the skeleton (earlier waves' cuccos, cows, Guays,
+  fish, Wolfos and Moblins included).
+- The beggar's bottles are MM's (`Inventory_HasItemInBottle`); the lost dog uses MM's leftover `dogParams` and
+  `dogIsLost`.
 
 ## Text
 

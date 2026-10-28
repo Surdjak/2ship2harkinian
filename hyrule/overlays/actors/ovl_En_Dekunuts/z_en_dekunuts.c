@@ -531,6 +531,6 @@ static void EnDekunuts_Draw(Actor* thisx, PlayState* play) {
     if (this->actor.params == DEKUNUTS_FLOWER) {
         Gfx_DrawDListOpa(play, gDekuNutsFlowerDL);
     } else {
-        SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, EnDekunuts_OverrideLimbDraw, NULL, this);
+        SkelAnime_DrawSkeletonOpaOot(play, &this->skelAnime, EnDekunuts_OverrideLimbDraw, NULL, this);
     }
 }

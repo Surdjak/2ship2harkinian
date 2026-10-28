@@ -4,6 +4,7 @@
 
 #include "HyruleScenesPending.h"
 #include "HyruleInventory.h"
+#include "HyrulePlayer.h" // OoT's exchange items
 
 // Link's age (docs/ADULT_LINK.md): adult Link is human Link at adult age, as in OoT.
 #define LINK_IS_ADULT_OOT (gSaveContext.save.saveInfo.isAdultOot != 0)
@@ -14,8 +15,6 @@
 // OoT's quest status and inventory, in the shared inventory (HyruleInventory.h).
 #define CHECK_QUEST_ITEM_OOT(item) Hyrule_CheckQuestItemOot(item)
 #define INV_CONTENT_OOT(item) Hyrule_InvContentOot(item)
-// Link cannot offer OoT's trade items yet: they need a C-button, which needs the pause menu (EXCH_ITEM_NONE).
-#define ACTOR_GET_PLAYER_EXCHANGE_ITEM_ID_OOT(play) 0
 
 // OoT's weather modes (En_Weather_Tag's, 1 to 5) in MM's gWeatherMode, past MM's own: MM's Environment_Init
 // would act on them as its own when it keeps the weather (retainWeatherMode or a respawn), and clears them

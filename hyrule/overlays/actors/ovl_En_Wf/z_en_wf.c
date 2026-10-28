@@ -1444,7 +1444,7 @@ static void EnWf_Draw(Actor* thisx, PlayState* play) {
             gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sWolfosWhiteEyeTextures[this->eyeIndex]));
         }
 
-        SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, EnWf_OverrideLimbDraw, EnWf_PostLimbDraw, &this->actor);
+        SkelAnime_DrawSkeletonOpaOot(play, &this->skelAnime, EnWf_OverrideLimbDraw, EnWf_PostLimbDraw, &this->actor);
 
         if (this->fireTimer != 0) {
             this->actor.colorFilterTimer++;

@@ -124,7 +124,8 @@ Not yet:
 - **Using OoT items:** the equipment page ([PAUSE.md](PAUSE.md)) equips OoT's swords, shields, tunics and
   boots, and child Link uses the Deku and Hylian Shields and the Great Fairy's Sword; adult pieces wait
   for the adult body. Player using the Slingshot, Boomerang, Hammer and spells comes item by item after
-  the item page. Mido still accepts any shield, and Link cannot offer OoT's trade items.
+  the item page. Mido still accepts any shield. Link shows OoT's trade items to OoT's people, who take only
+  what they ask for, as in OoT (hyrule/README.md, wave 20); Ruto's Letter cannot be shown yet.
 - **Losing MM's shield** (stolen, eaten) does not clear its ownership yet; MM's sword follows the one worn.
 
 **Next:** the unified pause menu, in [PAUSE.md](PAUSE.md).

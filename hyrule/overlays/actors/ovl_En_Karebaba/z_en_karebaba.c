@@ -480,7 +480,7 @@ static void EnKarebaba_Draw(Actor* thisx, PlayState* play) {
         }
     } else if (this->actionFunc != EnKarebaba_Dead) {
         func_800AE2A0(play, &black, 1, 2);
-        SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, NULL, NULL, NULL);
+        SkelAnime_DrawSkeletonOpaOot(play, &this->skelAnime, NULL, NULL, NULL);
         Matrix_Translate(this->actor.world.pos.x, this->actor.world.pos.y, this->actor.world.pos.z, MTXMODE_NEW);
 
         if ((this->actionFunc == EnKarebaba_Regrow) || (this->actionFunc == EnKarebaba_Grow)) {

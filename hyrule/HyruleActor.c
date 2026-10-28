@@ -501,3 +501,13 @@ s32 BodyBreak_SpawnParts(Actor* actor, BodyBreak* bodyBreak, PlayState* play, s1
 
     return true;
 }
+
+void SkelAnime_DrawSkeletonOpaOot(PlayState* play, SkelAnime* skelAnime, OverrideLimbDrawOpa overrideLimbDraw,
+                                  PostLimbDrawOpa postLimbDraw, void* arg) {
+    if (skelAnime->dListCount != 0) {
+        SkelAnime_DrawFlexOpa(play, skelAnime->skeleton, skelAnime->jointTable, skelAnime->dListCount,
+                              overrideLimbDraw, postLimbDraw, arg);
+    } else {
+        SkelAnime_DrawOpa(play, skelAnime->skeleton, skelAnime->jointTable, overrideLimbDraw, postLimbDraw, arg);
+    }
+}

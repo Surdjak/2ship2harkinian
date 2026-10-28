@@ -511,5 +511,5 @@ static void EnCrow_Draw(Actor* thisx, PlayState* play) {
     EnCrow* this = (EnCrow*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, EnCrow_OverrideLimbDraw, EnCrow_PostLimbDraw, this);
+    SkelAnime_DrawSkeletonOpaOot(play, &this->skelAnime, EnCrow_OverrideLimbDraw, EnCrow_PostLimbDraw, this);
 }

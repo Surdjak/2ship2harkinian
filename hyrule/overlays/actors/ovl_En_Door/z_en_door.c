@@ -359,7 +359,7 @@ static void EnDoor_Draw(Actor* thisx, PlayState* play) {
         OPEN_DISPS(play->state.gfxCtx);
 
         Gfx_SetupDL25_Opa(play->state.gfxCtx);
-        SkelAnime_DrawOpa(play, this->knobDoor.skelAnime.skeleton, this->knobDoor.skelAnime.jointTable, EnDoor_OverrideLimbDraw, NULL, &this->knobDoor.dyna.actor);
+        SkelAnime_DrawSkeletonOpaOot(play, &this->knobDoor.skelAnime, EnDoor_OverrideLimbDraw, NULL, &this->knobDoor.dyna.actor);
         if (this->knobDoor.dyna.actor.world.rot.y != 0) {
             if (this->knobDoor.dyna.actor.world.rot.y > 0) {
                 gSPDisplayList(POLY_OPA_DISP++, gDoorRightDL);

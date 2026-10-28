@@ -401,5 +401,5 @@ static void EnAttackNiw_Draw(Actor* thisx, PlayState* play) {
     EnAttackNiw* this = (EnAttackNiw*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, func_809B5F98, NULL, this);
+    SkelAnime_DrawSkeletonOpaOot(play, &this->skelAnime, func_809B5F98, NULL, this);
 }

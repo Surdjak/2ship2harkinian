@@ -60,10 +60,19 @@ Gfx** Hyrule_GetHandHoldingBoomerangDLs(void);
 #define PLAYER_MASK_NONE_Oot 0
 #define PLAYER_MASK_KEATON_Oot 1
 #define PLAYER_MASK_SKULL_Oot 2
+#define PLAYER_MASK_SPOOKY_Oot 3
 #define PLAYER_MASK_BUNNY_Oot 4
+#define PLAYER_MASK_GORON_Oot 5
+#define PLAYER_MASK_ZORA_Oot 6
+#define PLAYER_MASK_GERUDO_Oot 7
 #define PLAYER_MASK_TRUTH_Oot 8
 // The OoT mask Link wears, for OoT's actors (OoT's Player_GetMask).
 s32 Player_GetMaskOot(struct PlayState* play);
+// OoT's Text_GetFaceReaction: what OoT's people say to the OoT mask Link wears, for one of OoT's reaction sets
+// (an OoT text id with TEXT_OOT_BASE), or 0. MM's function reads MM's masks and returns MM's texts.
+u16 Text_GetFaceReactionOot(struct PlayState* play, u32 reactionSet);
+// Takes the OoT mask off (OoT's Player_UnsetMask).
+void Player_UnsetMaskOot(struct PlayState* play);
 // Puts an OoT mask on, MM's off, or takes the OoT mask off if it is that one (OoT's Player_UseItem).
 void Hyrule_ToggleMaskOot(struct Player* player, s32 mask);
 // Each frame: the mask comes off when its item leaves the buttons or Link changes body (OoT's
@@ -127,6 +136,51 @@ u8 Hyrule_GetAdultBoots(void);
 s32 Hyrule_HoldsBrokenKnife(struct Player* player);
 // A sword hit wears the Giant's Knife down; after 8, it breaks (OoT's func_80842B7C). True if he holds it.
 s32 Hyrule_WearGiantsKnife(struct PlayState* play, struct Player* player);
+
+// OoT's exchange items (OoT's ExchangeItemID): what an OoT actor asks Link to show, and what he showed it. MM's
+// Player keeps item actions in exchangeItemAction instead.
+typedef enum ExchangeItemIdOot {
+    /* 0x00 */ EXCH_ITEM_NONE,
+    /* 0x01 */ EXCH_ITEM_LETTER_ZELDA,
+    /* 0x02 */ EXCH_ITEM_WEIRD_EGG,
+    /* 0x03 */ EXCH_ITEM_CHICKEN,
+    /* 0x04 */ EXCH_ITEM_BEAN,
+    /* 0x05 */ EXCH_ITEM_POCKET_EGG,
+    /* 0x06 */ EXCH_ITEM_POCKET_CUCCO,
+    /* 0x07 */ EXCH_ITEM_COJIRO,
+    /* 0x08 */ EXCH_ITEM_ODD_MUSHROOM,
+    /* 0x09 */ EXCH_ITEM_ODD_POTION,
+    /* 0x0A */ EXCH_ITEM_SAW,
+    /* 0x0B */ EXCH_ITEM_SWORD_BROKEN,
+    /* 0x0C */ EXCH_ITEM_PRESCRIPTION,
+    /* 0x0D */ EXCH_ITEM_FROG,
+    /* 0x0E */ EXCH_ITEM_EYEDROPS,
+    /* 0x0F */ EXCH_ITEM_CLAIM_CHECK,
+    /* 0x10 */ EXCH_ITEM_MASK_SKULL,
+    /* 0x11 */ EXCH_ITEM_MASK_SPOOKY,
+    /* 0x12 */ EXCH_ITEM_MASK_KEATON,
+    /* 0x13 */ EXCH_ITEM_MASK_BUNNY,
+    /* 0x14 */ EXCH_ITEM_MASK_TRUTH,
+    /* 0x15 */ EXCH_ITEM_MASK_GORON,
+    /* 0x16 */ EXCH_ITEM_MASK_ZORA,
+    /* 0x17 */ EXCH_ITEM_MASK_GERUDO,
+    /* 0x18 */ EXCH_ITEM_FISH,
+    /* 0x19 */ EXCH_ITEM_BLUE_FIRE,
+    /* 0x1A */ EXCH_ITEM_BUG,
+    /* 0x1B */ EXCH_ITEM_POE,
+    /* 0x1C */ EXCH_ITEM_BIG_POE,
+    /* 0x1D */ EXCH_ITEM_LETTER_RUTO,
+    /* 0x1E */ EXCH_ITEM_MAX
+} ExchangeItemIdOot;
+// The item action Link shows for an OoT exchange item (PLAYER_IA_NONE for none or Ruto's Letter, which Link cannot
+// show yet), and back (EXCH_ITEM_NONE for an item action OoT has no exchange item for).
+PlayerItemAction Hyrule_ExchangeItemToActionOot(s32 exchangeItem);
+s32 Hyrule_ActionToExchangeItemOot(PlayerItemAction itemAction);
+// OoT's Actor_GetPlayerExchangeItemId: the exchange item Link showed.
+s32 Actor_GetPlayerExchangeItemIdOot(struct PlayState* play);
+// Whether an OoT actor that asked for `offer` takes the item Link shows, by OoT's rule: only the item it asked for,
+// a Big Poe for a Poe, and anything when it asked for Blue Fire. MM's actors take any item.
+s32 Hyrule_IsExchangeAcceptedOot(PlayerItemAction offer, PlayerItemAction shown);
 
 // The B-button item for an equipped sword value, MM's or 3Ship's (ITEM_NONE for none).
 u16 Hyrule_SwordValueToItem(u8 value);

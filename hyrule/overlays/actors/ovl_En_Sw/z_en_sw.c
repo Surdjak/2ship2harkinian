@@ -1015,7 +1015,7 @@ static void EnSw_Draw(Actor* thisx, PlayState* play) {
     }
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, EnSw_OverrideLimbDraw, EnSw_PostLimbDraw, this);
+    SkelAnime_DrawSkeletonOpaOot(play, &this->skelAnime, EnSw_OverrideLimbDraw, EnSw_PostLimbDraw, this);
     if (this->actionFunc == func_80B0E728) {
         func_80B0EEA4(play);
     }

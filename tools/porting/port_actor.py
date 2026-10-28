@@ -80,7 +80,7 @@ RENAMES = [
     (r"\bIS_DAY\b", "IS_DAY_OOT"),
     (r"\bGET_GS_FLAGS\(", "GET_GS_FLAGS_OOT("),
     (r"\bSET_GS_FLAGS\(", "SET_GS_FLAGS_OOT("),
-    (r"\bSkelAnime_DrawSkeletonOpa\(play, &([\w>.-]+), ", r"SkelAnime_DrawOpa(play, \1.skeleton, \1.jointTable, "),
+    (r"\bSkelAnime_DrawSkeletonOpa\(", "SkelAnime_DrawSkeletonOpaOot("),
     (r"\bDEGF_TO_RADF\(", "DEG_TO_RAD("),
     (r"\bIS_NIGHT\b", "IS_NIGHT_OOT"),
     (r"\bactorCtx\.unk_02\b", "actorCtx.unk2"),
@@ -209,7 +209,20 @@ RENAMES = [
     (r"\bLINK_IS_CHILD\b", "LINK_IS_CHILD_OOT"),
     (r"\bCHECK_QUEST_ITEM\((QUEST_\w+)\)", r"CHECK_QUEST_ITEM_OOT(\1_Oot)"),
     (r"\bINV_CONTENT\(", "INV_CONTENT_OOT("),
-    (r"\bActor_GetPlayerExchangeItemId\(", "ACTOR_GET_PLAYER_EXCHANGE_ITEM_ID_OOT("),
+    # OoT's exchange items (HyrulePlayer.h): MM's Player keeps item actions; offers are wrapped in convert().
+    (r"\bActor_GetPlayerExchangeItemId\(", "Actor_GetPlayerExchangeItemIdOot("),
+    (r"\bplayer->exchangeItemId = ([^;]+);", r"player->exchangeItemAction = Hyrule_ExchangeItemToActionOot(\1);"),
+    (r"\bGET_ITEM_NONE\b", "GI_NONE"),
+    (r"\bgSaveContext\.(eventChkInf|itemGetInf|infTable)\[", r"gSaveContext.save.saveInfo.\1Oot["),
+    (r"\bgSaveContext\.rupees\b", "gSaveContext.save.saveInfo.playerData.rupees"),
+    (r"\bCAM_STAT_(\w+)", r"CAM_STATUS_\1"),
+    (r"\bPlay_CameraSetAtEye\(", "Play_SetCameraAtEye("),
+    (r"\bDEGTORAD\(", "DEG_TO_RAD("),
+    (r"\bPlayer_UnsetMask\(", "Player_UnsetMaskOot("),
+    (r"\bPlayer_GetMask\(", "Player_GetMaskOot("),
+    (r"\bText_GetFaceReaction\(", "Text_GetFaceReactionOot("),
+    (r"\bPLAYER_MASK_([A-Z_]+)\b(?!_Oot)", r"PLAYER_MASK_\1_Oot"),
+    (r"\bgSaveContext\.eventInf\[", "gSaveContext.eventInfOot["),
     (r"\bCUR_EQUIP_VALUE\(", "GET_CUR_EQUIP_VALUE("),
     (r"\bGET_EVENTCHKINF_CARPENTERS_FREE_ALL\(\)", "GET_EVENTCHKINF_CARPENTERS_FREE_ALL_OOT()"),
     (r"\bFlags_GetEventChkInf\((\w+)\)", r"GET_EVENTCHKINF_OOT(\1_Oot)"),
@@ -231,9 +244,14 @@ RENAMES = [
 ]
 # Lines that are SoH-only and dropped when they stand alone.
 DROP_LINE = re.compile(r"^\s*#include \"(vt\.h|soh/[^\"]+|overlays/effects/ovl_Effect_Ss_Dead_Sound/[^\"]+)\"\s*$|"
-                       r"^\s*#include <libultraship/bridge/[^>]+>\s*$")
+                       r"^\s*#include <libultraship/bridge/[^>]+>\s*$|"
+                       # SoH's randomizer item entries.
+                       r"^\s*(/\*[^*]*\*/ )?GetItemEntry getItemEntry;\s*$|"
+                       r"^\s*this->getItemEntry = \(GetItemEntry\)(GI_NONE|GET_ITEM_NONE);\s*$")
 TEXT_ID = re.compile(r"\b(0x[1-7][0-9A-Fa-f]{3})\b")
-TEXT_LINE = re.compile(r"\breturn\b|\bcase\b|textId\b")
+# Lines that give text ids: returns, cases, textId assignments, text calls and a GetTextId's `ret`. A statement that
+# goes on to the next lines (a multi-line ternary) is converted to its end.
+TEXT_LINE = re.compile(r"\breturn\b|\bcase\b|textId\b|\bret = |SetText\w*\(|Message_(?:Start|Continue)Textbox\(")
 PROFILE = re.compile(
     r"const ActorInit (\w+)_InitVars = \{\s*(\w+),\s*(\w+),\s*(\w+),\s*(\w+),\s*sizeof\((\w+)\),\s*"
     r"(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),"
@@ -352,15 +370,39 @@ def strip_enhancement_ifs(text):
         text = text[:m.start()] + replacement + text[end:]
 
 
+def wrap_exchange_offers(text):
+    """The exchange item an OoT actor offers to take becomes the item action MM's Actor_OfferTalkExchange takes."""
+    out, i = [], 0
+    for m in re.finditer(r"\bActor_OfferTalkExchange(?:EquiCylinder)?\(", text):
+        if m.start() < i:
+            continue
+        depth, j, last_comma = 1, m.end(), None
+        while depth:
+            c = text[j]
+            if c in "([":
+                depth += 1
+            elif c in ")]":
+                depth -= 1
+            elif c == "," and depth == 1:
+                last_comma = j
+            j += 1
+        arg = text[last_comma + 1:j - 1].strip()
+        out.append(text[i:last_comma + 1] + f" Hyrule_ExchangeItemToActionOot({arg}))")
+        i = j
+    return "".join(out) + text[i:]
+
+
 def convert(text, header):
     out = []
+    in_text = False
     for line in text.splitlines():
         if line.strip() == '#include "soh/frame_interpolation.h"':
             line = '#include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"'
         elif DROP_LINE.match(line):
             continue
-        if TEXT_LINE.search(line) and not line.lstrip().startswith("//"):
+        if (in_text or TEXT_LINE.search(line)) and not line.lstrip().startswith("//"):
             line = TEXT_ID.sub(r"TEXT_OOT(\1)", line)
+            in_text = not re.search(r"[;:{}]\s*(//.*)?$", line)
         out.append(line)
     text = "\n".join(out) + "\n"
     text = re.sub(r'#include "objects/(\w+)/(\w+)\.h"', r'#include "assets/oot/objects/\1/\2.h"', text)
@@ -376,6 +418,8 @@ def convert(text, header):
     for pattern, repl in RENAMES:
         text = re.sub(pattern, repl, text, flags=re.M)
     text = re.sub(r"\bNA_SE_\w+\b", lambda m: SFX_RENAMES.get(m.group(0), m.group(0)), text)
+    text = re.sub(r"\bMATRIX_NEWMTX\(", "Matrix_Finalize(", text)
+    text = wrap_exchange_offers(text)
     # OoT damage tables (32 entries) become MM's 64 with DMG_TABLE_FROM_OOT.
     text = re.sub(r"(DamageTable \w+ = )\{\n((?:[ \t]*(?:/\*[^*]*\*/ )?DMG_ENTRY\([^)]*\),\n){32})\};",
                   lambda m: m.group(1) + "DMG_TABLE_FROM_OOT(\n" + m.group(2).rstrip(",\n") + "\n);", text)
