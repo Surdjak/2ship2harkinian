@@ -209,6 +209,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 19 | `En_Door` (doors with handles) and `En_Weather_Tag` (clouds, rain, snow and storms near Link) |
 | 20 | Kakariko's people: `En_Heishi2` (the Death Mountain gate guard, and OoT's other guards), `En_Heishi4` (guards), `En_Toryo` (the boss carpenter), `En_Daiku_Kakariko` (carpenters), `En_Ani` (the man on the roof), `En_Niw_Lady` (the cucco lady), `En_Hy` (townsfolk); `Bg_Spot15_Saku` (Hyrule Castle's gate, which a guard opens) |
 | 21 | The other people of the six scenes: `En_Ms` (the bean seller), `En_Hs2` (a sulking young man in Kakariko at night), `En_Tg` (the dancing couple), `En_Ge1` and `En_Ge2` (Gerudo guards), `En_Zo` (Lake Hylia's Zoras); `Item_Etcetera` (Ruto's Letter in its bottle, and other items set out), `Elf_Msg2` (Navi's message spots), `Bg_Haka` (gravestones) |
+| 22 | `Obj_Bean` (soft soil for magic beans, and the plants Link rides as an adult), `En_Po_Field` (Hyrule Field's Poes), `Object_Kankyo` (Kokiri Forest's dust motes and OoT's other scene effects), `Bg_Spot00_Hanebasi` (Hyrule Castle's drawbridge) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -458,6 +459,21 @@ night and the couple talk. Notes:
 - OoT's exits by entrance name go through `Hyrule_ExitFromOot` (the port tool turns
   `play->nextEntranceIndex = ENTR_X;` into it); exits to scenes that are not loaded yet lead back to the spawn.
 - MM's circle transition has no starburst, so the Gerudo's capture is MM's plain circle.
+
+Wave 22 was checked the same way: the six scenes diverge from SoH as before, and the regressions match but for the
+random numbers in Kokiri Forest, which the dust motes draw from the first frame. Under gdb: child Link plants a bean
+from the bean seller in Zora's River's soil (the soil takes MM's Magic Beans under OoT's rule), and adult Link rides
+the grown plant up the river and back; a Big Poe rises near adult Link in Hyrule Field at night and flees; the
+drawbridge is up at night for child Link and comes down at dawn; Kokiri Forest has its 64 dust motes. Notes:
+
+- OoT's and MM's `EnvironmentContext` share their layout under other names; the port tool now renames OoT's
+  (`gloomySkyMode` is MM's `stormRequest`, `unk_EE` its `precipitation`...), and OoT's clock (`dayTime`,
+  `gTimeSpeed`) is MM's.
+- A bean is watered by the Song of Storms, which MM's ocarina mode reports (`OCARINA_MODE_PLAYED_STORMS`), as for
+  the grottos. OoT's sprout camera cutscene and bean-plant camera settings are not in MM's camera; the ride keeps
+  Link's camera.
+- `SkelAnime_DrawSkeleton2Oot` and OoT's `D_80116280` (`HyruleActor.h`) draw the Poes' translucent skeletons.
+- Not checked yet: killing a Poe and bottling its soul, which needs arrows from Epona for a Big Poe.
 
 ## Text
 

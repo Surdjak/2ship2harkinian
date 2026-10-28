@@ -511,3 +511,19 @@ void SkelAnime_DrawSkeletonOpaOot(PlayState* play, SkelAnime* skelAnime, Overrid
         SkelAnime_DrawOpa(play, skelAnime->skeleton, skelAnime->jointTable, overrideLimbDraw, postLimbDraw, arg);
     }
 }
+
+Gfx* SkelAnime_DrawSkeleton2Oot(PlayState* play, SkelAnime* skelAnime, OverrideLimbDraw overrideLimbDraw,
+                                PostLimbDraw postLimbDraw, void* arg, Gfx* gfx) {
+    if (skelAnime->dListCount != 0) {
+        return SkelAnime_DrawFlex(play, skelAnime->skeleton, skelAnime->jointTable, skelAnime->dListCount,
+                                  overrideLimbDraw, postLimbDraw, arg, gfx);
+    }
+    return SkelAnime_Draw(play, skelAnime->skeleton, skelAnime->jointTable, overrideLimbDraw, postLimbDraw, arg, gfx);
+}
+
+Gfx D_80116280_Oot[] = {
+    gsDPSetRenderMode(G_RM_FOG_SHADE_A, AA_EN | Z_CMP | Z_UPD | IM_RD | CLR_ON_CVG | CVG_DST_WRAP | ZMODE_XLU |
+                                            FORCE_BL | GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA)),
+    gsDPSetAlphaCompare(G_AC_THRESHOLD),
+    gsSPEndDisplayList(),
+};

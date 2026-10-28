@@ -30,6 +30,11 @@ typedef struct AnimationFrameCountInfo {
 // flexible ones), so that ported actors need not know which theirs is.
 void SkelAnime_DrawSkeletonOpaOot(PlayState* play, SkelAnime* skelAnime, OverrideLimbDrawOpa overrideLimbDraw,
                                   PostLimbDrawOpa postLimbDraw, void* arg);
+// SoH's SkelAnime_DrawSkeleton2: the same, into a display list given and returned.
+Gfx* SkelAnime_DrawSkeleton2Oot(PlayState* play, SkelAnime* skelAnime, OverrideLimbDraw overrideLimbDraw,
+                                PostLimbDraw postLimbDraw, void* arg, Gfx* gfx);
+// OoT's D_80116280: the render mode translucent skeletons draw with (Poes'), for segment 0x0C.
+extern Gfx D_80116280_Oot[];
 
 // Fades alpha in or out by Player's distance (the camera's in cutscenes) and enables attention to match.
 s16 Actor_UpdateAlphaByDistance(Actor* actor, PlayState* play, s16 alpha, f32 radius);

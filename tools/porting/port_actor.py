@@ -170,6 +170,21 @@ RENAMES = [
     (r"\bview\.lookAt\b", "view.at"),
     # OoT's roomCtx.unk_74 (data cutscenes and actors pass to the scene draw config) is MM's unk7A.
     (r"\broomCtx\.unk_74\b", "roomCtx.unk7A"),
+    # OoT's and MM's EnvironmentContext share their layout under other names.
+    (r"\benvCtx\.unk_17\b", "envCtx.skyboxConfig"),
+    (r"\benvCtx\.unk_18\b", "envCtx.changeSkyboxNextConfig"),
+    (r"\benvCtx\.unk_19\b", "envCtx.changeSkyboxState"),
+    (r"\benvCtx\.unk_1A\b", "envCtx.changeSkyboxTimer"),
+    (r"\benvCtx\.indoors\b", "envCtx.lightMode"),
+    (r"\benvCtx\.unk_1F\b", "envCtx.lightConfig"),
+    (r"\benvCtx\.unk_20\b", "envCtx.changeLightNextConfig"),
+    (r"\benvCtx\.unk_21\b", "envCtx.changeLightEnabled"),
+    (r"\benvCtx\.unk_22\b", "envCtx.changeLightTimer"),
+    (r"\benvCtx\.unk_24\b", "envCtx.changeDuration"),
+    (r"\benvCtx\.gloomySkyMode\b", "envCtx.stormRequest"),
+    (r"\benvCtx\.unk_DE\b", "envCtx.stormState"),
+    (r"\benvCtx\.lightningMode\b", "envCtx.lightningState"),
+    (r"\benvCtx\.unk_EE\b", "envCtx.precipitation"),
     (r"\benvCtx\.adjAmbientColor\b", "envCtx.adjLightSettings.ambientColor"),
     (r"\benvCtx\.adjLight1Color\b", "envCtx.adjLightSettings.light1Color"),
     (r"\benvCtx\.adjFogColor\b", "envCtx.adjLightSettings.fogColor"),
@@ -226,6 +241,13 @@ RENAMES = [
     (r"\bPlayer_GetMask\(", "Player_GetMaskOot("),
     (r"\bText_GetFaceReaction\(", "Text_GetFaceReactionOot("),
     (r"\bEffectSsKiraKira_", "EffectSsKirakira_"),
+    # OoT's clock is MM's.
+    (r"\bgSaveContext\.dayTime\b", "gSaveContext.save.time"),
+    (r"\bgTimeSpeed\b", "R_TIME_SPEED"),
+    (r"\bSkelAnime_DrawSkeleton2\(", "SkelAnime_DrawSkeleton2Oot("),
+    (r"\bD_80116280\b", "D_80116280_Oot"),
+    (r"\bSEG_ADDR\(1, 0\)", "D_01000000_TO_SEGMENTED"),
+    (r"\bAudio_StopSfxByPosAndId\(", "AudioSfx_StopByPosAndId("),
     (r"\bBEANS_BOUGHT\b", "BEANS_BOUGHT_OOT"),
     (r"\bHIGH_SCORE\((HS_\w+)\)", r"HIGH_SCORE_OOT(\1_Oot)"),
     # MM's circle transition has no starburst, colour or speed parameters.
@@ -303,13 +325,16 @@ def convert_entrances(text):
     text = re.sub(r"play->nextEntranceIndex = (ENTR_\w+);",
                   lambda m: f"play->nextEntrance = Hyrule_ExitFromOot(0x{ENTRANCES[m.group(1)]:03X}); // OoT's {m.group(1)}",
                   text)
-    return re.sub(r"gSaveContext\.entranceIndex == (ENTR_\w+)",
-                  lambda m: f"gSaveContext.save.entrance == Hyrule_EntranceFromOot(0x{ENTRANCES[m.group(1)]:03X} /* {m.group(1)} */)",
+    return re.sub(r"gSaveContext\.entranceIndex ([!=]=) (ENTR_\w+)",
+                  lambda m: f"gSaveContext.save.entrance {m.group(1)} Hyrule_EntranceFromOot(0x{ENTRANCES[m.group(2)]:03X} /* {m.group(2)} */)",
                   text)
 
 
 def strip_rando_ifs(text):
-    """SoH's randomizer-only blocks without an else (if (IS_RANDO) { ... }, no nested braces) are left out."""
+    """SoH's randomizer-only blocks without an else (if (IS_RANDO) { ... }, no nested braces) are left out, as are
+    randomizer-only terms of conditions and SoH's GameInteractor event calls."""
+    text = re.sub(r"\s*&&\s*!\(?IS_RANDO\)?", "", text)
+    text = re.sub(r"\n[ \t]*GameInteractor_Execute\w*\([^;]*\);", "", text)
     return re.sub(r"\n[ \t]*if \(IS_RANDO\) \{\n[^{}]*?\n[ \t]*\}(?=\n)(?![ \t]*else)", "", text)
 
 
