@@ -15,6 +15,8 @@
 // OoT's quest status and inventory, in the shared inventory (HyruleInventory.h).
 #define CHECK_QUEST_ITEM_OOT(item) Hyrule_CheckQuestItemOot(item)
 #define INV_CONTENT_OOT(item) Hyrule_InvContentOot(item)
+// The magic beans bought from the bean seller (OoT keeps the count in a spare ammo slot).
+#define BEANS_BOUGHT_OOT (gSaveContext.save.saveInfo.inventoryOot.beansBought)
 
 // OoT's weather modes (En_Weather_Tag's, 1 to 5) in MM's gWeatherMode, past MM's own: MM's Environment_Init
 // would act on them as its own when it keeps the weather (retainWeatherMode or a respawn), and clears them

@@ -240,6 +240,7 @@ inline void to_json(json& j, const InventoryOot& inventory) {
         { "gsFlags", inventory.gsFlags },
         { "gsTokens", inventory.gsTokens },
         { "knifeHealth", inventory.knifeHealth },
+        { "beansBought", inventory.beansBought },
     };
 }
 
@@ -255,6 +256,7 @@ inline void from_json(const json& j, InventoryOot& inventory) {
     j.at("gsFlags").get_to(inventory.gsFlags);
     j.at("gsTokens").get_to(inventory.gsTokens);
     j.at("knifeHealth").get_to(inventory.knifeHealth);
+    j.at("beansBought").get_to(inventory.beansBought);
 }
 
 inline void to_json(json& j, const PermanentSceneFlags& permanentSceneFlags) {
@@ -388,6 +390,7 @@ inline void to_json(json& j, const SaveInfo& saveInfo) {
         { "faroresWindOot", saveInfo.faroresWindOot },
         { "isAdultOot", saveInfo.isAdultOot },
         { "otherAgeEquipsOot", saveInfo.otherAgeEquipsOot },
+        { "highScoresOot", saveInfo.highScoresOot },
         { "regionsVisited", saveInfo.regionsVisited },
         { "worldMapCloudVisibility", saveInfo.worldMapCloudVisibility },
         { "unk_F40", saveInfo.unk_F40 },
@@ -432,6 +435,7 @@ inline void from_json(const json& j, SaveInfo& saveInfo) {
     j.at("faroresWindOot").get_to(saveInfo.faroresWindOot);
     j.at("isAdultOot").get_to(saveInfo.isAdultOot);
     j.at("otherAgeEquipsOot").get_to(saveInfo.otherAgeEquipsOot);
+    j.at("highScoresOot").get_to(saveInfo.highScoresOot);
     j.at("regionsVisited").get_to(saveInfo.regionsVisited);
     j.at("worldMapCloudVisibility").get_to(saveInfo.worldMapCloudVisibility);
     j.at("unk_F40").get_to(saveInfo.unk_F40);

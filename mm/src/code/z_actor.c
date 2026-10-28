@@ -2357,7 +2357,7 @@ s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId getItemId, f32 x
             if (((getItemId == GI_MASK_CIRCUS_LEADER) || (getItemId == GI_PENDANT_OF_MEMORIES) ||
                  (getItemId == GI_DEED_LAND) ||
                  (((player->heldActor != NULL) || (actor == player->talkActor)) &&
-                  ((getItemId > GI_NONE) && (getItemId < GI_MAX)))) ||
+                  ((getItemId > GI_NONE) && ((getItemId < GI_MAX) || (getItemId > GI_OOT_BASE))))) ||
                 !(player->stateFlags1 & (PLAYER_STATE1_CARRYING_ACTOR | PLAYER_STATE1_20000000))) {
                 s16 yawDiff = actor->yawTowardsPlayer - player->actor.shape.rot.y;
                 s32 absYawDiff = ABS_ALT(yawDiff);
@@ -2369,7 +2369,8 @@ s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId getItemId, f32 x
                     player->interactRangeActor = actor;
                     player->getItemDirection = absYawDiff;
 
-                    if ((getItemId > GI_NONE) && (getItemId < GI_MAX)) {
+                    // 3Ship [Hyrule] OoT's get-item ids, past MM's, too.
+                    if ((getItemId > GI_NONE) && ((getItemId < GI_MAX) || (getItemId > GI_OOT_BASE))) {
                         CutsceneManager_Queue(play->playerCsIds[PLAYER_CS_ID_ITEM_GET]);
                     }
 

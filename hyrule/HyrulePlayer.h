@@ -130,6 +130,9 @@ void Hyrule_DrawHoverBootsGlow(struct PlayState* play, struct Player* player);
 s32 Hyrule_GetHammerGroundPos(struct PlayState* play, struct Player* player, Vec3f* pos);
 // The hookshot's reach in frames: OoT's Hookshot 13, the Longshot and MM's Hookshot 26 (OoT's ArmsHook_Wait).
 s32 Hyrule_GetHookshotReach(struct Player* player);
+// How deep human Link dives: 120 as in MM without a scale, then OoT's Silver and Golden Scales (OoT's D_80854784, by
+// the scale upgrade, which MM leaves at 0).
+f32 Hyrule_GetDiveDepth(void);
 // Adult Link's PlayerBoots, from the equipment page's boots (OoT's BOOTS_EQUIP_TO_PLAYER).
 u8 Hyrule_GetAdultBoots(void);
 // Whether Link holds the Giant's Knife broken (OoT's Player_HoldsBrokenKnife).
@@ -181,6 +184,9 @@ s32 Actor_GetPlayerExchangeItemIdOot(struct PlayState* play);
 // Whether an OoT actor that asked for `offer` takes the item Link shows, by OoT's rule: only the item it asked for,
 // a Big Poe for a Poe, and anything when it asked for Blue Fire. MM's actors take any item.
 s32 Hyrule_IsExchangeAcceptedOot(PlayerItemAction offer, PlayerItemAction shown);
+// OoT's Player_SetCsActionWithHaltedActors with OoT's cutscene action number, which MM numbers differently. Only the
+// actions ported actors use are mapped: OoT's 1 (idle), 7 (end), 8 (wait) and 95 (hands up, caught by a Gerudo).
+void Player_SetCsActionWithHaltedActorsOot(struct PlayState* play, struct Actor* csActor, u8 ootCsAction);
 
 // The B-button item for an equipped sword value, MM's or 3Ship's (ITEM_NONE for none).
 u16 Hyrule_SwordValueToItem(u8 value);

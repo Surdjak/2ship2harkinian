@@ -2,6 +2,7 @@
 // adult Link's pieces wait for the adult body.
 
 #include "global.h"
+#include <assert.h>
 #include "HyrulePlayer.h"
 #include "HyruleInventory.h"
 #include "HyruleIds.h"
@@ -775,6 +776,12 @@ s32 Hyrule_GetHammerGroundPos(PlayState* play, Player* player, Vec3f* pos) {
     return ((player->actor.world.pos.y - floorY) > -40.0f) && ((player->actor.world.pos.y - floorY) < 40.0f);
 }
 
+f32 Hyrule_GetDiveDepth(void) {
+    static const f32 sDiveDepths[] = { 120.0f, 240.0f, 360.0f };
+
+    return sDiveDepths[CLAMP_MAX(CUR_UPG_VALUE(UPG_SCALE), ARRAY_COUNT(sDiveDepths) - 1)];
+}
+
 s32 Hyrule_GetHookshotReach(Player* player) {
     return (player->heldItemId == ITEM_HOOKSHOT_Oot) ? 13 : 26;
 }
@@ -838,6 +845,28 @@ s32 Actor_GetPlayerExchangeItemIdOot(PlayState* play) {
 s32 Hyrule_IsExchangeAcceptedOot(PlayerItemAction offer, PlayerItemAction shown) {
     return (offer > PLAYER_IA_NONE) && ((offer == shown) || (offer == PLAYER_IA_BOTTLE_1C) ||
                                         ((offer == PLAYER_IA_BOTTLE_POE) && (shown == PLAYER_IA_BOTTLE_BIG_POE)));
+}
+
+void Player_SetCsActionWithHaltedActorsOot(PlayState* play, Actor* csActor, u8 ootCsAction) {
+    u8 csAction;
+
+    switch (ootCsAction) {
+        case 7:
+            csAction = PLAYER_CSACTION_END;
+            break;
+        case 8:
+            csAction = PLAYER_CSACTION_WAIT;
+            break;
+        case 95:
+            csAction = PLAYER_CSACTION_26;
+            break;
+        default:
+            // 0 and 1 are the same in both games.
+            assert((ootCsAction == PLAYER_CSACTION_NONE) || (ootCsAction == PLAYER_CSACTION_1));
+            csAction = ootCsAction;
+            break;
+    }
+    Player_SetCsActionWithHaltedActors(play, csActor, csAction);
 }
 
 // OoT's sReactionTextIds (z_face_reaction.c): per reaction set, the text for no mask then each PlayerMask.

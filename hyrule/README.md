@@ -208,6 +208,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 18 | Their creatures and contraptions: `En_Niw` (cuccos) and `En_Attack_Niw` (the angry swarm), `Obj_Mure` (groups of fish, bugs and butterflies) with `En_Fish`, `En_Insect` and `En_Butte`, `Obj_Makekinsuta` (soft soil), `En_Crow` (Guays), `En_Cow`, `En_Bombf` (bomb flowers), `Bg_Spot16_Bombstone` (Dodongo's Cavern boulder), `En_Encount2` and `En_Fire_Rock` (Death Mountain's falling rocks), `Bg_Spot06_Objects` (Lake Hylia's water and lock), `Bg_Spot15_Rrbox` (pushable crates) |
 | 19 | `En_Door` (doors with handles) and `En_Weather_Tag` (clouds, rain, snow and storms near Link) |
 | 20 | Kakariko's people: `En_Heishi2` (the Death Mountain gate guard, and OoT's other guards), `En_Heishi4` (guards), `En_Toryo` (the boss carpenter), `En_Daiku_Kakariko` (carpenters), `En_Ani` (the man on the roof), `En_Niw_Lady` (the cucco lady), `En_Hy` (townsfolk); `Bg_Spot15_Saku` (Hyrule Castle's gate, which a guard opens) |
+| 21 | The other people of the six scenes: `En_Ms` (the bean seller), `En_Hs2` (a sulking young man in Kakariko at night), `En_Tg` (the dancing couple), `En_Ge1` and `En_Ge2` (Gerudo guards), `En_Zo` (Lake Hylia's Zoras); `Item_Etcetera` (Ruto's Letter in its bottle, and other items set out), `Elf_Msg2` (Navi's message spots), `Bg_Haka` (gravestones) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -435,6 +436,28 @@ guard gets OoT's reply and opens the Death Mountain gate. Notes:
   fish, Wolfos and Moblins included).
 - The beggar's bottles are MM's (`Inventory_HasItemInBottle`); the lost dog uses MM's leftover `dogParams` and
   `dogIsLost`.
+
+Wave 21 was checked the same way: the new people are SoH's, in the same places, and the six scenes diverge from SoH
+as before. The one new divergence is Gerudo Valley's gate guard, which SoH updates once on its first frame (OoT
+updates a new actor before the camera can cull it) and so stands 15 units higher on its floor, and the patrols,
+which start walking a frame later; the guard reaches its floor as soon as Link comes near. Under gdb: Link buys
+beans from the bean seller at OoT's rising prices; the Gerudo gate guard turns child Link away and a patrol catches
+him and throws him out of the valley; Lake Hylia's Zoras surface and talk; with the Silver Scale, Link dives for the
+bottle with Ruto's Letter; Tatl reads Navi's message spot (C-up); adult Link pulls the gravestone; the young man at
+night and the couple talk. Notes:
+
+- MM numbers Player's cutscene actions differently: OoT's 7 (end) and 8 (wait) are MM's `PLAYER_CSACTION_END` and
+  `PLAYER_CSACTION_WAIT`, and OoT's 95 (hands up, caught) is MM's 26. Ported actors call
+  `Player_SetCsActionWithHaltedActorsOot` (`HyrulePlayer.h`). Wave 20's guards passed OoT's numbers to MM, which
+  kept Link waiting after the Death Mountain gate opened; they now release him.
+- OoT's message system closes a choice once it is made unless the actor goes on to another text that frame, and
+  OoT's actors rely on it (the bean seller hands his bean over as the box closes). MM's actors close their choices
+  themselves, so `Message_Update` does it for OoT's texts only.
+- MM's Player and `Actor_OfferGetItem` took get-item ids below `GI_MAX` only, so an OoT actor could hand Link
+  nothing but chests (whose negative ids take another path); they now take OoT's (`GI_OOT_BASE` up).
+- OoT's exits by entrance name go through `Hyrule_ExitFromOot` (the port tool turns
+  `play->nextEntranceIndex = ENTR_X;` into it); exits to scenes that are not loaded yet lead back to the spawn.
+- MM's circle transition has no starburst, so the Gerudo's capture is MM's plain circle.
 
 ## Text
 

@@ -116,6 +116,11 @@ Done (`hyrule/HyruleInventory.c`, save version 11):
   `QUEST_*_Oot`.
 - MM's own sword and shield are recorded as owned whenever MM's `Item_Give` runs.
 - The cycle reset follows the table above.
+- OoT's Silver and Golden Scales let human Link dive to OoT's depths, 240 and 360 (`Hyrule_GetDiveDepth`), in
+  both worlds; without one he stops at MM's 120, which is OoT's too.
+- Save version 19: the beans bought from OoT's bean seller (`inventoryOot.beansBought`, OoT's `BEANS_BOUGHT`),
+  which go back to 0 each cycle with the rest of Hyrule's world so he sells again; and OoT's minigame records
+  (`SaveInfo.highScoresOot`, `HIGH_SCORE_OOT`), kept across cycles as MM keeps its own.
 
 Not yet:
 

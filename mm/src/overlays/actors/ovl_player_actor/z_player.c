@@ -9901,7 +9901,8 @@ s32 Player_ActionHandler_2(Player* this, PlayState* play) {
 
         if (interactRangeActor != NULL) {
             if (this->getItemId > GI_NONE) {
-                if (this->getItemId < GI_MAX) {
+                // 3Ship [Hyrule] OoT's get-item ids, past MM's, too.
+                if ((this->getItemId < GI_MAX) || (this->getItemId > GI_OOT_BASE)) {
                     GetItemEntry* giEntry = Player_GetItemEntry(this->getItemId);
 
                     interactRangeActor->parent = &this->actor;
@@ -12046,11 +12047,13 @@ void Player_UpdateInterface(PlayState* play, Player* this) {
         } else if (this->stateFlags2 & PLAYER_STATE2_10000) {
             doActionA = DO_ACTION_GRAB;
         } else if (this->stateFlags2 & PLAYER_STATE2_800) {
-            static u8 D_8085D354[] = { DO_ACTION_1, DO_ACTION_2 };
+            // 3Ship [Hyrule] With OoT's scales, OoT's counter, up to 8; MM's stops at 2.
+            static u8 D_8085D354[] = { DO_ACTION_1, DO_ACTION_2, DO_ACTION_3, DO_ACTION_4,
+                                       DO_ACTION_5, DO_ACTION_6, DO_ACTION_7, DO_ACTION_8 };
             s32 var_v0;
 
-            var_v0 = ((120.0f - this->actor.depthInWater) / 40.0f);
-            var_v0 = CLAMP(var_v0, 0, ARRAY_COUNT(D_8085D354) - 1);
+            var_v0 = ((Hyrule_GetDiveDepth() - this->actor.depthInWater) / 40.0f);
+            var_v0 = CLAMP(var_v0, 0, (CUR_UPG_VALUE(UPG_SCALE) != 0) ? ARRAY_COUNT(D_8085D354) - 1 : 1);
 
             doActionA = D_8085D354[var_v0];
         } else if (this->stateFlags3 & PLAYER_STATE3_100) {
@@ -18142,7 +18145,8 @@ void Player_Action_59(Player* this, PlayState* play) {
             this->unk_AAA = 0x3E80;
 
             if (CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_A) && !Player_ActionHandler_2(this, play) &&
-                !(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && (this->actor.depthInWater < 120.0f)) {
+                !(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
+                (this->actor.depthInWater < Hyrule_GetDiveDepth())) { // 3Ship [Hyrule] OoT's scales
                 func_808481CC(play, this, -2.0f);
             } else {
                 this->av1.actionVar1++;

@@ -240,6 +240,10 @@ u16 Hyrule_ItemGive(PlayState* play, u16 item) {
             INVENTORY_OOT.equipmentOwned |= EQUIP_OWNED_BIT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_KOKIRI);
             return ITEM_NONE;
         }
+        // OoT's beans come from the bean seller, who counts them (MM's own seller does not).
+        if (item == ITEM_BEAN_Oot) {
+            INVENTORY_OOT.beansBought++;
+        }
         return Item_Give(play, mmItem);
     }
 
@@ -425,6 +429,8 @@ void Hyrule_ResetInventoryOotForCycle(PlayState* play) {
     for (i = 0; i < ARRAY_COUNT(INVENTORY_OOT.ammo); i++) {
         INVENTORY_OOT.ammo[i] = 0;
     }
+    // The bean seller restocks with the rest of Hyrule's world.
+    INVENTORY_OOT.beansBought = 0;
     // Bottle contents, as MM does for its six (Sram_SaveEndOfCycle).
     for (i = SLOT_BOTTLE_7; i <= SLOT_BOTTLE_10; i++) {
         item = INV_CONTENT_SLOT_OOT(i);

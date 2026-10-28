@@ -216,6 +216,18 @@ typedef enum HighScore {
     /* 7 */ HS_MAX
 } HighScore;
 
+// 3Ship [Hyrule] OoT's highScores, in highScoresOot.
+typedef enum HighScoreOot {
+    /* 0 */ HS_HBA_Oot, // horseback archery
+    /* 1 */ HS_POE_POINTS_Oot,
+    /* 2 */ HS_FISHING_Oot,
+    /* 3 */ HS_HORSE_RACE_Oot,
+    /* 4 */ HS_MARATHON_Oot,
+    /* 5 */ HS_UNK_05_Oot,
+    /* 6 */ HS_DAMPE_RACE_Oot,
+    /* 7 */ HS_OOT_MAX
+} HighScoreOot;
+
 #define PICTO_PHOTO_WIDTH 160
 #define PICTO_PHOTO_HEIGHT 112
 
@@ -337,6 +349,7 @@ typedef struct InventoryOot {
     u32 gsFlags[6];      // OoT's Gold Skulltula flags, a byte per area
     s16 gsTokens;        // OoT's Gold Skulltula tokens
     s16 knifeHealth;     // hits the Giant's Knife has left before it breaks (OoT's swordHealth)
+    u8 beansBought;      // magic beans bought from the bean seller (OoT's BEANS_BOUGHT), back to 0 each cycle
 } InventoryOot;
 
 // the current ones when his age changes, as OoT swaps childEquips and adultEquips.
@@ -394,6 +407,7 @@ typedef struct SaveInfo {
     /*       */ RespawnData faroresWindOot; // 3Ship [Hyrule] Farore's Wind's warp point (OoT's fw), set while data != 0
     /*       */ u8 isAdultOot; // 3Ship [Hyrule] adult Link (docs/ADULT_LINK.md), as OoT's linkAge
     /*       */ AgeEquipsOot otherAgeEquipsOot; // 3Ship [Hyrule] the other age's buttons and equipment
+    /*       */ s32 highScoresOot[HS_OOT_MAX]; // 3Ship [Hyrule] OoT's minigame records (HIGH_SCORE_OOT), kept across cycles
 } SaveInfo;
 
 // #region 2S2H
@@ -737,6 +751,7 @@ typedef enum {
     (gSaveContext.save.saveInfo.stolenItems = (gSaveContext.save.saveInfo.stolenItems & ~0x00FF0000) | ((itemId & 0xFF) << 0x10))
 
 #define HIGH_SCORE(type) (gSaveContext.save.saveInfo.highScores[(type)])
+#define HIGH_SCORE_OOT(type) (gSaveContext.save.saveInfo.highScoresOot[(type)]) // 3Ship [Hyrule]
 #define GET_HIGH_SCORE(type) ((void)0, gSaveContext.save.saveInfo.highScores[(type)])
 
 #define HS_GET_BANK_RUPEES() (HIGH_SCORE(HS_BANK_RUPEES) & 0xFFFF)

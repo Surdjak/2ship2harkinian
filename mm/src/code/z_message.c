@@ -5529,6 +5529,16 @@ s16 sDoubleTimeSkipToDayTextIds[] = {
     0x1B8E, // Dawn of final day
 };
 
+// 3Ship [Hyrule] OoT's message system closes a choice once it is made, unless the actor went on to another text in
+// its update; OoT's actors rely on it (the bean seller hands his bean over as the box closes). MM's actors close
+// their choices themselves, so this is for OoT's texts only.
+static void Message_CloseOotChoice(PlayState* play) {
+    if ((play->msgCtx.currentTextId >= TEXT_OOT_BASE) && Message_ShouldAdvance(play)) {
+        Audio_PlaySfx(NA_SE_SY_DECIDE);
+        Message_CloseTextbox(play);
+    }
+}
+
 void Message_Update(PlayState* play) {
     static u8 D_801D0468 = 0;
     MessageContext* msgCtx = &play->msgCtx;
@@ -5866,10 +5876,12 @@ void Message_Update(PlayState* play) {
 
                     case TEXTBOX_ENDTYPE_TWO_CHOICE:
                         Message_HandleChoiceSelection(play, 1);
+                        Message_CloseOotChoice(play);
                         break;
 
                     case TEXTBOX_ENDTYPE_THREE_CHOICE:
                         Message_HandleChoiceSelection(play, 2);
+                        Message_CloseOotChoice(play);
                         break;
 
                     case TEXTBOX_ENDTYPE_12:

@@ -16,8 +16,11 @@ What it does (each a plain text rewrite):
 - OoT flags use HyruleFlags.h, OoT text ids in returns, cases and textId assignments get TEXT_OOT, and
   OoT age checks use HyrulePort.h.
 - Debug prints are removed, SoH's GameInteractor_Should(VB_..., cond) hooks become (cond), ifs on SoH's
-  enhancements keep vanilla's branch, and OoT's
-  matrix, allocation, segment and default-sound calls become MM's. SoH's cvars and stats, and anything
+  enhancements keep vanilla's branch, randomizer-only blocks go, and OoT's
+  matrix, allocation, segment and default-sound calls become MM's.
+- Exits by OoT entrance name go through Hyrule_ExitFromOot, Player cutscene actions through
+  Player_SetCsActionWithHaltedActorsOot (MM numbers them differently), and raw damage-flag tests through
+  DMG_FROM_OOT. Prototypes in the actor's header of functions the .c makes static are left out. SoH's cvars and stats, and anything
   else that needs a decision, are listed at the end for review.
 - Functions become static.
 
@@ -110,6 +113,7 @@ RENAMES = [
     (r"\bITEM00_HEART\b", "ITEM00_RECOVERY_HEART"),
     (r"\bITEM00_SEEDS\b", "ITEM00_DEKU_SEEDS_Oot"),
     (r"\b(GI_(?!NONE\b|MAX\b)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
+    (r"\b(GID_(?!NONE\b|MAX\b|OOT_BASE\b)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"(\.|->)toucher\.", r"\1atDmgInfo."),
     (r"(\.|->)bumper\.", r"\1acDmgInfo."),
     (r"\.toucherFlags\b", ".atElemFlags"),
@@ -221,6 +225,16 @@ RENAMES = [
     (r"\bPlayer_UnsetMask\(", "Player_UnsetMaskOot("),
     (r"\bPlayer_GetMask\(", "Player_GetMaskOot("),
     (r"\bText_GetFaceReaction\(", "Text_GetFaceReactionOot("),
+    (r"\bEffectSsKiraKira_", "EffectSsKirakira_"),
+    (r"\bBEANS_BOUGHT\b", "BEANS_BOUGHT_OOT"),
+    (r"\bHIGH_SCORE\((HS_\w+)\)", r"HIGH_SCORE_OOT(\1_Oot)"),
+    # MM's circle transition has no starburst, colour or speed parameters.
+    (r"\bTRANS_TYPE_CIRCLE\([^)]*\)", "TRANS_TYPE_CIRCLE"),
+    # OoT's specular highlight setup for opaque and translucent display lists.
+    (r"\bfunc_8002EBCC\(", "func_800B8050("),
+    (r"\bfunc_8002ED80\(", "func_800B8118("),
+    (r"(atDmgInfo\.dmgFlags & )(0x[0-9A-Fa-f]+)\b", r"\1DMG_FROM_OOT(\2)"),
+    (r"\b(?:Player_SetCsActionWithHaltedActors|func_8002DF54)\(", "Player_SetCsActionWithHaltedActorsOot("),
     (r"\bPLAYER_MASK_([A-Z_]+)\b(?!_Oot)", r"PLAYER_MASK_\1_Oot"),
     (r"\bgSaveContext\.eventInf\[", "gSaveContext.eventInfOot["),
     (r"\bCUR_EQUIP_VALUE\(", "GET_CUR_EQUIP_VALUE("),
@@ -246,12 +260,13 @@ RENAMES = [
 DROP_LINE = re.compile(r"^\s*#include \"(vt\.h|soh/[^\"]+|overlays/effects/ovl_Effect_Ss_Dead_Sound/[^\"]+)\"\s*$|"
                        r"^\s*#include <libultraship/bridge/[^>]+>\s*$|"
                        # SoH's randomizer item entries.
-                       r"^\s*(/\*[^*]*\*/ )?GetItemEntry getItemEntry;\s*$|"
+                       r"^\s*(/\*[^*]*\*/ )?GetItemEntry getItemEntry( = \(GetItemEntry\)(GI_NONE|GET_ITEM_NONE))?;\s*$|"
                        r"^\s*this->getItemEntry = \(GetItemEntry\)(GI_NONE|GET_ITEM_NONE);\s*$")
 TEXT_ID = re.compile(r"\b(0x[1-7][0-9A-Fa-f]{3})\b")
 # Lines that give text ids: returns, cases, textId assignments, text calls and a GetTextId's `ret`. A statement that
 # goes on to the next lines (a multi-line ternary) is converted to its end.
-TEXT_LINE = re.compile(r"\breturn\b|\bcase\b|textId\b|\bret = |SetText\w*\(|Message_(?:Start|Continue)Textbox\(")
+TEXT_LINE = re.compile(r"\breturn\b|\bcase\b|textId\b|\bret = |[Tt]ext\w* = |SetText\w*\(|SetTalkAction\(|"
+                       r"Message_(?:Start|Continue)Textbox\(")
 PROFILE = re.compile(
     r"const ActorInit (\w+)_InitVars = \{\s*(\w+),\s*(\w+),\s*(\w+),\s*(\w+),\s*sizeof\((\w+)\),\s*"
     r"(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),"
@@ -271,6 +286,31 @@ def sfx_renames(soh_root):
 
 
 SFX_RENAMES = {}
+
+
+def oot_entrances(soh_root):
+    """OoT's entrance indexes by name, from SoH's entrance_table.h."""
+    table = open(os.path.join(soh_root, "include", "tables", "entrance_table.h")).read()
+    return {name: int(value, 16) for value, name in re.findall(r"/\* (0x[0-9A-Fa-f]+) \*/ DEFINE_ENTRANCE\((ENTR_\w+),", table)}
+
+
+ENTRANCES = {}
+
+
+def convert_entrances(text):
+    """OoT exits by entrance name become MM entrances through HyruleScenes.h (an exit into a scene that is not
+    loaded yet leads back to the spawn Link came in at), and checks of the entrance Link came in at compare MM's."""
+    text = re.sub(r"play->nextEntranceIndex = (ENTR_\w+);",
+                  lambda m: f"play->nextEntrance = Hyrule_ExitFromOot(0x{ENTRANCES[m.group(1)]:03X}); // OoT's {m.group(1)}",
+                  text)
+    return re.sub(r"gSaveContext\.entranceIndex == (ENTR_\w+)",
+                  lambda m: f"gSaveContext.save.entrance == Hyrule_EntranceFromOot(0x{ENTRANCES[m.group(1)]:03X} /* {m.group(1)} */)",
+                  text)
+
+
+def strip_rando_ifs(text):
+    """SoH's randomizer-only blocks without an else (if (IS_RANDO) { ... }, no nested braces) are left out."""
+    return re.sub(r"\n[ \t]*if \(IS_RANDO\) \{\n[^{}]*?\n[ \t]*\}(?=\n)(?![ \t]*else)", "", text)
 
 
 def PORTED_ACTOR(ovl):
@@ -415,6 +455,7 @@ def convert(text, header):
     # One-line debug prints.
     text = re.sub(r"\n[ \t]*// \"[^\n]*\"(?=\n[ \t]*osSyncPrintf)", "", text)
     text = re.sub(r"\n[ \t]*osSyncPrintf\((?:[^;]|\n)*?\);", "", text)
+    text = re.sub(r"\n[ \t]*LOG_(?:NUM|STRING|HEX|ADDRESS|FLOAT)\((?:[^;]|\n)*?\);", "", text)
     for pattern, repl in RENAMES:
         text = re.sub(pattern, repl, text, flags=re.M)
     text = re.sub(r"\bNA_SE_\w+\b", lambda m: SFX_RENAMES.get(m.group(0), m.group(0)), text)
@@ -424,6 +465,8 @@ def convert(text, header):
     text = re.sub(r"(DamageTable \w+ = )\{\n((?:[ \t]*(?:/\*[^*]*\*/ )?DMG_ENTRY\([^)]*\),\n){32})\};",
                   lambda m: m.group(1) + "DMG_TABLE_FROM_OOT(\n" + m.group(2).rstrip(",\n") + "\n);", text)
     text = strip_game_interactor(text)
+    text = strip_rando_ifs(text)
+    text = convert_entrances(text)
     text = strip_enhancement_ifs(text)
     # OoT's background check flag 4 covers floor and water; MM checks water only with 0x400.
     text = re.sub(r"(Actor_UpdateBgCheckInfo\((?:[^;()]|\([^()]*\))*, )(0x[0-9A-Fa-f]+|\d+)\)",
@@ -441,6 +484,8 @@ def convert(text, header):
         extra += '#include "z64quake.h"\n' if "Quake_" in text else ""
         extra += '#include "z64rumble.h"\n' if "Rumble_" in text else ""
         extra += '#include "HyrulePlayer.h"\n' if re.search(r"\bPLAYER_SHIELD_\w+_Oot\b", text) else ""
+        extra += '#include "HyruleScenes.h"\n' if "Hyrule_E" in text else ""
+        extra += '#include "z64horse.h"\n' if "Horse_" in text else ""
         # SoH's soh/ResourceManagerHelpers.h, dropped above; without it C assumes int and truncates pointers.
         extra += '#include "2s2h/BenPort.h"\n' if "ResourceMgr_" in text else ""
         text = re.sub(r'(#include "[^"]+"\n)', lambda m: m.group(1) + extra, text, count=1)
@@ -458,18 +503,25 @@ def main():
     args = parser.parse_args()
     src = os.path.normpath(args.soh_actor_dir)
     SFX_RENAMES.update(sfx_renames(os.path.join(src, "..", "..", "..", "..")))
+    ENTRANCES.update(oot_entrances(os.path.join(src, "..", "..", "..", "..")))
     PORTING.update(a.strip() for a in os.environ.get("PORTING", "").split(",") if a.strip())
     out = os.path.join(OUT_ROOT, os.path.basename(src))
     os.makedirs(out, exist_ok=True)
     review = re.compile(r"GameInteractor|CVar|IS_RANDO|Randomizer|gSaveContext\.ship|Sfx_Play|Audio_Play|"
                         r"Player_SetCsAction|func_8002DF54|dmgFlags|"
-                        r"Item_Drop|ITEM00_|MATRIX_NEWMTX|#include \"overlays/|\.table\[")
-    for name in sorted(os.listdir(src)):
+                        r"Item_Drop|ITEM00_|MATRIX_NEWMTX|#include \"overlays/|\.table\[|ENTR_|Horse_")
+    statics = set()
+    for name in sorted(os.listdir(src), key=lambda n: n.endswith(".h")):
         if not name.endswith((".c", ".h")):
             continue
         with open(os.path.join(src, name)) as f:
             text = f.read()
         result = convert(text, name.endswith(".h"))
+        if name.endswith(".c"):
+            statics.update(re.findall(r"^static [^\n(=]*?\b(\w+)\(", result, flags=re.M))
+        else:
+            result = re.sub(r"^(?!typedef)[A-Za-z_][^\n(;]*?\b(\w+)\([^;{]*\);\n",
+                            lambda m: "" if m.group(1) in statics else m.group(0), result, flags=re.M)
         with open(os.path.join(out, name), "w") as f:
             f.write(result)
         for i, line in enumerate(result.splitlines(), 1):
