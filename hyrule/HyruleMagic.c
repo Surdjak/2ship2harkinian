@@ -5,6 +5,7 @@
 #include "HyruleMagic.h"
 #include "HyruleIds.h"
 #include "HyruleScenes.h"
+#include "HyruleRestrictions.h"
 #include "HyrulePort.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 
@@ -14,117 +15,6 @@ static const s16 sSpellActorIds[HYRULE_SPELL_MAX] = {
     ACTOR_MAGIC_WIND_Oot,
     ACTOR_MAGIC_DARK_Oot,
     ACTOR_MAGIC_FIRE_Oot,
-};
-
-// OoT's sRestrictionFlags (z_parameter.c) for its spells: OoT scene, Farore's Wind, Din's Fire and Nayru's Love,
-// non-zero when not allowed. Scenes missing allow both.
-typedef struct {
-    u8 ootScene;
-    u8 farores;
-    u8 dinsNayrus;
-} SpellRestriction;
-
-static const SpellRestriction sOotSpellRestrictions[] = {
-    { 0x00, 0, 0 }, // DEKU_TREE
-    { 0x01, 0, 0 }, // DODONGOS_CAVERN
-    { 0x02, 0, 0 }, // JABU_JABU
-    { 0x03, 0, 0 }, // FOREST_TEMPLE
-    { 0x04, 0, 0 }, // FIRE_TEMPLE
-    { 0x05, 0, 0 }, // WATER_TEMPLE
-    { 0x06, 0, 0 }, // SPIRIT_TEMPLE
-    { 0x07, 0, 0 }, // SHADOW_TEMPLE
-    { 0x08, 0, 0 }, // BOTTOM_OF_THE_WELL
-    { 0x09, 0, 0 }, // ICE_CAVERN
-    { 0x0A, 0, 0 }, // GANONS_TOWER
-    { 0x0B, 1, 0 }, // GERUDO_TRAINING_GROUND
-    { 0x0C, 1, 0 }, // THIEVES_HIDEOUT
-    { 0x0D, 1, 0 }, // INSIDE_GANONS_CASTLE
-    { 0x0E, 1, 0 }, // GANONS_TOWER_COLLAPSE_INTERIOR
-    { 0x0F, 1, 0 }, // INSIDE_GANONS_CASTLE_COLLAPSE
-    { 0x10, 1, 1 }, // TREASURE_BOX_SHOP
-    { 0x11, 1, 0 }, // DEKU_TREE_BOSS
-    { 0x12, 1, 0 }, // DODONGOS_CAVERN_BOSS
-    { 0x13, 1, 0 }, // JABU_JABU_BOSS
-    { 0x14, 1, 0 }, // FOREST_TEMPLE_BOSS
-    { 0x15, 1, 0 }, // FIRE_TEMPLE_BOSS
-    { 0x16, 1, 0 }, // WATER_TEMPLE_BOSS
-    { 0x17, 1, 0 }, // SPIRIT_TEMPLE_BOSS
-    { 0x18, 1, 0 }, // SHADOW_TEMPLE_BOSS
-    { 0x19, 1, 0 }, // GANONDORF_BOSS
-    { 0x1A, 1, 0 }, // GANONS_TOWER_COLLAPSE_EXTERIOR
-    { 0x1B, 1, 1 }, // MARKET_ENTRANCE_DAY
-    { 0x1C, 1, 1 }, // MARKET_ENTRANCE_NIGHT
-    { 0x1D, 1, 1 }, // MARKET_ENTRANCE_RUINS
-    { 0x1E, 1, 1 }, // BACK_ALLEY_DAY
-    { 0x1F, 1, 1 }, // BACK_ALLEY_NIGHT
-    { 0x20, 1, 1 }, // MARKET_DAY
-    { 0x21, 1, 1 }, // MARKET_NIGHT
-    { 0x22, 1, 1 }, // MARKET_RUINS
-    { 0x23, 1, 1 }, // TEMPLE_OF_TIME_EXTERIOR_DAY
-    { 0x24, 1, 1 }, // TEMPLE_OF_TIME_EXTERIOR_NIGHT
-    { 0x25, 1, 1 }, // TEMPLE_OF_TIME_EXTERIOR_RUINS
-    { 0x26, 1, 1 }, // KNOW_IT_ALL_BROS_HOUSE
-    { 0x27, 1, 1 }, // TWINS_HOUSE
-    { 0x28, 1, 1 }, // MIDOS_HOUSE
-    { 0x29, 1, 1 }, // SARIAS_HOUSE
-    { 0x2A, 1, 1 }, // KAKARIKO_CENTER_GUEST_HOUSE
-    { 0x2B, 1, 1 }, // BACK_ALLEY_HOUSE
-    { 0x2C, 1, 1 }, // BAZAAR
-    { 0x2D, 1, 1 }, // KOKIRI_SHOP
-    { 0x2E, 1, 1 }, // GORON_SHOP
-    { 0x2F, 1, 1 }, // ZORA_SHOP
-    { 0x30, 1, 1 }, // POTION_SHOP_KAKARIKO
-    { 0x31, 1, 1 }, // POTION_SHOP_MARKET
-    { 0x32, 1, 1 }, // BOMBCHU_SHOP
-    { 0x33, 1, 1 }, // HAPPY_MASK_SHOP
-    { 0x34, 1, 1 }, // LINKS_HOUSE
-    { 0x35, 1, 1 }, // DOG_LADY_HOUSE
-    { 0x36, 1, 1 }, // STABLE
-    { 0x37, 1, 1 }, // IMPAS_HOUSE
-    { 0x38, 1, 1 }, // LAKESIDE_LABORATORY
-    { 0x39, 1, 1 }, // CARPENTERS_TENT
-    { 0x3A, 1, 1 }, // GRAVEKEEPERS_HUT
-    { 0x3B, 1, 0 }, // GREAT_FAIRYS_FOUNTAIN_MAGIC
-    { 0x3C, 1, 0 }, // FAIRYS_FOUNTAIN
-    { 0x3D, 1, 0 }, // GREAT_FAIRYS_FOUNTAIN_SPELLS
-    { 0x3E, 1, 0 }, // GROTTOS
-    { 0x3F, 1, 0 }, // REDEAD_GRAVE
-    { 0x40, 1, 0 }, // GRAVE_WITH_FAIRYS_FOUNTAIN
-    { 0x41, 1, 0 }, // ROYAL_FAMILYS_TOMB
-    { 0x42, 1, 1 }, // SHOOTING_GALLERY
-    { 0x43, 1, 1 }, // TEMPLE_OF_TIME
-    { 0x44, 2, 2 }, // CHAMBER_OF_THE_SAGES
-    { 0x45, 1, 1 }, // CASTLE_COURTYARD_GUARDS_DAY
-    { 0x46, 1, 1 }, // CASTLE_COURTYARD_GUARDS_NIGHT
-    { 0x48, 1, 1 }, // WINDMILL_AND_DAMPES_GRAVE
-    { 0x49, 1, 1 }, // FISHING_POND
-    { 0x4A, 1, 1 }, // CASTLE_COURTYARD_ZELDA
-    { 0x4B, 1, 1 }, // BOMBCHU_BOWLING_ALLEY
-    { 0x4C, 1, 1 }, // LON_LON_BUILDINGS
-    { 0x4D, 1, 1 }, // MARKET_GUARD_HOUSE
-    { 0x4E, 1, 1 }, // POTION_SHOP_GRANNY
-    { 0x4F, 1, 0 }, // GANON_BOSS
-    { 0x50, 1, 1 }, // HOUSE_OF_SKULLTULA
-    { 0x51, 1, 0 }, // HYRULE_FIELD
-    { 0x52, 1, 0 }, // KAKARIKO_VILLAGE
-    { 0x53, 1, 0 }, // GRAVEYARD
-    { 0x54, 1, 0 }, // ZORAS_RIVER
-    { 0x55, 1, 0 }, // KOKIRI_FOREST
-    { 0x56, 1, 0 }, // SACRED_FOREST_MEADOW
-    { 0x57, 1, 0 }, // LAKE_HYLIA
-    { 0x58, 1, 0 }, // ZORAS_DOMAIN
-    { 0x59, 1, 0 }, // ZORAS_FOUNTAIN
-    { 0x5A, 1, 0 }, // GERUDO_VALLEY
-    { 0x5B, 1, 0 }, // LOST_WOODS
-    { 0x5C, 1, 0 }, // DESERT_COLOSSUS
-    { 0x5D, 1, 0 }, // GERUDOS_FORTRESS
-    { 0x5E, 1, 0 }, // HAUNTED_WASTELAND
-    { 0x5F, 1, 0 }, // HYRULE_CASTLE
-    { 0x60, 1, 0 }, // DEATH_MOUNTAIN_TRAIL
-    { 0x61, 1, 0 }, // DEATH_MOUNTAIN_CRATER
-    { 0x62, 1, 0 }, // GORON_CITY
-    { 0x63, 1, 0 }, // LON_LON_RANCH
-    { 0x64, 1, 0 }, // OUTSIDE_GANONS_CASTLE
 };
 
 s32 Hyrule_GetSpell(u16 item) {
@@ -145,17 +35,9 @@ s32 Hyrule_GetSpellCost(s32 spell) {
 }
 
 s32 Hyrule_IsSpellAllowed(PlayState* play, s32 spell) {
-    s32 ootScene = Hyrule_GetOotSceneId(play->sceneId);
-    s32 i;
-
-    if (ootScene >= 0) {
-        for (i = 0; i < ARRAY_COUNT(sOotSpellRestrictions); i++) {
-            if (sOotSpellRestrictions[i].ootScene == ootScene) {
-                return (spell == HYRULE_SPELL_FARORES_WIND) ? (sOotSpellRestrictions[i].farores == 0)
-                                                            : (sOotSpellRestrictions[i].dinsNayrus == 0);
-            }
-        }
-        return true;
+    if (Hyrule_GetOotSceneId(play->sceneId) >= 0) {
+        return Hyrule_GetRestrictionOot(play, (spell == HYRULE_SPELL_FARORES_WIND) ? HYRULE_RESTRICTION_FARORES_OOT
+                                                                                    : HYRULE_RESTRICTION_DINS_NAYRUS_OOT) == 0;
     }
 
     if (spell == HYRULE_SPELL_FARORES_WIND) {

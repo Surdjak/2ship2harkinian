@@ -7,6 +7,7 @@
 #include "z_en_md.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
+#include "HyruleOcarina.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_md/object_md.h"
 
@@ -749,13 +750,30 @@ static void EnMd_BlockPath(EnMd* this, PlayState* play) {
         Actor_UpdateFidgetTables(play, this->fidgetTableY, this->fidgetTableZ, 17);
     }
 
-    // PORT: in the Lost Woods, adult Link plays Saria's Song for Mido (EnMd_ListenToOcarina). That scene and
-    // OoT's songs are not in this fork yet.
+    // In the Lost Woods, adult Link plays Saria's Song for Mido. OoT's Player plays for an actor that asks
+    // (PLAYER_STATE2_ATTEMPT_PLAY_FOR_ACTOR); MM's offers the ocarina to an actor that offers itself.
+    if ((this->interactInfo.talkState == NPC_TALK_STATE_IDLE) && (play->sceneId == SCENE_LOST_WOODS_Oot)) {
+        if (Actor_OcarinaInteractionAccepted(&this->actor, &play->state)) {
+            Message_StartOcarinaOot(play, OCARINA_ACTION_CHECK_SARIA_Oot);
+            this->actionFunc = EnMd_ListenToOcarina;
+            return;
+        }
+        Actor_OfferOcarinaInteraction(&this->actor, play, 30.0f + this->collider.dim.radius, 100.0f);
+    }
 }
 
 static void EnMd_ListenToOcarina(EnMd* this, PlayState* play) {
-    // PORT: see EnMd_BlockPath.
-    this->actionFunc = EnMd_BlockPath;
+    if (Hyrule_GetOcarinaModeOot(play) >= OCARINA_MODE_04_Oot) {
+        this->actionFunc = EnMd_BlockPath;
+        Hyrule_SetOcarinaModeOot(play, OCARINA_MODE_04_Oot);
+    } else if (Hyrule_GetOcarinaModeOot(play) == OCARINA_MODE_03_Oot) {
+        Audio_PlaySfx(NA_SE_SY_CORRECT_CHIME);
+        this->actor.textId = TEXT_OOT(0x1067);
+        Actor_OfferTalk(&this->actor, play, this->collider.dim.radius + 30.0f);
+
+        this->actionFunc = EnMd_BlockPath;
+        Hyrule_SetOcarinaModeOot(play, OCARINA_MODE_04_Oot);
+    }
 }
 
 static void EnMd_Walk(EnMd* this, PlayState* play) {

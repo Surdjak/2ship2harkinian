@@ -7,6 +7,7 @@
 #include "z_bg_ingate.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
+#include "HyruleCutscene.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_ingate/object_ingate.h"
 
@@ -55,7 +56,7 @@ static void BgInGate_Init(Actor* thisx, PlayState* play) {
 
     Actor_SetScale(&this->dyna.actor, 0.1f);
     if (((this->dyna.actor.params & 1) != 0) && ((gSaveContext.eventInf[0] & 0xF) == 6)) {
-        play->csCtx.curFrame = 0;
+        gCsCtxOot.frames = 0;
         BgInGate_SetupAction(this, func_80892890);
     } else {
         BgInGate_SetupAction(this, BgInGate_DoNothing);
@@ -73,15 +74,15 @@ static void func_80892890(BgInGate* this, PlayState* play) {
     s16 phi1;
     s16 csFrames;
 
-    if (play->csCtx.curFrame >= 50) {
+    if (gCsCtxOot.frames >= 50) {
         phi0 = 0x4000;
         if ((this->dyna.actor.params & 2) == 0) {
             phi0 = -0x4000;
         }
         this->dyna.actor.shape.rot.y = this->dyna.actor.world.rot.y + phi0;
         BgInGate_SetupAction(this, BgInGate_DoNothing);
-    } else if (play->csCtx.curFrame >= 10) {
-        csFrames = play->csCtx.curFrame - 10;
+    } else if (gCsCtxOot.frames >= 10) {
+        csFrames = gCsCtxOot.frames - 10;
         csFrames *= 400;
         phi1 = csFrames;
         if (csFrames > 0x4000) {

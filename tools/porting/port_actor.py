@@ -20,7 +20,10 @@ What it does (each a plain text rewrite):
   matrix, allocation, segment and default-sound calls become MM's.
 - Exits by OoT entrance name go through Hyrule_ExitFromOot, Player cutscene actions through
   Player_SetCsActionWithHaltedActorsOot (MM numbers them differently), and raw damage-flag tests through
-  DMG_FROM_OOT. Prototypes in the actor's header of functions the .c makes static are left out. SoH's cvars and stats, and anything
+  DMG_FROM_OOT. Prototypes in the actor's header of functions the .c makes static are left out.
+- OoT's song, staff action and ocarina mode names go through hyrule/HyruleOcarina.h (modes are read and set in
+  OoT's values). OoT's Player plays for an actor that asks (PLAYER_STATE2_ATTEMPT_PLAY_FOR_ACTOR); MM's waits for
+  an actor to offer itself (Actor_OfferOcarinaInteraction), which needs a hand port. SoH's cvars and stats, and anything
   else that needs a decision, are listed at the end for review.
 - Functions become static.
 
@@ -149,13 +152,6 @@ RENAMES = [
     (r"\bAudio_PlaySoundRiver\(", "Audio_PlaySfx_River("),
     (r"\bAudio_PlaySoundWaterfall\(", "Audio_PlaySfx_Waterfall("),
     (r"\bACTOR_FLAG_IGNORE_POINTLIGHTS\b", "ACTOR_FLAG_IGNORE_LEGACY_POINT_LIGHTS"),
-    # OoT's cutscene actor actions are MM's actor cues, in the same slots.
-    (r"\bnpcActions\[([^\]]+)\]->action\b", r"actorCues[\1]->id"),
-    (r"\bnpcActions\[", "actorCues["),
-    (r"\blinkAction->action\b", "playerCue->id"),
-    (r"\blinkAction\b", "playerCue"),
-    (r"\bCsCmdActorAction\b", "CsCmdActorCue"),
-    (r"\bcsCtx\.frames\b", "csCtx.curFrame"),
     (r"\bgSaveContext\.cutsceneIndex\b", "gSaveContext.save.cutsceneIndex"),
     # OoT's WaterBox corner and surface are MM's minPos.
     (r"(\.|->)xMin\b", r"\1minPos.x"),
@@ -236,11 +232,40 @@ RENAMES = [
     (r"\bgSaveContext\.rupees\b", "gSaveContext.save.saveInfo.playerData.rupees"),
     (r"\bCAM_STAT_(\w+)", r"CAM_STATUS_\1"),
     (r"\bPlay_CameraSetAtEye\(", "Play_SetCameraAtEye("),
+    (r"\bfunc_8005B1A4\(", "Camera_SetFinishedFlag("),
     (r"\bDEGTORAD\(", "DEG_TO_RAD("),
     (r"\bPlayer_UnsetMask\(", "Player_UnsetMaskOot("),
     (r"\bPlayer_GetMask\(", "Player_GetMaskOot("),
     (r"\bText_GetFaceReaction\(", "Text_GetFaceReactionOot("),
     (r"\bEffectSsKiraKira_", "EffectSsKirakira_"),
+    # OoT's songs on MM's ocarina (hyrule/HyruleOcarina.h): song and action names map to MM's, and modes, which MM
+    # numbers differently, are read and set in OoT's values.
+    (r"\bOCARINA_SONG_([A-Z_]+)\b(?!_Oot)", r"OCARINA_SONG_\1_Oot"),
+    (r"\bOCARINA_ACTION_([A-Z0-9_]+)\b(?!_Oot)", r"OCARINA_ACTION_\1_Oot"),
+    (r"\bOCARINA_MODE_(0[0-9A-F])\b", r"OCARINA_MODE_\1_Oot"),
+    (r"\b(\w+)->msgCtx\.ocarinaMode = ([^;]+);", r"Hyrule_SetOcarinaModeOot(\1, \2);"),
+    (r"\b(\w+)->msgCtx\.ocarinaMode\b", r"Hyrule_GetOcarinaModeOot(\1)"),
+    (r"\b(?:func_8010BD58|Message_StartOcarina)\(", "Message_StartOcarinaOot("),
+    (r"\bmsgCtx\.unk_E3F2\b", "msgCtx.lastPlayedSong"),  # OoT's "chk_ocarina_no"
+    # OoT's cutscenes play with OoT's interpreter (hyrule/HyruleCutscene.h), in OoT's own context and types.
+    (r"\bplay->csCtx\.(npcActions|frames|state|segment|linkAction|unk_1[8AB])\b", r"gCsCtxOot.\1"),
+    (r"\bgSaveContext\.cutsceneTrigger = (\d);", r"Hyrule_TriggerCutsceneOot(\1);"),
+    (r"\bCutscene_SetSegment\(play, ([^;]+)\);", r"gCsCtxOot.segment = \1;"),
+    (r"\b(CS_STATE_[A-Z_]+)\b(?!_Oot)", r"\1_Oot"),
+    (r"\bCS_CMD_(CONTINUE|STOP)\b", r"CS_CMD_\1_Oot"),
+    (r"\bFlags_(Get|Set|Unset)Env\(", r"Flags_\1EnvOot("),
+    (r"\bfunc_800BB2B4\(", "Hyrule_CsSplineStepOot("),
+    (r"\bgSaveContext\.linkAge\b", "LINK_AGE_OOT"),
+    # OoT's math helpers that fill an out-parameter return their value in MM.
+    (r"\bVecSph\b", "VecGeo"),
+    (r"\bOLib_VecSphGeoToVec3f\(&(\w+), ([^;]+)\);", r"\1 = OLib_VecGeoToVec3f(\2);"),
+    (r"\bOLib_Vec3fToVecSphGeo\(&(\w+), ([^;]+)\);", r"\1 = OLib_Vec3fToVecGeo(\2);"),
+    (r"\bActor_GetWorld\(&(\w+), ([^;]+)\);", r"\1 = Actor_GetWorld(\2);"),
+    (r"\bCsCmdActor(?:Cue|Action)\b", "CsCmdActorCueOot"),
+    (r"\bCutsceneCameraPoint\b", "CutsceneCameraPointOot"),
+    (r'#include "z64cutscene_commands\.h"', '#include "HyruleCutsceneCommands.h"'),
+    (r"\b(?<!OOT_)CS_(?!CMD_|STATE_)([A-Z0-9_]+)\(", r"OOT_CS_\1("),
+    (r"\bfunc_8010BD88\(", "Message_StartOcarinaNoWarpOot("),
     # OoT's clock is MM's.
     (r"\bgSaveContext\.dayTime\b", "gSaveContext.save.time"),
     (r"\bgTimeSpeed\b", "R_TIME_SPEED"),
@@ -511,6 +536,8 @@ def convert(text, header):
         extra += '#include "HyrulePlayer.h"\n' if re.search(r"\bPLAYER_SHIELD_\w+_Oot\b", text) else ""
         extra += '#include "HyruleScenes.h"\n' if "Hyrule_E" in text else ""
         extra += '#include "z64horse.h"\n' if "Horse_" in text else ""
+        extra += '#include "HyruleOcarina.h"\n' if re.search(r"OCARINA_\w+_Oot|OcarinaOot\(|StartOcarina\w*Oot", text) else ""
+        extra += '#include "HyruleCutscene.h"\n' if re.search(r"gCsCtxOot|CutsceneOot\(|CS_STATE_\w+_Oot|CsCmdActorCueOot", text) else ""
         # SoH's soh/ResourceManagerHelpers.h, dropped above; without it C assumes int and truncates pointers.
         extra += '#include "2s2h/BenPort.h"\n' if "ResourceMgr_" in text else ""
         text = re.sub(r'(#include "[^"]+"\n)', lambda m: m.group(1) + extra, text, count=1)

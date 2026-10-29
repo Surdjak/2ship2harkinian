@@ -9,6 +9,7 @@
 #include "HyruleInventory.h"
 #include "HyrulePlayer.h"
 #include "HyruleMagic.h"
+#include "HyruleOcarina.h"
 #include "z64horse.h"
 #include "z64malloc.h"
 #include "z64quake.h"
@@ -11814,6 +11815,12 @@ void Player_Init(Actor* thisx, PlayState* play) {
         gSaveContext.save.isOwlSave = false;
     }
 
+    // 3Ship [Hyrule] Arriving by one of OoT's warp songs, which enter through the pad's entrance (respawnFlag 0, as MM
+    // gave OoT's -3 to grotto returns).
+    if (Hyrule_TakeWarpSongArrivalOot()) {
+        startMode = PLAYER_START_MODE_WARP_SONG;
+    }
+
     // 3Ship [Hyrule] Arriving by Farore's Wind (OoT's PLAYER_START_MODE_FARORES_WIND, which MM gave to owls).
     if (Hyrule_TakeFaroresWindArrival()) {
         this->actor.draw = NULL;
@@ -18504,6 +18511,27 @@ void Player_Action_63(Player* this, PlayState* play) {
                         Player_Anim_PlayOnceAdjustedReverse(play, this, D_8085D17C[this->transformation]);
                     }
                 }
+            } else if ((play->msgCtx.ocarinaMode == OCARINA_MODE_WARP) &&
+                       (play->msgCtx.lastPlayedSong >= OCARINA_SONG_MINUET) &&
+                       (play->msgCtx.lastPlayedSong <= OCARINA_SONG_PRELUDE)) {
+                // 3Ship [Hyrule] OoT's warp songs, after "yes" (OoT's end of the ocarina action): Link waits in the warp
+                // light (Demo_Kankyo_Oot), which takes him to the pad (Hyrule_WarpSongLeaveOot).
+                play->interfaceCtx.bButtonInterfaceDoActionActive = false;
+                CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
+                this->actor.flags &= ~ACTOR_FLAG_OCARINA_INTERACTION;
+                Hyrule_SetWarpSongDestinationOot(play->msgCtx.lastPlayedSong);
+
+                this->csAction = PLAYER_CSACTION_NONE;
+                this->stateFlags1 &= ~PLAYER_STATE1_20000000;
+                Player_TryCsAction(play, NULL, PLAYER_CSACTION_WAIT);
+                this->stateFlags1 |= PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000;
+                this->stateFlags2 |= PLAYER_STATE2_USING_OCARINA;
+
+                if (Actor_Spawn(&play->actorCtx, play, ACTOR_DEMO_KANKYO_Oot, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0xF) == NULL) {
+                    Hyrule_WarpSongLeaveOot(play);
+                }
+                gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+                gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
             } else if ((play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) &&
                        (play->msgCtx.lastPlayedSong == OCARINA_SONG_ELEGY)) {
                 play->interfaceCtx.bButtonInterfaceDoActionActive = false;
@@ -19187,7 +19215,8 @@ void Player_Action_StartWarpSongArrive(Player* this, PlayState* play) {
     Player_SetAction(play, this, Player_Action_WaitForCutscene, 0);
     this->av2.csDelayTimer = 40;
 
-    Actor_Spawn(&play->actorCtx, play, ACTOR_DEMO_KANKYO, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0x10);
+    // 3Ship [Hyrule] OoT's warp-in light: MM's Demo_Kankyo is not OoT's (OoT's leftover spawned MM's).
+    Actor_Spawn(&play->actorCtx, play, ACTOR_DEMO_KANKYO_Oot, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0x10);
 }
 
 void Player_Action_BlueWarpArrive(Player* this, PlayState* play) {

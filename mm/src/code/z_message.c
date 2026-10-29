@@ -7,6 +7,7 @@
 #include "message_data_static.h"
 #include "interface/parameter_static/parameter_static.h"
 #include "z64save.h"
+#include "HyruleOcarina.h"
 #include "BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/BenGui/CosmeticEditor.h"
@@ -1240,7 +1241,7 @@ void Message_HandleOcarina(PlayState* play) {
                    (msgCtx->ocarinaAction == OCARINA_ACTION_PROMPT_WIND_FISH_DEKU)) {
             msgCtx->msgMode = MSGMODE_SONG_PROMPT_STARTING;
         } else if ((msgCtx->ocarinaAction == OCARINA_ACTION_0) || (msgCtx->ocarinaAction == OCARINA_ACTION_FREE_PLAY) ||
-                   (msgCtx->ocarinaAction >= OCARINA_ACTION_CHECK_TIME)) {
+                   (msgCtx->ocarinaAction >= OCARINA_ACTION_CHECK_SONATA)) { // 3Ship [Hyrule] was CHECK_TIME
             msgCtx->msgMode = MSGMODE_OCARINA_STARTING;
         } else {
             msgCtx->msgMode = MSGMODE_SONG_PROMPT_STARTING;
@@ -3741,8 +3742,10 @@ void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
         }
     }
 
+    // 3Ship [Hyrule] The Song of Time brings the Inverted Song of Time only: the Song of Double Time has its own bit,
+    // as do Zelda's Lullaby and OoT's warp songs (docs/SONGS.md).
     if (CHECK_QUEST_ITEM(QUEST_SONG_TIME)) {
-        msgCtx->ocarinaAvailableSongs |= 0x3000;
+        msgCtx->ocarinaAvailableSongs |= 0x1000;
     }
     if (CHECK_QUEST_ITEM(QUEST_SONG_LULLABY_INTRO)) {
         msgCtx->ocarinaAvailableSongs |= 0x4000;
@@ -3750,6 +3753,8 @@ void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
     if (CHECK_QUEST_ITEM(QUEST_SONG_LULLABY)) {
         msgCtx->ocarinaAvailableSongs &= (u16)~0x4000;
     }
+    // 3Ship [Hyrule] After the line above, whose u16 mask clears the bits past 15.
+    msgCtx->ocarinaAvailableSongs |= Hyrule_GetLearnedSongBitsOot();
     if (gSaveContext.save.saveInfo.scarecrowSpawnSongSet) {
         msgCtx->ocarinaAvailableSongs |= 0x400000;
     }
@@ -3794,8 +3799,10 @@ void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
         noStop = true;
         Message_OpenText(play, 0x1B59);
         Message_SetTextboxColor(play);
-    } else if ((ocarinaAction == OCARINA_ACTION_FREE_PLAY) || (ocarinaAction >= OCARINA_ACTION_CHECK_TIME)) {
-        if ((ocarinaAction >= OCARINA_ACTION_CHECK_TIME) && (ocarinaAction <= OCARINA_ACTION_CHECK_STORMS)) {
+    // 3Ship [Hyrule] The checks for the songs before the Song of Time, which MM leaves broken and unused, are checks too:
+    // OoT's actors check for Saria's Song.
+    } else if ((ocarinaAction == OCARINA_ACTION_FREE_PLAY) || (ocarinaAction >= OCARINA_ACTION_CHECK_SONATA)) {
+        if ((ocarinaAction >= OCARINA_ACTION_CHECK_SONATA) && (ocarinaAction <= OCARINA_ACTION_CHECK_STORMS)) {
             Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
         }
         if (ocarinaAction == OCARINA_ACTION_SCARECROW_SPAWN_DEMONSTRATION) {
@@ -4098,7 +4105,14 @@ void Message_SpawnSongEffect(PlayState* play) {
         !((msgCtx->ocarinaAction >= OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN) &&
           (msgCtx->ocarinaAction <= OCARINA_ACTION_PROMPT_WIND_FISH_DEKU))) {
         msgCtx->ocarinaSongEffectActive = true;
-        if (msgCtx->songPlayed != OCARINA_SONG_SCARECROW_SPAWN) {
+        // 3Ship [Hyrule] OoT's effects for Saria's Song and Zelda's Lullaby (whose index is past MM's table).
+        if (msgCtx->songPlayed == OCARINA_SONG_SARIAS) {
+            Actor_Spawn(&play->actorCtx, play, ACTOR_OCEFF_WIPE3, player->actor.world.pos.x, player->actor.world.pos.y,
+                        player->actor.world.pos.z, 0, 0, 0, 0);
+        } else if (msgCtx->songPlayed == OCARINA_SONG_ZELDAS_LULLABY) {
+            Actor_Spawn(&play->actorCtx, play, ACTOR_OCEFF_WIPE, player->actor.world.pos.x, player->actor.world.pos.y,
+                        player->actor.world.pos.z, 0, 0, 0, 0); // OCEFF_WIPE_ZL
+        } else if (msgCtx->songPlayed != OCARINA_SONG_SCARECROW_SPAWN) {
             Actor_Spawn(&play->actorCtx, play, sOcarinaEffectActorIds[msgCtx->songPlayed], player->actor.world.pos.x,
                         player->actor.world.pos.y, player->actor.world.pos.z, 0, 0, 0,
                         sOcarinaEffectActorParams[msgCtx->songPlayed]);
@@ -4384,13 +4398,31 @@ void Message_DrawSceneTitleCard(PlayState* play, Gfx** gfxP) {
     *gfxP = gfx++;
 }
 
+// 3Ship [Hyrule] "You played ...": MM's texts, and OoT's (0x893 on, in OoT's song order) for the songs MM has no
+// text for: Saria's Song, the Sun's Song, Zelda's Lullaby and the warp songs.
+u16 Message_GetSongPlayedTextId(u8 song) {
+    switch (song) {
+        case OCARINA_SONG_SARIAS:
+            return TEXT_OOT(0x899);
+        case OCARINA_SONG_SUNS:
+            return TEXT_OOT(0x89C);
+        case OCARINA_SONG_ZELDAS_LULLABY:
+            return TEXT_OOT(0x89B);
+        default:
+            if ((song >= OCARINA_SONG_MINUET) && (song <= OCARINA_SONG_PRELUDE)) {
+                return TEXT_OOT(0x893 + song - OCARINA_SONG_MINUET);
+            }
+            return 0x1B72 + song;
+    }
+}
+
 s16 sOcarinaSongFanfares[] = {
     NA_BGM_OCARINA_SONATA,            // OCARINA_SONG_SONATA
     NA_BGM_OCARINA_LULLABY,           // OCARINA_SONG_GORON_LULLABY
     NA_BGM_OCARINA_NEW_WAVE,          // OCARINA_SONG_NEW_WAVE
     NA_BGM_OCARINA_ELEGY,             // OCARINA_SONG_ELEGY
     NA_BGM_OCARINA_OATH,              // OCARINA_SONG_OATH
-    NA_BGM_MAJORAS_LAIR,              // OCARINA_SONG_SARIAS
+    SEQ_OOT(0x44),                    // OCARINA_SONG_SARIAS (3Ship [Hyrule] OoT's NA_BGM_OCA_SARIA)
     NA_BGM_OCARINA_TIME,              // OCARINA_SONG_TIME
     NA_BGM_OCARINA_HEALING,           // OCARINA_SONG_HEALING
     NA_BGM_OCARINA_EPONA,             // OCARINA_SONG_EPONAS
@@ -4402,6 +4434,20 @@ s16 sOcarinaSongFanfares[] = {
     NA_BGM_OCARINA_LULLABY_INTRO_PTR, // OCARINA_SONG_GORON_LULLABY_INTRO
     NA_BGM_OCARINA_LULLABY_INTRO_PTR, // OCARINA_SONG_WIND_FISH_HUMAN
     NA_BGM_OCARINA_LULLABY_INTRO_PTR, // OCARINA_SONG_WIND_FISH_GORON
+    // 3Ship [Hyrule] The table stopped here, short of Zelda's Lullaby; OoT's songs play OoT's fanfares.
+    NA_BGM_OCARINA_LULLABY_INTRO_PTR, // OCARINA_SONG_WIND_FISH_ZORA
+    NA_BGM_OCARINA_LULLABY_INTRO_PTR, // OCARINA_SONG_WIND_FISH_DEKU
+    NA_BGM_OCARINA_LULLABY_INTRO_PTR, // OCARINA_SONG_EVAN_PART1
+    NA_BGM_OCARINA_LULLABY_INTRO_PTR, // OCARINA_SONG_EVAN_PART2
+    SEQ_OOT(0x46),                    // OCARINA_SONG_ZELDAS_LULLABY (OoT's NA_BGM_OCA_ZELDA)
+    NA_BGM_OCARINA_LULLABY_INTRO_PTR, // OCARINA_SONG_SCARECROW_SPAWN (none is played)
+    NA_BGM_OCARINA_LULLABY_INTRO_PTR, // OCARINA_SONG_TERMINA_WALL
+    SEQ_OOT(0x34),                    // OCARINA_SONG_MINUET (OoT's NA_BGM_OCA_MINUET)
+    SEQ_OOT(0x33),                    // OCARINA_SONG_BOLERO
+    SEQ_OOT(0x35),                    // OCARINA_SONG_SERENADE
+    SEQ_OOT(0x36),                    // OCARINA_SONG_REQUIEM
+    SEQ_OOT(0x37),                    // OCARINA_SONG_NOCTURNE
+    SEQ_OOT(0x25),                    // OCARINA_SONG_PRELUDE (OoT's NA_BGM_OCA_LIGHT)
 };
 
 s8 sOcarinaSongFanfareIoData[PLAYER_FORM_MAX] = {
@@ -4565,7 +4611,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                         (msgCtx->ocarinaAction == OCARINA_ACTION_FREE_PLAY) ||
                         (msgCtx->ocarinaAction == OCARINA_ACTION_SCARECROW_SPAWN_RECORDING) ||
                         (msgCtx->ocarinaAction == OCARINA_ACTION_CHECK_NOTIME) ||
-                        (msgCtx->ocarinaAction >= OCARINA_ACTION_CHECK_TIME)) {
+                        (msgCtx->ocarinaAction >= OCARINA_ACTION_CHECK_SONATA)) { // 3Ship [Hyrule] was CHECK_TIME
                         if ((msgCtx->ocarinaAction == OCARINA_ACTION_FREE_PLAY) ||
                             (msgCtx->ocarinaAction == OCARINA_ACTION_CHECK_NOTIME)) {
                             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_52_10)) {
@@ -4659,9 +4705,9 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
 
                 GameInteractor_Should(VB_OVERRIDE_OCARINA_STAFF_STATE, false, msgCtx->ocarinaStaff);
 
+                // 3Ship [Hyrule] The Song of Double Time is learned on its own (Hyrule_IsSongLearned).
                 bool vanillaOwnedSongCheck = (msgCtx->ocarinaStaff->state == OCARINA_SONG_SCARECROW_SPAWN) ||
                                              (msgCtx->ocarinaStaff->state == OCARINA_SONG_INVERTED_TIME) ||
-                                             (msgCtx->ocarinaStaff->state == OCARINA_SONG_DOUBLE_TIME) ||
                                              (msgCtx->ocarinaStaff->state == OCARINA_SONG_GORON_LULLABY_INTRO);
                 // 0xFE means the staff is up but nothing has been played
                 // 0xFF means no staff is up
@@ -4669,10 +4715,13 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                 // 2S2H [Port] Fix this OOB with a check.
                 if (msgCtx->ocarinaStaff->state != 0xFE && msgCtx->ocarinaStaff->state != 0xFF) {
                     vanillaOwnedSongCheck =
-                        vanillaOwnedSongCheck || CHECK_QUEST_ITEM(QUEST_SONG_SONATA + msgCtx->ocarinaStaff->state);
+                        vanillaOwnedSongCheck || Hyrule_IsSongLearned(msgCtx->ocarinaStaff->state);
                 }
 
-                if (msgCtx->ocarinaStaff->state <= OCARINA_SONG_SCARECROW_SPAWN) {
+                // 3Ship [Hyrule] OoT's warp songs too.
+                if ((msgCtx->ocarinaStaff->state <= OCARINA_SONG_SCARECROW_SPAWN) ||
+                    ((msgCtx->ocarinaStaff->state >= OCARINA_SONG_MINUET) &&
+                     (msgCtx->ocarinaStaff->state <= OCARINA_SONG_PRELUDE))) {
                     if (msgCtx->ocarinaStaff->state == OCARINA_SONG_EVAN_PART1) {
                         AudioOcarina_ResetAndReadInput();
                         AudioOcarina_StartDefault(0x80100000);
@@ -4691,7 +4740,8 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
 
                         if (msgCtx->ocarinaAction == OCARINA_ACTION_CHECK_NOTIME) {
                             if ((msgCtx->ocarinaStaff->state <= OCARINA_SONG_SARIAS) ||
-                                (msgCtx->ocarinaStaff->state == OCARINA_SONG_SCARECROW_SPAWN)) {
+                                (msgCtx->ocarinaStaff->state == OCARINA_SONG_SCARECROW_SPAWN) ||
+                                (msgCtx->ocarinaStaff->state >= OCARINA_SONG_MINUET)) { // 3Ship [Hyrule]
                                 AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
                                 Audio_PlaySfx(NA_SE_SY_OCARINA_ERROR);
                                 msgCtx->msgMode = MSGMODE_OCARINA_STARTING;
@@ -4704,7 +4754,8 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                                 Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
                             }
                         } else if (msgCtx->ocarinaAction == OCARINA_ACTION_CHECK_SCARECROW_SPAWN) {
-                            if (msgCtx->ocarinaStaff->state <= OCARINA_SONG_STORMS) {
+                            if ((msgCtx->ocarinaStaff->state <= OCARINA_SONG_STORMS) ||
+                                (msgCtx->ocarinaStaff->state >= OCARINA_SONG_MINUET)) { // 3Ship [Hyrule]
                                 AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
                                 Audio_PlaySfx(NA_SE_SY_OCARINA_ERROR);
                                 msgCtx->stateTimer = 10;
@@ -4879,7 +4930,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                 if (msgCtx->songPlayed == OCARINA_SONG_SCARECROW_SPAWN) {
                     Message_ContinueTextbox(play, 0x1B6B);
                 } else {
-                    Message_ContinueTextbox(play, 0x1B72 + msgCtx->songPlayed);
+                    Message_ContinueTextbox(play, Message_GetSongPlayedTextId(msgCtx->songPlayed));
                 }
                 Message_Decode(play);
                 msgCtx->msgMode = MSGMODE_16;
@@ -4911,7 +4962,22 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                         gHorsePlayedEponasSong = true;
                     }
 
-                    if (msgCtx->ocarinaAction == OCARINA_ACTION_FREE_PLAY_DONE) {
+                    // 3Ship [Hyrule] OoT's warp songs ask where to warp, as OoT's MSGMODE_SONG_PLAYED_ACT does (not
+                    // while teaching or prompting one); "yes" makes the ocarina mode WARP (MSGMODE_TEXT_DONE).
+                    if ((msgCtx->songPlayed >= OCARINA_SONG_MINUET) && (msgCtx->songPlayed <= OCARINA_SONG_PRELUDE) &&
+                        ((msgCtx->ocarinaAction == OCARINA_ACTION_FREE_PLAY_DONE) ||
+                         (msgCtx->ocarinaAction >= OCARINA_ACTION_CHECK_SONATA)) &&
+                        Hyrule_IsWarpSongPadLoadedOot(msgCtx->songPlayed)) {
+                        if (!Hyrule_AreWarpSongsAllowedOot(play)) {
+                            Message_StartTextbox(play, TEXT_OOT(0x88C), NULL); // "You can't warp here!"
+                            play->msgCtx.ocarinaMode = OCARINA_MODE_END;
+                        } else {
+                            Message_StartTextbox(play, TEXT_OOT(0x88D + msgCtx->songPlayed - OCARINA_SONG_MINUET),
+                                                 NULL); // "Warp to [place]?"
+                            play->msgCtx.ocarinaMode = OCARINA_MODE_ACTIVE;
+                        }
+                        gWarpSongsDisabledOot = false;
+                    } else if (msgCtx->ocarinaAction == OCARINA_ACTION_FREE_PLAY_DONE) {
                         if (sLastPlayedSong == OCARINA_SONG_ELEGY) {
                             if (GameInteractor_Should(
                                     VB_ELEGY_CHECK_SCENE,
@@ -5533,7 +5599,9 @@ s16 sDoubleTimeSkipToDayTextIds[] = {
 // its update; OoT's actors rely on it (the bean seller hands his bean over as the box closes). MM's actors close
 // their choices themselves, so this is for OoT's texts only.
 static void Message_CloseOotChoice(PlayState* play) {
-    if ((play->msgCtx.currentTextId >= TEXT_OOT_BASE) && Message_ShouldAdvance(play)) {
+    // A choice with the ocarina still out is a warp song's "Warp to...?", which MM's own code below answers.
+    if ((play->msgCtx.currentTextId >= TEXT_OOT_BASE) && (play->msgCtx.ocarinaMode != OCARINA_MODE_ACTIVE) &&
+        Message_ShouldAdvance(play)) {
         Audio_PlaySfx(NA_SE_SY_DECIDE);
         Message_CloseTextbox(play);
     }

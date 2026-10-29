@@ -42,8 +42,8 @@ converters live in `OTRExporter/OTRExporter/OotToMm.cpp` and are skeletons:
 - **Text:** OoT control codes become MM ones, item icons and text-ID jumps move into MM's message
   header, and codes without an MM equivalent are dropped and reported in the extraction log. Textbox
   types, sound effects and item IDs are not remapped.
-- **Cutscenes:** stub. Each becomes an empty MM cutscene that only runs to its end frame, and the
-  skipped OoT commands are reported in the extraction log.
+- **Cutscenes:** not converted. Scripts stay in OoT's format, as SoH writes them, and play with OoT's
+  interpreter (Cutscenes, below); 2Ship's cutscene importer reads `oot/` scripts as they are.
 
 ## OoT scenes in game
 
@@ -74,6 +74,11 @@ entrance indices to MM entrances (`HyruleOotEntrances.inc`). To add a scene, app
 | Gerudo Valley | `SCENE_GERUDO_VALLEY_Oot` (0x80) | `0xFA00` |
 | Lon Lon Ranch | `SCENE_LON_LON_RANCH_Oot` (0x81) | `0xFC00` |
 | Death Mountain Trail | `SCENE_DEATH_MOUNTAIN_TRAIL_Oot` (0x82) | `0x10000` |
+
+OoT's scenes take MM's `RESTRICTIONS_NONE`. OoT's own restrictions (its `sRestrictionFlags`) are in
+`HyruleRestrictions.c`, read so far for the ocarina (its button greyed where OoT forbids it), the warp songs
+and the spells; OoT's others (B, A, bottles, trade items, the hookshot, the Sun's Song and every item) are not
+applied yet.
 
 To go there:
 
@@ -144,8 +149,6 @@ Not yet:
 - **Actors:** only some waves are ported, so other OoT actors in room lists do not appear.
 - **Scenes:** only the ones above; exits into others lead back to the spawn Link came in at.
 - **OoT sound effects:** the OoT-only sound effects are not played yet (see Audio).
-- **Entrance cutscenes:** OoT's first-visit scene cutscenes (Death Mountain Trail's 200-frame introduction) are
-  not played.
 - **Scene effects:** OoT's scene draw configs (z_scene_table.c) run for OoT scenes through MM's
   `SCENE_DRAW_CFG_HYRULE_OOT` (`HyruleSceneDraw.c`), but only those of the scenes loaded so far (Kokiri Forest,
   the Lost Woods, the grottos, the fairy fountain, calm water); the others draw as MM's default.
@@ -245,8 +248,7 @@ Known differences:
 - Grass drops come from MM's drop table of the same index, since OoT's tables and Deku seeds are not
   ported. Regrowing grass gives a recovery heart half the time and nothing instead of seeds.
 - Bugs from grass and rocks wait for `En_Insect`.
-- Cut signs (`En_Kanban`) are not repaired by Zelda's Lullaby, which MM's ocarina lacks; the pieces
-  go when Link walks away, as in OoT. The cut direction comes from MM's melee animations, with Zora
+- Cut signs (`En_Kanban`) are repaired by Zelda's Lullaby; the pieces go when Link walks away, as in OoT. The cut direction comes from MM's melee animations, with Zora
   attacks cutting like sword swings and Goron punches like the hammer.
 - OoT's age checks use `HyrulePort.h`, where Link is always a child until adult Link exists.
 - OoT's background check flag 4 covers floor and water, while MM checks water only with 0x400, so
@@ -332,9 +334,9 @@ match SoH on every frame, apart from the circle removing its rupees by the camer
 apart, as with `Obj_Mure2`). The shop shelves match SoH's shop run.
 
 - Talking to a Gossip Stone shows OoT's text, and its own message with MM's or OoT's Mask of Truth.
-- OoT's ocarina is not ported, so Gossip Stones hear MM's, as MM's own stones do: Epona's Song and the Song of
-  Time bring a healing fairy and the Song of Storms a big one, MM's `En_Elf` with the same fairy types. OoT's
-  Saria's Song, Zelda's Lullaby and Sun's Song wait for OoT's songs.
+- Gossip Stones hear Link's ocarina, which plays OoT's songs too (docs/SONGS.md): Zelda's Lullaby, Saria's Song,
+  Epona's Song, the Sun's Song and the Song of Time bring a healing fairy and the Song of Storms a big one, MM's
+  `En_Elf` with the same fairy types.
 - Boulders break when one of MM's bombs explodes next to them (`func_80033684`, OoT's search for an
   exploding bomb, works on MM's `En_Bom`) or under the Megaton Hammer.
 
@@ -382,12 +384,13 @@ frame; Death Mountain's cloud ring turns on SoH's frames until it leaves the cam
   are left out.
 - MM's `LINK_AGE_IN_YEARS` reads MM's adult transformation, so ported code uses `LINK_AGE_IN_YEARS_OOT`
   (`HyrulePort.h`): the bridges and well water follow OoT's age.
-- The well beam and the cloud ring's eruption follow OoT's cutscene cues (MM's `actorCues`), which only OoT's
-  cutscenes give; those are not played yet.
+- The well beam and the cloud ring's eruption follow OoT's cutscene cues (`gCsCtxOot.npcActions`), which only
+  OoT's story cutscenes give; those are not triggered yet (docs/CUTSCENES.md).
 
 Wave 18 was checked the same way, adding adult runs at Lake Hylia and Death Mountain Trail: the same actors are in
 the same places as SoH's, except that the cuccos wander to random spots (RNG) and adult Lake Hylia's Guays
-take off at once, where SoH holds them through its first-visit cutscene, which is not played here. A cucco
+take off at once, where SoH holds them through its first-visit cutscene, which this check did not play (it plays
+since docs/CUTSCENES.md step 2). A cucco
 made angry (under gdb) brings up to six attack cuccos, which hit Link seven times in the next 770 frames. Notes:
 
 - `En_Butte`'s fairy is MM's `En_Elf` (`FAIRY_TYPE_2`, OoT's `FAIRY_HEAL_TIMED`); OoT's `En_Elf` is not ported.
@@ -474,6 +477,29 @@ drawbridge is up at night for child Link and comes down at dawn; Kokiri Forest h
   Link's camera.
 - `SkelAnime_DrawSkeleton2Oot` and OoT's `D_80116280` (`HyruleActor.h`) draw the Poes' translucent skeletons.
 - Not checked yet: killing a Poe and bottling its soul, which needs arrows from Epona for a Big Poe.
+
+## Cutscenes
+
+OoT's scripts play with OoT's interpreter (`HyruleCutscene.c`, from SoH's `z_demo.c`, docs/CUTSCENES.md), in OoT's
+`CutsceneContext` (`gCsCtxOot`) and with OoT's trigger, apart from MM's. While one plays, MM's
+`play->csCtx.state` reads `CS_STATE_RUN` and `curFrame` follows OoT's frame, so MM's Player, interface and
+actors see a cutscene, and `Play_Update` runs OoT's interpreter instead of MM's. OoT's script camera (spline
+points relative to the world or to Link) drives MM's cutscene sub-camera through `Play_SetCameraAtEye`, its FOV
+and roll. OoT's environment flags (`Flags_GetEnvOot`) are kept here and cleared on scene load, as in OoT.
+`HyruleCutscene.c` is generated (the port tool's renames plus fix-ups); the Link actions of story cutscenes are
+not ported yet.
+
+Scene cutscenes start as in OoT (`HyruleSceneCutscene.c`, from Play_Init): a cutscene layer (4 and up) plays its
+scene's script, and otherwise OoT's entrance cutscene table plays a first-visit introduction (or Epona's fence
+jumps, or one of its story scenes) by OoT entrance, age and event flag. The introductions' flags
+(`EVENTCHKINF_ENTERED_*`) survive the cycle reset, so each plays once per save (docs/CUTSCENES.md C2). OoT's
+conditional triggers (Saria on the bridge, the Nocturne...) are not ported yet.
+
+Played so far: the warp songs' warp-out and warp-in (`Demo_Kankyo`), from both worlds; the introductions of Death
+Mountain Trail, Hyrule Field, Kakariko, Lake Hylia, Gerudo Valley and Lon Lon Ranch; and Kokiri Forest's
+cutscene layers (the opening narration, the Deku Tree), reached only from story cutscenes. Link leaves through the
+pad's entrance (`Hyrule_WarpSongLeaveOot`) with respawn flag 0, since MM gave OoT's -3 to grotto returns, and
+Player starts in MM's warp-song arrival, which now spawns OoT's `Demo_Kankyo` (MM's leftover spawned MM's).
 
 ## Text
 

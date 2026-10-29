@@ -108,10 +108,10 @@ MM's Player kept OoT's spell animations; the cast is OoT's, with MM's item camer
   arriving uses the point up. OoT keeps the point in `respawn[RESPAWN_MODE_TOP]`, which MM uses for itself on
   every scene entry, so the pointer has its own copy and the point goes into `RESPAWN_MODE_TOP` only for the warp.
   The point is erased at the end of a cycle (F2).
-- **Where** (`Hyrule_IsSpellAllowed`): in Hyrule, OoT's own table (Farore's Wind in eleven dungeons, not their
-  boss rooms; Din's Fire and Nayru's Love not in towns, houses and shops). In Termina, Farore's Wind in the
-  four temples (F1), and Din's Fire and Nayru's Love outside Clock Town (F3); MM greys every OoT item in houses
-  and shops already. A forbidden spell's button is greyed.
+- **Where** (`Hyrule_IsSpellAllowed`): in Hyrule, OoT's own table (`HyruleRestrictions.c`; Farore's Wind in
+  eleven dungeons, not their boss rooms; Din's Fire and Nayru's Love not in towns, houses and shops). In Termina,
+  Farore's Wind in the four temples (F1), and Din's Fire and Nayru's Love outside Clock Town (F3); MM greys every
+  OoT item in houses and shops already. A forbidden spell's button is greyed.
 - **OoT's text**: OoT's message positions went into the flags half of MM's message header, which made every
   message placed at the top, middle or bottom unskippable, and the bottom ones invisible. OTRExporter's
   converter now puts them where MM reads its own (`OotToMm::ConvertMessage`).

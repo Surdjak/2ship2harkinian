@@ -11,6 +11,10 @@
 #define LINK_IS_CHILD_OOT (!LINK_IS_ADULT_OOT)
 // MM's LINK_AGE_IN_YEARS reads MM's LINK_IS_ADULT (a transformation), not OoT's age.
 #define LINK_AGE_IN_YEARS_OOT (LINK_IS_ADULT_OOT ? YEARS_ADULT : YEARS_CHILD)
+// OoT's gSaveContext.linkAge: LINK_AGE_ADULT 0, LINK_AGE_CHILD 1.
+#define LINK_AGE_OOT (LINK_IS_ADULT_OOT ? 0 : 1)
+// OoT's sub-timer (the escape and minigame countdowns), which MM's timers do not run yet.
+#define Interface_SetSubTimerToFinalSecond(play) ((void)0)
 
 // OoT's quest status and inventory, in the shared inventory (HyruleInventory.h).
 #define CHECK_QUEST_ITEM_OOT(item) Hyrule_CheckQuestItemOot(item)

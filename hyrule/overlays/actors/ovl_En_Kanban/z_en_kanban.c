@@ -10,6 +10,7 @@
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/object_kanban/object_kanban.h"
 #include "HyrulePort.h"
+#include "HyruleOcarina.h"
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h" // BOMB_TYPE_EXPLOSION
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
@@ -708,8 +709,21 @@ static void EnKanban_Update(Actor* thisx, PlayState* play2) {
                     bomb = bomb->next;
                 }
             }
-            // PORT: Zelda's Lullaby repairs the sign in OoT, and MM's ocarina has no such song yet. The pieces stay
-            // until Link moves away and the sign resets (ENKANBAN_SIGN above).
+            switch (this->ocarinaFlag) {
+                case 0:
+                    if (Hyrule_GetOcarinaModeOot(play) == OCARINA_MODE_01_Oot) {
+                        this->ocarinaFlag = 1;
+                    }
+                    break;
+                case 1:
+                    if ((Hyrule_GetOcarinaModeOot(play) == OCARINA_MODE_04_Oot) &&
+                        (play->msgCtx.lastPlayedSong == OCARINA_SONG_LULLABY_Oot)) {
+                        this->actionState = ENKANBAN_REPAIR;
+                        this->bounceX = 1;
+                        Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
+                    }
+                    break;
+            }
             break;
         case ENKANBAN_REPAIR: {
             f32 distX;

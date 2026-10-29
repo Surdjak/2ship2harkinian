@@ -7,6 +7,7 @@
 #include "z_en_ani.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
+#include "HyruleCutscene.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_ani/object_ani.h"
 
@@ -214,7 +215,7 @@ static void func_809B0988(EnAni* this, PlayState* play) {
 }
 
 static void func_809B0994(EnAni* this, PlayState* play) {
-    if (play->csCtx.actorCues[0]->id == 4) {
+    if (gCsCtxOot.npcActions[0]->action == 4) {
         Animation_Change(&this->skelAnime, &gRoofManGettingUpAfterKnockbackAnim, 1.0f, 0.0f,
                          Animation_GetLastFrame(&gRoofManGettingUpAfterKnockbackAnim), ANIMMODE_ONCE, -4.0f);
         this->unk_2AA++;
@@ -232,7 +233,7 @@ static void func_809B0A6C(EnAni* this, PlayState* play) {
     if (SkelAnime_Update(&this->skelAnime)) {
         this->skelAnime.curFrame = 0.0f;
     }
-    if (play->csCtx.actorCues[0]->id == 2) {
+    if (gCsCtxOot.npcActions[0]->action == 2) {
         Animation_Change(&this->skelAnime, &gRoofManKnockbackAnim, 1.0f, 0.0f,
                          Animation_GetLastFrame(&gRoofManKnockbackAnim), ANIMMODE_ONCE, 0.0f);
         this->actor.shape.shadowDraw = NULL;
@@ -248,7 +249,7 @@ static void EnAni_Update(Actor* thisx, PlayState* play) {
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
     Actor_MoveWithGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, 0x404);
-    if ((play->csCtx.state != CS_STATE_IDLE) && (play->csCtx.actorCues[0] != NULL)) {
+    if ((gCsCtxOot.state != CS_STATE_IDLE_Oot) && (gCsCtxOot.npcActions[0] != NULL)) {
         switch (this->unk_2AA) {
             case 0:
                 func_809B0A6C(this, play);
@@ -267,7 +268,7 @@ static void EnAni_Update(Actor* thisx, PlayState* play) {
                 break;
         }
 
-        if (play->csCtx.curFrame == 100) {
+        if (gCsCtxOot.frames == 100) {
             Audio_PlaySfx_2(NA_SE_IT_EARTHQUAKE);
         }
     } else {

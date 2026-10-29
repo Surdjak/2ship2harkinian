@@ -1,6 +1,7 @@
 #include "global.h"
 #include "HyruleInventory.h"
 #include "HyruleMagic.h"
+#include "HyruleRestrictions.h"
 #include "HyrulePlayer.h"
 #include "HyruleKaleido.h"
 #include "PR/gs2dex.h"
@@ -3429,7 +3430,10 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
                     }
                 } else {
                     // End of special item cases. Apply restrictions to buttons
-                    if (interfaceCtx->restrictions.tradeItems != 0) {
+                    // 3Ship [Hyrule] OoT's scenes that forbid the ocarina (OoT's restrictions.ocarina).
+                    if ((interfaceCtx->restrictions.tradeItems != 0) ||
+                        ((GET_CUR_FORM_BTN_ITEM(i) == ITEM_OCARINA_OF_TIME) &&
+                         (Hyrule_GetRestrictionOot(play, HYRULE_RESTRICTION_OCARINA_OOT) > 0))) {
                         if (((GET_CUR_FORM_BTN_ITEM(i) >= ITEM_MOONS_TEAR) &&
                              (GET_CUR_FORM_BTN_ITEM(i) <= ITEM_PENDANT_OF_MEMORIES)) ||
                             ((GET_CUR_FORM_BTN_ITEM(i) >= ITEM_BOTTLE) &&
@@ -3582,7 +3586,10 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
                     }
                 } else {
                     // End of special item cases. Apply restrictions to buttons
-                    if (interfaceCtx->restrictions.tradeItems != 0) {
+                    // 3Ship [Hyrule] OoT's scenes that forbid the ocarina (OoT's restrictions.ocarina).
+                    if ((interfaceCtx->restrictions.tradeItems != 0) ||
+                        ((DPAD_GET_CUR_FORM_BTN_ITEM(j) == ITEM_OCARINA_OF_TIME) &&
+                         (Hyrule_GetRestrictionOot(play, HYRULE_RESTRICTION_OCARINA_OOT) > 0))) {
                         if (((DPAD_GET_CUR_FORM_BTN_ITEM(j) >= ITEM_MOONS_TEAR) &&
                              (DPAD_GET_CUR_FORM_BTN_ITEM(j) <= ITEM_PENDANT_OF_MEMORIES)) ||
                             ((DPAD_GET_CUR_FORM_BTN_ITEM(j) >= ITEM_BOTTLE) &&

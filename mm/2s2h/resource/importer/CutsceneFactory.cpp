@@ -75,6 +75,17 @@ ResourceFactoryBinaryCutsceneV0::ReadResource(std::shared_ptr<Ship::File> file,
     uint32_t numEntries = reader->ReadUInt32();
     cutscene->commands.reserve(numEntries);
 
+    // 3Ship [Hyrule] OoT's scripts (oot.o2r) are in OoT's format, for OoT's interpreter (hyrule/HyruleCutscene.c):
+    // OTRExporter writes them as words in native (little-endian) order, so they are read as they are.
+    if (initData->Path.rfind("oot/", 0) == 0) {
+        for (uint32_t i = 0; i < numEntries; i++) {
+            cutscene->commands.push_back(reader->ReadUInt32());
+        }
+        cutscene->numCommands = cutscene->commands[0];
+        cutscene->endFrame = cutscene->commands[1];
+        return cutscene;
+    }
+
     cutscene->numCommands = reader->ReadUInt32();
     cutscene->commands.push_back(cutscene->numCommands);
 

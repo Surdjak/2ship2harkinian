@@ -28,8 +28,15 @@ typedef enum OcarinaSongId {
     /* 21 */ OCARINA_SONG_ZELDAS_LULLABY,
     /* 22 */ OCARINA_SONG_SCARECROW_SPAWN,
     /* 23 */ OCARINA_SONG_TERMINA_WALL,
-    /* 24 */ OCARINA_SONG_MAX,
-    /* 24 */ OCARINA_SONG_SCARECROW_LONG = OCARINA_SONG_MAX // anything larger than 24 is considered the long scarecrow's song
+    // 3Ship [Hyrule] OoT's warp songs (docs/SONGS.md).
+    /* 24 */ OCARINA_SONG_MINUET,
+    /* 25 */ OCARINA_SONG_BOLERO,
+    /* 26 */ OCARINA_SONG_SERENADE,
+    /* 27 */ OCARINA_SONG_REQUIEM,
+    /* 28 */ OCARINA_SONG_NOCTURNE,
+    /* 29 */ OCARINA_SONG_PRELUDE,
+    /* 30 */ OCARINA_SONG_MAX,
+    /* 30 */ OCARINA_SONG_SCARECROW_LONG = OCARINA_SONG_MAX // anything larger than 30 is considered the long scarecrow's song
 } OcarinaSongId;
 
 typedef enum OcarinaSongActionId {

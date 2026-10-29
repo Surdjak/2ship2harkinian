@@ -51,6 +51,7 @@ u8 sMotionBlurStatus;
 #include "Harness.h"
 #include "HyruleScenes.h"
 #include "HyrulePanorama.h"
+#include "HyruleCutscene.h"
 
 s32 gDbgCamEnabled = false;
 u8 D_801D0D54 = false;
@@ -1058,8 +1059,13 @@ void Play_UpdateMain(PlayState* this) {
                     if (!this->haltAllActors) {
                         Actor_UpdateAll(this, &this->actorCtx);
                     }
-                    Cutscene_UpdateManual(this, &this->csCtx);
-                    Cutscene_UpdateScripted(this, &this->csCtx);
+                    // 3Ship [Hyrule] OoT's scripts play with OoT's interpreter (docs/CUTSCENES.md).
+                    if (Hyrule_IsCutsceneOotPlaying()) {
+                        Hyrule_UpdateCutsceneOot(this);
+                    } else {
+                        Cutscene_UpdateManual(this, &this->csCtx);
+                        Cutscene_UpdateScripted(this, &this->csCtx);
+                    }
                     Effect_UpdateAll(this);
                     EffectSs_UpdateAll(this);
                     EffFootmark_Update(this);
@@ -2355,6 +2361,7 @@ void Play_Init(GameState* thisx) {
     CollisionCheck_InitContext(this, &this->colChkCtx);
     AnimTaskQueue_Reset(&this->animTaskQueue);
     Cutscene_InitContext(this, &this->csCtx);
+    Hyrule_InitCutsceneOot(this); // 3Ship [Hyrule]
 
     if (gSaveContext.nextCutsceneIndex != 0xFFEF) {
         gSaveContext.save.cutsceneIndex = gSaveContext.nextCutsceneIndex;
@@ -2389,6 +2396,8 @@ void Play_Init(GameState* thisx) {
     } else {
         gSaveContext.sceneLayer = 0;
     }
+    // 3Ship [Hyrule] An OoT cutscene's age for this scene (OoT's linkAgeOnLoad), before the layer depends on it.
+    Hyrule_ApplyAgeOnLoadOot();
     // 3Ship [Hyrule] OoT scenes have age and time layers, and their cutscene layers start at 4.
     gSaveContext.sceneLayer = Hyrule_GetSceneLayer(gSaveContext.save.entrance, gSaveContext.sceneLayer);
 
@@ -2513,6 +2522,8 @@ void Play_Init(GameState* thisx) {
     gSaveContext.seqId = this->sceneSequences.seqId;
     gSaveContext.ambienceId = this->sceneSequences.ambienceId;
     AnimTaskQueue_Update(this, &this->animTaskQueue);
+    // 3Ship [Hyrule] OoT's scene cutscenes: the cutscene layer's script, or OoT's entrance cutscene.
+    Hyrule_HandleSceneCutscenesOot(this);
     // BENTODO: crash in Message_FindMessage
     Cutscene_HandleEntranceTriggers(this);
     gSaveContext.respawnFlag = 0;

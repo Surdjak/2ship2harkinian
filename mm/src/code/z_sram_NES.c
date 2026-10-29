@@ -1,4 +1,5 @@
 #include "global.h"
+#include "HyruleCutscene.h"
 #include "HyruleInventory.h"
 #include "HyruleMagic.h"
 #include "HyrulePlayer.h"
@@ -530,8 +531,8 @@ void Sram_SaveEndOfCycle(PlayState* play) {
         }
     }
 
-    // 3Ship [Hyrule] Hyrule resets completely with each cycle.
-    memset(gSaveContext.save.saveInfo.eventChkInfOot, 0, sizeof(gSaveContext.save.saveInfo.eventChkInfOot));
+    // 3Ship [Hyrule] Hyrule resets completely with each cycle, but for its first-visit introductions (C2).
+    Hyrule_ResetEventChkInfOotForCycle();
     memset(gSaveContext.save.saveInfo.itemGetInfOot, 0, sizeof(gSaveContext.save.saveInfo.itemGetInfOot));
     memset(gSaveContext.save.saveInfo.infTableOot, 0, sizeof(gSaveContext.save.saveInfo.infTableOot));
     memset(gSaveContext.eventInfOot, 0, sizeof(gSaveContext.eventInfOot));

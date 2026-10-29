@@ -7,6 +7,7 @@
 #include "z_bg_spot16_doughnut.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
+#include "HyruleCutscene.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_efc_doughnut/object_efc_doughnut.h"
 
@@ -92,8 +93,8 @@ static void BgSpot16Doughnut_Update(Actor* thisx, PlayState* play) {
         } else {
             this->envColorAlpha = 255;
         }
-    } else if (play->csCtx.state != CS_STATE_IDLE && play->csCtx.actorCues[2] != NULL &&
-               play->csCtx.actorCues[2]->id == 2) {
+    } else if (gCsCtxOot.state != CS_STATE_IDLE_Oot && gCsCtxOot.npcActions[2] != NULL &&
+               gCsCtxOot.npcActions[2]->action == 2) {
         if (this->envColorAlpha >= 6) {
             this->envColorAlpha -= 5;
         } else {

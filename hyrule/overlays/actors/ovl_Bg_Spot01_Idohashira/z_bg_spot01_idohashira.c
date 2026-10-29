@@ -7,6 +7,7 @@
 #include "z_bg_spot01_idohashira.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
+#include "HyruleCutscene.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_spot01_objects/object_spot01_objects.h"
 
@@ -147,18 +148,18 @@ static void BgSpot01Idohashira_Destroy(Actor* thisx, PlayState* play) {
 }
 
 static s32 BgSpot01Idohashira_NotInCsMode(PlayState* play) {
-    if (play->csCtx.state == CS_STATE_IDLE) {
+    if (gCsCtxOot.state == CS_STATE_IDLE_Oot) {
         return true;
     }
     return false;
 }
 
-CsCmdActorCue* BgSpot01Idohashira_GetNpcAction(PlayState* play, s32 actionIdx) {
+CsCmdActorCueOot* BgSpot01Idohashira_GetNpcAction(PlayState* play, s32 actionIdx) {
     s32 pad[2];
-    CsCmdActorCue* npcAction = NULL;
+    CsCmdActorCueOot* npcAction = NULL;
 
     if (!BgSpot01Idohashira_NotInCsMode(play)) {
-        npcAction = play->csCtx.actorCues[actionIdx];
+        npcAction = gCsCtxOot.npcActions[actionIdx];
     }
     return npcAction;
 }
@@ -186,7 +187,7 @@ static f32 func_808AB1DC(f32 arg0, f32 arg1, u16 arg2, u16 arg3, u16 arg4) {
 }
 
 static s32 func_808AB29C(BgSpot01Idohashira* this, PlayState* play) {
-    CsCmdActorCue* npcAction;
+    CsCmdActorCueOot* npcAction;
     Vec3f* thisPos;
     f32 endX;
     f32 temp_f0;
@@ -198,7 +199,7 @@ static s32 func_808AB29C(BgSpot01Idohashira* this, PlayState* play) {
 
     npcAction = BgSpot01Idohashira_GetNpcAction(play, 2);
     if (npcAction != NULL) {
-        temp_f0 = Environment_LerpWeight(npcAction->endFrame, npcAction->startFrame, play->csCtx.curFrame);
+        temp_f0 = Environment_LerpWeight(npcAction->endFrame, npcAction->startFrame, gCsCtxOot.frames);
         initPos = this->dyna.actor.home.pos;
         endX = npcAction->endPos.x;
         tempY = ((kREG(10) + 1100.0f) / 10.0f) + npcAction->endPos.y;
@@ -206,7 +207,7 @@ static s32 func_808AB29C(BgSpot01Idohashira* this, PlayState* play) {
         thisPos = &this->dyna.actor.world.pos;
         thisPos->x = ((endX - initPos.x) * temp_f0) + initPos.x;
         thisPos->y =
-            func_808AB1DC(initPos.y, tempY, npcAction->endFrame, npcAction->startFrame, play->csCtx.curFrame) + initPos.y;
+            func_808AB1DC(initPos.y, tempY, npcAction->endFrame, npcAction->startFrame, gCsCtxOot.frames) + initPos.y;
         thisPos->z = ((endZ - initPos.z) * temp_f0) + initPos.z;
 
         if (temp_f0 >= 1.0f) {
@@ -236,12 +237,12 @@ static void func_808AB414(BgSpot01Idohashira* this, PlayState* play) {
 }
 
 static void func_808AB444(BgSpot01Idohashira* this, PlayState* play) {
-    CsCmdActorCue* npcAction = BgSpot01Idohashira_GetNpcAction(play, 2);
+    CsCmdActorCueOot* npcAction = BgSpot01Idohashira_GetNpcAction(play, 2);
     u32 action;
     u32 currentNpcAction;
 
     if (npcAction != NULL) {
-        action = npcAction->id;
+        action = npcAction->action;
         currentNpcAction = this->npcAction;
         if (action != currentNpcAction) {
             switch (action) {

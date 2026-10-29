@@ -7,6 +7,7 @@
 #include "z_en_fish.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
+#include "HyruleCutscene.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 
@@ -616,7 +617,7 @@ static void EnFish_Cutscene_WiggleFlyingThroughAir(EnFish* this, PlayState* play
 static void EnFish_UpdateCutscene(EnFish* this, PlayState* play) {
     s32 pad;
     s32 pad2;
-    CsCmdActorCue* csAction = play->csCtx.actorCues[1];
+    CsCmdActorCueOot* csAction = gCsCtxOot.npcActions[1];
     Vec3f startPos;
     Vec3f endPos;
     f32 progress;
@@ -631,7 +632,7 @@ static void EnFish_UpdateCutscene(EnFish* this, PlayState* play) {
     this->slowPhase += 0x111;
     this->fastPhase += 0x500;
 
-    switch (csAction->id) {
+    switch (csAction->action) {
         case 1:
             EnFish_Cutscene_FlopOnGround(this, play);
             break;
@@ -653,7 +654,7 @@ static void EnFish_UpdateCutscene(EnFish* this, PlayState* play) {
     endPos.y = csAction->endPos.y;
     endPos.z = csAction->endPos.z;
 
-    progress = Environment_LerpWeight(csAction->endFrame, csAction->startFrame, play->csCtx.curFrame);
+    progress = Environment_LerpWeight(csAction->endFrame, csAction->startFrame, gCsCtxOot.frames);
 
     this->actor.world.pos.x = (endPos.x - startPos.x) * progress + startPos.x;
     this->actor.world.pos.y = (endPos.y - startPos.y) * progress + startPos.y + D_80A17014;
@@ -732,8 +733,8 @@ static void EnFish_RespawningUpdate(EnFish* this, PlayState* play) {
 static void EnFish_Update(Actor* thisx, PlayState* play) {
     EnFish* this = (EnFish*)thisx;
 
-    if ((D_80A17010 == NULL) && (this->actor.params == FISH_DROPPED) && (play->csCtx.state != 0) &&
-        (play->csCtx.actorCues[1] != NULL)) {
+    if ((D_80A17010 == NULL) && (this->actor.params == FISH_DROPPED) && (gCsCtxOot.state != 0) &&
+        (gCsCtxOot.npcActions[1] != NULL)) {
         EnFish_SetCutsceneData(this);
     }
 

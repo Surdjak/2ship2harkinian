@@ -7,6 +7,7 @@
 #include "z_item_etcetera.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
+#include "HyruleCutscene.h"
 #include "HyruleActor.h"
 #include <assert.h>
 
@@ -181,8 +182,8 @@ static void func_80B85B28(ItemEtcetera* this, PlayState* play) {
 }
 
 static void ItemEtcetera_UpdateFireArrow(ItemEtcetera* this, PlayState* play) {
-    if ((play->csCtx.state != CS_STATE_IDLE) && (play->csCtx.actorCues[0] != NULL)) {
-        if (play->csCtx.actorCues[0]->id == 2) {
+    if ((gCsCtxOot.state != CS_STATE_IDLE_Oot) && (gCsCtxOot.npcActions[0] != NULL)) {
+        if (gCsCtxOot.npcActions[0]->action == 2) {
             this->actor.draw = ItemEtcetera_Draw;
             this->actor.gravity = -0.1f;
             this->actor.terminalVelocity = -4.0f;

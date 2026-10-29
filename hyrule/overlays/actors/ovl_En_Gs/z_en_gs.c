@@ -7,6 +7,7 @@
 #include "z_en_gs.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
+#include "HyruleOcarina.h"
 #include "HyruleActor.h"
 #include "HyrulePlayer.h"
 #include "assets/oot/objects/object_gs/object_gs.h"
@@ -139,9 +140,9 @@ static s32 func_80A4E3EC(EnGs* this, PlayState* play) {
     return ret;
 }
 
-// PORT: OoT's ocarina is not ported, so the stone hears MM's, as MM's own Gossip Stones do: it offers itself to the
-// ocarina and opens the free-play staff. Of OoT's songs, MM has Epona's Song, the Song of Time and the Song of Storms;
-// the fairies are MM's (En_Elf), whose types are OoT's.
+// The stone offers itself to MM's ocarina, as MM's own Gossip Stones do, and opens the free-play staff; it answers
+// OoT's songs as in OoT (OoT's Song of Time is the Song of Double Time, docs/SONGS.md). The fairies are MM's (En_Elf),
+// whose types are OoT's.
 static void func_80A4E470(EnGs* this, PlayState* play) {
     if (this->actor.xzDistToPlayer <= 100.0f) {
         if (this->unk_19D == 0) {
@@ -153,13 +154,16 @@ static void func_80A4E470(EnGs* this, PlayState* play) {
             }
         } else if ((this->unk_19D & 1)) {
             if (play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) {
-                if ((play->msgCtx.lastPlayedSong == OCARINA_SONG_EPONAS) ||
-                    (play->msgCtx.lastPlayedSong == OCARINA_SONG_TIME)) {
+                if ((play->msgCtx.lastPlayedSong == OCARINA_SONG_SARIAS_Oot) ||
+                    (play->msgCtx.lastPlayedSong == OCARINA_SONG_EPONAS_Oot) ||
+                    (play->msgCtx.lastPlayedSong == OCARINA_SONG_LULLABY_Oot) ||
+                    (play->msgCtx.lastPlayedSong == OCARINA_SONG_SUNS_Oot) ||
+                    (play->msgCtx.lastPlayedSong == OCARINA_SONG_TIME_Oot)) {
                     Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, this->actor.world.pos.x,
                                 this->actor.world.pos.y + 40.0f, this->actor.world.pos.z, 0, 0, 0,
                                 2 /* MM's FAIRY_TYPE_2, OoT's FAIRY_HEAL_TIMED */);
                     Actor_PlaySfx(&this->actor, NA_SE_EV_BUTTERFRY_TO_FAIRY);
-                } else if (play->msgCtx.lastPlayedSong == OCARINA_SONG_STORMS) {
+                } else if (play->msgCtx.lastPlayedSong == OCARINA_SONG_STORMS_Oot) {
                     Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, this->actor.world.pos.x,
                                 this->actor.world.pos.y + 40.0f, this->actor.world.pos.z, 0, 0, 0,
                                 7 /* MM's FAIRY_TYPE_7, OoT's FAIRY_HEAL_BIG */);
