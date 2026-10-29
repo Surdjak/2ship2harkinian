@@ -5,6 +5,7 @@
 #include "HyruleScenesPending.h"
 #include "HyruleInventory.h"
 #include "HyrulePlayer.h" // OoT's exchange items
+#include "HyruleElfMessage.h"
 
 // Link's age (docs/ADULT_LINK.md): adult Link is human Link at adult age, as in OoT.
 #define LINK_IS_ADULT_OOT (gSaveContext.save.saveInfo.isAdultOot != 0)
@@ -34,3 +35,10 @@
 // OoT's Gold Skulltula flags, in the shared inventory.
 #define GET_GS_FLAGS_OOT(index) Hyrule_GetGsFlagsOot(index)
 #define SET_GS_FLAGS_OOT(index, value) Hyrule_SetGsFlagsOot(index, value)
+
+// Navi's hint timer (OoT's saved gSaveContext.naviTimer), not saved yet: after a reload Navi offers her C-up hint
+// again.
+extern u16 gNaviTimerOot;
+
+// OoT's func_800F3F3C: the cutscene effects sequence, one of its effects (HyruleAudio.c).
+void Hyrule_PlayCutsceneEffectsSeqOot(u8 effect);

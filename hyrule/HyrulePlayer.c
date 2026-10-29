@@ -11,6 +11,8 @@
 #include "assets/oot/objects/object_link_child/object_link_child.h"
 #include "assets/oot/objects/object_link_boy/object_link_boy.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+
+u16 gNaviTimerOot;
 // hyrule/overlays/actors, not MM's Zora boomerang.
 #include "./overlays/actors/ovl_En_Boom/z_en_boom.h"
 

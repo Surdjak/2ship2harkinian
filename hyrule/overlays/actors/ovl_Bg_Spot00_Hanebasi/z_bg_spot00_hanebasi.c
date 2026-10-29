@@ -147,8 +147,7 @@ static void BgSpot00Hanebasi_DrawbridgeWait(BgSpot00Hanebasi* this, PlayState* p
         !CHECK_QUEST_ITEM_OOT(QUEST_GORON_RUBY_Oot) || !CHECK_QUEST_ITEM_OOT(QUEST_ZORA_SAPPHIRE_Oot) ||
         (GET_EVENTCHKINF_OOT(EVENTCHKINF_ZELDA_FLED_HYRULE_CASTLE_Oot))) {
         if (this->dyna.actor.shape.rot.x != 0) {
-            // PORT: OoT's env flag 0 is set by Zelda's escape cutscene, which is not ported.
-            if (((gSaveContext.sceneLayer < 4) && IS_DAY_OOT)) {
+            if (Flags_GetEnvOot(play, 0) || ((gSaveContext.sceneLayer < 4) && IS_DAY_OOT)) {
                 this->actionFunc = BgSpot00Hanebasi_DrawbridgeRiseAndFall;
                 this->destAngle = 0;
                 child->destAngle = 0;

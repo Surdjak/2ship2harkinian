@@ -213,6 +213,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 20 | Kakariko's people: `En_Heishi2` (the Death Mountain gate guard, and OoT's other guards), `En_Heishi4` (guards), `En_Toryo` (the boss carpenter), `En_Daiku_Kakariko` (carpenters), `En_Ani` (the man on the roof), `En_Niw_Lady` (the cucco lady), `En_Hy` (townsfolk); `Bg_Spot15_Saku` (Hyrule Castle's gate, which a guard opens) |
 | 21 | The other people of the six scenes: `En_Ms` (the bean seller), `En_Hs2` (a sulking young man in Kakariko at night), `En_Tg` (the dancing couple), `En_Ge1` and `En_Ge2` (Gerudo guards), `En_Zo` (Lake Hylia's Zoras); `Item_Etcetera` (Ruto's Letter in its bottle, and other items set out), `Elf_Msg2` (Navi's message spots), `Bg_Haka` (gravestones) |
 | 22 | `Obj_Bean` (soft soil for magic beans, and the plants Link rides as an adult), `En_Po_Field` (Hyrule Field's Poes), `Object_Kankyo` (Kokiri Forest's dust motes and OoT's other scene effects), `Bg_Spot00_Hanebasi` (Hyrule Castle's drawbridge) |
+| Cutscenes | `Demo_Kankyo` (the warp songs' light), `En_Elf` (Navi), `Elf_Msg` (Navi's message spots), `Bg_Treemouth` (the Deku Tree's mouth), `Demo_Effect` (cutscene lights and jewels), `Demo_Sa` (Saria in cutscenes) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -393,7 +394,7 @@ take off at once, where SoH holds them through its first-visit cutscene, which t
 since docs/CUTSCENES.md step 2). A cucco
 made angry (under gdb) brings up to six attack cuccos, which hit Link seven times in the next 770 frames. Notes:
 
-- `En_Butte`'s fairy is MM's `En_Elf` (`FAIRY_TYPE_2`, OoT's `FAIRY_HEAL_TIMED`); OoT's `En_Elf` is not ported.
+- `En_Butte`'s fairy is MM's `En_Elf` (`FAIRY_TYPE_2`, OoT's `FAIRY_HEAL_TIMED`), which MM's Player catches in a bottle. OoT's `En_Elf` is Navi and the Kokiri's own fairies (`FAIRY_KOKIRI`, spawned by `En_Ko`), which appear since it was ported.
 - `En_Cow` reads MM's `gHorsePlayedEponasSong`, OoT's `DREG(53)`; the Guays' Skull Mask is OoT's
   (`Player_GetMaskOot`).
 - `Bg_Spot15_Rrbox`'s three crates at Lon Lon Ranch are in one of its cutscene layers, so they are built but not
@@ -486,20 +487,30 @@ OoT's scripts play with OoT's interpreter (`HyruleCutscene.c`, from SoH's `z_dem
 actors see a cutscene, and `Play_Update` runs OoT's interpreter instead of MM's. OoT's script camera (spline
 points relative to the world or to Link) drives MM's cutscene sub-camera through `Play_SetCameraAtEye`, its FOV
 and roll. OoT's environment flags (`Flags_GetEnvOot`) are kept here and cleared on scene load, as in OoT.
-`HyruleCutscene.c` is generated (the port tool's renames plus fix-ups); the Link actions of story cutscenes are
-not ported yet.
+`HyruleCutscene.c` is generated (the port tool's renames plus fix-ups). Link follows an OoT script's cues with OoT's
+own Player cutscene actions (`HyrulePlayerCsOot.inc`, generated from SoH's `z_player.c` and included by MM's
+`z_player.c`), on MM's Player helpers and MM's copies of OoT's Link animations. While an OoT script plays, MM's camera
+keeps OoT's letterbox and hides the interface, and the script's sub-camera takes MM's `CAM_SET_FREE0`.
+
+Navi (docs/CUTSCENES.md N1) is OoT's `En_Elf`, which MM's Player spawns in OoT scenes while Link has no Tatl, in
+its fairy slot (`tatlActor`). OoT's targeting context is MM's attention context field for field, so she hovers as
+Tatl does; MM's Player talks to her on C-up. She gives no C-up quest hint, as in SoH, and her hint timer
+(`gNaviTimerOot`) is not saved. `Elf_Msg` (her message spots) and OoT's Saria's Song text (`HyruleElfMessage.c`)
+come with her. Once Tatl has joined, Navi's cutscene cues are not followed yet.
 
 Scene cutscenes start as in OoT (`HyruleSceneCutscene.c`, from Play_Init): a cutscene layer (4 and up) plays its
 scene's script, and otherwise OoT's entrance cutscene table plays a first-visit introduction (or Epona's fence
 jumps, or one of its story scenes) by OoT entrance, age and event flag. The introductions' flags
 (`EVENTCHKINF_ENTERED_*`) survive the cycle reset, so each plays once per save (docs/CUTSCENES.md C2). OoT's
-conditional triggers (Saria on the bridge, the Nocturne...) are not ported yet.
+conditional triggers (Saria on the bridge, the Nocturne...) run before the layer is chosen
+(`Hyrule_HandleConditionalTriggersOot`).
 
 Played so far: the warp songs' warp-out and warp-in (`Demo_Kankyo`), from both worlds; the introductions of Death
 Mountain Trail, Hyrule Field, Kakariko, Lake Hylia, Gerudo Valley and Lon Lon Ranch; and Kokiri Forest's
-cutscene layers (the opening narration, the Deku Tree), reached only from story cutscenes. Link leaves through the
-pad's entrance (`Hyrule_WarpSongLeaveOot`) with respawn flag 0, since MM gave OoT's -3 to grotto returns, and
-Player starts in MM's warp-song arrival, which now spawns OoT's `Demo_Kankyo` (MM's leftover spawned MM's).
+cutscene layers (the opening, the Deku Tree's death); Link's house's (Navi wakes Link); and Saria on the bridge.
+For the warp songs, Link leaves through the pad's entrance (`Hyrule_WarpSongLeaveOot`) with respawn flag 0, since
+MM gave OoT's -3 to grotto returns, and Player starts in MM's warp-song arrival, which now spawns OoT's
+`Demo_Kankyo` (MM's leftover spawned MM's).
 
 ## Text
 

@@ -234,6 +234,14 @@ extern "C" void Hyrule_UpdateViewpoint(PlayState* play, Input* input) {
     Camera_ChangeActorCsCamIndex(GET_ACTIVE_CAM(play), sViewpoint - 1);
 }
 
+extern "C" u8 Hyrule_GetCameraMovementOot(void) {
+    return sCameraMovement;
+}
+
+extern "C" s32 Hyrule_CheckViewpointOot(s16 viewpoint) {
+    return viewpoint == sViewpoint;
+}
+
 extern "C" s32 Hyrule_CUpChangesViewpoint(void) {
     return (sCameraMovement == CAMERA_MOVEMENT_SHOP) || (sCameraMovement == CAMERA_MOVEMENT_HOUSE);
 }

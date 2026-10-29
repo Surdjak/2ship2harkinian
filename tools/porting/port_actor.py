@@ -132,6 +132,34 @@ RENAMES = [
     (r"\bPLAYER_STATE2_GRABBED_BY_ENEMY\b", "PLAYER_STATE2_80"),
     (r"\bACTORCAT_EXPLOSIVE\b", "ACTORCAT_EXPLOSIVES"),
     (r"\bPLAYER_STATE1_IN_CUTSCENE\b", "PLAYER_STATE1_20000000"),
+    (r"\bPLAYER_STATE1_GETTING_ITEM\b", "PLAYER_STATE1_400"),
+    (r"\bPLAYER_STATE1_FIRST_PERSON\b", "PLAYER_STATE1_100000"),
+    (r"\bPLAYER_STATE2_NAVI_ACTIVE\b", "PLAYER_STATE2_100000"),
+    (r"\bPLAYER_STATE2_NAVI_ALERT\b", "PLAYER_STATE2_200000"),
+    # OoT's TargetContext is MM's Attention, field for field; Navi's fields are Tatl's.
+    (r"\bactorCtx\.targetCtx\.naviRefPos\b", "actorCtx.attention.tatlHoverPos"),
+    (r"\bactorCtx\.targetCtx\.targetCenterPos\b", "actorCtx.attention.reticlePos"),
+    (r"\bactorCtx\.targetCtx\.naviInner\b", "actorCtx.attention.tatlInnerColor"),
+    (r"\bactorCtx\.targetCtx\.naviOuter\b", "actorCtx.attention.tatlOuterColor"),
+    (r"\bactorCtx\.targetCtx\.arrowPointedActor\b", "actorCtx.attention.tatlHoverActor"),
+    (r"\bactorCtx\.targetCtx\.targetedActor\b", "actorCtx.attention.reticleActor"),
+    (r"\bactorCtx\.targetCtx\.unk_40\b", "actorCtx.attention.tatlMoveProgressFactor"),
+    (r"\bactorCtx\.targetCtx\.bgmEnemy\b", "actorCtx.attention.bgmEnemy"),
+    # Navi's C-up text is MM's Player's Tatl text.
+    (r"->naviTextId\b", "->tatlTextId"),
+    # Navi is Player's fairy actor while she is Link's (hyrule/README.md, Cutscenes).
+    (r"->naviActor\b", "->tatlActor"),
+    # SoH keeps Navi's hint timer in the save; 3Ship does not save it yet.
+    (r"\bgSaveContext\.naviTimer\b", "gNaviTimerOot"),
+    (r"\bfunc_800F4524\(", "Audio_PlaySfx_AtPosWithReverb("),
+    (r"\bfunc_800F3F3C\(", "Hyrule_PlayCutsceneEffectsSeqOot("),
+    (r"\bfunc_8002873C\(", "func_800B1280("),
+    # Cutscene data: OoT's terminator destinations (HyruleCutscene.h).
+    (r"CS_TERMINATOR\(([A-Z0-9_]+?)(?:_Oot)?,", r"CS_TERMINATOR(\1_Oot,"),
+    (r"\bMagic_Fill\(play\)", "Magic_Add(play, MAGIC_FILL_TO_CAPACITY)"),
+    # OoT's scene camera type (YREG(15)) and prerendered viewpoint (HyruleScenes.h).
+    (r"\bYREG\(15\)", "Hyrule_GetCameraMovementOot()"),
+    (r"\bPlay_CheckViewpoint\(play, ", "Hyrule_CheckViewpointOot("),
     (r"\bVIRTUAL_TO_PHYSICAL\(", "OS_K0_TO_PHYSICAL("),
     (r"\bGraph_Alloc\(", "GRAPH_ALLOC("),
     (r"\bMatrix_RotateX\(([^;]*), MTXMODE_APPLY\);", r"Matrix_RotateXFApply(\1);"),

@@ -1,6 +1,6 @@
 # OoT's cutscenes
 
-**Status: approved 2026-10-28 with decisions C1 and C2 (below); steps 1 (the interpreter, camera and warp-song
+**Status: approved 2026-10-28 with decisions C1 and C2, and N1 on 2026-10-29 (below); steps 1 (the interpreter, camera and warp-song
 cutscenes) and 2 (scene cutscenes and the entrance introductions) done.** Asked for by [SONGS.md](SONGS.md) step 4: OoT's warp-song
 light is a cutscene, and the fork plays none of OoT's yet.
 
@@ -71,7 +71,36 @@ light is a cutscene, and the fork plays none of OoT's yet.
    Forest's cutscene layer (forced under gdb) plays OoT's opening narration and its terminator chains into the Deku
    Tree's layer; the cycle reset keeps Death Mountain Trail's flag and clears Mido's. OoT's conditional triggers
    (Saria on the bridge, the Nocturne, the Light Arrows, Ganon's collapse) are story cutscenes (step 3).
-3. Next: story cutscenes with their `Demo_*` actors and OoT's Link actions, and OoT's conditional triggers.
+3. Story cutscenes, in progress:
+   - Done: Link follows an OoT script's cues with OoT's own Player cutscene actions (`HyrulePlayerCsOot.inc`,
+     generated from SoH's `z_player.c` and included by MM's): OoT's cue map, its two action tables and their
+     actions, on MM's Player helpers and MM's copies of OoT's Link animations. MM's "follow cues" action
+     (`Player_CsAction_48`, OoT's `func_80852C50`) hands over while an OoT script plays. This replaces point 2's
+     mapping of OoT's ids to MM's actions, which would have lost the ~60 OoT actions MM's table lacks. MM's camera
+     now keeps OoT's letterbox and hides the interface while an OoT script plays, as OoT's camera does, and the
+     script's sub-camera takes MM's `CAM_SET_FREE0` (OoT's `CAM_SET_CS_0`), as MM's own scripts do. Checked under
+     gdb: Link's house's first cutscene layer plays Link asleep, waking and getting up on Navi's lines.
+   - Done: Navi (N1). OoT's `En_Elf` and `Elf_Msg` are ported, and MM's Player spawns OoT's `En_Elf` as Navi in an
+     OoT scene while Link has no Tatl (`hasTatl`), in Player's fairy slot (`tatlActor`, OoT's `naviActor`): MM's
+     Player talks to her on C-up with its fairy text (`tatlTextId`, OoT's `naviTextId`), and she hovers by MM's
+     attention context (`attention.tatlHoverPos`...), which is OoT's targeting context field for field. Her C-up
+     quest hint is none, as in SoH, whose scenes load no hint table; her hint timer is not saved yet. What she says
+     after Saria's Song is OoT's (`HyruleElfMessage.c`, generated from SoH's `z_elf_message.c`). Checked under gdb:
+     in Link's house's cutscene she follows her cues (slot 8) to the window, the bed and Link's side, and in Kokiri
+     Forest she follows Link.
+   - Done: Kokiri Forest's opening and Saria on the bridge. `Bg_Treemouth` (the Deku Tree's mouth), `Demo_Effect`
+     (the cutscenes' lights and jewels, here the Kokiri Emerald) and `Demo_Sa` (Saria in cutscenes) are ported, and
+     OoT's conditional triggers (`Hyrule_HandleConditionalTriggersOot`, after MM's in Play_Init, before the layer
+     is chosen) start Saria on the bridge (with the Fairy Ocarina), and, once their scenes come, the Requiem, the
+     Nocturne, the Light Arrows and Ganon's collapse. The interpreter's music commands now play OoT's sequences
+     (`SEQ_OOT`; they played MM's of the same number), and OoT's cutscene effects sequence is
+     `Hyrule_PlayCutsceneEffectsSeqOot`. Checked under gdb with screenshots: Kokiri Forest's cutscene layers (forced)
+     play the opening (the Deku Tree sends Navi), the Deku Tree's death to the Kokiri Emerald, then Link back in
+     Kokiri Forest; entering the bridge plays Saria's farewell (Link takes the ocarina, "You received the Fairy
+     Ocarina!"), then Hyrule Field's introduction, then normal play.
+   - Next: Tatl taking Navi's cues once she has joined (N1); Sheik's Minuet (Sacred Forest Meadow, `En_Xc`),
+     Zelda's escape (Hyrule Field, `Demo_Im`, `En_Viewer`), Kakariko's story layers. The credits' layers (Lon Lon
+     Ranch's and others) wait for the ending.
 
 ## Decisions
 
@@ -79,3 +108,4 @@ light is a cutscene, and the fork plays none of OoT's yet.
 |-|----------|----------|
 | C1 | Play OoT's scripts natively, or convert them to MM's commands | natively, with OoT's interpreter |
 | C2 | OoT's first-visit introductions (Death Mountain Trail's...) once the cycle resets Hyrule | once per save, though Hyrule's world resets |
+| N1 | Who plays Navi's part (her cues, lines and companion role) in Hyrule | Navi, ported, until Link first enters Termina (where Tatl joins him); then Tatl, in both worlds, takes Navi's later cues and lines |

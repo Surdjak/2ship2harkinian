@@ -825,3 +825,10 @@ const void* Hyrule_GetNatureAmbienceData(u8 ootAmbienceId) {
     return (ootAmbienceId < ARRAY_COUNT(sNatureAmbienceDataIO)) ? &sNatureAmbienceDataIO[ootAmbienceId]
                                                                 : &sNatureAmbienceDataIO[NATURE_ID_GENERAL_NIGHT];
 }
+
+// OoT's func_800F3F3C: the cutscene effects sequence (OoT's NA_BGM_VARIOUS_SFX) on the sub-BGM player, its effect
+// chosen by an IO port.
+void Hyrule_PlayCutsceneEffectsSeqOot(u8 effect) {
+    SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_SUB, 0, SEQ_OOT(0x6D));
+    SEQCMD_SET_SEQPLAYER_IO(SEQ_PLAYER_BGM_SUB, 0, effect);
+}

@@ -362,7 +362,7 @@ static void EnButte_TransformIntoFairy(EnButte* this, PlayState* play) {
     if (this->timer == 5) {
         SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 60, NA_SE_EV_BUTTERFRY_TO_FAIRY);
     } else if ((this->timer == 4)) {
-        // PORT: OoT's En_Elf is not ported; MM's FAIRY_TYPE_2 is OoT's FAIRY_HEAL_TIMED.
+        // PORT: MM's En_Elf, which MM's Player catches in a bottle; MM's FAIRY_TYPE_2 is OoT's FAIRY_HEAL_TIMED.
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, this->actor.focus.pos.x, this->actor.focus.pos.y,
                     this->actor.focus.pos.z, 0, this->actor.shape.rot.y, 0, 2);
         this->drawSkelAnime = false;

@@ -7,9 +7,9 @@
 #include "z_object_kankyo.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
-#include "HyruleCutscene.h"
 #include "HyruleActor.h"
 #include "HyruleScenes.h"
+#include "HyruleCutscene.h"
 #include "assets/oot/objects/object_demo_kekkai/object_demo_kekkai.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/object_spot02_objects/object_spot02_objects.h"
@@ -217,8 +217,7 @@ static void ObjectKankyo_Fairies(ObjectKankyo* this, PlayState* play) {
                 break;
 
             case 583:
-                // PORT: OoT plays it 32 frames late (func_800F4524), which MM's audio has no call for.
-                Audio_PlaySfx_2(NA_SE_VO_NA_HELLO_2);
+                Audio_PlaySfx_AtPosWithReverb(&gSfxDefaultPos, NA_SE_VO_NA_HELLO_2, 32);
                 break;
 
             case 763:
@@ -898,7 +897,7 @@ static void ObjectKankyo_Beams(ObjectKankyo* this, PlayState* play) {
         for (i = 0; i < 6; i++) {
             if (gCsCtxOot.npcActions[i + 1] != NULL && gCsCtxOot.npcActions[i + 1]->action == 2) {
                 if (this->effects[i].size == 0.1f) {
-                    // PORT: OoT's cutscene effects sequence (func_800F3F3C 11) is not ported.
+                    Hyrule_PlayCutsceneEffectsSeqOot(11);
                 }
                 Math_ApproachZeroF(&this->effects[i].size, 0.1f, 0.1f);
             }

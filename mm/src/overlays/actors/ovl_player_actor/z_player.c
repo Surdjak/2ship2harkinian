@@ -10,6 +10,7 @@
 #include "HyrulePlayer.h"
 #include "HyruleMagic.h"
 #include "HyruleOcarina.h"
+#include "HyruleCutscene.h"
 #include "z64horse.h"
 #include "z64malloc.h"
 #include "z64quake.h"
@@ -318,6 +319,12 @@ void Player_CsAction_45(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_46(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_End(PlayState* play, Player* this, CsCmdActorCue* cue);
 void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue);
+static s32 Player_HasCueOot(void);
+
+// 3Ship [Hyrule] Navi's texts are OoT's (docs/CUTSCENES.md N1); Tatl's are MM's.
+static u16 Player_FairyTextId(Actor* fairy, u16 textId) {
+    return (fairy->id == ACTOR_EN_ELF_Oot) ? TEXT_OOT(textId) : textId;
+}
 
 // Mostly PlayerAnimationHeader* anim
 
@@ -8503,7 +8510,7 @@ s32 Player_ActionHandler_Talk(Player* this, PlayState* play) {
                 this->talkActor = NULL;
 
                 if (forceTalkToTatl || !canTalkToLockOnWithCUp) {
-                    cUpTalkActor->textId = ABS_ALT(this->tatlTextId);
+                    cUpTalkActor->textId = Player_FairyTextId(cUpTalkActor, ABS_ALT(this->tatlTextId));
                 } else if (cUpTalkActor->hintId != 0xFF) {
                     cUpTalkActor->textId = cUpTalkActor->hintId + 0x1900;
                 }
@@ -11861,6 +11868,19 @@ void Player_Init(Actor* thisx, PlayState* play) {
         }
     }
 
+    // 3Ship [Hyrule] Navi is Link's fairy in Hyrule until Tatl joins him (docs/CUTSCENES.md N1). She takes Tatl's
+    // place in Player (C-up, the fairy's text), as OoT's Player keeps her in naviActor.
+    if ((this->tatlActor == NULL) && (this->actor.draw != NULL) && !gSaveContext.save.hasTatl &&
+        (Hyrule_GetOotSceneId(play->sceneId) >= 0) &&
+        ((gSaveContext.gameMode == GAMEMODE_NORMAL) || (gSaveContext.gameMode == GAMEMODE_END_CREDITS))) {
+        static Vec3f sNaviSpawnPosOffset = { 0.0f, 50.0f, 0.0f };
+        Vec3f naviPos;
+
+        Player_TranslateAndRotateY(this, &this->actor.world.pos, &sNaviSpawnPosOffset, &naviPos);
+        this->tatlActor =
+            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF_Oot, naviPos.x, naviPos.y, naviPos.z, 0, 0, 0, 0);
+    }
+
     Map_SetAreaEntrypoint(play);
     func_80841A50(play, this);
     this->unk_3CF = 0;
@@ -13176,8 +13196,10 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         if (play->csCtx.state != CS_STATE_IDLE) {
             if ((this->csAction != PLAYER_CSACTION_5) && !(this->stateFlags1 & PLAYER_STATE1_800000)) {
                 if (!(this->stateFlags2 & PLAYER_STATE2_80) && (this->actor.id == ACTOR_PLAYER)) {
-                    if ((play->csCtx.playerCue != NULL) &&
-                        (sPlayerCueToCsActionMap[play->csCtx.playerCue->id] != PLAYER_CSACTION_NONE)) {
+                    if (((play->csCtx.playerCue != NULL) &&
+                         (sPlayerCueToCsActionMap[play->csCtx.playerCue->id] != PLAYER_CSACTION_NONE)) ||
+                        // 3Ship [Hyrule] an OoT script's cue for Link
+                        Player_HasCueOot()) {
                         Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_5);
                         Player_StopHorizontalMovement(this);
                     } else if (((u32)this->csAction == PLAYER_CSACTION_NONE) &&
@@ -18465,7 +18487,7 @@ void Player_Action_63(Player* this, PlayState* play) {
                 Player_StartTalking(play, this->talkActor);
             } else if (this->tatlTextId < 0) {
                 this->talkActor = this->tatlActor;
-                this->tatlActor->textId = -this->tatlTextId;
+                this->tatlActor->textId = Player_FairyTextId(this->tatlActor, -this->tatlTextId);
                 Player_StartTalking(play, this->talkActor);
             } else if (!Player_ActionHandler_13(this, play)) {
                 func_80836A5C(this, play);
@@ -22060,6 +22082,9 @@ void func_8085AD5C(PlayState* play, Player* this, PlayerCsAction csAction) {
     }
 }
 
+// 3Ship [Hyrule] OoT's Player cutscene actions, for OoT's scripts.
+#include "HyrulePlayerCsOot.inc"
+
 void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
     CsCmdActorCue* playerCue = (this->actor.id == ACTOR_EN_TEST3)
                                    ? play->csCtx.actorCues[Cutscene_GetCueChannel(play, CS_CMD_ACTOR_CUE_506)]
@@ -22067,6 +22092,12 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
     s32 var_a0 = false;
     s32 pad;
     s32 csAction;
+
+    // 3Ship [Hyrule] Link follows an OoT script's cues with OoT's actions (OoT's func_80852C50).
+    if (gCsCtxOot.state != CS_STATE_IDLE_Oot) {
+        func_80852C50Oot(play, this, NULL);
+        return;
+    }
 
     if ((play->csCtx.state == CS_STATE_IDLE) || (play->csCtx.state == CS_STATE_STOP) ||
         (play->csCtx.state == CS_STATE_RUN_UNSTOPPABLE)) {

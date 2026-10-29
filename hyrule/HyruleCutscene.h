@@ -290,6 +290,10 @@ typedef struct CutsceneContextOot {
 } CutsceneContextOot;
 
 extern CutsceneContextOot gCsCtxOot;
+// OoT's z_demo.c frame markers of the camera and text commands, which Bg_Treemouth resets when it restarts a script.
+extern u16 D_8015FCC0;
+extern u16 D_8015FCC2;
+extern u16 D_8015FCC4;
 // OoT's play->linkAgeOnLoad: Link's age for the next scene (OoT's LINK_AGE_ADULT 0, LINK_AGE_CHILD 1), or -1.
 extern s8 gLinkAgeOnLoadOot;
 void Hyrule_ApplyAgeOnLoadOot(void);
@@ -306,6 +310,9 @@ void Hyrule_StartSceneCutsceneOot(struct PlayState* play, void* script);
 // OoT's scene cutscenes at the end of Play_Init (HyruleSceneCutscene.c): the cutscene layer's script, or OoT's entrance
 // cutscene (OoT's Cutscene_HandleEntranceTriggers).
 void Hyrule_HandleSceneCutscenesOot(struct PlayState* play);
+// OoT's Cutscene_HandleConditionalTriggers, in Play_Init before the scene layer is chosen: story cutscenes that replace
+// the entrance Link takes (Saria on the bridge...).
+void Hyrule_HandleConditionalTriggersOot(struct PlayState* play);
 // The cycle reset of OoT's event flags, which keeps the first-visit introductions' (C2: once per save).
 void Hyrule_ResetEventChkInfOotForCycle(void);
 // Whether an OoT script is playing, during which MM's cutscene update stands aside.

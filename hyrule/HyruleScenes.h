@@ -47,6 +47,9 @@ void Hyrule_UpdateViewpoint(struct PlayState* play, struct Input* input);
 void Hyrule_SetViewpoint(struct PlayState* play, s16 viewpoint);
 // Whether C-up is the scene's viewpoint toggle (or disabled, in shops) rather than first-person view.
 s32 Hyrule_CUpChangesViewpoint(void);
+// OoT's scene camera type (YREG(15) in OoT), and OoT's Play_CheckViewpoint.
+u8 Hyrule_GetCameraMovementOot(void);
+s32 Hyrule_CheckViewpointOot(s16 viewpoint);
 
 // MM's skybox for an OoT skybox id.
 u8 Hyrule_SkyboxFromOot(u8 ootSkyboxId);

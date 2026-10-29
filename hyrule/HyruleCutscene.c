@@ -504,14 +504,14 @@ static void Cutscene_Command_SetLighting(PlayState* play, CutsceneContextOot* cs
 // Command 0x56: Play Background Music
 static void Cutscene_Command_PlayBGM(PlayState* play, CutsceneContextOot* csCtx, CsCmdMusicChangeOot* cmd) {
     if (csCtx->frames == cmd->startFrame) {
-        Audio_PlaySequenceInCutscene(cmd->sequence - 1);
+        Audio_PlaySequenceInCutscene(SEQ_OOT(cmd->sequence - 1));
     }
 }
 
 // Command 0x57: Stop Background Music
 static void Cutscene_Command_StopBGM(PlayState* play, CutsceneContextOot* csCtx, CsCmdMusicChangeOot* cmd) {
     if (csCtx->frames == cmd->startFrame) {
-        Audio_StopSequenceInCutscene(cmd->sequence - 1);
+        Audio_StopSequenceInCutscene(SEQ_OOT(cmd->sequence - 1));
     }
 }
 
@@ -1473,6 +1473,8 @@ size_t Cutscene_Command_CameraPositions(PlayState* play, CutsceneContextOot* csC
         if (csCtx->unk_1A != 0) {
             csCtx->unk_18 = cmdBase->startFrame;
             if (D_8015FCC8 != 0) {
+                // OoT's CAM_SET_CS_0 is MM's FREE0 for scripts, which leaves the interface to the cutscene.
+                Play_ChangeCameraSetting(play, csCtx->unk_14, CAM_SET_FREE0);
                 Play_ChangeCameraStatus(play, D_8015FCC6, CAM_STATUS_WAIT);
                 Play_ChangeCameraStatus(play, csCtx->unk_14, CAM_STATUS_ACTIVE);
                 CsCamera_Start(play, csCtx->unk_14, csCtx->cameraFocus, csCtx->cameraPosition, relativeToLink);
@@ -1507,6 +1509,8 @@ size_t Cutscene_Command_CameraFocus(PlayState* play, CutsceneContextOot* csCtx, 
         if (csCtx->unk_1B != 0) {
             D_8015FCC0 = cmdBase->startFrame;
             if (D_8015FCC8 != 0) {
+                // OoT's CAM_SET_CS_0 is MM's FREE0 for scripts, which leaves the interface to the cutscene.
+                Play_ChangeCameraSetting(play, csCtx->unk_14, CAM_SET_FREE0);
                 Play_ChangeCameraStatus(play, D_8015FCC6, CAM_STATUS_WAIT);
                 Play_ChangeCameraStatus(play, csCtx->unk_14, CAM_STATUS_ACTIVE);
                 CsCamera_Start(play, csCtx->unk_14, csCtx->cameraFocus, csCtx->cameraPosition, relativeToLink);

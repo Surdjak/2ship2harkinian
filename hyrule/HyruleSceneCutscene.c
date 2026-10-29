@@ -1,5 +1,5 @@
-// OoT's scene cutscenes (docs/CUTSCENES.md step 2), played by OoT's interpreter (HyruleCutscene.c): a scene's
-// cutscene-layer script, and OoT's entrance cutscenes (the first-visit introductions).
+// OoT's scene cutscenes (docs/CUTSCENES.md steps 2 and 3), played by OoT's interpreter (HyruleCutscene.c): a scene's
+// cutscene-layer script, OoT's entrance cutscenes (the first-visit introductions) and its conditional triggers.
 
 #include "global.h"
 #include "BenPort.h"
@@ -91,6 +91,52 @@ static void Hyrule_HandleEntranceTriggersOot(PlayState* play) {
             gSaveContext.showTitleCard = false;
             break;
         }
+    }
+}
+
+// OoT's scene (OoT id) of the entrance Link is about to load.
+static s32 Hyrule_GetEntranceOotSceneId(void) {
+    return Hyrule_GetOotSceneId(Entrance_GetSceneIdAbsolute(gSaveContext.save.entrance));
+}
+
+// OoT's Cutscene_HandleConditionalTriggers: story cutscenes that replace the entrance Link takes (OoT's entrance
+// indices and scenes).
+void Hyrule_HandleConditionalTriggersOot(PlayState* play) {
+    if ((gSaveContext.gameMode != GAMEMODE_NORMAL) || (gSaveContext.respawnFlag > 0) ||
+        (gSaveContext.save.cutsceneIndex >= 0xFFF0)) {
+        return;
+    }
+
+    if ((gSaveContext.save.entrance == Hyrule_EntranceFromOot(0x1E1 /* ENTR_DESERT_COLOSSUS_OUTSIDE_TEMPLE */)) &&
+        !GET_EVENTCHKINF_OOT(EVENTCHKINF_LEARNED_REQUIEM_OF_SPIRIT_Oot)) {
+        SET_EVENTCHKINF_OOT(EVENTCHKINF_LEARNED_REQUIEM_OF_SPIRIT_Oot);
+        gSaveContext.save.entrance = Hyrule_EntranceFromOot(0x123 /* ENTR_DESERT_COLOSSUS_EAST_EXIT */);
+        gSaveContext.save.cutsceneIndex = 0xFFF0;
+    } else if ((gSaveContext.save.entrance == Hyrule_EntranceFromOot(0x0DB /* ENTR_KAKARIKO_VILLAGE_FRONT_GATE */)) &&
+               LINK_IS_ADULT_OOT && GET_EVENTCHKINF_OOT(EVENTCHKINF_USED_FOREST_TEMPLE_BLUE_WARP_Oot) &&
+               GET_EVENTCHKINF_OOT(EVENTCHKINF_USED_FIRE_TEMPLE_BLUE_WARP_Oot) &&
+               GET_EVENTCHKINF_OOT(EVENTCHKINF_USED_WATER_TEMPLE_BLUE_WARP_Oot) &&
+               !GET_EVENTCHKINF_OOT(EVENTCHKINF_BONGO_BONGO_ESCAPED_FROM_WELL_Oot)) {
+        SET_EVENTCHKINF_OOT(EVENTCHKINF_BONGO_BONGO_ESCAPED_FROM_WELL_Oot);
+        gSaveContext.save.cutsceneIndex = 0xFFF0;
+    } else if ((gSaveContext.save.entrance == Hyrule_EntranceFromOot(0x5E0 /* ENTR_LOST_WOODS_BRIDGE_EAST_EXIT */)) &&
+               !GET_EVENTCHKINF_OOT(EVENTCHKINF_SPOKE_TO_SARIA_ON_BRIDGE_Oot)) {
+        // Saria on the bridge, who gives Link the Fairy Ocarina.
+        SET_EVENTCHKINF_OOT(EVENTCHKINF_SPOKE_TO_SARIA_ON_BRIDGE_Oot);
+        Item_Give(play, ITEM_OCARINA_FAIRY_Oot);
+        gSaveContext.save.entrance = Hyrule_EntranceFromOot(0x11E /* ENTR_LOST_WOODS_SOUTH_EXIT */);
+        gSaveContext.save.cutsceneIndex = 0xFFF0;
+    } else if (CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_SPIRIT_Oot) && CHECK_QUEST_ITEM_OOT(QUEST_MEDALLION_SHADOW_Oot) &&
+               LINK_IS_ADULT_OOT && !GET_EVENTCHKINF_OOT(EVENTCHKINF_RETURNED_TO_TEMPLE_OF_TIME_WITH_ALL_MEDALLIONS_Oot) &&
+               (Hyrule_GetEntranceOotSceneId() == 0x43 /* SCENE_TEMPLE_OF_TIME */)) {
+        SET_EVENTCHKINF_OOT(EVENTCHKINF_RETURNED_TO_TEMPLE_OF_TIME_WITH_ALL_MEDALLIONS_Oot);
+        gSaveContext.save.entrance = Hyrule_EntranceFromOot(0x053 /* ENTR_TEMPLE_OF_TIME_ENTRANCE */);
+        gSaveContext.save.cutsceneIndex = 0xFFF8;
+    } else if (!GET_EVENTCHKINF_OOT(EVENTCHKINF_WATCHED_GANONS_CASTLE_COLLAPSE_CAUGHT_BY_GERUDO_Oot) &&
+               (Hyrule_GetEntranceOotSceneId() == 0x4F /* SCENE_GANON_BOSS */)) {
+        SET_EVENTCHKINF_OOT(EVENTCHKINF_WATCHED_GANONS_CASTLE_COLLAPSE_CAUGHT_BY_GERUDO_Oot);
+        gSaveContext.save.entrance = Hyrule_EntranceFromOot(0x517 /* ENTR_GANON_BOSS_0 */);
+        gSaveContext.save.cutsceneIndex = 0xFFF0;
     }
 }
 

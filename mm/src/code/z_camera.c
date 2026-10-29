@@ -44,6 +44,7 @@
  */
 
 #include "global.h"
+#include "HyruleCutscene.h"
 #include "libc/string.h"
 #include "z64malloc.h"
 #include "z64quake.h"
@@ -7680,6 +7681,10 @@ Vec3s Camera_Update(Camera* camera) {
             Camera_UpdateInterface(sCameraInterfaceFlags);
         } else if ((camera->play->transitionMode != TRANS_MODE_OFF) && (camera->camId != CAM_ID_MAIN)) {
             sCameraInterfaceFlags = CAM_INTERFACE_FLAGS(CAM_LETTERBOX_IGNORE, CAM_HUD_VISIBILITY_IGNORE, 0);
+            Camera_UpdateInterface(sCameraInterfaceFlags);
+        } else if (gCsCtxOot.state != CS_STATE_IDLE_Oot) {
+            // 3Ship [Hyrule] OoT's camera keeps the letterbox and hides the interface while an OoT script plays.
+            sCameraInterfaceFlags = CAM_INTERFACE_FLAGS(CAM_LETTERBOX_LARGE, CAM_HUD_VISIBILITY_NONE_ALT, 0);
             Camera_UpdateInterface(sCameraInterfaceFlags);
         } else {
             Camera_UpdateInterface(sCameraInterfaceFlags);
