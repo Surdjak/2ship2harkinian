@@ -154,8 +154,18 @@ RENAMES = [
     (r"\bfunc_800F4524\(", "Audio_PlaySfx_AtPosWithReverb("),
     (r"\bfunc_800F3F3C\(", "Hyrule_PlayCutsceneEffectsSeqOot("),
     (r"\bfunc_8002873C\(", "func_800B1280("),
+    (r"\bMATRIX_TOMTX\(", "Matrix_ToMtx("),
+    (r"\bAnimationContext_SetMoveActor\(", "AnimTaskQueue_AddActorMovement("),
+    # OoT's footstep sfx type is an offset from NA_SE_PL_WALK_GROUND, as MM's is from its own table.
+    (r"\bSurfaceType_GetSfx\(", "SurfaceType_GetSfxOffset("),
     # Cutscene data: OoT's terminator destinations (HyruleCutscene.h).
     (r"CS_TERMINATOR\(([A-Z0-9_]+?)(?:_Oot)?,", r"CS_TERMINATOR(\1_Oot,"),
+    # OoT's cutscene context through a local pointer is OoT's (HyruleCutscene.h).
+    (r"\bCutsceneContext\* (\w+) = &play->csCtx;", r"CutsceneContextOot* \1 = &gCsCtxOot;"),
+    # OoT's boots, owned in the OoT inventory (HyruleInventory.h).
+    (r"\bCHECK_OWNED_EQUIP\(EQUIP_TYPE_BOOTS, EQUIP_INV_BOOTS_KOKIRI\)", "CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_BOOTS_Oot, EQUIP_OWNED_KOKIRI)"),
+    (r"\bCHECK_OWNED_EQUIP\(EQUIP_TYPE_BOOTS, EQUIP_INV_BOOTS_IRON\)", "CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_BOOTS_Oot, EQUIP_OWNED_GORON_IRON)"),
+    (r"\bCHECK_OWNED_EQUIP\(EQUIP_TYPE_BOOTS, EQUIP_INV_BOOTS_HOVER\)", "CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_BOOTS_Oot, EQUIP_OWNED_ZORA_HOVER)"),
     (r"\bMagic_Fill\(play\)", "Magic_Add(play, MAGIC_FILL_TO_CAPACITY)"),
     # OoT's scene camera type (YREG(15)) and prerendered viewpoint (HyruleScenes.h).
     (r"\bYREG\(15\)", "Hyrule_GetCameraMovementOot()"),
@@ -524,6 +534,7 @@ def convert(text, header):
         out.append(line)
     text = "\n".join(out) + "\n"
     text = re.sub(r'#include "objects/(\w+)/(\w+)\.h"', r'#include "assets/oot/objects/\1/\2.h"', text)
+    text = re.sub(r'#include "scenes/([\w/]+)\.h"', r'#include "assets/oot/scenes/\1.h"', text)
     text = re.sub(r'#include <objects/(\w+)/(\w+)\.h>', r'#include "assets/oot/objects/\1/\2.h"', text)
     text = re.sub(r'#include "overlays/(ovl_\w+)/(\w+)\.h"', r'#include "assets/oot/overlays/\1/\2.h"', text)
     # Another ported OoT actor's header: by relative path, since MM may have an actor of the same name.

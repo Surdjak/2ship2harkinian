@@ -98,9 +98,15 @@ light is a cutscene, and the fork plays none of OoT's yet.
      play the opening (the Deku Tree sends Navi), the Deku Tree's death to the Kokiri Emerald, then Link back in
      Kokiri Forest; entering the bridge plays Saria's farewell (Link takes the ocarina, "You received the Fairy
      Ocarina!"), then Hyrule Field's introduction, then normal play.
-   - Next: Tatl taking Navi's cues once she has joined (N1); Sheik's Minuet (Sacred Forest Meadow, `En_Xc`),
-     Zelda's escape (Hyrule Field, `Demo_Im`, `En_Viewer`), Kakariko's story layers. The credits' layers (Lon Lon
-     Ranch's and others) wait for the ending.
+   - Done: Tatl takes Navi's cues (OoT's slot 8) in OoT's scripts once she has joined Link (N1), in MM's `En_Elf`,
+     whose cutscene movement is OoT's Navi's with MM's cue lookups. Sheik (`En_Xc`) is ported and teaches the Minuet
+     in the Sacred Forest Meadow: OoT's lessons of songs past MM's lesson ranges (Zelda's Lullaby and the warp songs)
+     take the ranges' unused last slots (SONGS.md step 5). Checked under gdb with screenshots: Link's house's
+     cutscene with Tatl, whom the cues move as they moved Navi; adult Link on the Meadow's warp pad meets Sheik, who
+     plays the Minuet, Link plays it back (wrong notes retry, as in OoT), learns it, and Sheik vanishes. Sheik's
+     Deku Nut flash (OoT's `En_Arrow`) and the Bolero's warp (OoT's `Door_Warp1`) are not ported yet.
+   - Next: Zelda's escape (Hyrule Field, `En_Viewer`, started from the castle area, which is not loaded yet),
+     Kakariko's story layers. The credits' layers (Lon Lon Ranch's and others) wait for the ending.
 
 ## Decisions
 

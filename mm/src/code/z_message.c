@@ -257,6 +257,21 @@ s16 gOcarinaSongItemMap[] = {
 
 // bss
 #include "prevent_bss_reordering.h"
+
+// 3Ship [Hyrule] OoT's lessons for the songs past MM's demonstrate and prompt ranges (Zelda's Lullaby, the warp songs)
+// take the ranges' unused last slots (OCARINA_ACTION_11 and OCARINA_ACTION_21), with the song and OoT's staff text kept
+// here (Hyrule_OcarinaActionFromOot): MM finds a lesson's song by its offset in the range.
+static u8 sLessonSongOot;
+static u16 sLessonTextOot;
+
+void Message_SetLessonOot(u8 song, u16 textId) {
+    sLessonSongOot = song;
+    sLessonTextOot = textId;
+}
+
+static s32 Message_LessonSongOot(s32 rangeIndex) {
+    return (rangeIndex == (OCARINA_ACTION_11 - OCARINA_ACTION_DEMONSTRATE_SONATA)) ? sLessonSongOot : rangeIndex;
+}
 s32 sCharTexSize;
 s32 sCharTexScale;
 s32 sItemIconTexScale;
@@ -1226,7 +1241,7 @@ void Message_HandleOcarina(PlayState* play) {
                    (msgCtx->ocarinaAction <= OCARINA_ACTION_TIMED_PROMPT_STORMS)) {
             msgCtx->msgMode = MSGMODE_35;
         } else if (((msgCtx->ocarinaAction >= OCARINA_ACTION_DEMONSTRATE_SONATA) &&
-                    (msgCtx->ocarinaAction <= OCARINA_ACTION_DEMONSTRATE_GORON_LULLABY_INTRO)) ||
+                    (msgCtx->ocarinaAction <= OCARINA_ACTION_11)) || // 3Ship [Hyrule] OCARINA_ACTION_11: OoT's lessons
                    (msgCtx->ocarinaAction == OCARINA_ACTION_3B) || (msgCtx->ocarinaAction == OCARINA_ACTION_3C) ||
                    (msgCtx->ocarinaAction == OCARINA_ACTION_DEMONSTRATE_EVAN_PART1_FIRST_HALF) ||
                    (msgCtx->ocarinaAction == OCARINA_ACTION_DEMONSTRATE_EVAN_PART2_FIRST_HALF) ||
@@ -3817,6 +3832,10 @@ void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
         if (ocarinaAction >= OCARINA_ACTION_PROMPT_SONATA) {
             Message_OpenText(play, 0x1B59);
             Message_SetTextboxColor(play);
+        } else if (ocarinaAction == OCARINA_ACTION_11) {
+            // 3Ship [Hyrule] OoT's lesson's staff text.
+            Message_OpenText(play, sLessonTextOot);
+            Message_SetTextboxColor(play);
         } else {
             Message_OpenText(play, D_801D028C[ocarinaAction]);
             Message_SetTextboxColor(play);
@@ -4072,7 +4091,7 @@ void func_80152CAC(PlayState* play) {
             0x44);
         return;
     }
-    AudioOcarina_SetPlaybackSong((msgCtx->ocarinaAction - OCARINA_ACTION_FREE_PLAY), 2);
+    AudioOcarina_SetPlaybackSong(Message_LessonSongOot(msgCtx->ocarinaAction - OCARINA_ACTION_DEMONSTRATE_SONATA) + 1, 2);
 }
 
 s16 sOcarinaEffectActorIds[] = {
@@ -4285,7 +4304,7 @@ void Message_DrawOcarinaButtons(PlayState* play, Gfx** gfxP) {
                         sOcarinaButtonStepG = msgCtx->ocarinaAction - OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN +
                                               OCARINA_SONG_WIND_FISH_HUMAN;
                     } else {
-                        sOcarinaButtonStepG = msgCtx->ocarinaAction - OCARINA_ACTION_PROMPT_SONATA;
+                        sOcarinaButtonStepG = Message_LessonSongOot(msgCtx->ocarinaAction - OCARINA_ACTION_PROMPT_SONATA);
                     }
                     sOcarinaButtonStepR = gOcarinaSongButtons[sOcarinaButtonStepG].numButtons;
 
@@ -4672,7 +4691,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                                 0x80000000);
                         } else {
                             AudioOcarina_StartDefault(
-                                (1 << ((msgCtx->ocarinaAction - OCARINA_ACTION_PROMPT_SONATA) + OCARINA_SONG_SONATA)) |
+                                (1 << Message_LessonSongOot(msgCtx->ocarinaAction - OCARINA_ACTION_PROMPT_SONATA)) |
                                 0x80000000);
                         }
                         msgCtx->msgMode = MSGMODE_SONG_PROMPT;
@@ -5005,7 +5024,8 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                         } else {
                             play->msgCtx.ocarinaMode = msgCtx->songPlayed - 1;
                         }
-                    } else if ((OCARINA_ACTION_PROMPT_SONATA + msgCtx->songPlayed) == msgCtx->ocarinaAction) {
+                    } else if (Message_LessonSongOot(msgCtx->ocarinaAction - OCARINA_ACTION_PROMPT_SONATA) ==
+                               msgCtx->songPlayed) {
                         play->msgCtx.ocarinaMode = OCARINA_MODE_EVENT;
                     } else {
                         play->msgCtx.ocarinaMode = OCARINA_MODE_END;
@@ -5071,7 +5091,11 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                     sOcarinaButtonIndexBufPos++;
                 }
 
-                if (msgCtx->ocarinaStaff->state <= OCARINA_SONG_SCARECROW_SPAWN) {
+                if ((msgCtx->ocarinaStaff->state <= OCARINA_SONG_SCARECROW_SPAWN) ||
+                    // 3Ship [Hyrule] OoT's lessons of the warp songs
+                    ((msgCtx->ocarinaAction == OCARINA_ACTION_21) &&
+                     (msgCtx->ocarinaStaff->state >= OCARINA_SONG_MINUET) &&
+                     (msgCtx->ocarinaStaff->state <= OCARINA_SONG_PRELUDE))) {
                     if ((msgCtx->ocarinaAction == OCARINA_ACTION_PROMPT_EVAN_PART1_SECOND_HALF) ||
                         (msgCtx->ocarinaAction == OCARINA_ACTION_PROMPT_EVAN_PART2_SECOND_HALF)) {
                         msgCtx->songPlayed = msgCtx->ocarinaStaff->state;
@@ -5081,6 +5105,12 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                         msgCtx->msgMode = MSGMODE_SONG_PROMPT_SUCCESS;
                         if (msgCtx->ocarinaStaff->state == OCARINA_SONG_GORON_LULLABY_INTRO) {
                             Item_Give(play, ITEM_SONG_LULLABY_INTRO);
+                        } else if (msgCtx->ocarinaAction == OCARINA_ACTION_21) {
+                            // 3Ship [Hyrule] OoT's lesson gives OoT's song, as OoT's playback does.
+                            Item_Give(play, (msgCtx->ocarinaStaff->state == OCARINA_SONG_ZELDAS_LULLABY)
+                                                ? ITEM_SONG_LULLABY_Oot
+                                                : ITEM_SONG_MINUET_Oot + msgCtx->ocarinaStaff->state -
+                                                      OCARINA_SONG_MINUET);
                         } else if (!((msgCtx->ocarinaAction >= OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN) &&
                                      (msgCtx->ocarinaAction <= OCARINA_ACTION_PROMPT_WIND_FISH_DEKU)) &&
                                    (msgCtx->ocarinaStaff->state != OCARINA_SONG_NEW_WAVE)) {

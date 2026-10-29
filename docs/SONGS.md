@@ -1,6 +1,6 @@
 # OoT's songs on MM's ocarina
 
-**Status: approved 2026-10-28 with decisions W1-W4 (below); steps 1 to 4 done.** It follows [DESIGN.md](DESIGN.md) (Songs) and
+**Status: approved 2026-10-28 with decisions W1-W4 (below); steps 1 to 4 done, step 5 in progress.** It follows [DESIGN.md](DESIGN.md) (Songs) and
 [INVENTORY.md](INVENTORY.md) (song bits). Most actors left in the scenes already loaded wait on it: the
 scarecrows, the frogs, the Sun's Song spots, the song teachers (Malon, the windmill man, Saria, Sheik), the
 Gossip Stones' fairies, OoT's chests and signs that answer Zelda's Lullaby, the Door of Time and the blue time
@@ -93,7 +93,12 @@ blocks.
    restrictions greys the ocarina, and the Minuet's inputs play nothing. Other songs keep MM's played-song effects
    (`Oceff_*`).
 5. The actor waves that need songs: Shot_Sun and the frogs (Zora's River), the scarecrows (Lake Hylia), then
-   the teachers as their scenes come.
+   the teachers as their scenes come. Lessons: done for the songs past MM's lesson ranges. MM finds a lesson's song
+   by its offset in its demonstrate and prompt ranges, which end before Zelda's Lullaby and the warp songs, so
+   OoT's teach and playback actions for those (`Hyrule_OcarinaActionFromOot`) take the ranges' unused last slots
+   (`OCARINA_ACTION_11`, `OCARINA_ACTION_21`) with the song and OoT's staff text kept aside
+   (`Message_SetLessonOot`); a correct playback gives OoT's song, as OoT's does. Sheik's Minuet is the first
+   teacher (docs/CUTSCENES.md step 3); their check actions are not ported yet.
 
 ## Decisions
 

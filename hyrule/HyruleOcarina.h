@@ -87,6 +87,9 @@ struct PlayState;
 u8 Hyrule_GetOcarinaModeOot(struct PlayState* play);
 void Hyrule_SetOcarinaModeOot(struct PlayState* play, u8 ootMode);
 
+// The song and OoT staff text of an OoT lesson that MM's lesson ranges cannot index (z_message.c).
+void Message_SetLessonOot(u8 song, u16 textId);
+
 // OoT's func_8010BD58 and func_8010BD88: bring up the ocarina staff for an action; the second also refuses warp songs
 // (OoT's unk_E40E), which the warp songs will read (docs/SONGS.md, step 4).
 void Message_StartOcarinaOot(struct PlayState* play, u16 ocarinaAction);

@@ -5,6 +5,7 @@
  */
 
 #include "z_en_elf.h"
+#include "HyruleCutscene.h"
 #include "2s2h/BenGui/CosmeticEditor.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 
@@ -30,7 +31,7 @@ void func_8088EFA4(EnElf* this, PlayState* play);
 void func_8088F214(EnElf* this, PlayState* play);
 void func_8088F5F4(EnElf* this, PlayState* play, s32 sparkleLife);
 void func_8089010C(Actor* thisx, PlayState* play);
-void func_808908D0(Vec3f* vec, PlayState* play, u32 action);
+void func_808908D0(Vec3f* vec, PlayState* play, CsCmdActorCue* cue);
 
 ActorProfile En_Elf_Profile = {
     /**/ ACTOR_EN_ELF,
@@ -810,6 +811,18 @@ void func_8088E304(EnElf* this, PlayState* play) {
     Actor_PlaySfx(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
 }
 
+// 3Ship [Hyrule] Tatl's cue: MM's, or in an OoT script Navi's (OoT's slot 8), which she takes once she has joined Link
+// (docs/CUTSCENES.md N1). OoT's cue has MM's layout up to its normal, which Tatl does not read.
+static CsCmdActorCue* EnElf_GetTatlCue(EnElf* this, PlayState* play) {
+    if (gCsCtxOot.state != CS_STATE_IDLE_Oot) {
+        return (&this->actor == GET_PLAYER(play)->tatlActor) ? (CsCmdActorCue*)gCsCtxOot.npcActions[8] : NULL;
+    }
+    if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_201)) {
+        return play->csCtx.actorCues[Cutscene_GetCueChannel(play, CS_CMD_ACTOR_CUE_201)];
+    }
+    return NULL;
+}
+
 void func_8088E484(EnElf* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
@@ -859,10 +872,8 @@ void func_8088E60C(EnElf* this, PlayState* play) {
         glowLightRadius = 0;
     }
 
-    if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_201)) {
-        if (play->csCtx.actorCues[Cutscene_GetCueChannel(play, CS_CMD_ACTOR_CUE_201)]->id == 6) {
-            glowLightRadius = 0;
-        }
+    if ((EnElf_GetTatlCue(this, play) != NULL) && (EnElf_GetTatlCue(this, play)->id == 6)) {
+        glowLightRadius = 0;
     }
 
     if (this->fairyFlags & 0x20) {
@@ -887,18 +898,18 @@ void func_8088E850(EnElf* this, PlayState* play) {
     Actor* tatlHoverActor;
     f32 xScale;
     f32 distFromLinksHead;
-    u32 cueChannel;
+    CsCmdActorCue* cue;
 
     func_8088F214(this, play);
     func_8088E5A8(this, play);
     xScale = 0.0f;
 
-    if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_201)) {
-        cueChannel = Cutscene_GetCueChannel(play, CS_CMD_ACTOR_CUE_201);
-        func_808908D0(&nextPos, play, cueChannel);
-        this->actor.shape.rot.y = play->csCtx.actorCues[cueChannel]->rot.y;
-        this->actor.shape.rot.x = play->csCtx.actorCues[cueChannel]->rot.x;
-        if (play->csCtx.actorCues[cueChannel]->id == 5) {
+    cue = EnElf_GetTatlCue(this, play);
+    if (cue != NULL) {
+        func_808908D0(&nextPos, play, cue);
+        this->actor.shape.rot.y = cue->rot.y;
+        this->actor.shape.rot.x = cue->rot.x;
+        if (cue->id == 5) {
             func_8088F5F4(this, play, 16);
         }
 
@@ -1019,7 +1030,7 @@ void func_8088E850(EnElf* this, PlayState* play) {
 
     func_8088E60C(this, play);
 
-    if (!Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_201)) {
+    if (EnElf_GetTatlCue(this, play) == NULL) {
         this->actor.shape.rot.y = this->unk_258;
     }
 }
@@ -1110,8 +1121,8 @@ void func_8088F214(EnElf* this, PlayState* play) {
     s32 pad;
 
     if (play->csCtx.state != CS_STATE_IDLE) {
-        if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_201)) {
-            switch (play->csCtx.actorCues[Cutscene_GetCueChannel(play, CS_CMD_ACTOR_CUE_201)]->id) {
+        if (EnElf_GetTatlCue(this, play) != NULL) {
+            switch (EnElf_GetTatlCue(this, play)->id) {
                 case 4:
                     sp34 = 7;
                     break;
@@ -1587,8 +1598,7 @@ void EnElf_Draw(Actor* thisx, PlayState* play) {
 
     if (player->currentMask != PLAYER_MASK_GIANT) {
         if (!(this->fairyFlags & 8) &&
-            (!Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_201) ||
-             (play->csCtx.actorCues[Cutscene_GetCueChannel(play, CS_CMD_ACTOR_CUE_201)]->id != 6)) &&
+            ((EnElf_GetTatlCue(this, play) == NULL) || (EnElf_GetTatlCue(this, play)->id != 6)) &&
             (!(player->stateFlags1 & PLAYER_STATE1_100000) || (kREG(90) < this->actor.projectedPos.z))) {
             Gfx* gfx = GRAPH_ALLOC(play->state.gfxCtx, 4 * sizeof(Gfx));
             f32 alphaScale;
@@ -1643,10 +1653,9 @@ void EnElf_Draw(Actor* thisx, PlayState* play) {
     }
 }
 
-void func_808908D0(Vec3f* vec, PlayState* play, u32 action) {
+void func_808908D0(Vec3f* vec, PlayState* play, CsCmdActorCue* cue) {
     Vec3f startPos;
     Vec3f endPos;
-    CsCmdActorCue* cue = play->csCtx.actorCues[action];
     f32 lerp;
 
     startPos.x = cue->startPos.x;

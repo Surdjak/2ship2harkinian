@@ -25,13 +25,20 @@ def convert(text, rel):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("soh_assets", help="SoH's soh/assets directory")
-    parser.add_argument("dirs", nargs="+", help="asset directories relative to soh_assets, e.g. objects/object_kusa")
+    parser.add_argument("dirs", nargs="+", help="asset directories relative to soh_assets, e.g. objects/object_kusa, "
+                        "or header files, e.g. scenes/overworld/spot05/spot05_scene.h")
     args = parser.parse_args()
     for rel in args.dirs:
         rel = rel.strip("/")
-        name = os.path.basename(rel)
-        text = open(os.path.join(args.soh_assets, rel, name + ".h")).read()
-        out = os.path.join(OUT_DIR, rel, name + ".h")
+        if rel.endswith(".h"):
+            # A header named apart from its directory (scenes: scenes/overworld/spot05/spot05_scene.h).
+            text = open(os.path.join(args.soh_assets, rel)).read()
+            out = os.path.join(OUT_DIR, rel)
+            rel = rel[: -len(".h")]
+        else:
+            name = os.path.basename(rel)
+            text = open(os.path.join(args.soh_assets, rel, name + ".h")).read()
+            out = os.path.join(OUT_DIR, rel, name + ".h")
         os.makedirs(os.path.dirname(out), exist_ok=True)
         with open(out, "w") as f:
             f.write(convert(text, rel))

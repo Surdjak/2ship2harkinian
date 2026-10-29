@@ -124,6 +124,19 @@ void Message_StartOcarinaNoWarpOot(PlayState* play, u16 ocarinaAction) {
 }
 
 u16 Hyrule_OcarinaActionFromOot(u16 ootAction) {
+    // OoT's lessons of Zelda's Lullaby and the warp songs, which MM's lesson ranges cannot index: OoT's teach actions
+    // (0x02-0x07 the warp songs, 0x0A Zelda's Lullaby) show OoT's staff text (0x86E + the action) and its playback
+    // actions (0x0F-0x14, 0x17) prompt for the song, through Message_SetLessonOot.
+    if (((ootAction >= 0x02) && (ootAction <= 0x07)) || (ootAction == 0x0A)) {
+        Message_SetLessonOot((ootAction == 0x0A) ? OCARINA_SONG_ZELDAS_LULLABY : OCARINA_SONG_MINUET + ootAction - 0x02,
+                             TEXT_OOT(0x86E + ootAction));
+        return OCARINA_ACTION_11;
+    }
+    if (((ootAction >= 0x0F) && (ootAction <= 0x14)) || (ootAction == 0x17)) {
+        Message_SetLessonOot((ootAction == 0x17) ? OCARINA_SONG_ZELDAS_LULLABY : OCARINA_SONG_MINUET + ootAction - 0x0F,
+                             0);
+        return OCARINA_ACTION_21;
+    }
     switch (ootAction) {
         case 0x01:
             return OCARINA_ACTION_FREE_PLAY_Oot;
