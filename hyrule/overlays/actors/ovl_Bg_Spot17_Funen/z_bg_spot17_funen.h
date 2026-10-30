@@ -1,0 +1,12 @@
+#ifndef Z_BG_SPOT17_FUNEN_OOT_H
+#define Z_BG_SPOT17_FUNEN_OOT_H
+
+#include "global.h"
+
+struct BgSpot17Funen;
+
+typedef struct BgSpot17Funen {
+    /* 0x0000 */ Actor actor;
+} BgSpot17Funen; // size = 0x014C
+
+#endif

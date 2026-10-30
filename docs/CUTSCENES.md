@@ -105,8 +105,27 @@ light is a cutscene, and the fork plays none of OoT's yet.
      cutscene with Tatl, whom the cues move as they moved Navi; adult Link on the Meadow's warp pad meets Sheik, who
      plays the Minuet, Link plays it back (wrong notes retry, as in OoT), learns it, and Sheik vanishes. Sheik's
      Deku Nut flash (OoT's `En_Arrow`) and the Bolero's warp (OoT's `Door_Warp1`) are not ported yet.
-   - Next: Zelda's escape (Hyrule Field, `En_Viewer`, started from the castle area, which is not loaded yet),
-     Kakariko's story layers. The credits' layers (Lon Lon Ranch's and others) wait for the ending.
+   - Done: Kakariko's story layers. `Demo_Shd` (Bongo Bongo's shadow), `Bg_Hidan_Fwbig` and `Bg_Hidan_Curtain` (the
+     burning village's fires), `Bg_Spot17_Funen` (smoke), `En_Syateki_Niw` (a cucco) and `Efc_Erupc` (Death Mountain's
+     eruption) are ported. MM's ocarina reset each song's playback progress at a prompt only for MM's songs up to Evan's,
+     so after one wrong attempt at an OoT lesson's playback every later attempt failed; it now resets Zelda's Lullaby
+     and the warp songs too. Checked under gdb with screenshots: adult Link entering by the front gate after the three
+     blue warps plays the Nocturne (Sheik and the shadow at the well, Sheik's lines), plays it back, learns it (OoT's
+     song and flags) and is free in Kakariko; the well draining and Death Mountain clearing after the Fire Temple
+     (forced) play to their terminators, whose destinations (the windmill, the Chamber of Sages) are not loaded yet.
+   - Done: Zelda's escape. OoT starts it at Hyrule Field's drawbridge (`Bg_Spot00_Hanebasi`), not in the castle area.
+     `En_Viewer` (Zelda, Impa, Ganondorf and their horses), `En_Ganon_Mant` (Ganondorf's cape), `Demo_6K` (his magic),
+     `Eff_Dust` and `Item_Ocarina` are ported. A terminator into a scene that is not loaded yet returns Link to the
+     spawn he came in at without the cutscene layer or age it set for that scene (it played the arrival scene's layer
+     of the same number). OoT's texts show OoT's icons (hyrule/README.md, Text). Checked under gdb with screenshots:
+     child Link with the three Spiritual Stones at the drawbridge plays the escape (Impa and Zelda ride out, Ganondorf
+     asks Link which way they went and strikes him down) and is free in Hyrule Field; diving into the moat gives the
+     Ocarina of Time with its text, and Zelda's cutscene plays up to its terminator, which leads to her Song of Time
+     lesson in the Temple of Time, not loaded yet. Known difference: OoT's clock runs in cutscenes, and the drawbridge
+     hurries it to dusk for the escape, so OoT's escape is a stormy evening; MM's clock stops in cutscenes and OoT's
+     time rules (DESIGN.md, Time) are not built yet, so it plays at the hour Link arrives.
+   - Next: the castle area and the Temple of Time (Zelda's Song of Double Time lesson, the Door of Time). The
+     credits' layers (Lon Lon Ranch's, Kakariko's last and others) wait for the ending.
 
 ## Decisions
 

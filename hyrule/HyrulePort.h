@@ -6,6 +6,11 @@
 #include "HyruleInventory.h"
 #include "HyrulePlayer.h" // OoT's exchange items
 #include "HyruleElfMessage.h"
+#include "HyruleScenes.h" // Navi reads OoT scene cameras
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // Link's age (docs/ADULT_LINK.md): adult Link is human Link at adult age, as in OoT.
 #define LINK_IS_ADULT_OOT (gSaveContext.save.saveInfo.isAdultOot != 0)
@@ -40,5 +45,12 @@
 // again.
 extern u16 gNaviTimerOot;
 
+// OoT's play->shootingGalleryStatus (HyruleActor.c): its archery minigames' state, cleared on each scene's entry.
+extern s8 gShootingGalleryStatusOot;
+
 // OoT's func_800F3F3C: the cutscene effects sequence, one of its effects (HyruleAudio.c).
 void Hyrule_PlayCutsceneEffectsSeqOot(u8 effect);
+
+#ifdef __cplusplus
+}
+#endif

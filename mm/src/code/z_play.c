@@ -2384,6 +2384,7 @@ void Play_Init(GameState* thisx) {
     }
 
     func_800EDDB0(this);
+    Hyrule_SettleExitFallbackOot();            // 3Ship [Hyrule]
     Hyrule_HandleConditionalTriggersOot(this); // 3Ship [Hyrule]
 
     if (((gSaveContext.gameMode != GAMEMODE_NORMAL) && (gSaveContext.gameMode != GAMEMODE_TITLE_SCREEN)) ||

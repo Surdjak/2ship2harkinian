@@ -4,6 +4,7 @@
 #include "HyrulePanorama.h"
 #include "HyruleInventory.h"
 #include "HyruleFlags.h"
+#include "HyruleCutscene.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -131,16 +132,32 @@ extern "C" u32 Hyrule_EntranceFromOot(u16 ootEntrance) {
     return (ootEntrance < ARRAY_COUNT(sOotEntrances)) ? sOotEntrances[ootEntrance] : HYRULE_ENTRANCE_NONE;
 }
 
+// Whether the last exit taken through Hyrule_ExitFromOot led into a scene that is not loaded yet.
+static bool sExitFellBackOot = false;
+
 extern "C" u32 Hyrule_ExitFromOot(u16 ootEntrance) {
     // OoT's ENTR_RETURN_GROTTO, the exit out of grottos and fairy fountains, is MM's 0xFFFF: back to the hole Link
     // fell in (RESPAWN_MODE_UNK_3).
     static constexpr u16 kOotReturnGrotto = 0x7FFF;
     if (ootEntrance == kOotReturnGrotto) {
+        sExitFellBackOot = false;
         return 0xFFFF;
     }
     u32 entrance = Hyrule_EntranceFromOot(ootEntrance);
     // An exit into a scene that is not loaded yet leads back to the spawn Link came in at.
-    return (entrance != HYRULE_ENTRANCE_NONE) ? entrance : (gSaveContext.save.entrance & ~0xF);
+    sExitFellBackOot = (entrance == HYRULE_ENTRANCE_NONE);
+    return !sExitFellBackOot ? entrance : (gSaveContext.save.entrance & ~0xF);
+}
+
+extern "C" void Hyrule_SettleExitFallbackOot(void) {
+    // The fallback lands in the OoT scene Link came in at.
+    if (sExitFellBackOot && IsOotEntrance(gSaveContext.save.entrance)) {
+        if (gSaveContext.save.cutsceneIndex >= 0xFFF0) {
+            gSaveContext.save.cutsceneIndex = 0;
+        }
+        gLinkAgeOnLoadOot = -1;
+    }
+    sExitFellBackOot = false;
 }
 
 // OoT picks the scene layer from Link's age and the time of day, and puts cutscenes from layer 4 (Play_Init
@@ -247,6 +264,7 @@ extern "C" s32 Hyrule_CUpChangesViewpoint(void) {
 }
 
 extern "C" void Hyrule_AfterSceneCommands(PlayState* play) {
+    gShootingGalleryStatusOot = 0;
     Hyrule_InitPanorama(IsOotScene(play->sceneId) ? sOotSkyboxId : 0);
     sOotSkyboxId = 0;
     if (!IsOotScene(play->sceneId)) {

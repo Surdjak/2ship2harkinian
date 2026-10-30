@@ -8,6 +8,9 @@
 #include "interface/parameter_static/parameter_static.h"
 #include "z64save.h"
 #include "HyruleOcarina.h"
+#include "HyruleInventory.h"
+#include "HyruleKaleido.h"
+#include "HyruleIds.h"
 #include "BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/BenGui/CosmeticEditor.h"
@@ -1175,6 +1178,15 @@ void Message_DrawItemIcon(PlayState* play, Gfx** gfxP) {
         gDPLoadTextureBlock(gfx++, msgCtx->textboxSegment[TEXTBOX_SEG_ICON], G_IM_FMT_IA, G_IM_SIZ_8b, 32, 32, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                             G_TX_NOLOD);
+    } else if (msgCtx->itemId >= ITEM_MEDALLION_FOREST_Oot) { // 3Ship [Hyrule] OoT's quest items, 24x24
+        gDPLoadTextureBlock(gfx++, msgCtx->textboxSegment[TEXTBOX_SEG_ICON], G_IM_FMT_RGBA, G_IM_SIZ_32b, 24, 24, 0,
+                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
+                            G_TX_NOLOD);
+    } else if (msgCtx->itemId >= ITEM_OOT_BASE) { // 3Ship [Hyrule] OoT's items, 32x32
+        msgCtx->unk12016 = msgCtx->unk12014;
+        gDPLoadTextureBlock(gfx++, msgCtx->textboxSegment[TEXTBOX_SEG_ICON], G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, 32, 0,
+                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
+                            G_TX_NOLOD);
     } else if (msgCtx->itemId >= ITEM_B8) {
         gDPLoadTextureBlock(gfx++, msgCtx->textboxSegment[TEXTBOX_SEG_ICON], G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
@@ -2057,7 +2069,18 @@ void Message_LoadItemIcon(PlayState* play, u16 itemId, s16 arg2) {
     MessageContext* msgCtx = &play->msgCtx;
     u16* new_var2 = &itemId;
 
-    if (itemId == ITEM_RECOVERY_HEART) {
+    // 3Ship [Hyrule] OoT's own icons (Hyrule_MessageIconFromOot): its quest items are 24x24, as MM's are.
+    if (itemId >= ITEM_MEDALLION_FOREST_Oot) {
+        msgCtx->unk12010 = (msgCtx->textPosXTarget - D_801CFF7C[gSaveContext.options.language]);
+        msgCtx->unk12012 = (arg2 + 0xA);
+        msgCtx->unk12014 = 0x18;
+        msgCtx->textboxSegment[TEXTBOX_SEG_ICON] = Hyrule_GetItemIcon(itemId);
+    } else if (itemId >= ITEM_OOT_BASE) {
+        msgCtx->unk12010 = (msgCtx->textPosXTarget - D_801CFF70[gSaveContext.options.language]);
+        msgCtx->unk12012 = (arg2 + 6);
+        msgCtx->unk12014 = 0x20;
+        msgCtx->textboxSegment[TEXTBOX_SEG_ICON] = Hyrule_GetItemIcon(itemId);
+    } else if (itemId == ITEM_RECOVERY_HEART) {
         msgCtx->unk12010 = (msgCtx->textPosXTarget - D_801CFF88[gSaveContext.options.language]);
         msgCtx->unk12012 = (arg2 + 0xA);
         msgCtx->unk12014 = 0x10;
@@ -2211,6 +2234,10 @@ void Message_DecodeHeader(PlayState* play) {
                 (msgCtx->currentTextId == 0x1771)) {
                 msgCtx->itemId = ITEM_OCARINA_OF_TIME;
                 msgCtx->msgBufPos += 2;
+            } else if (msgCtx->currentTextId >= TEXT_OOT_BASE) {
+                // 3Ship [Hyrule] OoT's texts name their icon by OoT's item id.
+                msgCtx->msgBufPos += 2;
+                msgCtx->itemId = Hyrule_MessageIconFromOot((u8)font->msgBuf.schar[msgCtx->msgBufPos]);
             } else {
                 msgCtx->msgBufPos += 2;
                 if ((((u8)font->msgBuf.schar[msgCtx->msgBufPos]) < 0xC8) ||
@@ -5111,6 +5138,10 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                                                 ? ITEM_SONG_LULLABY_Oot
                                                 : ITEM_SONG_MINUET_Oot + msgCtx->ocarinaStaff->state -
                                                       OCARINA_SONG_MINUET);
+                        } else if (msgCtx->ocarinaStaff->state == OCARINA_SONG_DOUBLE_TIME) {
+                            // 3Ship [Hyrule] Zelda teaches the Song of Double Time (DESIGN.md), which keeps OoT's Song
+                            // of Time bit; MM teaches it nowhere, and MM's song items end before it.
+                            Item_Give(play, ITEM_SONG_TIME_Oot);
                         } else if (!((msgCtx->ocarinaAction >= OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN) &&
                                      (msgCtx->ocarinaAction <= OCARINA_ACTION_PROMPT_WIND_FISH_DEKU)) &&
                                    (msgCtx->ocarinaStaff->state != OCARINA_SONG_NEW_WAVE)) {

@@ -6,6 +6,7 @@
 
 #include "global.h"
 #include "HyruleInventory.h"
+#include "HyruleKaleido.h"
 #include "HyruleIds.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
@@ -362,10 +363,37 @@ u16 Hyrule_ItemGive(PlayState* play, u16 item) {
     return ITEM_NONE;
 }
 
+u16 Hyrule_MessageIconFromOot(u8 ootItem) {
+    u16 item = ITEM_OOT_BASE + ootItem;
+    u16 mmItem;
+
+    if (ootItem == 0xFE) {
+        return 0xFE;
+    }
+    if ((item >= ITEM_SONG_MINUET_Oot) && (item <= ITEM_SONG_PRELUDE_Oot)) {
+        // MM's first six song notes have OoT's warp song colors, in OoT's order.
+        return ITEM_SONG_SONATA + (item - ITEM_SONG_MINUET_Oot);
+    }
+    if ((item >= ITEM_SONG_LULLABY_Oot) && (item <= ITEM_SONG_STORMS_Oot)) {
+        return ITEM_SONG_TIME; // a white note, as OoT's other songs have
+    }
+    mmItem = Inventory_GetMmItem(item);
+    if ((mmItem != ITEM_NONE) && (mmItem < ITEM_B8)) {
+        return mmItem;
+    }
+    // OoT's own items (32x32) and quest items (24x24), up to the magic jars.
+    return ((item <= ITEM_MAGIC_LARGE_Oot) && (Hyrule_GetItemIcon(item) != NULL)) ? item : 0xFE;
+}
+
 u16 Hyrule_ItemCheckObtainability(u16 item) {
     u16 mmItem = Inventory_GetMmItem(item);
     s32 slot = Inventory_GetSlotOot(item);
 
+    // The Ocarina of Time replaces the Fairy Ocarina in MM's slot (INVENTORY.md D2): it is new until the slot holds it.
+    // MM's check counts any ocarina there.
+    if (item == ITEM_OCARINA_TIME_Oot) {
+        return (INV_CONTENT(ITEM_OCARINA_OF_TIME) == ITEM_OCARINA_OF_TIME) ? item : ITEM_NONE;
+    }
     if (mmItem != ITEM_NONE) {
         return (Item_CheckObtainability(mmItem) == ITEM_NONE) ? ITEM_NONE : item;
     }

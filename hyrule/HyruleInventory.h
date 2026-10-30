@@ -118,6 +118,10 @@ void Hyrule_InitInventoryOot(void);
 u16 Hyrule_ItemGive(struct PlayState* play, u16 item);
 u16 Hyrule_ItemCheckObtainability(u16 item);
 
+// The item whose icon an OoT text shows: OoT's texts name it by OoT's item id. Shared items show MM's icon, OoT's
+// songs MM's note in OoT's color, and OoT's own items OoT's icon (ITEM_OOT_BASE and up); 0xFE is none.
+u16 Hyrule_MessageIconFromOot(u8 ootItem);
+
 // What an item slot holds, for MM's slots (items and masks) and OoT's (SLOT_OOT_*) alike; NULL for others. The
 // Hookshot's slot is adult Link's own (InventoryOot.hookshotAdult) while he is adult.
 u16* Hyrule_GetSlotContent(s16 slot);

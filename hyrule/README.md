@@ -213,7 +213,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 20 | Kakariko's people: `En_Heishi2` (the Death Mountain gate guard, and OoT's other guards), `En_Heishi4` (guards), `En_Toryo` (the boss carpenter), `En_Daiku_Kakariko` (carpenters), `En_Ani` (the man on the roof), `En_Niw_Lady` (the cucco lady), `En_Hy` (townsfolk); `Bg_Spot15_Saku` (Hyrule Castle's gate, which a guard opens) |
 | 21 | The other people of the six scenes: `En_Ms` (the bean seller), `En_Hs2` (a sulking young man in Kakariko at night), `En_Tg` (the dancing couple), `En_Ge1` and `En_Ge2` (Gerudo guards), `En_Zo` (Lake Hylia's Zoras); `Item_Etcetera` (Ruto's Letter in its bottle, and other items set out), `Elf_Msg2` (Navi's message spots), `Bg_Haka` (gravestones) |
 | 22 | `Obj_Bean` (soft soil for magic beans, and the plants Link rides as an adult), `En_Po_Field` (Hyrule Field's Poes), `Object_Kankyo` (Kokiri Forest's dust motes and OoT's other scene effects), `Bg_Spot00_Hanebasi` (Hyrule Castle's drawbridge) |
-| Cutscenes | `Demo_Kankyo` (the warp songs' light), `En_Elf` (Navi), `Elf_Msg` (Navi's message spots), `Bg_Treemouth` (the Deku Tree's mouth), `Demo_Effect` (cutscene lights and jewels), `Demo_Sa` (Saria in cutscenes), `En_Xc` (Sheik) |
+| Cutscenes | `Demo_Kankyo` (the warp songs' light), `En_Elf` (Navi), `Elf_Msg` (Navi's message spots), `Bg_Treemouth` (the Deku Tree's mouth), `Demo_Effect` (cutscene lights and jewels), `Demo_Sa` (Saria in cutscenes), `En_Xc` (Sheik), `Demo_Shd` (Bongo Bongo's shadow), `Bg_Hidan_Fwbig` and `Bg_Hidan_Curtain` (fire walls), `Bg_Spot17_Funen` (smoke), `En_Syateki_Niw` (archery cuccos), `Efc_Erupc` (Death Mountain's eruption), `En_Viewer` (Zelda, Impa, Ganondorf and their horses), `En_Ganon_Mant` (Ganondorf's cape), `Demo_6K` (cutscene magic, here Ganondorf's), `Eff_Dust` (its sparkles), `Item_Ocarina` (the Ocarina of Time, thrown and in the moat) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
 possible:
@@ -507,8 +507,12 @@ conditional triggers (Saria on the bridge, the Nocturne...) run before the layer
 
 Played so far: the warp songs' warp-out and warp-in (`Demo_Kankyo`), from both worlds; the introductions of Death
 Mountain Trail, Hyrule Field, Kakariko, Lake Hylia, Gerudo Valley and Lon Lon Ranch; and Kokiri Forest's
-cutscene layers (the opening, the Deku Tree's death); Link's house's (Navi wakes Link); Saria on the bridge; and
-Sheik's Minuet in the Sacred Forest Meadow.
+cutscene layers (the opening, the Deku Tree's death); Link's house's (Navi wakes Link); Saria on the bridge;
+Sheik's Minuet in the Sacred Forest Meadow; Kakariko's Nocturne; and Zelda's escape at Hyrule Field's
+drawbridge, then the Ocarina of Time in the moat.
+A terminator into a scene that is not loaded yet returns Link to the spawn he came in at
+(`Hyrule_ExitFromOot`), without the cutscene layer or age it set for the missing scene
+(`Hyrule_SettleExitFallbackOot`).
 For the warp songs, Link leaves through the pad's entrance (`Hyrule_WarpSongLeaveOot`) with respawn flag 0, since
 MM gave OoT's -3 to grotto returns, and Player starts in MM's warp-song arrival, which now spawns OoT's
 `Demo_Kankyo` (MM's leftover spawned MM's).
@@ -522,8 +526,10 @@ writes `TEXT_OOT(<OoT id>)`. MM sends ids from 0x4E20 up to the credits table, s
 at `TEXT_OOT_BASE`.
 
 The text itself is converted at extraction (`OotToMm::ConvertMessage`). Textbox types are kept, which
-works for signs (type 1 is the wooden board in both games); OoT's other types, colours and icons are
-not checked yet.
+works for signs (type 1 is the wooden board in both games); OoT's other types and colours are not checked
+yet. An OoT text's icon stays OoT's item id, which MM's message code maps (`Hyrule_MessageIconFromOot`):
+shared items show MM's icon, OoT's songs MM's note in OoT's colour, and OoT's own items and quest items OoT's
+icons.
 
 Scene wind: MM's Player is blown by the scene's environment wind (scene command 0x05) from 50 up; OoT's only
 sways flags with it (En_Hata). Player ignores it in OoT scenes, or Death Mountain Trail's (130) blows Link back

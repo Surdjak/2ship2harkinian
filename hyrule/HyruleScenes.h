@@ -36,6 +36,10 @@ u32 Hyrule_EntranceFromOot(u16 ootEntrance);
 // Link came in at.
 u32 Hyrule_ExitFromOot(u16 ootEntrance);
 
+// On scene load, after an exit into a scene that is not loaded yet (Hyrule_ExitFromOot): Link arrives as on a plain
+// return, without the cutscene layer or age that a cutscene's terminator set for the missing scene.
+void Hyrule_SettleExitFallbackOot(void);
+
 // OoT's scene camera type (cameraMovement in OoT's misc settings command), read for OoT scenes.
 void Hyrule_SetCameraMovement(u8 cameraMovement);
 

@@ -130,6 +130,7 @@ RENAMES = [
     (r"\bPLAYER_STATE1_ON_HORSE\b", "PLAYER_STATE1_800000"),
     (r"\bPLAYER_STATE1_FLOOR_DISABLED\b", "PLAYER_STATE1_80000000"),
     (r"\bPLAYER_STATE2_GRABBED_BY_ENEMY\b", "PLAYER_STATE2_80"),
+    (r"\bPLAYER_STATE2_DIVING\b", "PLAYER_STATE2_800"),
     (r"\bACTORCAT_EXPLOSIVE\b", "ACTORCAT_EXPLOSIVES"),
     (r"\bPLAYER_STATE1_IN_CUTSCENE\b", "PLAYER_STATE1_20000000"),
     (r"\bPLAYER_STATE1_GETTING_ITEM\b", "PLAYER_STATE1_400"),
@@ -172,10 +173,10 @@ RENAMES = [
     (r"\bPlay_CheckViewpoint\(play, ", "Hyrule_CheckViewpointOot("),
     (r"\bVIRTUAL_TO_PHYSICAL\(", "OS_K0_TO_PHYSICAL("),
     (r"\bGraph_Alloc\(", "GRAPH_ALLOC("),
-    (r"\bMatrix_RotateX\(([^;]*), MTXMODE_APPLY\);", r"Matrix_RotateXFApply(\1);"),
-    (r"\bMatrix_RotateX\(([^;]*), MTXMODE_NEW\);", r"Matrix_RotateXFNew(\1);"),
-    (r"\bMatrix_RotateY\(([^;]*), (MTXMODE_\w+)\);", r"Matrix_RotateYF(\1, \2);"),
-    (r"\bMatrix_RotateZ\(([^;]*), (MTXMODE_\w+)\);", r"Matrix_RotateZF(\1, \2);"),
+    (r"\bMatrix_RotateX\(([^;]*),\s*MTXMODE_APPLY\);", r"Matrix_RotateXFApply(\1);"),
+    (r"\bMatrix_RotateX\(([^;]*),\s*MTXMODE_NEW\);", r"Matrix_RotateXFNew(\1);"),
+    (r"\bMatrix_RotateY\(([^;]*),\s*(MTXMODE_\w+)\);", r"Matrix_RotateYF(\1, \2);"),
+    (r"\bMatrix_RotateZ\(([^;]*),\s*(MTXMODE_\w+)\);", r"Matrix_RotateZF(\1, \2);"),
     # In any order of the three flags.
     (r"\bgSPMatrix\((POLY_\w+_DISP\+\+), MATRIX_NEWMTX\(([^)]*)\),\s*"
      r"(?=[^;]*G_MTX_LOAD)(?=[^;]*G_MTX_MODELVIEW)(?:G_MTX_(?:NOPUSH|LOAD|MODELVIEW)(?: \| )?){2,3}\);",
@@ -249,6 +250,7 @@ RENAMES = [
     (r"\bActor_MoveXZGravity\(", "Actor_MoveWithGravity("),
     (r"\bAudio_PlayActorSound2\(", "Actor_PlaySfx("),
     (r"\bGfx_SetupDL_(\d+)(Opa|Xlu)(\d?)\(", r"Gfx_SetupDL\1_\2\3("),
+    (r"\bGfx_SetupDL_(\d+)\(", r"Gfx_SetupDL\1("),
     # OoT's damage flash fog (z_eff_ss_dead.c) and floor-aligned matrix, under MM's names.
     (r"\bfunc_80026230\(", "func_800AE2A0("),
     (r"\bfunc_80026400\(", "func_800AE434("),
@@ -271,6 +273,15 @@ RENAMES = [
     (r"\bCAM_STAT_(\w+)", r"CAM_STATUS_\1"),
     (r"\bPlay_CameraSetAtEye\(", "Play_SetCameraAtEye("),
     (r"\bfunc_8005B1A4\(", "Camera_SetFinishedFlag("),
+    # OoT's skin draw without an override limb draw (horses).
+    (r"\bfunc_800A6330\(", "func_80138228("),
+    # OoT's item camera settings, by their camera data names ("ITEM0", "ITEM2").
+    (r"\bCAM_SET_SLOW_CHEST_CS\b", "CAM_SET_ITEM0"),
+    (r"\bCAM_SET_TURN_AROUND\b", "CAM_SET_ITEM2"),
+    # OoT's shooting gallery state (PlayState in OoT) and minigame timer.
+    (r"\bplay->shootingGalleryStatus\b", "gShootingGalleryStatusOot"),
+    (r"\bgSaveContext\.timerState\b", "gSaveContext.timerStates[TIMER_ID_MINIGAME_1]"),
+    (r"\bplay->nextEntranceIndex = gSaveContext\.entranceIndex;", "play->nextEntrance = gSaveContext.save.entrance;"),
     (r"\bDEGTORAD\(", "DEG_TO_RAD("),
     (r"\bPlayer_UnsetMask\(", "Player_UnsetMaskOot("),
     (r"\bPlayer_GetMask\(", "Player_GetMaskOot("),
@@ -380,6 +391,15 @@ def oot_entrances(soh_root):
 
 
 ENTRANCES = {}
+
+
+def oot_sequences(soh_root):
+    """OoT's music ids by name, from SoH's sequence.h."""
+    text = open(os.path.join(soh_root, "include", "sequence.h")).read()
+    return {name: int(value, 16) for name, value in re.findall(r"#define (NA_BGM_\w+) (0x[0-9A-Fa-f]+)", text)}
+
+
+SEQUENCES = {}
 
 
 def convert_entrances(text):
@@ -548,6 +568,10 @@ def convert(text, header):
     for pattern, repl in RENAMES:
         text = re.sub(pattern, repl, text, flags=re.M)
     text = re.sub(r"\bNA_SE_\w+\b", lambda m: SFX_RENAMES.get(m.group(0), m.group(0)), text)
+    # OoT's music plays as OoT's sequence in MM's table (SEQ_OOT).
+    text = re.sub(r"\bAudio_QueueSeqCmd\((SEQ_PLAYER_\w+) << 24 \| (NA_BGM_\w+)\);",
+                  lambda m: f"SEQCMD_PLAY_SEQUENCE({m.group(1)}, 0, SEQ_OOT(0x{SEQUENCES[m.group(2)]:02X})); // OoT's {m.group(2)}",
+                  text)
     text = re.sub(r"\bMATRIX_NEWMTX\(", "Matrix_Finalize(", text)
     text = wrap_exchange_offers(text)
     # OoT damage tables (32 entries) become MM's 64 with DMG_TABLE_FROM_OOT.
@@ -595,6 +619,7 @@ def main():
     src = os.path.normpath(args.soh_actor_dir)
     SFX_RENAMES.update(sfx_renames(os.path.join(src, "..", "..", "..", "..")))
     ENTRANCES.update(oot_entrances(os.path.join(src, "..", "..", "..", "..")))
+    SEQUENCES.update(oot_sequences(os.path.join(src, "..", "..", "..", "..")))
     PORTING.update(a.strip() for a in os.environ.get("PORTING", "").split(",") if a.strip())
     out = os.path.join(OUT_ROOT, os.path.basename(src))
     os.makedirs(out, exist_ok=True)

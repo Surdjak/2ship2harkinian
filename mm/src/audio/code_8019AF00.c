@@ -2404,7 +2404,11 @@ void AudioOcarina_Start(u32 ocarinaFlags) {
         sPrevOcarinaWithMusicStaffFlags = 0;
 
         // Reset music staff song check
-        for (songIndex = OCARINA_SONG_SONATA; songIndex <= OCARINA_SONG_EVAN_PART2; songIndex++) {
+        // 3Ship [Hyrule] OoT's songs too (Zelda's Lullaby and the warp songs), which OoT's lessons play back.
+        for (songIndex = OCARINA_SONG_SONATA; songIndex < OCARINA_SONG_MAX; songIndex++) {
+            if ((songIndex == OCARINA_SONG_SCARECROW_SPAWN) || (songIndex == OCARINA_SONG_TERMINA_WALL)) {
+                continue;
+            }
             for (sMusicStaffPos[songIndex] = 0;
                  sOcarinaSongNotes[songIndex][sMusicStaffPos[songIndex]].pitch == OCARINA_PITCH_NONE;) {
                 sMusicStaffPos[songIndex]++;
@@ -2463,7 +2467,11 @@ void AudioOcarina_StartForSongCheck(u32 ocarinaFlags, u8 ocarinaStaffPlayingPosS
     sMusicStaffNumNotesPerTest = 8;
     sOcarinaStaffPlayingPos = ocarinaStaffPlayingPosStart;
 
-    for (songIndex = 0; songIndex <= OCARINA_SONG_EVAN_PART2; songIndex++) {
+    // 3Ship [Hyrule] OoT's songs too, as in AudioOcarina_Start.
+    for (songIndex = 0; songIndex < OCARINA_SONG_MAX; songIndex++) {
+        if ((songIndex == OCARINA_SONG_SCARECROW_SPAWN) || (songIndex == OCARINA_SONG_TERMINA_WALL)) {
+            continue;
+        }
         for (j = 0; j < ocarinaStaffPlayingPosStart;) {
             if (sOcarinaSongNotes[songIndex][sMusicStaffPos[songIndex]].pitch != OCARINA_PITCH_NONE) {
                 j++;

@@ -6,6 +6,8 @@
 #include "overlays/actors/ovl_En_Part/z_en_part.h" // OoT's, in hyrule/
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 
+s8 gShootingGalleryStatusOot;
+
 static Gfx* func_80034B28(GraphicsContext* gfxCtx) {
     Gfx* displayList;
 
