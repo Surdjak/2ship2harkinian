@@ -315,6 +315,34 @@ static void Hyrule_SceneDrawTempleOfTime(PlayState* play) {
     }
 }
 
+// SDC_CHAMBER_OF_THE_SAGES (OoT's func_8009A798).
+static void Hyrule_SceneDrawChamberOfTheSages(PlayState* play) {
+    u32 gameplayFrames;
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    gameplayFrames = play->gameplayFrames;
+    gSPSegment(POLY_XLU_DISP++, 0x08, Gfx_TexScrollEx(play->state.gfxCtx, 0, (gameplayFrames * 2) % 256, 64, 64, 0, 2));
+
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetEnvColor(POLY_OPA_DISP++, 128, 128, 128, 128);
+
+    gSPSegment(POLY_OPA_DISP++, 0x0A,
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 127 - gameplayFrames % 128, (gameplayFrames * 1) % 128, 32, 32,
+                                  1, gameplayFrames % 128, (gameplayFrames * 1) % 128, 32, 32, -1, 1, 1, 1));
+    gSPSegment(POLY_XLU_DISP++, 0x09,
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 127 - (gameplayFrames * 1) % 128, (gameplayFrames * 1) % 256,
+                                  32, 64, 1, 0, 0, 32, 128, -1, 1, 0, 0));
+
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetEnvColor(POLY_OPA_DISP++, 128, 128, 128, 128);
+
+    gDPPipeSync(POLY_XLU_DISP++);
+    gDPSetEnvColor(POLY_XLU_DISP++, 128, 128, 128, 128);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
 // SDC_CASTLE_COURTYARD_GUARDS (OoT's func_8009BAA4).
 static void Hyrule_SceneDrawCastleCourtyardGuards(PlayState* play) {
     u32 gameplayFrames;
@@ -400,6 +428,9 @@ void Hyrule_SceneDrawOot(PlayState* play) {
             break;
         case SDC_TEMPLE_OF_TIME:
             Hyrule_SceneDrawTempleOfTime(play);
+            break;
+        case SDC_CHAMBER_OF_THE_SAGES:
+            Hyrule_SceneDrawChamberOfTheSages(play);
             break;
         case SDC_CASTLE_COURTYARD_GUARDS:
             Hyrule_SceneDrawCastleCourtyardGuards(play);

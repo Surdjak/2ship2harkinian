@@ -136,10 +136,17 @@ light is a cutscene, and the fork plays none of OoT's yet.
      the Song of Double Time at the altar plays the Door of Time's cutscene (the Spiritual Stones, the Triforce, the
      door opening) and the door stays open; through it, the Master Sword chamber's cutscene plays (Navi: "The Master
      Sword!!").
-   - Next: the Master Sword and the age change (docs/ADULT_LINK.md, A2). OoT's Player pulls and returns the sword with
-     its own action, which MM's Player lacks (MM's would lift it as a pot), so the pedestal does not offer it yet; then
-     the Chamber of the Sages (Rauru and the Light Medallion) and the Temple of Time's adult return (Sheik). The
-     credits' layers (Lon Lon Ranch's, Kakariko's last and others) wait for the ending.
+   - Done: the Master Sword and the age change (docs/ADULT_LINK.md, A2). MM's Player takes the sword from its pedestal
+     as OoT's does (the sword becomes its child and Link waits for the pedestal's cutscene, whose cues pull it), where
+     it would have lifted it as a pot; adult Link sees "Drop" there, as in OoT. The Chamber of the Sages and OoT's
+     cutscene map are loaded and Rauru (`En_Rl`) is ported. Checked under gdb with screenshots: child Link pulls the
+     sword; Ganondorf thanks him in the cutscene map; Link wakes as an adult in the Chamber of the Sages, where Rauru
+     speaks and gives the Light Medallion; back in the Temple of Time, Navi and Sheik speak and adult Link is free with
+     the Master Sword. Adult Link who has learned the Prelude of Light returns the sword and wakes as a child at the
+     pedestal; pulling it again makes him an adult at once, as in OoT. Known difference: OoT puts the Master Sword in
+     adult Link's hands for the return (`PLAYER_IA_SWORD_CS`); here he may play it empty-handed.
+   - Next: the Chamber of the Sages' other layers (the sages' awakenings) come with their temples. The credits' layers
+     (Lon Lon Ranch's, Kakariko's last and others) wait for the ending.
 
 ## Decisions
 

@@ -7664,6 +7664,16 @@ void func_808379C0(PlayState* play, Player* this) {
         Actor* interactRangeActor = this->interactRangeActor;
         PlayerAnimationHeader* anim;
 
+        // 3Ship [Hyrule] OoT's Master Sword pedestal: Link takes the sword (its parent) and waits for the pedestal's
+        // cutscene, whose cues pull it, as OoT's Player does.
+        if (interactRangeActor->id == ACTOR_BG_TOKI_SWD_Oot) {
+            interactRangeActor->parent = &this->actor;
+            Player_SetAction(play, this, Player_Action_WaitForCutscene, 0);
+            this->stateFlags1 |= PLAYER_STATE1_20000000;
+            this->stateFlags1 &= ~PLAYER_STATE1_CARRYING_ACTOR;
+            return;
+        }
+
         // 3Ship [Hyrule] OoT's rocks keep their size in the same bit.
         if (((interactRangeActor->id == ACTOR_EN_ISHI) || (interactRangeActor->id == ACTOR_EN_ISHI_Oot)) &&
             (ENISHI_GET_SIZE_FLAG(interactRangeActor) != ISHI_SIZE_SMALL_ROCK)) {
@@ -12072,7 +12082,11 @@ void Player_UpdateInterface(PlayState* play, Player* this) {
                 doActionA = DO_ACTION_NONE;
             }
         } else if (this->stateFlags2 & PLAYER_STATE2_10000) {
-            doActionA = DO_ACTION_GRAB;
+            // 3Ship [Hyrule] Adult Link returns the Master Sword to its pedestal ("Drop"), as in OoT.
+            doActionA = ((interactRangeActor != NULL) && (interactRangeActor->id == ACTOR_BG_TOKI_SWD_Oot) &&
+                         gSaveContext.save.saveInfo.isAdultOot)
+                            ? DO_ACTION_DROP
+                            : DO_ACTION_GRAB;
         } else if (this->stateFlags2 & PLAYER_STATE2_800) {
             // 3Ship [Hyrule] With OoT's scales, OoT's counter, up to 8; MM's stops at 2.
             static u8 D_8085D354[] = { DO_ACTION_1, DO_ACTION_2, DO_ACTION_3, DO_ACTION_4,

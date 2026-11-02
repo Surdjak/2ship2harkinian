@@ -1440,6 +1440,48 @@ static EntranceTableEntry* sCastleCourtyardZeldaOotEntranceTable[] = {
 static EntranceTableEntry* sOutsideGanonsCastleOotEntranceTable[] = {
 };
 
+static EntranceTableEntry sChamberOfTheSagesOotEntrance0[] = {
+    /* 0x06B */ { SCENE_CHAMBER_OF_THE_SAGES_Oot, 0, 0x4387 },
+    /* 0x06C */ { SCENE_CHAMBER_OF_THE_SAGES_Oot, 0, 0x4387 },
+    /* 0x06D */ { SCENE_CHAMBER_OF_THE_SAGES_Oot, 0, 0x4387 },
+    /* 0x06E */ { SCENE_CHAMBER_OF_THE_SAGES_Oot, 0, 0x4387 },
+    /* 0x06F */ { SCENE_CHAMBER_OF_THE_SAGES_Oot, 0, 0x4682 },
+    /* 0x070 */ { SCENE_CHAMBER_OF_THE_SAGES_Oot, 0, 0x4682 },
+    /* 0x071 */ { SCENE_CHAMBER_OF_THE_SAGES_Oot, 0, 0x4183 },
+};
+
+static EntranceTableEntry sChamberOfTheSagesOotEntrance1[] = {
+    /* 0x2CE */ { SCENE_CHAMBER_OF_THE_SAGES_Oot, 1, 0x4102 },
+    /* 0x2CF */ { SCENE_CHAMBER_OF_THE_SAGES_Oot, 1, 0x4102 },
+    /* 0x2D0 */ { SCENE_CHAMBER_OF_THE_SAGES_Oot, 1, 0x4102 },
+    /* 0x2D1 */ { SCENE_CHAMBER_OF_THE_SAGES_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry* sChamberOfTheSagesOotEntranceTable[] = {
+    sChamberOfTheSagesOotEntrance0,
+    sChamberOfTheSagesOotEntrance1,
+};
+
+static EntranceTableEntry sCutsceneMapOotEntrance0[] = {
+    /* 0x0A0 */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x4183 },
+    /* 0x0A1 */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x4183 },
+    /* 0x0A2 */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x4183 },
+    /* 0x0A3 */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x4183 },
+    /* 0x0A4 */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x450A },
+    /* 0x0A5 */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x410A },
+    /* 0x0A6 */ { SCENE_CUTSCENE_MAP_Oot, 0, 0xC50A },
+    /* 0x0A7 */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x458B },
+    /* 0x0A8 */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x4183 },
+    /* 0x0A9 */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x4102 },
+    /* 0x0AA */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x4102 },
+    /* 0x0AB */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x4183 },
+    /* 0x0AC */ { SCENE_CUTSCENE_MAP_Oot, 0, 0x4183 },
+};
+
+static EntranceTableEntry* sCutsceneMapOotEntranceTable[] = {
+    sCutsceneMapOotEntrance0,
+};
+
 // The entrance scenes from ENTR_SCENE_KOKIRI_FOREST_Oot on, in order.
 #define HYRULE_SCENE_ENTRANCES \
     /* 0x6E */ SCENE_ENTRANCE(sKokiriForestOotEntranceTable, "SCENE_KOKIRI_FOREST"), \
@@ -1477,4 +1519,6 @@ static EntranceTableEntry* sOutsideGanonsCastleOotEntranceTable[] = {
     /* 0x8E */ SCENE_ENTRANCE(sCastleCourtyardGuardsDayOotEntranceTable, "SCENE_CASTLE_COURTYARD_GUARDS_DAY"), \
     /* 0x8F */ SCENE_ENTRANCE(sCastleCourtyardGuardsNightOotEntranceTable, "SCENE_CASTLE_COURTYARD_GUARDS_NIGHT"), \
     /* 0x90 */ SCENE_ENTRANCE(sCastleCourtyardZeldaOotEntranceTable, "SCENE_CASTLE_COURTYARD_ZELDA"), \
-    /* 0x91 */ SCENE_ENTRANCE(sOutsideGanonsCastleOotEntranceTable, "SCENE_OUTSIDE_GANONS_CASTLE"),
+    /* 0x91 */ SCENE_ENTRANCE(sOutsideGanonsCastleOotEntranceTable, "SCENE_OUTSIDE_GANONS_CASTLE"), \
+    /* 0x92 */ SCENE_ENTRANCE(sChamberOfTheSagesOotEntranceTable, "SCENE_CHAMBER_OF_THE_SAGES"), \
+    /* 0x93 */ SCENE_ENTRANCE(sCutsceneMapOotEntranceTable, "SCENE_CUTSCENE_MAP"),

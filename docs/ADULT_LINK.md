@@ -49,8 +49,10 @@ actors expect him (`LINK_IS_ADULT`).
 5. **Hyrule at adult age**: OoT's scenes load their adult layers for adult Link, as OoT does (only the actors
    ported so far appear). Termina is unchanged: he is the same Link there (Stage 3).
 
-Each step ends with harness tests of both ages and the usual regressions. Changing age the OoT way (the Master
-Sword in the Temple of Time) comes with the Temple of Time.
+Each step ends with harness tests of both ages and the usual regressions. Age also changes the OoT way (A2): child
+Link pulls the Master Sword from its pedestal in the Temple of Time and wakes as an adult, and adult Link returns it
+(once he has learned the Prelude of Light, as in OoT) to become a child again; docs/CUTSCENES.md has the story it plays.
+The developer toggle stays for testing.
 
 ## Implementation
 

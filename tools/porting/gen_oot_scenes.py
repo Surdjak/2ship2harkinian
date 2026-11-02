@@ -67,6 +67,8 @@ SCENES = [
     "SCENE_CASTLE_COURTYARD_GUARDS_NIGHT",
     "SCENE_CASTLE_COURTYARD_ZELDA",
     "SCENE_OUTSIDE_GANONS_CASTLE",
+    "SCENE_CHAMBER_OF_THE_SAGES",
+    "SCENE_CUTSCENE_MAP",
 ]
 
 # Human-readable names that the enum name spells badly.
@@ -83,6 +85,7 @@ NAMES = {
     "SCENE_TEMPLE_OF_TIME": "Temple of Time",
     "SCENE_CASTLE_COURTYARD_ZELDA": "Zelda's Courtyard",
     "SCENE_OUTSIDE_GANONS_CASTLE": "Outside Ganon's Castle",
+    "SCENE_CHAMBER_OF_THE_SAGES": "Chamber of the Sages",
 }
 
 FIRST_SCENE_ID = 0x71  # after MM's SCENE_ALLEY

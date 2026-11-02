@@ -106,9 +106,7 @@ static void func_808BAF40(BgTokiSwd* this, PlayState* play) {
         }
     }
 
-    // PORT: OoT's Player pulls and returns the sword with its own action, which MM's Player lacks (MM's would lift the
-    // sword as it lifts a pot), so the sword is not offered until that comes with the age change (docs/ADULT_LINK.md, A2).
-    if (false && (!LINK_IS_ADULT_OOT || GET_EVENTCHKINF_OOT(EVENTCHKINF_LEARNED_PRELUDE_OF_LIGHT_Oot))) {
+    if (!LINK_IS_ADULT_OOT || GET_EVENTCHKINF_OOT(EVENTCHKINF_LEARNED_PRELUDE_OF_LIGHT_Oot)) {
         if (Actor_HasParent(&this->actor, play)) {
             if (!LINK_IS_ADULT_OOT) {
                 if ((true)) {
