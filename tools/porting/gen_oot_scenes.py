@@ -50,6 +50,23 @@ SCENES = [
     "SCENE_GERUDO_VALLEY",
     "SCENE_LON_LON_RANCH",
     "SCENE_DEATH_MOUNTAIN_TRAIL",
+    "SCENE_MARKET_ENTRANCE_DAY",
+    "SCENE_MARKET_ENTRANCE_NIGHT",
+    "SCENE_MARKET_ENTRANCE_RUINS",
+    "SCENE_BACK_ALLEY_DAY",
+    "SCENE_BACK_ALLEY_NIGHT",
+    "SCENE_MARKET_DAY",
+    "SCENE_MARKET_NIGHT",
+    "SCENE_MARKET_RUINS",
+    "SCENE_TEMPLE_OF_TIME_EXTERIOR_DAY",
+    "SCENE_TEMPLE_OF_TIME_EXTERIOR_NIGHT",
+    "SCENE_TEMPLE_OF_TIME_EXTERIOR_RUINS",
+    "SCENE_TEMPLE_OF_TIME",
+    "SCENE_HYRULE_CASTLE",
+    "SCENE_CASTLE_COURTYARD_GUARDS_DAY",
+    "SCENE_CASTLE_COURTYARD_GUARDS_NIGHT",
+    "SCENE_CASTLE_COURTYARD_ZELDA",
+    "SCENE_OUTSIDE_GANONS_CASTLE",
 ]
 
 # Human-readable names that the enum name spells badly.
@@ -60,6 +77,12 @@ NAMES = {
     "SCENE_MIDOS_HOUSE": "Mido's House",
     "SCENE_SARIAS_HOUSE": "Saria's House",
     "SCENE_FAIRYS_FOUNTAIN": "Fairy's Fountain",
+    "SCENE_TEMPLE_OF_TIME_EXTERIOR_DAY": "Temple of Time Exterior Day",
+    "SCENE_TEMPLE_OF_TIME_EXTERIOR_NIGHT": "Temple of Time Exterior Night",
+    "SCENE_TEMPLE_OF_TIME_EXTERIOR_RUINS": "Temple of Time Exterior Ruins",
+    "SCENE_TEMPLE_OF_TIME": "Temple of Time",
+    "SCENE_CASTLE_COURTYARD_ZELDA": "Zelda's Courtyard",
+    "SCENE_OUTSIDE_GANONS_CASTLE": "Outside Ganon's Castle",
 }
 
 FIRST_SCENE_ID = 0x71  # after MM's SCENE_ALLEY
@@ -195,14 +218,21 @@ def gen_entrance_table(groups, ids):
             if group[0][1] == scene:
                 assert group[0][2] not in by_spawn, f"{scene} has two groups for spawn {group[0][2]}"
                 by_spawn[group[0][2]] = group
-        assert sorted(by_spawn) == list(range(len(by_spawn))), f"{scene}'s spawns are not contiguous"
-        assert len(by_spawn) <= 32 and all(len(g) <= 16 for g in by_spawn.values())
+        spawns = max(by_spawn) + 1 if by_spawn else 0
+        assert spawns <= 32 and all(len(g) <= 16 for g in by_spawn.values())
         names = []
-        for spawn in range(len(by_spawn)):
-            group = by_spawn[spawn]
+        for spawn in range(spawns):
             name = f"s{camel(scene)}OotEntrance{spawn}"
             names.append(name)
             lines.append(f"static EntranceTableEntry {name}[] = {{")
+            if spawn not in by_spawn:
+                # No OoT entrance leads to this spawn (the Temple of Time's 1): one leads there, so the spawn bits
+                # keep matching OoT's spawns.
+                lines.append(f"    {{ {scene}_Oot, {spawn}, 0x0000 }},")
+                lines.append("};")
+                lines.append("")
+                continue
+            group = by_spawn[spawn]
             for index, target, target_spawn, flags in group:
                 if target not in ids:
                     _, target, target_spawn, flags = group[0]

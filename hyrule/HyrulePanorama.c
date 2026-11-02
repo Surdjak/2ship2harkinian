@@ -20,6 +20,27 @@ typedef struct {
 
 // The panoramas of the OoT scenes in the scene table (Skybox_Setup in OoT).
 static const PanoramaInfo sPanoramas[] = {
+    { 0x04, // SKYBOX_MARKET_ADULT
+      4,
+      0.0f,
+      { BG_TEX("vr_RUVR_static", "gMarketRuinsBgTex"), BG_TEX("vr_RUVR_static", "gMarketRuins2BgTex"),
+        BG_TEX("vr_RUVR_static", "gMarketRuins3BgTex"), BG_TEX("vr_RUVR_static", "gMarketRuins4BgTex") },
+      { BG_TEX("vr_RUVR_pal_static", "gMarketRuinsBgTLUT"), BG_TEX("vr_RUVR_pal_static", "gMarketRuinsBg2TLUT"),
+        BG_TEX("vr_RUVR_pal_static", "gMarketRuinsBg3TLUT"), BG_TEX("vr_RUVR_pal_static", "gMarketRuinsBg4TLUT") } },
+    { 0x09, // SKYBOX_MARKET_CHILD_DAY
+      4,
+      0.0f,
+      { BG_TEX("vr_MDVR_static", "gMarketDayBgTex"), BG_TEX("vr_MDVR_static", "gMarketDay2BgTex"),
+        BG_TEX("vr_MDVR_static", "gMarketDay3BgTex"), BG_TEX("vr_MDVR_static", "gMarketDay4BgTex") },
+      { BG_TEX("vr_MDVR_pal_static", "gMarketDayBgTLUT"), BG_TEX("vr_MDVR_pal_static", "gMarketDayBg2TLUT"),
+        BG_TEX("vr_MDVR_pal_static", "gMarketDayBg3TLUT"), BG_TEX("vr_MDVR_pal_static", "gMarketDayBg4TLUT") } },
+    { 0x0A, // SKYBOX_MARKET_CHILD_NIGHT
+      4,
+      0.0f,
+      { BG_TEX("vr_MNVR_static", "gMarketNightBgTex"), BG_TEX("vr_MNVR_static", "gMarketNight2BgTex"),
+        BG_TEX("vr_MNVR_static", "gMarketNight3BgTex"), BG_TEX("vr_MNVR_static", "gMarketNight4BgTex") },
+      { BG_TEX("vr_MNVR_pal_static", "gMarketNightBgTLUT"), BG_TEX("vr_MNVR_pal_static", "gMarketNightBg2TLUT"),
+        BG_TEX("vr_MNVR_pal_static", "gMarketNightBg3TLUT"), BG_TEX("vr_MNVR_pal_static", "gMarketNightBg4TLUT") } },
     { 0x07, // SKYBOX_HOUSE_LINK
       4,
       0.0f,

@@ -80,7 +80,7 @@ std::shared_ptr<Ship::IResource> SetMeshFactory::ReadResource(std::shared_ptr<Sh
                 setMesh->imagePaths.push_back(imagePath);
                 image.source = (void*)setMesh->imagePaths.back().c_str();
                 image.unk_0C = reader->ReadUInt32();
-                image.tlut = reader->ReadUInt32();
+                image.tlut = (void*)(uintptr_t)reader->ReadUInt32();
                 image.width = reader->ReadUInt16();
                 image.height = reader->ReadUInt16();
                 image.fmt = reader->ReadUByte();
@@ -91,8 +91,7 @@ std::shared_ptr<Ship::IResource> SetMeshFactory::ReadResource(std::shared_ptr<Sh
                 if (setMesh->meshHeader.polygon1.format == 1) {
                     setMesh->meshHeader.polygon1.single.source = image.source;
                     setMesh->meshHeader.polygon1.single.unk_0C = image.unk_0C;
-                    setMesh->meshHeader.polygon1.single.tlut =
-                        (void*)image.tlut; // OTRTODO: type of bgimage.tlut should be uintptr_t
+                    setMesh->meshHeader.polygon1.single.tlut = image.tlut;
                     setMesh->meshHeader.polygon1.single.width = image.width;
                     setMesh->meshHeader.polygon1.single.height = image.height;
                     setMesh->meshHeader.polygon1.single.fmt = image.fmt;

@@ -1068,6 +1068,378 @@ static EntranceTableEntry* sDeathMountainTrailOotEntranceTable[] = {
     sDeathMountainTrailOotEntrance5,
 };
 
+static EntranceTableEntry sMarketEntranceDayOotEntrance0[] = {
+    /* 0x033 */ { SCENE_MARKET_ENTRANCE_DAY_Oot, 0, 0xC183 },
+    /* 0x034 */ { SCENE_MARKET_ENTRANCE_NIGHT_Oot, 0, 0xC102 },
+    /* 0x035 */ { SCENE_MARKET_ENTRANCE_RUINS_Oot, 0, 0xC183 },
+    /* 0x036 */ { SCENE_MARKET_ENTRANCE_RUINS_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry sMarketEntranceDayOotEntrance1[] = {
+    /* 0x276 */ { SCENE_MARKET_ENTRANCE_DAY_Oot, 1, 0x4183 },
+    /* 0x277 */ { SCENE_MARKET_ENTRANCE_NIGHT_Oot, 1, 0x4102 },
+    /* 0x278 */ { SCENE_MARKET_ENTRANCE_RUINS_Oot, 1, 0x4102 },
+    /* 0x279 */ { SCENE_MARKET_ENTRANCE_RUINS_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry sMarketEntranceDayOotEntrance2[] = {
+    /* 0x26E */ { SCENE_MARKET_ENTRANCE_DAY_Oot, 2, 0x0102 },
+    /* 0x26F */ { SCENE_MARKET_ENTRANCE_NIGHT_Oot, 2, 0x0102 },
+    /* 0x270 */ { SCENE_MARKET_ENTRANCE_RUINS_Oot, 2, 0x0102 },
+    /* 0x271 */ { SCENE_MARKET_ENTRANCE_RUINS_Oot, 2, 0x0102 },
+};
+
+static EntranceTableEntry* sMarketEntranceDayOotEntranceTable[] = {
+    sMarketEntranceDayOotEntrance0,
+    sMarketEntranceDayOotEntrance1,
+    sMarketEntranceDayOotEntrance2,
+};
+
+static EntranceTableEntry* sMarketEntranceNightOotEntranceTable[] = {
+};
+
+static EntranceTableEntry* sMarketEntranceRuinsOotEntranceTable[] = {
+};
+
+static EntranceTableEntry sBackAlleyDayOotEntrance0[] = {
+    /* 0x0AD */ { SCENE_BACK_ALLEY_DAY_Oot, 0, 0xC183 },
+    /* 0x0AE */ { SCENE_BACK_ALLEY_NIGHT_Oot, 0, 0xC102 },
+    /* 0x0AF */ { SCENE_BACK_ALLEY_DAY_Oot, 0, 0xC102 },
+    /* 0x0B0 */ { SCENE_BACK_ALLEY_NIGHT_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry sBackAlleyDayOotEntrance1[] = {
+    /* 0x29A */ { SCENE_BACK_ALLEY_DAY_Oot, 1, 0xC183 },
+    /* 0x29B */ { SCENE_BACK_ALLEY_NIGHT_Oot, 1, 0xC102 },
+    /* 0x29C */ { SCENE_BACK_ALLEY_DAY_Oot, 1, 0xC102 },
+    /* 0x29D */ { SCENE_BACK_ALLEY_NIGHT_Oot, 1, 0xC102 },
+};
+
+static EntranceTableEntry sBackAlleyDayOotEntrance2[] = {
+    /* 0x3C0 */ { SCENE_BACK_ALLEY_DAY_Oot, 2, 0x4202 },
+    /* 0x3C1 */ { SCENE_BACK_ALLEY_NIGHT_Oot, 2, 0x4202 },
+    /* 0x3C2 */ { SCENE_BACK_ALLEY_DAY_Oot, 2, 0x4183 },
+    /* 0x3C3 */ { SCENE_BACK_ALLEY_NIGHT_Oot, 2, 0x4102 },
+};
+
+static EntranceTableEntry sBackAlleyDayOotEntrance3[] = {
+    /* 0x067 */ { SCENE_BACK_ALLEY_DAY_Oot, 3, 0xC183 },
+    /* 0x068 */ { SCENE_BACK_ALLEY_NIGHT_Oot, 3, 0xC102 },
+    /* 0x069 */ { SCENE_BACK_ALLEY_DAY_Oot, 3, 0xC102 },
+    /* 0x06A */ { SCENE_BACK_ALLEY_NIGHT_Oot, 3, 0xC102 },
+};
+
+static EntranceTableEntry sBackAlleyDayOotEntrance4[] = {
+    /* 0x38C */ { SCENE_BACK_ALLEY_DAY_Oot, 4, 0x4202 },
+    /* 0x38D */ { SCENE_BACK_ALLEY_NIGHT_Oot, 4, 0x4202 },
+    /* 0x38E */ { SCENE_BACK_ALLEY_DAY_Oot, 4, 0x4202 },
+    /* 0x38F */ { SCENE_BACK_ALLEY_NIGHT_Oot, 4, 0x4202 },
+};
+
+static EntranceTableEntry* sBackAlleyDayOotEntranceTable[] = {
+    sBackAlleyDayOotEntrance0,
+    sBackAlleyDayOotEntrance1,
+    sBackAlleyDayOotEntrance2,
+    sBackAlleyDayOotEntrance3,
+    sBackAlleyDayOotEntrance4,
+};
+
+static EntranceTableEntry* sBackAlleyNightOotEntranceTable[] = {
+};
+
+static EntranceTableEntry sMarketDayOotEntrance0[] = {
+    /* 0x0B1 */ { SCENE_MARKET_DAY_Oot, 0, 0xC183 },
+    /* 0x0B2 */ { SCENE_MARKET_NIGHT_Oot, 0, 0xC102 },
+    /* 0x0B3 */ { SCENE_MARKET_RUINS_Oot, 0, 0xC102 },
+    /* 0x0B4 */ { SCENE_MARKET_RUINS_Oot, 0, 0xC102 },
+    /* 0x0B5 */ { SCENE_MARKET_DAY_Oot, 0, 0x4408 },
+};
+
+static EntranceTableEntry sMarketDayOotEntrance1[] = {
+    /* 0x25A */ { SCENE_MARKET_DAY_Oot, 1, 0x4183 },
+    /* 0x25B */ { SCENE_MARKET_NIGHT_Oot, 1, 0x4102 },
+    /* 0x25C */ { SCENE_MARKET_RUINS_Oot, 1, 0x4102 },
+    /* 0x25D */ { SCENE_MARKET_RUINS_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry sMarketDayOotEntrance2[] = {
+    /* 0x25E */ { SCENE_MARKET_DAY_Oot, 2, 0x4183 },
+    /* 0x25F */ { SCENE_MARKET_NIGHT_Oot, 2, 0x4102 },
+    /* 0x260 */ { SCENE_MARKET_RUINS_Oot, 2, 0x4102 },
+    /* 0x261 */ { SCENE_MARKET_RUINS_Oot, 2, 0x4102 },
+};
+
+static EntranceTableEntry sMarketDayOotEntrance3[] = {
+    /* 0x262 */ { SCENE_MARKET_DAY_Oot, 3, 0xC183 },
+    /* 0x263 */ { SCENE_MARKET_NIGHT_Oot, 3, 0xC102 },
+    /* 0x264 */ { SCENE_MARKET_RUINS_Oot, 3, 0xC102 },
+    /* 0x265 */ { SCENE_MARKET_RUINS_Oot, 3, 0xC102 },
+};
+
+static EntranceTableEntry sMarketDayOotEntrance4[] = {
+    /* 0x29E */ { SCENE_MARKET_DAY_Oot, 4, 0xC183 },
+    /* 0x29F */ { SCENE_MARKET_NIGHT_Oot, 4, 0xC102 },
+    /* 0x2A0 */ { SCENE_MARKET_RUINS_Oot, 4, 0xC102 },
+    /* 0x2A1 */ { SCENE_MARKET_RUINS_Oot, 4, 0xC102 },
+};
+
+static EntranceTableEntry sMarketDayOotEntrance5[] = {
+    /* 0x2A2 */ { SCENE_MARKET_DAY_Oot, 5, 0x4202 },
+    /* 0x2A3 */ { SCENE_MARKET_NIGHT_Oot, 5, 0x4202 },
+    /* 0x2A4 */ { SCENE_MARKET_RUINS_Oot, 5, 0x4202 },
+    /* 0x2A5 */ { SCENE_MARKET_RUINS_Oot, 5, 0x4202 },
+};
+
+static EntranceTableEntry sMarketDayOotEntrance6[] = {
+    /* 0x3B8 */ { SCENE_MARKET_DAY_Oot, 6, 0x4202 },
+    /* 0x3B9 */ { SCENE_MARKET_NIGHT_Oot, 6, 0x4202 },
+    /* 0x3BA */ { SCENE_MARKET_RUINS_Oot, 6, 0x4202 },
+    /* 0x3BB */ { SCENE_MARKET_RUINS_Oot, 6, 0x4202 },
+};
+
+static EntranceTableEntry sMarketDayOotEntrance7[] = {
+    /* 0x3BC */ { SCENE_MARKET_DAY_Oot, 7, 0x4202 },
+    /* 0x3BD */ { SCENE_MARKET_NIGHT_Oot, 7, 0x4202 },
+    /* 0x3BE */ { SCENE_MARKET_RUINS_Oot, 7, 0x4202 },
+    /* 0x3BF */ { SCENE_MARKET_RUINS_Oot, 7, 0x4202 },
+};
+
+static EntranceTableEntry sMarketDayOotEntrance8[] = {
+    /* 0x1CD */ { SCENE_MARKET_DAY_Oot, 8, 0x4202 },
+    /* 0x1CE */ { SCENE_MARKET_NIGHT_Oot, 8, 0x4202 },
+    /* 0x1CF */ { SCENE_MARKET_RUINS_Oot, 8, 0x4202 },
+    /* 0x1D0 */ { SCENE_MARKET_RUINS_Oot, 8, 0x4202 },
+};
+
+static EntranceTableEntry sMarketDayOotEntrance9[] = {
+    /* 0x1D1 */ { SCENE_MARKET_DAY_Oot, 9, 0x4202 },
+    /* 0x1D2 */ { SCENE_MARKET_NIGHT_Oot, 9, 0x4202 },
+    /* 0x1D3 */ { SCENE_MARKET_RUINS_Oot, 9, 0x4202 },
+    /* 0x1D4 */ { SCENE_MARKET_RUINS_Oot, 9, 0x4202 },
+};
+
+static EntranceTableEntry sMarketDayOotEntrance10[] = {
+    /* 0x1D5 */ { SCENE_MARKET_DAY_Oot, 10, 0x4202 },
+    /* 0x1D6 */ { SCENE_MARKET_NIGHT_Oot, 10, 0x4202 },
+    /* 0x1D7 */ { SCENE_MARKET_RUINS_Oot, 10, 0x4202 },
+    /* 0x1D8 */ { SCENE_MARKET_RUINS_Oot, 10, 0x4202 },
+};
+
+static EntranceTableEntry* sMarketDayOotEntranceTable[] = {
+    sMarketDayOotEntrance0,
+    sMarketDayOotEntrance1,
+    sMarketDayOotEntrance2,
+    sMarketDayOotEntrance3,
+    sMarketDayOotEntrance4,
+    sMarketDayOotEntrance5,
+    sMarketDayOotEntrance6,
+    sMarketDayOotEntrance7,
+    sMarketDayOotEntrance8,
+    sMarketDayOotEntrance9,
+    sMarketDayOotEntrance10,
+};
+
+static EntranceTableEntry* sMarketNightOotEntranceTable[] = {
+};
+
+static EntranceTableEntry* sMarketRuinsOotEntranceTable[] = {
+};
+
+static EntranceTableEntry sTempleOfTimeExteriorDayOotEntrance0[] = {
+    /* 0x171 */ { SCENE_TEMPLE_OF_TIME_EXTERIOR_DAY_Oot, 0, 0x4183 },
+    /* 0x172 */ { SCENE_TEMPLE_OF_TIME_EXTERIOR_NIGHT_Oot, 0, 0x4102 },
+    /* 0x173 */ { SCENE_TEMPLE_OF_TIME_EXTERIOR_RUINS_Oot, 0, 0x4102 },
+    /* 0x174 */ { SCENE_TEMPLE_OF_TIME_EXTERIOR_RUINS_Oot, 0, 0x4102 },
+};
+
+static EntranceTableEntry sTempleOfTimeExteriorDayOotEntrance1[] = {
+    /* 0x472 */ { SCENE_TEMPLE_OF_TIME_EXTERIOR_DAY_Oot, 1, 0x4202 },
+    /* 0x473 */ { SCENE_TEMPLE_OF_TIME_EXTERIOR_NIGHT_Oot, 1, 0x4202 },
+    /* 0x474 */ { SCENE_TEMPLE_OF_TIME_EXTERIOR_RUINS_Oot, 1, 0x4202 },
+    /* 0x475 */ { SCENE_TEMPLE_OF_TIME_EXTERIOR_RUINS_Oot, 1, 0x4202 },
+};
+
+static EntranceTableEntry* sTempleOfTimeExteriorDayOotEntranceTable[] = {
+    sTempleOfTimeExteriorDayOotEntrance0,
+    sTempleOfTimeExteriorDayOotEntrance1,
+};
+
+static EntranceTableEntry* sTempleOfTimeExteriorNightOotEntranceTable[] = {
+};
+
+static EntranceTableEntry* sTempleOfTimeExteriorRuinsOotEntranceTable[] = {
+};
+
+static EntranceTableEntry sTempleOfTimeOotEntrance0[] = {
+    /* 0x053 */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x054 */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x055 */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x056 */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x057 */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x058 */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x059 */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x05A */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x05B */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x05C */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x05D */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x05E */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x458B },
+    /* 0x05F */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x060 */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x061 */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+    /* 0x062 */ { SCENE_TEMPLE_OF_TIME_Oot, 0, 0x4102 },
+};
+
+static EntranceTableEntry sTempleOfTimeOotEntrance1[] = {
+    { SCENE_TEMPLE_OF_TIME_Oot, 1, 0x0000 },
+};
+
+static EntranceTableEntry sTempleOfTimeOotEntrance2[] = {
+    /* 0x2CA */ { SCENE_TEMPLE_OF_TIME_Oot, 2, 0x450A },
+    /* 0x2CB */ { SCENE_TEMPLE_OF_TIME_Oot, 2, 0x450A },
+    /* 0x2CC */ { SCENE_TEMPLE_OF_TIME_Oot, 2, 0x450A },
+    /* 0x2CD */ { SCENE_TEMPLE_OF_TIME_Oot, 2, 0x450A },
+};
+
+static EntranceTableEntry sTempleOfTimeOotEntrance3[] = {
+    /* 0x320 */ { SCENE_TEMPLE_OF_TIME_Oot, 3, 0x4102 },
+    /* 0x321 */ { SCENE_TEMPLE_OF_TIME_Oot, 3, 0x4102 },
+    /* 0x322 */ { SCENE_TEMPLE_OF_TIME_Oot, 3, 0x4102 },
+    /* 0x323 */ { SCENE_TEMPLE_OF_TIME_Oot, 3, 0x4102 },
+};
+
+static EntranceTableEntry sTempleOfTimeOotEntrance4[] = {
+    /* 0x324 */ { SCENE_TEMPLE_OF_TIME_Oot, 4, 0x4102 },
+    /* 0x325 */ { SCENE_TEMPLE_OF_TIME_Oot, 4, 0x4102 },
+    /* 0x326 */ { SCENE_TEMPLE_OF_TIME_Oot, 4, 0x4102 },
+    /* 0x327 */ { SCENE_TEMPLE_OF_TIME_Oot, 4, 0x4102 },
+};
+
+static EntranceTableEntry sTempleOfTimeOotEntrance5[] = {
+    /* 0x58C */ { SCENE_TEMPLE_OF_TIME_Oot, 5, 0x4102 },
+    /* 0x58D */ { SCENE_TEMPLE_OF_TIME_Oot, 5, 0x4102 },
+    /* 0x58E */ { SCENE_TEMPLE_OF_TIME_Oot, 5, 0x4102 },
+    /* 0x58F */ { SCENE_TEMPLE_OF_TIME_Oot, 5, 0x4102 },
+};
+
+static EntranceTableEntry sTempleOfTimeOotEntrance6[] = {
+    /* 0x590 */ { SCENE_TEMPLE_OF_TIME_Oot, 6, 0x4102 },
+    /* 0x591 */ { SCENE_TEMPLE_OF_TIME_Oot, 6, 0x4102 },
+    /* 0x592 */ { SCENE_TEMPLE_OF_TIME_Oot, 6, 0x4102 },
+    /* 0x593 */ { SCENE_TEMPLE_OF_TIME_Oot, 6, 0x4102 },
+};
+
+static EntranceTableEntry sTempleOfTimeOotEntrance7[] = {
+    /* 0x5F4 */ { SCENE_TEMPLE_OF_TIME_Oot, 7, 0x4102 },
+    /* 0x5F5 */ { SCENE_TEMPLE_OF_TIME_Oot, 7, 0x4102 },
+    /* 0x5F6 */ { SCENE_TEMPLE_OF_TIME_Oot, 7, 0x4102 },
+    /* 0x5F7 */ { SCENE_TEMPLE_OF_TIME_Oot, 7, 0x4102 },
+};
+
+static EntranceTableEntry* sTempleOfTimeOotEntranceTable[] = {
+    sTempleOfTimeOotEntrance0,
+    sTempleOfTimeOotEntrance1,
+    sTempleOfTimeOotEntrance2,
+    sTempleOfTimeOotEntrance3,
+    sTempleOfTimeOotEntrance4,
+    sTempleOfTimeOotEntrance5,
+    sTempleOfTimeOotEntrance6,
+    sTempleOfTimeOotEntrance7,
+};
+
+static EntranceTableEntry sHyruleCastleOotEntrance0[] = {
+    /* 0x138 */ { SCENE_HYRULE_CASTLE_Oot, 0, 0x4183 },
+    /* 0x139 */ { SCENE_HYRULE_CASTLE_Oot, 0, 0x4102 },
+    /* 0x13A */ { SCENE_OUTSIDE_GANONS_CASTLE_Oot, 0, 0x4102 },
+    /* 0x13B */ { SCENE_OUTSIDE_GANONS_CASTLE_Oot, 0, 0x4102 },
+    /* 0x13C */ { SCENE_OUTSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+};
+
+static EntranceTableEntry sHyruleCastleOotEntrance1[] = {
+    /* 0x23D */ { SCENE_HYRULE_CASTLE_Oot, 1, 0x4183 },
+    /* 0x23E */ { SCENE_HYRULE_CASTLE_Oot, 1, 0x4102 },
+    /* 0x23F */ { SCENE_OUTSIDE_GANONS_CASTLE_Oot, 1, 0x4285 },
+    /* 0x240 */ { SCENE_OUTSIDE_GANONS_CASTLE_Oot, 1, 0x4285 },
+    /* 0x241 */ { SCENE_HYRULE_CASTLE_Oot, 1, 0x4000 },
+};
+
+static EntranceTableEntry sHyruleCastleOotEntrance2[] = {
+    /* 0x340 */ { SCENE_HYRULE_CASTLE_Oot, 2, 0x4102 },
+    /* 0x341 */ { SCENE_HYRULE_CASTLE_Oot, 2, 0x4102 },
+    /* 0x342 */ { SCENE_OUTSIDE_GANONS_CASTLE_Oot, 2, 0x4102 },
+    /* 0x343 */ { SCENE_OUTSIDE_GANONS_CASTLE_Oot, 2, 0x4102 },
+    /* 0x344 */ { SCENE_HYRULE_CASTLE_Oot, 2, 0x4000 },
+};
+
+static EntranceTableEntry sHyruleCastleOotEntrance3[] = {
+    /* 0x4FA */ { SCENE_HYRULE_CASTLE_Oot, 3, 0x4183 },
+    /* 0x4FB */ { SCENE_HYRULE_CASTLE_Oot, 3, 0x4102 },
+    /* 0x4FC */ { SCENE_OUTSIDE_GANONS_CASTLE_Oot, 3, 0x4102 },
+    /* 0x4FD */ { SCENE_OUTSIDE_GANONS_CASTLE_Oot, 3, 0x4102 },
+    /* 0x4FE */ { SCENE_HYRULE_CASTLE_Oot, 3, 0x4000 },
+};
+
+static EntranceTableEntry sHyruleCastleOotEntrance4[] = {
+    /* 0x47E */ { SCENE_HYRULE_CASTLE_Oot, 4, 0x4183 },
+    /* 0x47F */ { SCENE_HYRULE_CASTLE_Oot, 4, 0x4102 },
+    /* 0x480 */ { SCENE_OUTSIDE_GANONS_CASTLE_Oot, 4, 0x4102 },
+    /* 0x481 */ { SCENE_OUTSIDE_GANONS_CASTLE_Oot, 4, 0x4102 },
+};
+
+static EntranceTableEntry* sHyruleCastleOotEntranceTable[] = {
+    sHyruleCastleOotEntrance0,
+    sHyruleCastleOotEntrance1,
+    sHyruleCastleOotEntrance2,
+    sHyruleCastleOotEntrance3,
+    sHyruleCastleOotEntrance4,
+};
+
+static EntranceTableEntry sCastleCourtyardGuardsDayOotEntrance0[] = {
+    /* 0x07A */ { SCENE_CASTLE_COURTYARD_GUARDS_DAY_Oot, 0, 0x4204 },
+    /* 0x07B */ { SCENE_CASTLE_COURTYARD_GUARDS_NIGHT_Oot, 0, 0x4204 },
+    /* 0x07C */ { SCENE_CASTLE_COURTYARD_GUARDS_DAY_Oot, 0, 0x4204 },
+    /* 0x07D */ { SCENE_CASTLE_COURTYARD_GUARDS_NIGHT_Oot, 0, 0x4204 },
+};
+
+static EntranceTableEntry sCastleCourtyardGuardsDayOotEntrance1[] = {
+    /* 0x296 */ { SCENE_CASTLE_COURTYARD_GUARDS_DAY_Oot, 1, 0x4183 },
+    /* 0x297 */ { SCENE_CASTLE_COURTYARD_GUARDS_NIGHT_Oot, 1, 0x4102 },
+    /* 0x298 */ { SCENE_CASTLE_COURTYARD_GUARDS_DAY_Oot, 1, 0x4183 },
+    /* 0x299 */ { SCENE_CASTLE_COURTYARD_GUARDS_NIGHT_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry* sCastleCourtyardGuardsDayOotEntranceTable[] = {
+    sCastleCourtyardGuardsDayOotEntrance0,
+    sCastleCourtyardGuardsDayOotEntrance1,
+};
+
+static EntranceTableEntry* sCastleCourtyardGuardsNightOotEntranceTable[] = {
+};
+
+static EntranceTableEntry sCastleCourtyardZeldaOotEntrance0[] = {
+    /* 0x400 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 0, 0x4183 },
+    /* 0x401 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 0, 0x4102 },
+    /* 0x402 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 0, 0x4183 },
+    /* 0x403 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 0, 0x4102 },
+    /* 0x404 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 0, 0x4183 },
+    /* 0x405 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 0, 0x4183 },
+    /* 0x406 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 0, 0x4183 },
+};
+
+static EntranceTableEntry sCastleCourtyardZeldaOotEntrance1[] = {
+    /* 0x5F0 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 1, 0x0183 },
+    /* 0x5F1 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 1, 0x0102 },
+    /* 0x5F2 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 1, 0x0183 },
+    /* 0x5F3 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 1, 0x0102 },
+};
+
+static EntranceTableEntry* sCastleCourtyardZeldaOotEntranceTable[] = {
+    sCastleCourtyardZeldaOotEntrance0,
+    sCastleCourtyardZeldaOotEntrance1,
+};
+
+static EntranceTableEntry* sOutsideGanonsCastleOotEntranceTable[] = {
+};
+
 // The entrance scenes from ENTR_SCENE_KOKIRI_FOREST_Oot on, in order.
 #define HYRULE_SCENE_ENTRANCES \
     /* 0x6E */ SCENE_ENTRANCE(sKokiriForestOotEntranceTable, "SCENE_KOKIRI_FOREST"), \
@@ -1088,4 +1460,21 @@ static EntranceTableEntry* sDeathMountainTrailOotEntranceTable[] = {
     /* 0x7D */ SCENE_ENTRANCE(sGerudoValleyOotEntranceTable, "SCENE_GERUDO_VALLEY"), \
     /* 0x7E */ SCENE_ENTRANCE(sLonLonRanchOotEntranceTable, "SCENE_LON_LON_RANCH"), \
     /* 0x7F */ SCENE_ENTRANCE_NONE(), \
-    /* 0x80 */ SCENE_ENTRANCE(sDeathMountainTrailOotEntranceTable, "SCENE_DEATH_MOUNTAIN_TRAIL"),
+    /* 0x80 */ SCENE_ENTRANCE(sDeathMountainTrailOotEntranceTable, "SCENE_DEATH_MOUNTAIN_TRAIL"), \
+    /* 0x81 */ SCENE_ENTRANCE(sMarketEntranceDayOotEntranceTable, "SCENE_MARKET_ENTRANCE_DAY"), \
+    /* 0x82 */ SCENE_ENTRANCE(sMarketEntranceNightOotEntranceTable, "SCENE_MARKET_ENTRANCE_NIGHT"), \
+    /* 0x83 */ SCENE_ENTRANCE(sMarketEntranceRuinsOotEntranceTable, "SCENE_MARKET_ENTRANCE_RUINS"), \
+    /* 0x84 */ SCENE_ENTRANCE(sBackAlleyDayOotEntranceTable, "SCENE_BACK_ALLEY_DAY"), \
+    /* 0x85 */ SCENE_ENTRANCE(sBackAlleyNightOotEntranceTable, "SCENE_BACK_ALLEY_NIGHT"), \
+    /* 0x86 */ SCENE_ENTRANCE(sMarketDayOotEntranceTable, "SCENE_MARKET_DAY"), \
+    /* 0x87 */ SCENE_ENTRANCE(sMarketNightOotEntranceTable, "SCENE_MARKET_NIGHT"), \
+    /* 0x88 */ SCENE_ENTRANCE(sMarketRuinsOotEntranceTable, "SCENE_MARKET_RUINS"), \
+    /* 0x89 */ SCENE_ENTRANCE(sTempleOfTimeExteriorDayOotEntranceTable, "SCENE_TEMPLE_OF_TIME_EXTERIOR_DAY"), \
+    /* 0x8A */ SCENE_ENTRANCE(sTempleOfTimeExteriorNightOotEntranceTable, "SCENE_TEMPLE_OF_TIME_EXTERIOR_NIGHT"), \
+    /* 0x8B */ SCENE_ENTRANCE(sTempleOfTimeExteriorRuinsOotEntranceTable, "SCENE_TEMPLE_OF_TIME_EXTERIOR_RUINS"), \
+    /* 0x8C */ SCENE_ENTRANCE(sTempleOfTimeOotEntranceTable, "SCENE_TEMPLE_OF_TIME"), \
+    /* 0x8D */ SCENE_ENTRANCE(sHyruleCastleOotEntranceTable, "SCENE_HYRULE_CASTLE"), \
+    /* 0x8E */ SCENE_ENTRANCE(sCastleCourtyardGuardsDayOotEntranceTable, "SCENE_CASTLE_COURTYARD_GUARDS_DAY"), \
+    /* 0x8F */ SCENE_ENTRANCE(sCastleCourtyardGuardsNightOotEntranceTable, "SCENE_CASTLE_COURTYARD_GUARDS_NIGHT"), \
+    /* 0x90 */ SCENE_ENTRANCE(sCastleCourtyardZeldaOotEntranceTable, "SCENE_CASTLE_COURTYARD_ZELDA"), \
+    /* 0x91 */ SCENE_ENTRANCE(sOutsideGanonsCastleOotEntranceTable, "SCENE_OUTSIDE_GANONS_CASTLE"),

@@ -228,6 +228,153 @@ static void Hyrule_SceneDrawCalmWater(PlayState* play) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
+// SDC_HYRULE_CASTLE (OoT's func_8009F40C).
+static void Hyrule_SceneDrawHyruleCastle(PlayState* play) {
+    u32 gameplayFrames;
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    gameplayFrames = play->gameplayFrames;
+    gSPSegment(POLY_XLU_DISP++, 0x08,
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 127 - gameplayFrames % 128, (gameplayFrames * 10) % 128, 32,
+                                  32, 1, gameplayFrames % 128, (gameplayFrames * 10) % 128, 32, 32, -1, 10, 1, 10));
+    gSPSegment(POLY_XLU_DISP++, 0x09,
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 127 - gameplayFrames % 128, (gameplayFrames * 3) % 128, 32, 32,
+                                  1, gameplayFrames % 128, (gameplayFrames * 3) % 128, 32, 32, -1, 3, 1, 3));
+
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetEnvColor(POLY_OPA_DISP++, 128, 128, 128, 128);
+
+    gDPPipeSync(POLY_XLU_DISP++);
+    gDPSetEnvColor(POLY_XLU_DISP++, 128, 128, 128, 128);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+// SDC_TEMPLE_OF_TIME (OoT's func_80099BD8): the light through the windows, which the Door of Time's cutscenes
+// brighten through OoT's roomCtx.unk_74 (MM's unk7A).
+static void Hyrule_SceneDrawTempleOfTime(PlayState* play) {
+    f32 temp;
+    Gfx* displayListHead = GRAPH_ALLOC(play->state.gfxCtx, 18 * sizeof(Gfx));
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    temp = play->roomCtx.unk7A[0] / 255.0f;
+
+    gSPSegment(POLY_XLU_DISP++, 0x08, displayListHead);
+    gSPSegment(POLY_OPA_DISP++, 0x08, displayListHead);
+    gDPSetPrimColor(displayListHead++, 0, 0, 255 - (u8)(185.0f * temp), 255 - (u8)(145.0f * temp),
+                    255 - (u8)(105.0f * temp), 255);
+    gSPEndDisplayList(displayListHead++);
+
+    gSPSegment(POLY_XLU_DISP++, 0x09, displayListHead);
+    gSPSegment(POLY_OPA_DISP++, 0x09, displayListHead);
+    gDPSetPrimColor(displayListHead++, 0, 0, 76 + (u8)(6.0f * temp), 76 + (u8)(34.0f * temp), 76 + (u8)(74.0f * temp),
+                    255);
+    gSPEndDisplayList(displayListHead++);
+
+    gSPSegment(POLY_OPA_DISP++, 0x0A, displayListHead);
+    gSPSegment(POLY_XLU_DISP++, 0x0A, displayListHead);
+    gDPPipeSync(displayListHead++);
+    gDPSetEnvColor(displayListHead++, 0, 0, 0, play->roomCtx.unk7A[0]);
+    gSPEndDisplayList(displayListHead++);
+
+    gSPSegment(POLY_OPA_DISP++, 0x0B, displayListHead);
+    gSPSegment(POLY_XLU_DISP++, 0x0B, displayListHead);
+    gDPSetPrimColor(displayListHead++, 0, 0, 89 + (u8)(166.0f * temp), 89 + (u8)(166.0f * temp),
+                    89 + (u8)(166.0f * temp), 255);
+    gDPPipeSync(displayListHead++);
+    gDPSetEnvColor(displayListHead++, 0, 0, 0, play->roomCtx.unk7A[0]);
+    gSPEndDisplayList(displayListHead++);
+
+    gSPSegment(POLY_OPA_DISP++, 0x0C, displayListHead);
+    gSPSegment(POLY_XLU_DISP++, 0x0C, displayListHead);
+    gDPSetPrimColor(displayListHead++, 0, 0, 255 + (u8)(179.0f * temp), 255 + (u8)(179.0f * temp),
+                    255 + (u8)(179.0f * temp), 255);
+    gDPPipeSync(displayListHead++);
+    gDPSetEnvColor(displayListHead++, 0, 0, 0, play->roomCtx.unk7A[0]);
+    gSPEndDisplayList(displayListHead++);
+
+    gSPSegment(POLY_OPA_DISP++, 0x0D, displayListHead);
+    gSPSegment(POLY_XLU_DISP++, 0x0D, displayListHead);
+    gDPPipeSync(displayListHead++);
+    gDPSetEnvColor(displayListHead++, 0, 0, 0, play->roomCtx.unk7A[1]);
+    gSPEndDisplayList(displayListHead);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+
+    // The Master Sword's glint in layer 5 (OoT's gCustomLensFlareOn and its scale, intensity and fill).
+    if (gSaveContext.sceneLayer == 5) {
+        gCustomLensFlare1On = true;
+        gCustomLensFlare1Pos.x = -20.0f;
+        gCustomLensFlare1Pos.y = 1220.0f;
+        gCustomLensFlare1Pos.z = -684.0f;
+        D_801F4E44 = 10.0f;
+        D_801F4E48 = 8.0f;
+        D_801F4E4C = 200;
+    }
+}
+
+// SDC_CASTLE_COURTYARD_GUARDS (OoT's func_8009BAA4).
+static void Hyrule_SceneDrawCastleCourtyardGuards(PlayState* play) {
+    u32 gameplayFrames;
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    gameplayFrames = play->gameplayFrames;
+    gSPSegment(POLY_XLU_DISP++, 0x08,
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 127 - gameplayFrames % 128, (gameplayFrames * 3) % 128, 32, 32,
+                                  1, gameplayFrames % 128, (gameplayFrames * 3) % 128, 32, 32, -1, 3, 1, 3));
+
+    if (play->sceneId == SCENE_CASTLE_COURTYARD_GUARDS_DAY_Oot) {
+        gSPSegment(POLY_XLU_DISP++, 0x09,
+                   Gfx_TexScrollEx(play->state.gfxCtx, 0, (gameplayFrames * 10) % 256, 32, 64, 0, 10));
+    }
+
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetEnvColor(POLY_OPA_DISP++, 128, 128, 128, 128);
+
+    gDPPipeSync(POLY_XLU_DISP++);
+    gDPSetEnvColor(POLY_XLU_DISP++, 128, 128, 128, 128);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+// SDC_OUTSIDE_GANONS_CASTLE (OoT's func_8009BC44).
+static void Hyrule_SceneDrawOutsideGanonsCastle(PlayState* play) {
+    u32 gameplayFrames;
+    s8 envShade = Math_CosS((play->gameplayFrames * 1500) & 0xFFFF) * 0x7F;
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    gameplayFrames = play->gameplayFrames;
+
+    if (play->sceneId == SCENE_OUTSIDE_GANONS_CASTLE_Oot) {
+        gSPSegment(POLY_XLU_DISP++, 0x09,
+                   Gfx_TexScrollEx(play->state.gfxCtx, 0, (gameplayFrames * 1) % 256, 64, 64, 0, 1));
+        gSPSegment(POLY_XLU_DISP++, 0x08,
+                   Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, 255 - (gameplayFrames * 1) % 256, 64, 64, 1, 0,
+                                      (gameplayFrames * 1) % 256, 64, 64, 0, -1, 0, 1));
+    }
+
+    gSPSegment(POLY_OPA_DISP++, 0x0B,
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 255 - (gameplayFrames * 1) % 128, (gameplayFrames * 1) % 128,
+                                  32, 32, 1, (gameplayFrames * 1) % 128, (gameplayFrames * 1) % 128, 32, 32, -1, 1, 1,
+                                  1));
+
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetEnvColor(POLY_OPA_DISP++, 128, 128, 128, 128);
+
+    gDPPipeSync(POLY_XLU_DISP++);
+    gDPSetEnvColor(POLY_XLU_DISP++, 128, 128, 128, 128);
+
+    envShade = (envShade >> 1) + 192;
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetEnvColor(POLY_OPA_DISP++, envShade, envShade, envShade, 128);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
 void Hyrule_SceneDrawOot(PlayState* play) {
     s32 index = play->sceneId - SCENE_KOKIRI_FOREST_Oot;
     s32 config = ((index >= 0) && (index < ARRAY_COUNT(sOotSceneDrawConfigs))) ? sOotSceneDrawConfigs[index] : SDC_DEFAULT;
@@ -247,6 +394,18 @@ void Hyrule_SceneDrawOot(PlayState* play) {
             break;
         case SDC_CALM_WATER:
             Hyrule_SceneDrawCalmWater(play);
+            break;
+        case SDC_HYRULE_CASTLE:
+            Hyrule_SceneDrawHyruleCastle(play);
+            break;
+        case SDC_TEMPLE_OF_TIME:
+            Hyrule_SceneDrawTempleOfTime(play);
+            break;
+        case SDC_CASTLE_COURTYARD_GUARDS:
+            Hyrule_SceneDrawCastleCourtyardGuards(play);
+            break;
+        case SDC_OUTSIDE_GANONS_CASTLE:
+            Hyrule_SceneDrawOutsideGanonsCastle(play);
             break;
         default:
             // OoT's SDC_DEFAULT is MM's default; the others wait for their scenes.

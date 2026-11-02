@@ -74,6 +74,27 @@ entrance indices to MM entrances (`HyruleOotEntrances.inc`). To add a scene, app
 | Gerudo Valley | `SCENE_GERUDO_VALLEY_Oot` (0x80) | `0xFA00` |
 | Lon Lon Ranch | `SCENE_LON_LON_RANCH_Oot` (0x81) | `0xFC00` |
 | Death Mountain Trail | `SCENE_DEATH_MOUNTAIN_TRAIL_Oot` (0x82) | `0x10000` |
+| Market Entrance (day) | `SCENE_MARKET_ENTRANCE_DAY_Oot` (0x83) | `0x10200` |
+| Market Entrance (night) | `SCENE_MARKET_ENTRANCE_NIGHT_Oot` (0x84) | — |
+| Market Entrance (ruins) | `SCENE_MARKET_ENTRANCE_RUINS_Oot` (0x85) | — |
+| Back Alley (day) | `SCENE_BACK_ALLEY_DAY_Oot` (0x86) | `0x10800` |
+| Back Alley (night) | `SCENE_BACK_ALLEY_NIGHT_Oot` (0x87) | — |
+| Market (day) | `SCENE_MARKET_DAY_Oot` (0x88) | `0x10C00` |
+| Market (night) | `SCENE_MARKET_NIGHT_Oot` (0x89) | — |
+| Market (ruins) | `SCENE_MARKET_RUINS_Oot` (0x8A) | — |
+| Temple of Time Exterior (day) | `SCENE_TEMPLE_OF_TIME_EXTERIOR_DAY_Oot` (0x8B) | `0x11200` |
+| Temple of Time Exterior (night) | `SCENE_TEMPLE_OF_TIME_EXTERIOR_NIGHT_Oot` (0x8C) | — |
+| Temple of Time Exterior (ruins) | `SCENE_TEMPLE_OF_TIME_EXTERIOR_RUINS_Oot` (0x8D) | — |
+| Temple of Time | `SCENE_TEMPLE_OF_TIME_Oot` (0x8E) | `0x11800` |
+| Hyrule Castle | `SCENE_HYRULE_CASTLE_Oot` (0x8F) | `0x11A00` |
+| Castle Courtyard (guards, day) | `SCENE_CASTLE_COURTYARD_GUARDS_DAY_Oot` (0x90) | `0x11C00` |
+| Castle Courtyard (guards, night) | `SCENE_CASTLE_COURTYARD_GUARDS_NIGHT_Oot` (0x91) | — |
+| Zelda's Courtyard | `SCENE_CASTLE_COURTYARD_ZELDA_Oot` (0x92) | `0x12000` |
+| Outside Ganon's Castle | `SCENE_OUTSIDE_GANONS_CASTLE_Oot` (0x93) | — |
+
+The scenes without an entrance (—) are OoT's night and adult variants: no OoT entrance group starts in them, so the
+day scene's entrances lead to them by layer (child at night, adult). Boot the day scene at night or as adult
+(`HYRULE_BOOT_TIME`, `HYRULE_BOOT_ADULT`) to reach them; Outside Ganon's Castle is adult Hyrule Castle.
 
 OoT's scenes take MM's `RESTRICTIONS_NONE`. OoT's own restrictions (its `sRestrictionFlags`) are in
 `HyruleRestrictions.c`, read so far for the ocarina (its button greyed where OoT forbids it), the warp songs
@@ -110,14 +131,14 @@ become fades of the same color and speed.
   (`Hyrule_GetSceneLayerException`): adult Kokiri Forest's layer 3 only after the Forest Temple, and child
   Hyrule Field's layer 1 with the three spiritual stones. The exit fade and the transition setup use the layer
   before the exceptions, as OoT does, and a missing adult night layer falls back to adult day.
-- **Skyboxes:** OoT's normal sky and cutscene map use MM's, and the prerendered rooms' panoramas are
-  drawn by `HyrulePanorama.c` (below). OoT's bazaar, market and overcast skies are not ported and show
-  nothing (`Hyrule_SkyboxFromOot`).
+- **Skyboxes:** OoT's normal sky and cutscene map use MM's, and the prerendered rooms' panoramas (the market
+  square's day, night and ruins among them) are drawn by `HyrulePanorama.c` (below). OoT's bazaar and overcast skies
+  are not ported and show nothing (`Hyrule_SkyboxFromOot`).
 
 ### Prerendered rooms
 
-The houses and the shop are OoT's prerendered rooms. Each has two scene cameras, which OoT calls
-viewpoints:
+The houses, the shop, the market area (its entrance, square and back alley) and the Temple of Time's exterior are
+OoT's prerendered rooms. The houses and the shop have two scene cameras, which OoT calls viewpoints:
 
 - **Fixed (viewpoint 1):** `CAM_SET_PREREND_FIXED`. A JPEG background is drawn behind the room's depth
   geometry, from the camera it was rendered with.
@@ -141,6 +162,10 @@ The scene camera type travels in the 0x19 command: the converter writes it and 2
 under `oot/` (`SetCameraSettingsFactory`). Checked against SoH booted at each house's entrance
 (`HARNESS_ENTRANCE`): same camera, framing and panorama.
 
+The back alley and the Temple of Time's exterior have one fixed background per scene camera (multi-background rooms):
+2Ship's importer declared their entries' palette as a `u32` where MM's `RoomShapeImageMultiBgEntry` has a pointer, so
+on 64-bit every entry after the first was misread; `BgImage` now matches (`SetMesh.h`).
+
 Not yet: the shopkeeper's browsing viewpoint (`En_Ossan` is not ported), and the 4:3 fixed backgrounds
 leave the sides of a wider window to the depth geometry.
 
@@ -150,8 +175,9 @@ Not yet:
 - **Scenes:** only the ones above; exits into others lead back to the spawn Link came in at.
 - **OoT sound effects:** the OoT-only sound effects are not played yet (see Audio).
 - **Scene effects:** OoT's scene draw configs (z_scene_table.c) run for OoT scenes through MM's
-  `SCENE_DRAW_CFG_HYRULE_OOT` (`HyruleSceneDraw.c`), but only those of the scenes loaded so far (Kokiri Forest,
-  the Lost Woods, the grottos, the fairy fountain, calm water); the others draw as MM's default.
+  `SCENE_DRAW_CFG_HYRULE_OOT` (`HyruleSceneDraw.c`), but only some of the scenes loaded so far (Kokiri Forest,
+  the Lost Woods, the grottos, the fairy fountain, calm water, Hyrule Castle, the Temple of Time with the
+  Master Sword's glint, the castle courtyard's guards, outside Ganon's Castle); the others draw as MM's default.
 - **Cameras:** OoT settings with no MM counterpart (crawlspaces, magic beans, fishing, boss arenas,
   some temple rooms) use a general MM setting.
 - **MM-only scene commands:** the actor cutscene list (0x1B) is started empty. The other MM-only
@@ -213,6 +239,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 20 | Kakariko's people: `En_Heishi2` (the Death Mountain gate guard, and OoT's other guards), `En_Heishi4` (guards), `En_Toryo` (the boss carpenter), `En_Daiku_Kakariko` (carpenters), `En_Ani` (the man on the roof), `En_Niw_Lady` (the cucco lady), `En_Hy` (townsfolk); `Bg_Spot15_Saku` (Hyrule Castle's gate, which a guard opens) |
 | 21 | The other people of the six scenes: `En_Ms` (the bean seller), `En_Hs2` (a sulking young man in Kakariko at night), `En_Tg` (the dancing couple), `En_Ge1` and `En_Ge2` (Gerudo guards), `En_Zo` (Lake Hylia's Zoras); `Item_Etcetera` (Ruto's Letter in its bottle, and other items set out), `Elf_Msg2` (Navi's message spots), `Bg_Haka` (gravestones) |
 | 22 | `Obj_Bean` (soft soil for magic beans, and the plants Link rides as an adult), `En_Po_Field` (Hyrule Field's Poes), `Object_Kankyo` (Kokiri Forest's dust motes and OoT's other scene effects), `Bg_Spot00_Hanebasi` (Hyrule Castle's drawbridge) |
+| 23 | The Temple of Time: `En_Okarina_Tag` (song spots: the Door of Time's altar, Zora's River's waterfall...), `Door_Toki` (the Door of Time's collision), `Bg_Toki_Hikari` (its light), `Bg_Toki_Swd` (the Master Sword in its pedestal; not pulled yet, see docs/CUTSCENES.md), `En_Wonder_Talk` (message spots, such as the altar's inscription) |
 | Cutscenes | `Demo_Kankyo` (the warp songs' light), `En_Elf` (Navi), `Elf_Msg` (Navi's message spots), `Bg_Treemouth` (the Deku Tree's mouth), `Demo_Effect` (cutscene lights and jewels), `Demo_Sa` (Saria in cutscenes), `En_Xc` (Sheik), `Demo_Shd` (Bongo Bongo's shadow), `Bg_Hidan_Fwbig` and `Bg_Hidan_Curtain` (fire walls), `Bg_Spot17_Funen` (smoke), `En_Syateki_Niw` (archery cuccos), `Efc_Erupc` (Death Mountain's eruption), `En_Viewer` (Zelda, Impa, Ganondorf and their horses), `En_Ganon_Mant` (Ganondorf's cape), `Demo_6K` (cutscene magic, here Ganondorf's), `Eff_Dust` (its sparkles), `Item_Ocarina` (the Ocarina of Time, thrown and in the moat) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
@@ -508,8 +535,9 @@ conditional triggers (Saria on the bridge, the Nocturne...) run before the layer
 Played so far: the warp songs' warp-out and warp-in (`Demo_Kankyo`), from both worlds; the introductions of Death
 Mountain Trail, Hyrule Field, Kakariko, Lake Hylia, Gerudo Valley and Lon Lon Ranch; and Kokiri Forest's
 cutscene layers (the opening, the Deku Tree's death); Link's house's (Navi wakes Link); Saria on the bridge;
-Sheik's Minuet in the Sacred Forest Meadow; Kakariko's Nocturne; and Zelda's escape at Hyrule Field's
-drawbridge, then the Ocarina of Time in the moat.
+Sheik's Minuet in the Sacred Forest Meadow; Kakariko's Nocturne; Zelda's escape at Hyrule Field's
+drawbridge, then the Ocarina of Time in the moat and Zelda's Song of Double Time lesson in the Temple of Time; the
+Temple of Time's introduction, the Door of Time opening to the Song of Double Time, and the Master Sword chamber's.
 A terminator into a scene that is not loaded yet returns Link to the spawn he came in at
 (`Hyrule_ExitFromOot`), without the cutscene layer or age it set for the missing scene
 (`Hyrule_SettleExitFallbackOot`).

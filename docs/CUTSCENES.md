@@ -125,7 +125,20 @@ light is a cutscene, and the fork plays none of OoT's yet.
      the clock runs through them as in OoT (`Environment_UpdateTime`): the drawbridge hurries it through the night,
      the escape is a stormy night, and Link wakes in Hyrule Field at dawn. OoT's double-speed nights are not built
      (DESIGN.md, Time), so the escape's night passes at half OoT's pace; it still reaches 4:00 before Ganondorf comes.
-   - Next: the castle area and the Temple of Time (Zelda's Song of Double Time lesson, the Door of Time). The
+   - Done: the castle area and the Temple of Time. The market area, Hyrule Castle, the courtyards, the Temple of Time
+     and its exterior, and outside Ganon's Castle are loaded (hyrule/README.md), with the Temple of Time's actors
+     (`En_Okarina_Tag`, `Door_Toki`, `Bg_Toki_Hikari`, `Bg_Toki_Swd`, `En_Wonder_Talk`). The song spots offer themselves
+     to MM's ocarina; MM's staff has no Zelda's Lullaby check yet, so the Lullaby spots (Zora's River's waterfall, the
+     royal tomb) take the free-play staff and accept the Lullaby. Checked under gdb with screenshots: from the moat,
+     Zelda's cutscene leads to her lesson (the Temple of Time's layer 11), where she plays the Song of Double Time's
+     notes (OoT's Song of Time is MM's Song of Double Time, SONGS.md), Link plays them back and learns it, and her
+     parting words return him to Hyrule Field by the drawbridge; the Temple of Time's first-visit introduction plays;
+     the Song of Double Time at the altar plays the Door of Time's cutscene (the Spiritual Stones, the Triforce, the
+     door opening) and the door stays open; through it, the Master Sword chamber's cutscene plays (Navi: "The Master
+     Sword!!").
+   - Next: the Master Sword and the age change (docs/ADULT_LINK.md, A2). OoT's Player pulls and returns the sword with
+     its own action, which MM's Player lacks (MM's would lift it as a pot), so the pedestal does not offer it yet; then
+     the Chamber of the Sages (Rauru and the Light Medallion) and the Temple of Time's adult return (Sheik). The
      credits' layers (Lon Lon Ranch's, Kakariko's last and others) wait for the ending.
 
 ## Decisions

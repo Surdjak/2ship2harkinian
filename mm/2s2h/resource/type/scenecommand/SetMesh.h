@@ -23,7 +23,9 @@ typedef struct {
     /* 0x02 */ u8 id;
     /* 0x04 */ void* source;
     /* 0x08 */ u32 unk_0C;
-    /* 0x0C */ u32 tlut;
+    // 3Ship [Hyrule] A pointer, as in RoomShapeImageMultiBgEntry, which reads these: a u32 made every entry after
+    // the first misread on 64-bit (OoT's multi-background rooms, such as the Temple of Time's exterior)
+    /* 0x0C */ void* tlut;
     /* 0x10 */ u16 width;
     /* 0x12 */ u16 height;
     /* 0x14 */ u8 fmt;

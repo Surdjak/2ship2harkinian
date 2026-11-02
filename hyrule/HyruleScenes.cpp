@@ -209,7 +209,7 @@ extern "C" u8 Hyrule_SkyboxFromOot(u8 ootSkyboxId) {
             return SKYBOX_CUTSCENE_MAP;
         default:
             // The prerendered rooms' panoramas (SKYBOX_HOUSE_LINK...) are drawn by HyrulePanorama.c.
-            // TODO: OoT's bazaar, market and overcast skies are not ported.
+            // TODO: OoT's bazaar and overcast skies are not ported.
             return SKYBOX_NONE;
     }
 }

@@ -569,6 +569,8 @@ def convert(text, header):
         text = re.sub(pattern, repl, text, flags=re.M)
     text = re.sub(r"\bNA_SE_\w+\b", lambda m: SFX_RENAMES.get(m.group(0), m.group(0)), text)
     # OoT's music plays as OoT's sequence in MM's table (SEQ_OOT).
+    text = re.sub(r"\bAudio_QueueSeqCmd\((SEQ_PLAYER_\w+) << 24 \| NA_BGM_STOP\);",
+                  r"SEQCMD_STOP_SEQUENCE(\1, 0);", text)
     text = re.sub(r"\bAudio_QueueSeqCmd\((SEQ_PLAYER_\w+) << 24 \| (NA_BGM_\w+)\);",
                   lambda m: f"SEQCMD_PLAY_SEQUENCE({m.group(1)}, 0, SEQ_OOT(0x{SEQUENCES[m.group(2)]:02X})); // OoT's {m.group(2)}",
                   text)
