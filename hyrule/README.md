@@ -559,6 +559,10 @@ yet. An OoT text's icon stays OoT's item id, which MM's message code maps (`Hyru
 shared items show MM's icon, OoT's songs MM's note in OoT's colour, and OoT's own items and quest items OoT's
 icons.
 
+Before conversion, `OotToMm::RenameMessage` renames: OoT's Song of Time is MM's Song of Double Time (docs/SONGS.md),
+so the texts that name it (the lesson's "You've learned...", OoT's "You played..." and the Temple of Time altar's
+inscription) say so, broken after "Double" as MM's own texts break it.
+
 Scene wind: MM's Player is blown by the scene's environment wind (scene command 0x05) from 50 up; OoT's only
 sways flags with it (En_Hata). Player ignores it in OoT scenes, or Death Mountain Trail's (130) blows Link back
 down into Kakariko.

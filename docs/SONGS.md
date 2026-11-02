@@ -101,7 +101,8 @@ blocks.
    ocarina now resets those songs' playback progress at each prompt, as it does its own). Sheik teaches the Minuet
    and the Nocturne (docs/CUTSCENES.md step 3); the teachers' check actions are not ported yet. The Song of Double
    Time's lesson (Zelda's, OoT's Song of Time) gives its own bit: MM teaches it nowhere, and MM's song items end
-   before it, so MM's lesson gave a Skulltula token. Zelda's lesson plays in the Temple of Time (docs/CUTSCENES.md), and the Door of Time opens to the Song of
+   before it, so MM's lesson gave a Skulltula token. OoT's texts that name the song call it the Song of Double Time
+   (hyrule/README.md, Text). Zelda's lesson plays in the Temple of Time (docs/CUTSCENES.md), and the Door of Time opens to the Song of
    Double Time (`En_Okarina_Tag`).
 
 ## Decisions
