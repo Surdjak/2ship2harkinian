@@ -121,9 +121,10 @@ light is a cutscene, and the fork plays none of OoT's yet.
      child Link with the three Spiritual Stones at the drawbridge plays the escape (Impa and Zelda ride out, Ganondorf
      asks Link which way they went and strikes him down) and is free in Hyrule Field; diving into the moat gives the
      Ocarina of Time with its text, and Zelda's cutscene plays up to its terminator, which leads to her Song of Time
-     lesson in the Temple of Time, not loaded yet. Known difference: OoT's clock runs in cutscenes, and the drawbridge
-     hurries it to dusk for the escape, so OoT's escape is a stormy evening; MM's clock stops in cutscenes and OoT's
-     time rules (DESIGN.md, Time) are not built yet, so it plays at the hour Link arrives.
+     lesson in the Temple of Time, not loaded yet. OoT's clock runs through cutscenes and MM's stops, so in OoT's scenes
+     the clock runs through them as in OoT (`Environment_UpdateTime`): the drawbridge hurries it through the night,
+     the escape is a stormy night, and Link wakes in Hyrule Field at dawn. OoT's double-speed nights are not built
+     (DESIGN.md, Time), so the escape's night passes at half OoT's pace; it still reaches 4:00 before Ganondorf comes.
    - Next: the castle area and the Temple of Time (Zelda's Song of Double Time lesson, the Door of Time). The
      credits' layers (Lon Lon Ranch's, Kakariko's last and others) wait for the ending.
 

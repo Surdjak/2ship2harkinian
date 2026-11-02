@@ -1274,7 +1274,9 @@ void Environment_UpdateTime(PlayState* play, EnvironmentContext* envCtx, PauseCo
             if (!FrameAdvance_IsEnabled(play) &&
                 ((play->transitionMode == TRANS_MODE_OFF) || (gSaveContext.gameMode != GAMEMODE_NORMAL))) {
                 if (play->transitionTrigger == TRANS_TRIGGER_OFF) {
-                    if ((CutsceneManager_GetCurrentCsId() == CS_ID_NONE) && !Play_InCsMode(play)) {
+                    // 3Ship [Hyrule] OoT's clock runs through cutscenes (the escape's drawbridge hurries it to dusk)
+                    if (((CutsceneManager_GetCurrentCsId() == CS_ID_NONE) && !Play_InCsMode(play)) ||
+                        (Hyrule_GetOotSceneId(play->sceneId) >= 0)) {
                         gSaveContext.save.time = CURRENT_TIME + (u16)R_TIME_SPEED;
                         if (R_TIME_SPEED != 0) {
                             gSaveContext.save.time = CURRENT_TIME + (u16)((void)0, gSaveContext.save.timeSpeedOffset);
