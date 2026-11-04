@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "HyruleCamera.h"
+#include "HyrulePort.h"
 
 typedef struct {
     /* 0x00 */ CutsceneCameraMoveOot* move;
@@ -89,4 +90,25 @@ void Hyrule_UpdateCsCameraOot(PlayState* play) {
         activeCam->animState = 2;
         Hyrule_StopCsCameraOot();
     }
+}
+
+// OoT's one-point camera cutscenes are not ported (HyrulePort.h); MM has no equivalent system.
+s16 OnePointCutscene_Init(PlayState* play, s16 csId, s16 timer, Actor* actor, s16 parentCamId) {
+    return CAM_ID_NONE;
+}
+
+s16 OnePointCutscene_EndCutscene(PlayState* play, s16 subCamId) {
+    return CAM_ID_NONE;
+}
+
+s32 OnePointCutscene_Attention(PlayState* play, Actor* actor) {
+    return CAM_ID_NONE;
+}
+
+s32 OnePointCutscene_CheckForCategory(PlayState* play, s32 actorCategory) {
+    return false;
+}
+
+s32 Hyrule_GetAttentionCategoryOot(void) {
+    return -1;
 }

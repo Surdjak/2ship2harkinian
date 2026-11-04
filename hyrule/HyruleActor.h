@@ -137,3 +137,6 @@ void BodyBreak_Alloc(BodyBreak* bodyBreak, s32 count, PlayState* play);
 void BodyBreak_SetInfo(BodyBreak* bodyBreak, s32 limbIndex, s32 minLimbIndex, s32 maxLimbIndex, u32 count, Gfx** dList,
                        s16 objectId);
 s32 BodyBreak_SpawnParts(Actor* actor, BodyBreak* bodyBreak, PlayState* play, s16 type);
+
+// OoT's Actor_Find: the first actor of this id in a category, or NULL.
+Actor* Actor_FindOot(ActorContext* actorCtx, s32 actorId, s32 actorCategory);

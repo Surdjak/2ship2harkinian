@@ -832,3 +832,18 @@ void Hyrule_PlayCutsceneEffectsSeqOot(u8 effect) {
     SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_SUB, 0, SEQ_OOT(0x6D));
     SEQCMD_SET_SEQPLAYER_IO(SEQ_PLAYER_BGM_SUB, 0, effect);
 }
+
+void Audio_PlaySoundTransposedOot(Vec3f* pos, u16 sfxId, s8 semitone) {
+    // gPitchFrequencies[39] is the sound's own pitch.
+    Audio_PlaySfx_AtPosWithFreq(pos, sfxId, gPitchFrequencies[semitone + 39]);
+}
+
+void Audio_SetFastTempoForTimedMinigameOot(void) {
+    u16 seqId = AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN);
+
+    // OoT's timed minigame music (0x6C), or MM's that plays in its place.
+    if (((seqId == SEQ_OOT(0x6C)) || (seqId == NA_BGM_TIMED_MINI_GAME)) &&
+        AudioSeq_IsSeqCmdNotQueued(SEQCMD_OP_PLAY_SEQUENCE << 28, SEQCMD_OP_MASK)) {
+        SEQCMD_SET_TEMPO(SEQ_PLAYER_BGM_MAIN, 5, 210);
+    }
+}

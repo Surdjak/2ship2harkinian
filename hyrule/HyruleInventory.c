@@ -124,7 +124,8 @@ static u16 Inventory_GetMmItem(u16 item) {
 s32 Inventory_GetDungeonIndexOot(PlayState* play) {
     s32 ootScene = (play != NULL) ? Hyrule_GetOotSceneId(play->sceneId) : -1;
 
-    if ((ootScene >= 0x00) && (ootScene <= 0x0D)) { // SCENE_DEKU_TREE to SCENE_INSIDE_GANONS_CASTLE
+    // OoT's map index: SCENE_DEKU_TREE to SCENE_TREASURE_BOX_SHOP, whose game uses small keys too.
+    if ((ootScene >= 0x00) && (ootScene <= 0x10)) {
         return ootScene;
     }
     if ((ootScene >= 0x11) && (ootScene <= 0x18)) { // SCENE_DEKU_TREE_BOSS to SCENE_SHADOW_TEMPLE_BOSS

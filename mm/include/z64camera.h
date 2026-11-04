@@ -234,7 +234,9 @@ typedef enum {
     /* 0x59 */ CAM_SET_ELEGY_SHELL, // cutscene after playing elegy of emptyness and spawning a shell "SHELL"
     /* 0x5A */ CAM_SET_DUNGEON4, // Used in Pirates Fortress Interior, hidden room near hookshot "DUNGEON4"
     /* 0x5B */ CAM_SET_PREREND_SIDE_SCROLL, // 3Ship [Hyrule] OoT's: the camera side-scrolls with Link (Hyrule Castle's guarded courtyard) "PREREND3"
-    /* 0x5C */ CAM_SET_MAX
+    /* 0x5C */ CAM_SET_PIVOT_SHOP_BROWSING, // 3Ship [Hyrule] OoT's: shopping and browsing the shelves, the camera turning to the shelf "CIRCLE2"
+    /* 0x5D */ CAM_SET_PIVOT_FROM_SIDE, // 3Ship [Hyrule] OoT's: a fixed eye that turns to follow Link (OoT's minigame rooms, its potion shops) "CIRCLE7"
+    /* 0x5E */ CAM_SET_MAX
 } CameraSettingType;
 
 typedef enum {
@@ -1271,6 +1273,67 @@ typedef struct {
 } Unique7; // size = 0xC
 
 /*================================
+ *   Camera_Fixed4() Data
+ *================================
+ */
+
+#define CAM_FUNCDATA_FIXD4(yOffset, speedToEyePos, followSpeed, fov, interfaceFlags) \
+    { yOffset, CAM_DATA_Y_OFFSET }, \
+    { speedToEyePos, CAM_DATA_04 }, \
+    { followSpeed, CAM_DATA_05 }, \
+    { fov, CAM_DATA_FOV }, \
+    { interfaceFlags, CAM_DATA_INTERFACE_FLAGS }
+
+// 3Ship [Hyrule] Camera_Fixed4 is ported from OoT for CAM_SET_PIVOT_FROM_SIDE.
+#define FIXED4_FLAG_KEEP_UPDATE_RATES (1 << 2) // OoT's interface flag 4: keep the update rates on entry
+
+typedef struct {
+    /* 0x00 */ f32 yOffset;
+    /* 0x04 */ f32 speedToEyePos;
+    /* 0x08 */ f32 followSpeed;
+    /* 0x0C */ f32 fov;
+    /* 0x10 */ s16 interfaceFlags;
+} Fixed4ReadOnlyData; // size = 0x14
+
+typedef struct {
+    /* 0x00 */ Vec3f eyeTarget;
+    /* 0x0C */ f32 followSpeed;
+} Fixed4ReadWriteData; // size = 0x10
+
+typedef struct {
+    /* 0x00 */ Fixed4ReadOnlyData roData;
+    /* 0x14 */ Fixed4ReadWriteData rwData;
+} Fixed4; // size = 0x24
+
+/*================================
+ *   Camera_Data4() Data
+ *================================
+ */
+
+#define CAM_FUNCDATA_DATA4(yOffset, fov, interfaceFlags) \
+    { yOffset, CAM_DATA_Y_OFFSET }, \
+    { fov, CAM_DATA_FOV }, \
+    { interfaceFlags, CAM_DATA_INTERFACE_FLAGS }
+
+// 3Ship [Hyrule] Camera_Data4 is ported from OoT for its shops (CAM_SET_PIVOT_SHOP_BROWSING).
+typedef struct {
+    /* 0x0 */ f32 yOffset;
+    /* 0x4 */ f32 fov;
+    /* 0x8 */ s16 interfaceFlags;
+} Data4ReadOnlyData; // size = 0xC
+
+typedef struct {
+    /* 0x00 */ PosRot eyePosRot;
+    /* 0x14 */ s16 fov;
+    /* 0x16 */ s16 flags; // bit 0: data2 turns the yaw, bit 1: data3 turns the pitch
+} Data4ReadWriteData; // size = 0x18
+
+typedef struct {
+    /* 0x00 */ Data4ReadOnlyData roData;
+    /* 0x0C */ Data4ReadWriteData rwData;
+} Data4; // size = 0x24
+
+/*================================
  *   Camera_Special6() Data
  *================================
  */
@@ -1587,6 +1650,8 @@ typedef union {
     Unique6 uniq6;
     Unique7 uniq7; // 3Ship [Hyrule]
     Special6 spec6; // 3Ship [Hyrule]
+    Data4 data4; // 3Ship [Hyrule]
+    Fixed4 fixd4; // 3Ship [Hyrule]
     Demo1 demo1;
     Demo2 demo2;
     Demo3 demo3;

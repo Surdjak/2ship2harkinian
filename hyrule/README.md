@@ -168,8 +168,9 @@ The back alley and the Temple of Time's exterior have one fixed background per s
 2Ship's importer declared their entries' palette as a `u32` where MM's `RoomShapeImageMultiBgEntry` has a pointer, so
 on 64-bit every entry after the first was misread; `BgImage` now matches (`SetMesh.h`).
 
-Not yet: the shopkeeper's browsing viewpoint (`En_Ossan` is not ported), and the 4:3 fixed backgrounds
-leave the sides of a wider window to the depth geometry.
+The shops browse their shelves through OoT's shop camera (`CAM_SET_PIVOT_SHOP_BROWSING`, wave 25). Not yet: the
+4:3 fixed backgrounds leave the sides of a wider window to the depth geometry, and the shops' panoramas, which OoT
+never showed at 4:3, show there as flat colours (as in SoH).
 
 Not yet:
 
@@ -183,7 +184,10 @@ Not yet:
   draw as MM's default.
 - **Cameras:** OoT settings with no MM counterpart (crawlspaces, magic beans, fishing, boss arenas,
   some temple rooms) use a general MM setting. OoT's side-scrolling camera (PREREND3, the castle's guarded courtyard)
-  is ported into MM's camera (`Camera_Special6`, `CAM_SET_PREREND_SIDE_SCROLL`). MM's `bgCamIndex` carries a
+  is ported into MM's camera (`Camera_Special6`, `CAM_SET_PREREND_SIDE_SCROLL`), and so are its shop camera
+  (CIRCLE2, `Camera_Data4`, `CAM_SET_PIVOT_SHOP_BROWSING`) and its pivot seen from the side (CIRCLE7, the minigame
+  rooms and potion shops, `Camera_Fixed4`, `CAM_SET_PIVOT_FROM_SIDE`), which MM's stubs left as no-ops. MM's
+  `bgCamIndex` carries a
   scene-camera flag (bit 12) OoT's lacks; ported code that compares it masks it.
 - **MM-only scene commands:** the actor cutscene list (0x1B) is started empty. The other MM-only
   commands are left out.
@@ -207,9 +211,10 @@ Chests (`En_Box`) map to MM's `En_Box` when MM has the item they hold: rupees, h
 containers, bombs, Bombchus, Deku nuts and sticks, arrows, magic, keys, map, compass and ice traps
 (`OotToMm::MmGetItem`). The two games' chests share their parameter layout and chest types, so only the
 get-item id changes; the chest's switch flag (its Z rotation) stays raw through MM's raw-rotation id
-flags, and OoT's `object_box` becomes MM's. Chests holding anything else stay OoT actors, which are not
-ported, until OoT's items are in the save. Mido's House's four chests sit where SoH's do with the same
-flags, and one held in front of gives "You got a Blue Rupee!" with MM's chest and text.
+flags, and OoT's `object_box` becomes MM's. Chests holding anything else, and the ones actors spawn (the Treasure
+Chest Shop's), are OoT's `En_Box` (wave 25), which waits for MM's chest object too and draws OoT's chest. Mido's
+House's four chests sit where SoH's do with the same flags, and one held in front of gives "You got a Blue Rupee!"
+with MM's chest and text.
 
 Room actor lists keep OoT's rotations, since some OoT actors read parameters from them. MM keeps a
 cutscene id and half-day bits in its rotations instead, so `Actor_SpawnEntry` spawns OoT ids with the
@@ -246,6 +251,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 22 | `Obj_Bean` (soft soil for magic beans, and the plants Link rides as an adult), `En_Po_Field` (Hyrule Field's Poes), `Object_Kankyo` (Kokiri Forest's dust motes and OoT's other scene effects), `Bg_Spot00_Hanebasi` (Hyrule Castle's drawbridge) |
 | 23 | The Temple of Time: `En_Okarina_Tag` (song spots: the Door of Time's altar, Zora's River's waterfall...), `Door_Toki` (the Door of Time's collision), `Bg_Toki_Hikari` (its light), `Bg_Toki_Swd` (the Master Sword in its pedestal: MM's Player takes it as OoT's does, `func_808379C0`, and shows "Drop" to adult Link), `En_Wonder_Talk` (message spots, such as the altar's inscription), `En_Rl` (Rauru, who gives the Light Medallion) |
 | 24 | The castle: `En_Ta` (Talon), `En_Ma1` (child Malon), `En_Heishi3` (the castle's guards), `En_Heishi1` (the courtyard's guards, with OoT's search balls), `En_Zl4` (child Zelda), `Demo_Im` (Impa), `En_Owl` (Kaepora Gaebora), `En_Light` (torches and other fires) |
+| 25 | The market: `En_Ossan` (shopkeepers) and `En_GirlA` (their wares); `En_Dog` (dogs), `En_Mu` (gossiping townsfolk), `En_Niw_Girl` (the girl chasing a cucco), `En_Rd` (ReDeads in the ruins), `En_Gb` (the Poe collector); the Treasure Chest Shop: `En_Takara_Man`, `En_Changer`, `En_Box` (OoT's chests), `Door_Shutter` (sliding and locked doors); the shooting gallery: `En_Syateki_Man`, `En_Syateki_Itm`, `En_G_Switch` and `En_Ex_Ruppy` (its rupee targets); Bombchu Bowling: `En_Bom_Bowl_Man`, `En_Bom_Bowl_Pit`, `En_Bom_Chu`, `Bg_Bom_Guard`, `Bg_Bowl_Wall`, `En_Wall_Tubo`, `En_Ex_Item` (prizes); `Bg_Dy_Yoseizo` and `En_Dy_Extra` (the Great Fairy), `En_Trap` (spike traps), `En_Guest`, `En_Diving_Game` (Zora's Domain's diving game, which `En_Ex_Ruppy` reports to) |
 | Cutscenes | `Demo_Kankyo` (the warp songs' light), `En_Elf` (Navi), `Elf_Msg` (Navi's message spots), `Bg_Treemouth` (the Deku Tree's mouth), `Demo_Effect` (cutscene lights and jewels), `Demo_Sa` (Saria in cutscenes), `En_Xc` (Sheik), `Demo_Shd` (Bongo Bongo's shadow), `Bg_Hidan_Fwbig` and `Bg_Hidan_Curtain` (fire walls), `Bg_Spot17_Funen` (smoke), `En_Syateki_Niw` (archery cuccos), `Efc_Erupc` (Death Mountain's eruption), `En_Viewer` (Zelda, Impa, Ganondorf and their horses), `En_Ganon_Mant` (Ganondorf's cape), `Demo_6K` (cutscene magic, here Ganondorf's), `Eff_Dust` (its sparkles), `Item_Ocarina` (the Ocarina of Time, thrown and in the moat) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
@@ -511,6 +517,31 @@ drawbridge is up at night for child Link and comes down at dawn; Kokiri Forest h
   Link's camera.
 - `SkelAnime_DrawSkeleton2Oot` and OoT's `D_80116280` (`HyruleActor.h`) draw the Poes' translucent skeletons.
 - Not checked yet: killing a Poe and bottling its soul, which needs arrows from Epona for a Big Poe.
+
+Wave 25 opens the market's eleven interiors. Under gdb: child Link buys Deku Nuts and the Deku Shield in the Kokiri
+Shop, browsing the shelves with OoT's shop camera, and talks to the bazaar, potion, Bombchu and Happy Mask
+shopkeepers; plays the shooting gallery with OoT's Slingshot; pays for Bombchu Bowling and throws its Bombchus; pays
+for the Treasure Chest Shop, unlocks its first door with the key and opens a chest; and the market's people, the
+ruins' ReDeads and the Poe collector load. Notes:
+
+- OoT's minigame states are MM's: OoT's `shootingGalleryStatus` is MM's `bButtonAmmoPlusOne`, which MM's Player and
+  HUD already handle as OoT's do, and its `bombchuBowlingStatus` is Honey and Darling's `unk_1887D`, whose Bombchus
+  MM's Player counts the same way. The HUD puts the Bombchus on B for a game of bowling (switch 0x38,
+  `Hyrule_IsBombchuBowlingOot`) and shows their count, and gives child Link OoT's Slingshot in a gallery
+  (`Hyrule_MinigameBButtonItem`; vanilla OoT draws child Link's "bow" as the Slingshot). OoT's Player keeps the
+  facing the gallery gives Link where MM's turns him to where he looks; MM's gallery entry does as OoT's in OoT
+  scenes.
+- OoT's small keys are kept by OoT's map index, which includes the Treasure Chest Shop (`Inventory_GetDungeonIndexOot`).
+  OoT's doors queue MM's door cutscene when they offer themselves to Player, as MM's do (`func_80122F28`; the port
+  tool adds it), and MM's Player opens OoT's chests through `EnBox_OpenOot`, since it writes MM's `EnBox` fields.
+- OoT's one-point camera cutscenes (z_onepointdemo.c) are not in MM's camera: actors that start one keep the main
+  camera (`OnePointCutscene_Init` returns `CAM_ID_NONE`, `HyruleCamera.c`).
+- Text ids below 0x1000 (item and shop texts) are OoT's too: the port tool wraps them in text calls, `textId`
+  assignments and text id arrays (to their closing brace).
+- Vanilla conditions apply: the Bombchu Shop and the bowling alley open after Dodongo's Cavern, the Happy Mask Shop
+  after Zelda's Letter is shown to Kakariko's guard, and the Treasure Chest Shop at night.
+- Not checked yet: the Great Fairy's appearance (Zelda's Lullaby on her platform), the Poe collector's trade, the
+  dog lady's dog, and the bowling and gallery prizes.
 
 ## Cutscenes
 

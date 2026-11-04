@@ -192,6 +192,12 @@ void Player_SetCsActionWithHaltedActorsOot(struct PlayState* play, struct Actor*
 u16 Hyrule_SwordValueToItem(u8 value);
 // MM's sword owned (Kokiri, Razor or Gilded), as an equip value; for its sheath while an OoT sword is worn.
 u8 Hyrule_GetOwnedMmSwordValue(void);
+// The item a minigame puts on the B button, MM's (mmItem) unless it is one of OoT's: Bombchu Bowling throws Bombchus, and
+// child Link shoots in OoT's galleries with the Slingshot.
+u16 Hyrule_MinigameBButtonItem(struct PlayState* play, u16 mmItem);
+// Opens OoT's chest (its En_Box, ACTOR_EN_BOX_Oot): 1 slowly, -1 with a kick. MM's Player opens MM's chests through
+// MM's EnBox fields instead.
+void EnBox_OpenOot(struct Actor* thisx, s16 openType);
 
 #ifdef __cplusplus
 }

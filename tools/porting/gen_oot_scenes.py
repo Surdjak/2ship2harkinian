@@ -69,6 +69,17 @@ SCENES = [
     "SCENE_OUTSIDE_GANONS_CASTLE",
     "SCENE_CHAMBER_OF_THE_SAGES",
     "SCENE_CUTSCENE_MAP",
+    "SCENE_TREASURE_BOX_SHOP",
+    "SCENE_BACK_ALLEY_HOUSE",
+    "SCENE_BAZAAR",
+    "SCENE_POTION_SHOP_MARKET",
+    "SCENE_BOMBCHU_SHOP",
+    "SCENE_HAPPY_MASK_SHOP",
+    "SCENE_DOG_LADY_HOUSE",
+    "SCENE_SHOOTING_GALLERY",
+    "SCENE_BOMBCHU_BOWLING_ALLEY",
+    "SCENE_MARKET_GUARD_HOUSE",
+    "SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS",
 ]
 
 # Human-readable names that the enum name spells badly.
@@ -86,6 +97,11 @@ NAMES = {
     "SCENE_CASTLE_COURTYARD_ZELDA": "Zelda's Courtyard",
     "SCENE_OUTSIDE_GANONS_CASTLE": "Outside Ganon's Castle",
     "SCENE_CHAMBER_OF_THE_SAGES": "Chamber of the Sages",
+    "SCENE_TREASURE_BOX_SHOP": "Treasure Chest Shop",
+    "SCENE_BACK_ALLEY_HOUSE": "Back Alley House",
+    "SCENE_HAPPY_MASK_SHOP": "Happy Mask Shop",
+    "SCENE_DOG_LADY_HOUSE": "Dog Lady's House",
+    "SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS": "Great Fairy's Fountain (Spells)",
 }
 
 FIRST_SCENE_ID = 0x71  # after MM's SCENE_ALLEY
@@ -163,6 +179,18 @@ def entrance_groups(soh_dir):
     return groups
 
 
+def is_duplicate_group(groups, group):
+    """Whether an earlier group already starts at this group's scene and spawn: OoT's debug test entrances (the
+    shooting gallery's ENTR_TEST_SHOOTING_GALLERY_0) repeat one. The first group is the scene's entrance; the later
+    one's indices lead to its first layer."""
+    for other in groups:
+        if other is group:
+            return False
+        if (other[0][1], other[0][2]) == (group[0][1], group[0][2]):
+            return True
+    return False
+
+
 def entrance_scene_ids():
     ids, next_id = {}, FIRST_ENTRANCE_SCENE_ID
     for scene in SCENES:
@@ -218,8 +246,7 @@ def gen_entrance_table(groups, ids):
     for scene in SCENES:
         by_spawn = {}
         for group in groups:
-            if group[0][1] == scene:
-                assert group[0][2] not in by_spawn, f"{scene} has two groups for spawn {group[0][2]}"
+            if group[0][1] == scene and not is_duplicate_group(groups, group):
                 by_spawn[group[0][2]] = group
         spawns = max(by_spawn) + 1 if by_spawn else 0
         assert spawns <= 32 and all(len(g) <= 16 for g in by_spawn.values())
@@ -271,8 +298,11 @@ def gen_oot_entrance_map(groups, ids):
     by_index = {}
     for group in groups:
         scene, spawn = group[0][1], group[0][2]
+        duplicate = is_duplicate_group(groups, group)
         for layer, (index, *_rest) in enumerate(group):
-            if scene in ids:
+            if duplicate and scene in ids:
+                by_index[index] = f"ENTRANCE_MAKE(ENTR_SCENE_{scene[len('SCENE_'):]}_Oot, {spawn}, 0)"
+            elif scene in ids:
                 by_index[index] = f"ENTRANCE_MAKE(ENTR_SCENE_{scene[len('SCENE_'):]}_Oot, {spawn}, {layer})"
             else:
                 by_index[index] = "HYRULE_ENTRANCE_NONE"

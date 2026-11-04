@@ -49,6 +49,8 @@ void Hyrule_SetCameraMovement(u8 cameraMovement);
 void Hyrule_InitViewpoint(struct PlayState* play);
 void Hyrule_UpdateViewpoint(struct PlayState* play, struct Input* input);
 void Hyrule_SetViewpoint(struct PlayState* play, s16 viewpoint);
+// OoT's Play_SetShopBrowsingViewpoint: a shop's shopkeeper turns to the shelves' viewpoint (2) while Link browses.
+void Hyrule_SetShopBrowsingViewpoint(struct PlayState* play);
 // Whether C-up is the scene's viewpoint toggle (or disabled, in shops) rather than first-person view.
 s32 Hyrule_CUpChangesViewpoint(void);
 // OoT's scene camera type (YREG(15) in OoT), and OoT's Play_CheckViewpoint.

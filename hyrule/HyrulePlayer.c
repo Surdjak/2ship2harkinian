@@ -7,6 +7,7 @@
 #include "HyruleInventory.h"
 #include "HyruleIds.h"
 #include "HyrulePort.h"
+#include "HyruleScenes.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "assets/oot/objects/object_link_child/object_link_child.h"
 #include "assets/oot/objects/object_link_boy/object_link_boy.h"
@@ -939,4 +940,14 @@ u16 Text_GetFaceReactionOot(PlayState* play, u32 reactionSet) {
     u16 textId = sReactionTextIdsOot[reactionSet][Player_GetMaskOot(play)];
 
     return (textId != 0) ? TEXT_OOT(textId) : 0;
+}
+
+u16 Hyrule_MinigameBButtonItem(PlayState* play, u16 mmItem) {
+    if (Hyrule_IsBombchuBowlingOot(play)) {
+        return ITEM_BOMBCHU;
+    }
+    if ((Hyrule_GetOotSceneId(play->sceneId) >= 0) && LINK_IS_CHILD_OOT && (play->bButtonAmmoPlusOne >= 2)) {
+        return ITEM_SLINGSHOT_Oot;
+    }
+    return mmItem;
 }

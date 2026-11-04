@@ -67,6 +67,9 @@ RENAMES = [
     (r"\bHUD_VISIBILITY_NOTHING_ALT\b", "HUD_VISIBILITY_NONE_ALT"),
     (r"\bprevHudVisibilityMode\b", "prevHudVisibility"),
     (r"\bCamera_RequestSetting\(", "Camera_ChangeSetting("),
+    # SoH's options read as their default, which is vanilla's.
+    (r"\bCVarGetInteger\(CVAR_\w+\(\"[^\"]*\"\), (-?\w+)\)", r"\1"),
+    (r"\bCVarGetColor24\(CVAR_\w+\(\"[^\"]*\"\), ((?:\(Color_RGB8\))?\{[^{}]*\}|[^()]+)\)", r"\1"),
     # OoT's audio and interface calls under MM's names.
     (r"\bfunc_800F4414\(", "Audio_PlaySfx_AtPosWithTimer("),
     (r"\bfunc_800F44EC\(", "Audio_SetSfxTimerLerpInterval("),
@@ -81,9 +84,23 @@ RENAMES = [
     (r"\bTEXT_STATE_DONE_HAS_NEXT\b", "TEXT_STATE_NEXT"),
     (r"\bActor_ProcessTalkRequest\((&?[\w>.-]+), play\)", r"Actor_TalkOfferAccepted(\1, &play->state)"),
     (r"\bSEGMENTED_TO_VIRTUAL\(", "Lib_SegmentedToVirtual("),
-    (r"\bQuake_Add\(([^,]+), (\d)\)", r"Quake_Request(\1, QUAKE_TYPE_\2)"),
+    (r"\bQuake_Add\(((?:[^,()]|\([^()]*\))+), (\d)\)", r"Quake_Request(\1, QUAKE_TYPE_\2)"),
     (r"\bQuake_SetQuakeValues\(", "Quake_SetPerturbations("),
     (r"\bWaterBox_GetSurfaceImpl\(", "BgCheck_GetWaterSurfaceNoBgId("),
+    # OoT's WaterBox_GetSurface1 adds Zora's Domain's own water box (not in its collision) to the scene's.
+    (r"\bWaterBox_GetSurface1\(", "BgCheck_GetWaterSurfaceNoBgId("),
+    (r"\bFlags_GetTempClear\(", "Flags_GetClearTemp("),
+    (r"\bFlags_SetTempClear\(", "Flags_SetClearTemp("),
+    (r"\bPlay_CameraSetFov\(", "Play_SetCameraFov("),
+    (r"\bInterface_SetTimer\(", "Interface_StartTimer(TIMER_ID_MINIGAME_1, "),
+    (r"\bfunc_800C0DB4\(", "Play_IsUnderwater("),
+    (r"\bfunc_800A9F6C\(", "Rumble_Request("),
+    (r"\bfunc_800433A4\(", "DynaPolyActor_TransformCarriedActor("),
+    (r"\bfunc_8003ECA8\(", "DynaPoly_DisableCeilingCollision("),
+    (r"\bfunc_8005B198\(\)", "Hyrule_GetAttentionCategoryOot()"),
+    (r"\bEffectSsHitMark_", "EffectSsHitmark_"),
+    (r"\bAudio_PlaySoundTransposed\(", "Audio_PlaySoundTransposedOot("),
+    (r"\bAudio_SetFastTempoForTimedMinigame\(", "Audio_SetFastTempoForTimedMinigameOot("),
     (r"\bActor_UpdateVelocityXZGravity\(", "Actor_UpdateVelocityWithGravity("),
     (r"\bMatrix_RotateAxis\(", "Matrix_RotateAxisF("),
     (r"\bMatrix_MtxFToYXZRotS\(", "Matrix_MtxFToYXZRot("),
@@ -146,6 +163,18 @@ RENAMES = [
     (r"\bPLAYER_STATE2_DIVING\b", "PLAYER_STATE2_800"),
     (r"\bACTORCAT_EXPLOSIVE\b", "ACTORCAT_EXPLOSIVES"),
     (r"\bPLAYER_STATE1_IN_CUTSCENE\b", "PLAYER_STATE1_20000000"),
+    (r"\bPLAYER_STATE2_DISABLE_DRAW\b", "PLAYER_STATE2_20000000"),
+    # SoH's colour scheme option (the A button's colour) reads as N64's.
+    (r"\bCOLORSCHEME_N64 == COLORSCHEME_GAMECUBE\b", "false"),
+    (r"\bPLAYER_STATE1_HANGING_OFF_LEDGE\b", "PLAYER_STATE1_2000"),
+    (r"\bPLAYER_STATE1_CLIMBING_LEDGE\b", "PLAYER_STATE1_4000"),
+    (r"\bPLAYER_STATE1_JUMPING\b", "PLAYER_STATE1_40000"),
+    (r"\bPLAYER_STATE1_FREEFALL\b", "PLAYER_STATE1_80000"),
+    # OoT's sword combo counters follow meleeWeaponState, as MM's do; the age property 0x92 is Link's voice offset.
+    (r"->unk_844\b", "->unk_ADC"),
+    (r"->unk_845\b", "->unk_ADD"),
+    (r"(ageProperties->)unk_92\b", r"\1voiceSfxIdOffset"),
+    (r"\bPlayerGrounded\((\w+)\)", r"(\1->actor.bgCheckFlags & BGCHECKFLAG_GROUND)"),
     (r"\bPLAYER_STATE1_GETTING_ITEM\b", "PLAYER_STATE1_400"),
     (r"\bPLAYER_STATE1_FIRST_PERSON\b", "PLAYER_STATE1_100000"),
     (r"\bPLAYER_STATE2_NAVI_ACTIVE\b", "PLAYER_STATE2_100000"),
@@ -177,13 +206,17 @@ RENAMES = [
     # OoT's cutscene context through a local pointer is OoT's (HyruleCutscene.h).
     (r"\bCutsceneContext\* (\w+) = &play->csCtx;", r"CutsceneContextOot* \1 = &gCsCtxOot;"),
     # OoT's boots, owned in the OoT inventory (HyruleInventory.h).
-    (r"\bCHECK_OWNED_EQUIP\(EQUIP_TYPE_BOOTS, EQUIP_INV_BOOTS_KOKIRI\)", "CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_BOOTS_Oot, EQUIP_OWNED_KOKIRI)"),
-    (r"\bCHECK_OWNED_EQUIP\(EQUIP_TYPE_BOOTS, EQUIP_INV_BOOTS_IRON\)", "CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_BOOTS_Oot, EQUIP_OWNED_GORON_IRON)"),
-    (r"\bCHECK_OWNED_EQUIP\(EQUIP_TYPE_BOOTS, EQUIP_INV_BOOTS_HOVER\)", "CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_BOOTS_Oot, EQUIP_OWNED_ZORA_HOVER)"),
     (r"\bMagic_Fill\(play\)", "Magic_Add(play, MAGIC_FILL_TO_CAPACITY)"),
     # OoT's scene camera type (YREG(15)) and prerendered viewpoint (HyruleScenes.h).
     (r"\bYREG\(15\)", "Hyrule_GetCameraMovementOot()"),
     (r"\bPlay_CheckViewpoint\(play, ", "Hyrule_CheckViewpointOot("),
+    (r"\bPlay_SetViewpoint\(", "Hyrule_SetViewpoint("),
+    (r"\bPlay_SetShopBrowsingViewpoint\(", "Hyrule_SetShopBrowsingViewpoint("),
+    (r"\bPHYSICAL_TO_VIRTUAL\(", "OS_K0_TO_PHYSICAL("),
+    (r"\bActor_Find\(", "Actor_FindOot("),
+    (r"\bfunc_800849EC\(play\)", "Hyrule_GiveGiantsKnife()"),
+    (r"\bGfx_SetupDL_39Overlay\(", "Gfx_SetupDL39_Overlay("),
+    (r"\b(GET|SET|CLEAR)_(ITEMGETINF|INFTABLE|EVENTCHKINF)\((\w+)\)", r"\1_\2_OOT(\3)"),
     (r"\bVIRTUAL_TO_PHYSICAL\(", "OS_K0_TO_PHYSICAL("),
     (r"\bGraph_Alloc\(", "GRAPH_ALLOC("),
     (r"\bMatrix_RotateX\(([^;]*),\s*MTXMODE_APPLY\);", r"Matrix_RotateXFApply(\1);"),
@@ -283,6 +316,41 @@ RENAMES = [
     (r"\bGET_ITEM_NONE\b", "GI_NONE"),
     (r"\bgSaveContext\.(eventChkInf|itemGetInf|infTable)\[", r"gSaveContext.save.saveInfo.\1Oot["),
     (r"\bgSaveContext\.rupees\b", "gSaveContext.save.saveInfo.playerData.rupees"),
+    (r"\bgSaveContext\.(health|healthCapacity|magic|magicLevel|isMagicAcquired|isDoubleMagicAcquired)\b",
+     r"gSaveContext.save.saveInfo.playerData.\1"),
+    (r"\bgSaveContext\.swordHealth\b", "gSaveContext.save.saveInfo.inventoryOot.knifeHealth"),
+    (r"\bUPG_NUTS\b", "UPG_DEKU_NUTS"),
+    (r"\bgSaveContext\.isDoubleDefenseAcquired\b", "gSaveContext.save.saveInfo.playerData.doubleDefense"),
+    (r"\bgSaveContext\.inventory\.defenseHearts\b", "gSaveContext.save.saveInfo.inventory.defenseHearts"),
+    # OoT's small keys, by OoT's map index (HyruleInventory.c).
+    (r"\bgSaveContext\.inventory\.dungeonKeys\[gSaveContext\.mapIndex\]",
+     "gSaveContext.save.saveInfo.inventoryOot.dungeonKeys[Inventory_GetDungeonIndexOot(play)]"),
+    (r"\bactorCtx\.flags\.chest\b", "actorCtx.sceneFlags.chest"),
+    (r"\bCHECK_DUNGEON_ITEM\((\w+), gSaveContext\.mapIndex\)",
+     r"CHECK_DUNGEON_ITEM_OOT(\1, Inventory_GetDungeonIndexOot(play))"),
+    (r"\bplay->transiActorCtx\b", "play->transitionActors"),
+    (r"\bcv\.slidingDoorBgCamIndex\b", "cv.doorBgCamIndex"),
+    (r"\bDOORLOCK_NORMAL_SPIRIT\b", "DOORLOCK_2"),
+    (r"\bDUNGEON_KEY_BOSS\b", "DUNGEON_BOSS_KEY"),
+    # A door that offers itself to Player queues MM's door cutscene, which MM's Player waits for, as MM's doors do.
+    (r"^([ \t]*)(\w+)->doorActor = ([^;\n]+);[ \t]*$",
+     r"\1\2->doorActor = \3;\n\1// 3Ship [Hyrule] MM's Player opens a door only once the door has queued the door "
+     r"cutscene, as MM's doors\n\1// do here.\n\1func_80122F28(\2);"),
+    # MM's chest fanfare is OoT's (both 0x2B); OoT's sequence ids cannot carry the sequence arguments it is played with.
+    (r"\bNA_BGM_OPEN_TRE_BOX\b", "NA_BGM_OPEN_CHEST"),
+    (r"\benvCtx\.unk_BF\b", "envCtx.lightSettingOverride"),
+    (r"\bMAX_HEALTH\b", "(20 * 0x10)"),
+    (r"\bSUBCAM_NONE\b", "CAM_ID_NONE"),
+    # OoT's camera settings that the exporter maps to MM's (OotToMm.cpp).
+    (r"\bCAM_SET_CHU_BOWLING\b", "CAM_SET_FIXED1"),
+    (r"\bSUBCAM_FREE\b", "SUB_CAM_ID_DONE"),
+    (r"\bWALL_FLAG_CRAWLSPACE\b", "(WALL_FLAG_4 | WALL_FLAG_5)"),
+    # Bombs are MM's En_Bom.
+    (r"\bBOMB_BODY\b", "BOMB_TYPE_BODY"),
+    (r"\bBOMB_EXPLOSION\b", "BOMB_TYPE_EXPLOSION"),
+    (r'#include "overlays/effects/ovl_Effect_Ss_HitMark/z_eff_ss_hitmark\.h"',
+     '#include "overlays/effects/ovl_Effect_Ss_Hitmark/z_eff_ss_hitmark.h"'),
+    (r"\bUPG_STICKS\b", "UPG_DEKU_STICKS"),
     (r"\bCAM_STAT_(\w+)", r"CAM_STATUS_\1"),
     (r"\bPlay_CameraSetAtEye\(", "Play_SetCameraAtEye("),
     (r"\bfunc_8005B1A4\(", "Camera_SetFinishedFlag("),
@@ -291,9 +359,15 @@ RENAMES = [
     # OoT's item camera settings, by their camera data names ("ITEM0", "ITEM2").
     (r"\bCAM_SET_SLOW_CHEST_CS\b", "CAM_SET_ITEM0"),
     (r"\bCAM_SET_TURN_AROUND\b", "CAM_SET_ITEM2"),
-    # OoT's shooting gallery state (PlayState in OoT) and minigame timer.
-    (r"\bplay->shootingGalleryStatus\b", "gShootingGalleryStatusOot"),
+    # OoT's minigame states and timer. MM keeps OoT's shooting gallery status (the B button's ammo plus one) as
+    # bButtonAmmoPlusOne, and its Bombchu Bowling status as Honey and Darling's unk_1887D; MM's timers count
+    # centiseconds.
+    (r"\bplay->shootingGalleryStatus\b", "play->bButtonAmmoPlusOne"),
+    (r"\bfunc_8008EF44\(", "Player_SetBButtonAmmo("),
+    (r"\bplay->bombchuBowlingStatus\b", "play->unk_1887D"),
     (r"\bgSaveContext\.timerState\b", "gSaveContext.timerStates[TIMER_ID_MINIGAME_1]"),
+    (r"\bgSaveContext\.timerSeconds\b", "((s32)(gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_1] / 100))"),
+    (r"\bITEM00_RUPEE_ORANGE\b", "ITEM00_RUPEE_HUGE"),
     (r"\bplay->nextEntranceIndex = gSaveContext\.entranceIndex;", "play->nextEntrance = gSaveContext.save.entrance;"),
     (r"\bDEGTORAD\(", "DEG_TO_RAD("),
     (r"\bPlayer_UnsetMask\(", "Player_UnsetMaskOot("),
@@ -342,8 +416,8 @@ RENAMES = [
     # as for OoT's entrances (gen_oot_scenes.py).
     (r"\bTRANS_TYPE_CIRCLE\(\s*\w+\s*,\s*TCC_(BLACK|WHITE)\s*,\s*TCS_(FAST|SLOW)\s*\)", r"TRANS_TYPE_FADE_\1_\2"),
     # OoT's specular highlight setup for opaque and translucent display lists.
-    (r"\bfunc_8002EBCC\(", "func_800B8050("),
-    (r"\bfunc_8002ED80\(", "func_800B8118("),
+    (r"\bfunc_8002EBCC\b", "func_800B8050"),
+    (r"\bfunc_8002ED80\b", "func_800B8118"),
     (r"(atDmgInfo\.dmgFlags & )(0x[0-9A-Fa-f]+)\b", r"\1DMG_FROM_OOT(\2)"),
     (r"\b(?:Player_SetCsActionWithHaltedActors|func_8002DF54)\(", "Player_SetCsActionWithHaltedActorsOot("),
     (r"\bPLAYER_MASK_([A-Z_]+)\b(?!_Oot)", r"PLAYER_MASK_\1_Oot"),
@@ -362,22 +436,31 @@ RENAMES = [
     (r"\bFlags_SetEventInf\((\w+)\)", r"SET_EVENTINF_OOT(\1_Oot)"),
     (r"\b((?:EVENTCHKINF|INFTABLE|ITEMGETINF|EVENTINF)_[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\b(ACTOR_(?!FLAG_)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
+    (r"\bACTOR_EN_BOM_Oot\b", "ACTOR_EN_BOM"),
     (r"\b(OBJECT_(?!GAMEPLAY_KEEP\b)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\bOBJECT_GAMEPLAY_KEEP\b", "GAMEPLAY_KEEP"),
     (r"\b(SCENE_[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\b(ITEM_(?!NONE\b)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
+    # MM's empty bottle: MM keeps the bottles OoT and MM share.
+    (r"\bPlayer_UpdateBottleHeld\((\w+), ([^,]+), ITEM_BOTTLE_Oot, PLAYER_IA_BOTTLE\)",
+     r"Player_UpdateBottleHeld(\1, \2, ITEM_BOTTLE, PLAYER_IA_BOTTLE_EMPTY)"),
 ]
 # Lines that are SoH-only and dropped when they stand alone.
-DROP_LINE = re.compile(r"^\s*#include \"(vt\.h|soh/[^\"]+|overlays/effects/ovl_Effect_Ss_Dead_Sound/[^\"]+)\"\s*$|"
+DROP_LINE = re.compile(r"^\s*#include \"(vt\.h|soh_assets\.h|soh/[^\"]+|overlays/effects/ovl_Effect_Ss_Dead_Sound/[^\"]+)\"\s*$|"
                        r"^\s*#include <libultraship/bridge/[^>]+>\s*$|"
                        # SoH's randomizer item entries.
                        r"^\s*(/\*[^*]*\*/ )?GetItemEntry getItemEntry( = \(GetItemEntry\)(GI_NONE|GET_ITEM_NONE))?;\s*$|"
-                       r"^\s*this->getItemEntry = \(GetItemEntry\)(GI_NONE|GET_ITEM_NONE);\s*$")
+                       r"^\s*this->getItemEntry = \(GetItemEntry\)(GI_NONE|GET_ITEM_NONE);\s*$|"
+                       r"^\s*\w+\.trailType = TRAIL_TYPE_\w+;\s*$")
 TEXT_ID = re.compile(r"\b(0x[1-7][0-9A-Fa-f]{3})\b")
 # Lines that give text ids: returns, cases, textId assignments, text calls and a GetTextId's `ret`. A statement that
 # goes on to the next lines (a multi-line ternary) is converted to its end.
 TEXT_LINE = re.compile(r"\breturn\b|\bcase\b|textId\b|\bret = |[Tt]ext\w* = |SetText\w*\(|SetTalkAction\(|"
-                       r"Message_(?:Start|Continue)Textbox\(")
+                       r"Message_(?:Start|Continue)Textbox\(|TextIds?\[\w*\] = ")
+# An array of text ids, whose short values are OoT's texts below 0x1000 too.
+TEXT_ID_ARRAY = re.compile(r"TextIds?\[\w*\] = \{")
+# OoT's texts below 0x1000 (item texts, shop texts), where a value can only be a text id.
+SHORT_TEXT_ID = re.compile(r"(Message_(?:Start|Continue)Textbox\(\s*\w+,\s*|[Tt]extId = )(0x[0-9A-Fa-f]{1,3})\b")
 PROFILE = re.compile(
     r"const ActorInit (\w+)_InitVars = \{\s*(\w+),\s*(\w+),\s*(\w+),\s*(\w+),\s*sizeof\((\w+)\),\s*"
     r"(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),"
@@ -406,6 +489,23 @@ def oot_entrances(soh_root):
 
 
 ENTRANCES = {}
+
+
+# OoT's equipment (CHECK_OWNED_EQUIP with EQUIP_INV_*) is InventoryOot.equipmentOwned (HyruleInventory.h).
+EQUIP_TYPES_OOT = {"SWORD": "0", "SHIELD": "1", "TUNIC": "2", "BOOTS": "EQUIP_TYPE_BOOTS_Oot"}
+EQUIP_OWNED_OOT = {
+    "SWORD_KOKIRI": "EQUIP_OWNED_SWORD_KOKIRI", "SWORD_MASTER": "EQUIP_OWNED_SWORD_MASTER",
+    "SWORD_BIGGORON": "EQUIP_OWNED_SWORD_BIGGORON", "SWORD_BROKENGIANTKNIFE": "EQUIP_OWNED_SWORD_KNIFE_BROKEN",
+    "SHIELD_DEKU": "EQUIP_OWNED_SHIELD_DEKU", "SHIELD_HYLIAN": "EQUIP_OWNED_SHIELD_HYLIAN",
+    "SHIELD_MIRROR": "EQUIP_OWNED_SHIELD_MIRROR_OOT",
+    "TUNIC_KOKIRI": "EQUIP_OWNED_KOKIRI", "TUNIC_GORON": "EQUIP_OWNED_GORON_IRON", "TUNIC_ZORA": "EQUIP_OWNED_ZORA_HOVER",
+    "BOOTS_KOKIRI": "EQUIP_OWNED_KOKIRI", "BOOTS_IRON": "EQUIP_OWNED_GORON_IRON", "BOOTS_HOVER": "EQUIP_OWNED_ZORA_HOVER",
+}
+
+
+def convert_equipment(text):
+    return re.sub(r"\bCHECK_OWNED_EQUIP(?:_ALT)?\(EQUIP_TYPE_(\w+), EQUIP_INV_(\w+)\)",
+                  lambda m: f"CHECK_OWNED_EQUIP_OOT({EQUIP_TYPES_OOT[m.group(1)]}, {EQUIP_OWNED_OOT[m.group(2)]})", text)
 
 
 def oot_sequences(soh_root):
@@ -560,13 +660,20 @@ def wrap_exchange_offers(text):
 def convert(text, header):
     out = []
     in_text = False
+    in_text_array = False
     for line in text.splitlines():
         if line.strip() == '#include "soh/frame_interpolation.h"':
             line = '#include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"'
         elif DROP_LINE.match(line):
             continue
-        if (in_text or TEXT_LINE.search(line)) and not line.lstrip().startswith("//"):
+        if (in_text_array or TEXT_ID_ARRAY.search(line)) and not line.lstrip().startswith("//"):
+            # An array of text ids, to its closing brace.
             line = TEXT_ID.sub(r"TEXT_OOT(\1)", line)
+            line = re.sub(r"(?<!TEXT_OOT\()\b(0x[0-9A-Fa-f]{1,4})\b", r"TEXT_OOT(\1)", line)
+            in_text_array = "}" not in line
+        elif (in_text or TEXT_LINE.search(line)) and not line.lstrip().startswith("//"):
+            line = TEXT_ID.sub(r"TEXT_OOT(\1)", line)
+            line = SHORT_TEXT_ID.sub(r"\1TEXT_OOT(\2)", line)
             in_text = not re.search(r"[;:{}]\s*(//.*)?$", line)
         out.append(line)
     text = "\n".join(out) + "\n"
@@ -595,6 +702,7 @@ def convert(text, header):
     text = re.sub(r"\bAudio_PlayFanfare\((NA_BGM_\w+)\);",
                   lambda m: m.group(0) if m.group(1) in MM_SEQUENCES else
                   f"Audio_PlayFanfare(SEQ_OOT(0x{SEQUENCES[m.group(1)]:02X})); // OoT's {m.group(1)}", text)
+    text = convert_equipment(text)
     text = re.sub(r"\bMATRIX_NEWMTX\(", "Matrix_Finalize(", text)
     text = wrap_exchange_offers(text)
     # OoT damage tables (32 entries) become MM's 64 with DMG_TABLE_FROM_OOT.
@@ -621,6 +729,7 @@ def convert(text, header):
         extra += '#include "z64rumble.h"\n' if "Rumble_" in text else ""
         extra += '#include "HyrulePlayer.h"\n' if re.search(r"\bPLAYER_SHIELD_\w+_Oot\b", text) else ""
         extra += '#include "HyruleScenes.h"\n' if "Hyrule_E" in text else ""
+        extra += '#include "HyruleInventory.h"\n' if "Inventory_GetDungeonIndexOot" in text else ""
         extra += '#include "z64horse.h"\n' if "Horse_" in text else ""
         extra += '#include "HyruleOcarina.h"\n' if re.search(r"OCARINA_\w+_Oot|OcarinaOot\(|StartOcarina\w*Oot", text) else ""
         extra += '#include "HyruleCutscene.h"\n' if re.search(r"gCsCtxOot|CutsceneOot\(|CS_STATE_\w+_Oot|CsCmdActorCueOot", text) else ""

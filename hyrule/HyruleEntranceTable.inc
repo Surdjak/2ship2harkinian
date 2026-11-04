@@ -1482,6 +1482,170 @@ static EntranceTableEntry* sCutsceneMapOotEntranceTable[] = {
     sCutsceneMapOotEntrance0,
 };
 
+static EntranceTableEntry sTreasureBoxShopOotEntrance0[] = {
+    /* 0x063 */ { SCENE_TREASURE_BOX_SHOP_Oot, 0, 0x4204 },
+    /* 0x064 */ { SCENE_TREASURE_BOX_SHOP_Oot, 0, 0x4204 },
+    /* 0x065 */ { SCENE_TREASURE_BOX_SHOP_Oot, 0, 0x4204 },
+    /* 0x066 */ { SCENE_TREASURE_BOX_SHOP_Oot, 0, 0x4204 },
+};
+
+static EntranceTableEntry* sTreasureBoxShopOotEntranceTable[] = {
+    sTreasureBoxShopOotEntrance0,
+};
+
+static EntranceTableEntry sBackAlleyHouseOotEntrance0[] = {
+    /* 0x43B */ { SCENE_BACK_ALLEY_HOUSE_Oot, 0, 0x4204 },
+    /* 0x43C */ { SCENE_BACK_ALLEY_HOUSE_Oot, 0, 0x4204 },
+    /* 0x43D */ { SCENE_BACK_ALLEY_HOUSE_Oot, 0, 0x4204 },
+    /* 0x43E */ { SCENE_BACK_ALLEY_HOUSE_Oot, 0, 0x4204 },
+};
+
+static EntranceTableEntry* sBackAlleyHouseOotEntranceTable[] = {
+    sBackAlleyHouseOotEntrance0,
+};
+
+static EntranceTableEntry sBazaarOotEntrance0[] = {
+    /* 0x0B7 */ { SCENE_BAZAAR_Oot, 0, 0x4204 },
+    /* 0x0B8 */ { SCENE_BAZAAR_Oot, 0, 0x4204 },
+    /* 0x0B9 */ { SCENE_BAZAAR_Oot, 0, 0x4204 },
+    /* 0x0BA */ { SCENE_BAZAAR_Oot, 0, 0x4204 },
+};
+
+static EntranceTableEntry sBazaarOotEntrance1[] = {
+    /* 0x52C */ { SCENE_BAZAAR_Oot, 1, 0x4204 },
+    /* 0x52D */ { SCENE_BAZAAR_Oot, 1, 0x4204 },
+    /* 0x52E */ { SCENE_BAZAAR_Oot, 1, 0x4204 },
+    /* 0x52F */ { SCENE_BAZAAR_Oot, 1, 0x4204 },
+};
+
+static EntranceTableEntry* sBazaarOotEntranceTable[] = {
+    sBazaarOotEntrance0,
+    sBazaarOotEntrance1,
+};
+
+static EntranceTableEntry sPotionShopMarketOotEntrance0[] = {
+    /* 0x388 */ { SCENE_POTION_SHOP_MARKET_Oot, 0, 0x4204 },
+    /* 0x389 */ { SCENE_POTION_SHOP_MARKET_Oot, 0, 0x4204 },
+    /* 0x38A */ { SCENE_POTION_SHOP_MARKET_Oot, 0, 0x4204 },
+    /* 0x38B */ { SCENE_POTION_SHOP_MARKET_Oot, 0, 0x4204 },
+};
+
+static EntranceTableEntry* sPotionShopMarketOotEntranceTable[] = {
+    sPotionShopMarketOotEntrance0,
+};
+
+static EntranceTableEntry sBombchuShopOotEntrance0[] = {
+    /* 0x390 */ { SCENE_BOMBCHU_SHOP_Oot, 0, 0x4102 },
+    /* 0x391 */ { SCENE_BOMBCHU_SHOP_Oot, 0, 0x4102 },
+    /* 0x392 */ { SCENE_BOMBCHU_SHOP_Oot, 0, 0x4102 },
+    /* 0x393 */ { SCENE_BOMBCHU_SHOP_Oot, 0, 0x4102 },
+};
+
+static EntranceTableEntry sBombchuShopOotEntrance1[] = {
+    /* 0x528 */ { SCENE_BOMBCHU_SHOP_Oot, 1, 0x4102 },
+    /* 0x529 */ { SCENE_BOMBCHU_SHOP_Oot, 1, 0x4102 },
+    /* 0x52A */ { SCENE_BOMBCHU_SHOP_Oot, 1, 0x4102 },
+    /* 0x52B */ { SCENE_BOMBCHU_SHOP_Oot, 1, 0x4102 },
+};
+
+static EntranceTableEntry* sBombchuShopOotEntranceTable[] = {
+    sBombchuShopOotEntrance0,
+    sBombchuShopOotEntrance1,
+};
+
+static EntranceTableEntry sHappyMaskShopOotEntrance0[] = {
+    /* 0x530 */ { SCENE_HAPPY_MASK_SHOP_Oot, 0, 0x4204 },
+    /* 0x531 */ { SCENE_HAPPY_MASK_SHOP_Oot, 0, 0x4204 },
+    /* 0x532 */ { SCENE_HAPPY_MASK_SHOP_Oot, 0, 0x4204 },
+    /* 0x533 */ { SCENE_HAPPY_MASK_SHOP_Oot, 0, 0x4204 },
+};
+
+static EntranceTableEntry* sHappyMaskShopOotEntranceTable[] = {
+    sHappyMaskShopOotEntrance0,
+};
+
+static EntranceTableEntry sDogLadyHouseOotEntrance0[] = {
+    /* 0x398 */ { SCENE_DOG_LADY_HOUSE_Oot, 0, 0x4202 },
+    /* 0x399 */ { SCENE_DOG_LADY_HOUSE_Oot, 0, 0x4202 },
+    /* 0x39A */ { SCENE_DOG_LADY_HOUSE_Oot, 0, 0x4202 },
+    /* 0x39B */ { SCENE_DOG_LADY_HOUSE_Oot, 0, 0x4202 },
+};
+
+static EntranceTableEntry* sDogLadyHouseOotEntranceTable[] = {
+    sDogLadyHouseOotEntrance0,
+};
+
+static EntranceTableEntry sShootingGalleryOotEntrance0[] = {
+    /* 0x03B */ { SCENE_SHOOTING_GALLERY_Oot, 0, 0x4204 },
+    /* 0x03C */ { SCENE_SHOOTING_GALLERY_Oot, 0, 0x4204 },
+    /* 0x03D */ { SCENE_SHOOTING_GALLERY_Oot, 0, 0x4204 },
+    /* 0x03E */ { SCENE_SHOOTING_GALLERY_Oot, 0, 0x4204 },
+};
+
+static EntranceTableEntry sShootingGalleryOotEntrance1[] = {
+    /* 0x16D */ { SCENE_SHOOTING_GALLERY_Oot, 1, 0x4204 },
+    /* 0x16E */ { SCENE_SHOOTING_GALLERY_Oot, 1, 0x4204 },
+    /* 0x16F */ { SCENE_SHOOTING_GALLERY_Oot, 1, 0x4204 },
+    /* 0x170 */ { SCENE_SHOOTING_GALLERY_Oot, 1, 0x4204 },
+};
+
+static EntranceTableEntry* sShootingGalleryOotEntranceTable[] = {
+    sShootingGalleryOotEntrance0,
+    sShootingGalleryOotEntrance1,
+};
+
+static EntranceTableEntry sBombchuBowlingAlleyOotEntrance0[] = {
+    /* 0x507 */ { SCENE_BOMBCHU_BOWLING_ALLEY_Oot, 0, 0x4204 },
+    /* 0x508 */ { SCENE_BOMBCHU_BOWLING_ALLEY_Oot, 0, 0x4204 },
+    /* 0x509 */ { SCENE_BOMBCHU_BOWLING_ALLEY_Oot, 0, 0x4204 },
+    /* 0x50A */ { SCENE_BOMBCHU_BOWLING_ALLEY_Oot, 0, 0x4204 },
+};
+
+static EntranceTableEntry* sBombchuBowlingAlleyOotEntranceTable[] = {
+    sBombchuBowlingAlleyOotEntrance0,
+};
+
+static EntranceTableEntry sMarketGuardHouseOotEntrance0[] = {
+    /* 0x07E */ { SCENE_MARKET_GUARD_HOUSE_Oot, 0, 0x4102 },
+    /* 0x07F */ { SCENE_MARKET_GUARD_HOUSE_Oot, 0, 0x4102 },
+    /* 0x080 */ { SCENE_MARKET_GUARD_HOUSE_Oot, 0, 0x4102 },
+    /* 0x081 */ { SCENE_MARKET_GUARD_HOUSE_Oot, 0, 0x4102 },
+};
+
+static EntranceTableEntry* sMarketGuardHouseOotEntranceTable[] = {
+    sMarketGuardHouseOotEntrance0,
+};
+
+static EntranceTableEntry sGreatFairysFountainSpellsOotEntrance0[] = {
+    /* 0x371 */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 0, 0x4102 },
+    /* 0x372 */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 0, 0x4102 },
+    /* 0x373 */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 0, 0x4102 },
+    /* 0x374 */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 0, 0x4102 },
+    /* 0x375 */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 0, 0x4102 },
+    /* 0x376 */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 0, 0x4102 },
+    /* 0x377 */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 0, 0x4102 },
+};
+
+static EntranceTableEntry sGreatFairysFountainSpellsOotEntrance1[] = {
+    /* 0x578 */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 1, 0x4204 },
+    /* 0x579 */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 1, 0x4204 },
+    /* 0x57A */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 1, 0x4204 },
+    /* 0x57B */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 1, 0x4204 },
+};
+
+static EntranceTableEntry sGreatFairysFountainSpellsOotEntrance2[] = {
+    /* 0x588 */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 2, 0x4102 },
+    /* 0x589 */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 2, 0x4102 },
+    /* 0x58A */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 2, 0x4102 },
+    /* 0x58B */ { SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot, 2, 0x4102 },
+};
+
+static EntranceTableEntry* sGreatFairysFountainSpellsOotEntranceTable[] = {
+    sGreatFairysFountainSpellsOotEntrance0,
+    sGreatFairysFountainSpellsOotEntrance1,
+    sGreatFairysFountainSpellsOotEntrance2,
+};
+
 // The entrance scenes from ENTR_SCENE_KOKIRI_FOREST_Oot on, in order.
 #define HYRULE_SCENE_ENTRANCES \
     /* 0x6E */ SCENE_ENTRANCE(sKokiriForestOotEntranceTable, "SCENE_KOKIRI_FOREST"), \
@@ -1521,4 +1685,15 @@ static EntranceTableEntry* sCutsceneMapOotEntranceTable[] = {
     /* 0x90 */ SCENE_ENTRANCE(sCastleCourtyardZeldaOotEntranceTable, "SCENE_CASTLE_COURTYARD_ZELDA"), \
     /* 0x91 */ SCENE_ENTRANCE(sOutsideGanonsCastleOotEntranceTable, "SCENE_OUTSIDE_GANONS_CASTLE"), \
     /* 0x92 */ SCENE_ENTRANCE(sChamberOfTheSagesOotEntranceTable, "SCENE_CHAMBER_OF_THE_SAGES"), \
-    /* 0x93 */ SCENE_ENTRANCE(sCutsceneMapOotEntranceTable, "SCENE_CUTSCENE_MAP"),
+    /* 0x93 */ SCENE_ENTRANCE(sCutsceneMapOotEntranceTable, "SCENE_CUTSCENE_MAP"), \
+    /* 0x94 */ SCENE_ENTRANCE(sTreasureBoxShopOotEntranceTable, "SCENE_TREASURE_BOX_SHOP"), \
+    /* 0x95 */ SCENE_ENTRANCE(sBackAlleyHouseOotEntranceTable, "SCENE_BACK_ALLEY_HOUSE"), \
+    /* 0x96 */ SCENE_ENTRANCE(sBazaarOotEntranceTable, "SCENE_BAZAAR"), \
+    /* 0x97 */ SCENE_ENTRANCE(sPotionShopMarketOotEntranceTable, "SCENE_POTION_SHOP_MARKET"), \
+    /* 0x98 */ SCENE_ENTRANCE(sBombchuShopOotEntranceTable, "SCENE_BOMBCHU_SHOP"), \
+    /* 0x99 */ SCENE_ENTRANCE(sHappyMaskShopOotEntranceTable, "SCENE_HAPPY_MASK_SHOP"), \
+    /* 0x9A */ SCENE_ENTRANCE(sDogLadyHouseOotEntranceTable, "SCENE_DOG_LADY_HOUSE"), \
+    /* 0x9B */ SCENE_ENTRANCE(sShootingGalleryOotEntranceTable, "SCENE_SHOOTING_GALLERY"), \
+    /* 0x9C */ SCENE_ENTRANCE(sBombchuBowlingAlleyOotEntranceTable, "SCENE_BOMBCHU_BOWLING_ALLEY"), \
+    /* 0x9D */ SCENE_ENTRANCE(sMarketGuardHouseOotEntranceTable, "SCENE_MARKET_GUARD_HOUSE"), \
+    /* 0x9E */ SCENE_ENTRANCE(sGreatFairysFountainSpellsOotEntranceTable, "SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS"),

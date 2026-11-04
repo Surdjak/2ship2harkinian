@@ -93,6 +93,11 @@ typedef enum EquipOwnedTunicBoots {
     EQUIP_OWNED_ZORA_HOVER
 } EquipOwnedTunicBoots;
 
+// OoT's boss key, compass or map (MM's DUNGEON_BOSS_KEY, DUNGEON_COMPASS, DUNGEON_MAP) for an OoT dungeon
+// (Inventory_GetDungeonIndexOot).
+#define CHECK_DUNGEON_ITEM_OOT(item, dungeonIndex) \
+    (gSaveContext.save.saveInfo.inventoryOot.dungeonItems[dungeonIndex] & (1 << (item)))
+
 #define EQUIP_TYPE_BOOTS_Oot 3
 #define EQUIP_OWNED_BIT(type, piece) (1u << ((type) * 8 + (piece)))
 #define CHECK_OWNED_EQUIP_OOT(type, piece) \

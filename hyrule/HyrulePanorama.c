@@ -20,6 +20,43 @@ typedef struct {
 
 // The panoramas of the OoT scenes in the scene table (Skybox_Setup in OoT).
 static const PanoramaInfo sPanoramas[] = {
+    { 0x02, // SKYBOX_BAZAAR
+      2,
+      0.8f,
+      { BG_TEX("vr_SP1a_static", "gBazaarBgTex"), BG_TEX("vr_SP1a_static", "gBazaar2BgTex") },
+      { BG_TEX("vr_SP1a_pal_static", "gBazaarBgTLUT"), BG_TEX("vr_SP1a_pal_static", "gBazaarBg2TLUT") } },
+    { 0x0B, // SKYBOX_HAPPY_MASK_SHOP
+      2,
+      0.8f,
+      { BG_TEX("vr_FCVR_static", "gMaskShopBgTex"), BG_TEX("vr_FCVR_static", "gMaskShop2BgTex") },
+      { BG_TEX("vr_FCVR_pal_static", "gMaskShopBgTLUT"), BG_TEX("vr_FCVR_pal_static", "gMaskShopBg2TLUT") } },
+    { 0x17, // SKYBOX_POTION_SHOP_MARKET
+      2,
+      0.8f,
+      { BG_TEX("vr_ALVR_static", "gMarketPotionShopBgTex"), BG_TEX("vr_ALVR_static", "gMarketPotionShop2BgTex") },
+      { BG_TEX("vr_ALVR_pal_static", "gMarketPotionShopBgTLUT"),
+        BG_TEX("vr_ALVR_pal_static", "gMarketPotionShopBg2TLUT") } },
+    { 0x18, // SKYBOX_BOMBCHU_SHOP
+      2,
+      0.8f,
+      { BG_TEX("vr_NSVR_static", "gBombchuShopBgTex"), BG_TEX("vr_NSVR_static", "gBombchuShop2BgTex") },
+      { BG_TEX("vr_NSVR_pal_static", "gBombchuShopBgTLUT"), BG_TEX("vr_NSVR_pal_static", "gBombchuShopBg2TLUT") } },
+    { 0x1A, // SKYBOX_HOUSE_RICHARD
+      4,
+      0.0f,
+      { BG_TEX("vr_IPVR_static", "gRichardsHouseBgTex"), BG_TEX("vr_IPVR_static", "gRichardsHouse2BgTex"),
+        BG_TEX("vr_IPVR_static", "gRichardsHouse3BgTex"), BG_TEX("vr_IPVR_static", "gRichardsHouse4BgTex") },
+      { BG_TEX("vr_IPVR_pal_static", "gRichardsHouseBgTLUT"), BG_TEX("vr_IPVR_pal_static", "gRichardsHouseBg2TLUT"),
+        BG_TEX("vr_IPVR_pal_static", "gRichardsHouseBg3TLUT"),
+        BG_TEX("vr_IPVR_pal_static", "gRichardsHouseBg4TLUT") } },
+    { 0x22, // SKYBOX_HOUSE_ALLEY
+      3,
+      0.0f,
+      { BG_TEX("vr_KR3VR_static", "gBackAlleyHouseBgTex"), BG_TEX("vr_KR3VR_static", "gBackAlleyHouse2BgTex"),
+        BG_TEX("vr_KR3VR_static", "gBackAlleyHouse3BgTex") },
+      { BG_TEX("vr_KR3VR_pal_static", "gBackAlleyHouseBgTLUT"),
+        BG_TEX("vr_KR3VR_pal_static", "gBackAlleyHouseBg2TLUT"),
+        BG_TEX("vr_KR3VR_pal_static", "gBackAlleyHouseBg3TLUT") } },
     { 0x04, // SKYBOX_MARKET_ADULT
       4,
       0.0f,

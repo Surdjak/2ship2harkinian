@@ -6,7 +6,10 @@
 #include "overlays/actors/ovl_En_Part/z_en_part.h" // OoT's, in hyrule/
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 
-s8 gShootingGalleryStatusOot;
+s32 Hyrule_IsBombchuBowlingOot(PlayState* play) {
+    // OoT's bowling alley sets switch 0x38 for the length of a game.
+    return (play->sceneId == SCENE_BOMBCHU_BOWLING_ALLEY_Oot) && Flags_GetSwitch(play, 0x38);
+}
 
 static Gfx* func_80034B28(GraphicsContext* gfxCtx) {
     Gfx* displayList;
@@ -529,3 +532,15 @@ Gfx D_80116280_Oot[] = {
     gsDPSetAlphaCompare(G_AC_THRESHOLD),
     gsSPEndDisplayList(),
 };
+
+Actor* Actor_FindOot(ActorContext* actorCtx, s32 actorId, s32 actorCategory) {
+    Actor* actor = actorCtx->actorLists[actorCategory].first;
+
+    while (actor != NULL) {
+        if (actorId == actor->id) {
+            return actor;
+        }
+        actor = actor->next;
+    }
+    return NULL;
+}

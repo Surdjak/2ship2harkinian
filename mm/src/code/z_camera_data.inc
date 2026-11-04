@@ -360,6 +360,25 @@ CameraModeValue sSetPrerendSideScrollModeNormalData[] = {
 };
 
 /*=====================================================================
+ *                   Custom Data: PIVOT_SHOP_BROWSING Setting (3Ship [Hyrule], OoT's)
+ *=====================================================================
+ */
+
+CameraModeValue sSetPivotShopBrowsingModeNormalData[] = {
+    CAM_FUNCDATA_DATA4(-40, 60, CAM_INTERFACE_FLAGS(CAM_LETTERBOX_LARGE, CAM_HUD_VISIBILITY_IGNORE, 0)),
+};
+
+/*=====================================================================
+ *                   Custom Data: PIVOT_FROM_SIDE Setting (3Ship [Hyrule], OoT's)
+ *=====================================================================
+ */
+
+CameraModeValue sSetPivotFromSideModeNormalData[] = {
+    CAM_FUNCDATA_FIXD4(-40, 50, 80, 60,
+                       CAM_INTERFACE_FLAGS(CAM_LETTERBOX_NONE, CAM_HUD_VISIBILITY_ALL, FIXED4_FLAG_KEEP_UPDATE_RATES)),
+};
+
+/*=====================================================================
  *                   Custom Data: DOORC Setting
  *=====================================================================
  */
@@ -2199,6 +2218,44 @@ CameraMode sCamSetPreRendSideScrollModes[] = {
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_SPECIAL6, sSetPrerendSideScrollModeNormalData), // CAM_MODE_NORMAL
 };
 
+CameraMode sCamSetPivotShopBrowsingModes[] = {
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_DATA4, sSetPivotShopBrowsingModeNormalData), // CAM_MODE_NORMAL
+};
+
+// OoT's modes for this setting: its pivot when free or following a target, NORMAL0's for the rest.
+CameraMode sCamSetPivotFromSideModes[] = {
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_FIXED4, sSetPivotFromSideModeNormalData),     // CAM_MODE_NORMAL
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORMAL1, sSetNormal0ModeJumpData),            // CAM_MODE_JUMP
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORMAL1, sSetNormal0ModeGoronDashData),       // CAM_MODE_GORONDASH
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_SUBJECT1, sSetNormal0ModeDekuShootData),      // CAM_MODE_DEKUSHOOT
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_SUBJECT1, sSetNormal0ModeBowArrowZData),      // CAM_MODE_BOWARROWZ
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORMAL1, sSetNormal0ModeDekuFlyData),         // CAM_MODE_DEKUFLY
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_SUBJECT1, sSetNormal0ModeFirstPersonData),    // CAM_MODE_FIRSTPERSON
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_KEEPON1, sSetNormal0ModeFollowBoomerangData), // CAM_MODE_FOLLOWBOOMERANG
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_SUBJECT1, sSetNormal0ModeZoraFinData),        // CAM_MODE_ZORAFIN
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_FIXED4, sSetPivotFromSideModeNormalData),     // CAM_MODE_FOLLOWTARGET
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARALLEL1, sSetNormal0ModeTargetData),        // CAM_MODE_TARGET
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_KEEPON3, sSetNormal0ModeTalkData),            // CAM_MODE_TALK
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_SUBJECT1, sSetNormal0ModeSlingshotData),      // CAM_MODE_SLINGSHOT
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_SUBJECT1, sSetNormal0ModeBowArrowData),       // CAM_MODE_BOWARROW
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_BATTLE1, sSetNormal0ModeBattleData),          // CAM_MODE_BATTLE
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARALLEL1, sSetNormal0ModeDekuHideData),      // CAM_MODE_DEKUHIDE
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORMAL1, sSetNormal0ModeStillData),           // CAM_MODE_STILL
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARALLEL1, sSetNormal0ModeChargeData),        // CAM_MODE_CHARGE
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_JUMP2, sSetNormal0ModeClimbData),             // CAM_MODE_CLIMB
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_JUMP2, sSetNormal0ModeClimbZData),            // CAM_MODE_CLIMBZ
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_SPECIAL5, sSetNormal0ModeHookshotData),       // CAM_MODE_HOOKSHOT
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARALLEL1, sSetNormal0ModeFreeFallData),      // CAM_MODE_FREEFALL
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARALLEL1, sSetNormal0ModeHangData),          // CAM_MODE_HANG
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARALLEL1, sSetNormal0ModeHangZData),         // CAM_MODE_HANGZ
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARALLEL1, sSetNormal0ModePushPullData),      // CAM_MODE_PUSHPULL
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARALLEL1, sSetNormal0ModeDekuFlyZData),      // CAM_MODE_DEKUFLYZ
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORMAL1, sSetNormal0ModeGoronJumpData),       // CAM_MODE_GORONJUMP
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_SUBJECT1, sSetNormal0ModeBoomerangData),      // CAM_MODE_BOOMERANG
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARALLEL1, sSetNormal0ModeChargeZData),       // CAM_MODE_CHARGEZ
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARALLEL1, sSetNormal0ModeTargetData),        // CAM_MODE_ZORAFINZ
+};
+
 CameraMode sCamSetDoorCModes[] = {
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_SPECIAL9, sSetDoorCModeNormalData), // CAM_MODE_NORMAL
 };
@@ -3624,6 +3681,8 @@ CameraSetting sCameraSettings[] = {
     { 0x0000002F, 0x00000005, sCamSetElegyShellModes },            // CAM_SET_ELEGY_SHELL
     { 0x03FFFFFF, 0x00000005, sCamSetDungeon4Modes },              // CAM_SET_DUNGEON4
     { 0x00000001, 0x8000000C, sCamSetPreRendSideScrollModes },     // CAM_SET_PREREND_SIDE_SCROLL (3Ship [Hyrule])
+    { 0x00000001, 0x80000005, sCamSetPivotShopBrowsingModes },     // CAM_SET_PIVOT_SHOP_BROWSING (3Ship [Hyrule])
+    { 0x08103A49, 0xC0000005, sCamSetPivotFromSideModes },         // CAM_SET_PIVOT_FROM_SIDE (3Ship [Hyrule])
 };
 
 s16 sGlobalCamDataSettings[] = {

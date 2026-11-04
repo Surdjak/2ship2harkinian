@@ -462,7 +462,7 @@ static void EnSyatekiNiw_Archery(EnSyatekiNiw* this, PlayState* play) {
             if (this->movementTimer == 1) {
                 play->transitionTrigger = TRANS_TRIGGER_START;
                 play->nextEntrance = gSaveContext.save.entrance;
-                gShootingGalleryStatusOot = 0;
+                play->bButtonAmmoPlusOne = 0;
                 player->actor.freezeTimer = 20;
                 this->movementTimer = 0x14;
                 this->actionFunc = EnSyatekiNiw_ExitArchery;
@@ -644,7 +644,7 @@ static void EnSyatekiNiw_Update(Actor* thisx, PlayState* play) {
     i = 0;
     switch (this->minigameType) {
         case 0:
-            if (gShootingGalleryStatusOot != 0) {
+            if (play->bButtonAmmoPlusOne != 0) {
                 i = 1;
             }
             break;

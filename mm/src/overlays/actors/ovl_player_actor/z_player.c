@@ -9990,17 +9990,26 @@ s32 Player_ActionHandler_2(Player* this, PlayState* play) {
                                                       (giEntry->itemId != ITEM_NONE) && (giEntry->gid >= 0) &&
                                                           (Item_CheckObtainability(giEntry->itemId) == ITEM_NONE),
                                                       chest)) {
-                                this->csId = chest->csId2;
+                                // 3Ship [Hyrule] OoT's chests have no MM chest cutscene.
+                                this->csId = (interactRangeActor->id == ACTOR_EN_BOX_Oot) ? CS_ID_NONE : chest->csId2;
                                 Player_Anim_PlayOnceAdjusted(play, this, this->ageProperties->openChestAnim);
                                 Player_AnimReplace_Setup(play, this,
                                                          ANIM_FLAG_1 | ANIM_FLAG_UPDATE_Y | ANIM_FLAG_4 |
                                                              ANIM_FLAG_ENABLE_MOVEMENT | ANIM_FLAG_NOMOVE |
                                                              ANIM_FLAG_80);
                                 this->actor.bgCheckFlags &= ~BGCHECKFLAG_WATER;
-                                chest->unk_1EC = 1;
+                                if (interactRangeActor->id == ACTOR_EN_BOX_Oot) { // 3Ship [Hyrule]
+                                    EnBox_OpenOot(interactRangeActor, 1);
+                                } else {
+                                    chest->unk_1EC = 1;
+                                }
                             } else {
                                 Player_Anim_PlayOnce(play, this, &gPlayerAnim_link_normal_box_kick);
-                                chest->unk_1EC = -1;
+                                if (interactRangeActor->id == ACTOR_EN_BOX_Oot) { // 3Ship [Hyrule]
+                                    EnBox_OpenOot(interactRangeActor, -1);
+                                } else {
+                                    chest->unk_1EC = -1;
+                                }
                             }
 
                             return true;
@@ -14196,12 +14205,18 @@ s32 func_80847880(PlayState* play, Player* this) {
         func_8082DE50(play, this);
         Player_SetAction(play, this, Player_Action_81, 0);
         if (!func_800B7118(this) || Player_IsHoldingHookshot(this)) {
-            Player_UseItem(play, this, ITEM_BOW);
+            // 3Ship [Hyrule] Child Link shoots OoT's galleries with the Slingshot.
+            Player_UseItem(play, this, Hyrule_MinigameBButtonItem(play, ITEM_BOW));
         }
         Player_Anim_PlayOnce(play, this, Player_GetIdleAnim(this));
         this->csAction = PLAYER_CSACTION_NONE;
         this->stateFlags1 |= PLAYER_STATE1_100000;
         Player_StopHorizontalMovement(this);
+        // 3Ship [Hyrule] OoT's galleries turn Link to their targets, and OoT's Player keeps that facing (its
+        // func_8083B010) where MM's turns Link to where he looks.
+        if (Hyrule_GetOotSceneId(play->sceneId) >= 0) {
+            this->actor.focus.rot.y = this->actor.shape.rot.y;
+        }
         func_80836D8C(this);
 
         return true;

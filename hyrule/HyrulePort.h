@@ -46,8 +46,25 @@ extern "C" {
 // again.
 extern u16 gNaviTimerOot;
 
-// OoT's play->shootingGalleryStatus (HyruleActor.c): its archery minigames' state, cleared on each scene's entry.
-extern s8 gShootingGalleryStatusOot;
+// OoT's play->shootingGalleryStatus and bombchuBowlingStatus are MM's play->bButtonAmmoPlusOne and unk_1887D (Honey and
+// Darling's Bombchus), which MM's Player handles as OoT's does.
+
+// Whether a game of Bombchu Bowling is on: the B button then throws its Bombchus (HyruleActor.c).
+s32 Hyrule_IsBombchuBowlingOot(struct PlayState* play);
+
+// OoT's one-point camera cutscenes (z_onepointdemo.c) are not ported (HyruleCamera.c): an actor that starts one keeps
+// the main camera, gets CAM_ID_NONE for the sub camera, and its attention cutscene is skipped.
+s16 OnePointCutscene_Init(struct PlayState* play, s16 csId, s16 timer, struct Actor* actor, s16 parentCamId);
+s16 OnePointCutscene_EndCutscene(struct PlayState* play, s16 subCamId);
+s32 OnePointCutscene_Attention(struct PlayState* play, struct Actor* actor);
+s32 OnePointCutscene_CheckForCategory(struct PlayState* play, s32 actorCategory);
+// OoT's func_8005B198: the actor category of the running attention cutscene, or -1.
+s32 Hyrule_GetAttentionCategoryOot(void);
+
+// OoT's Audio_PlaySoundTransposed: a sound effect at pos, raised or lowered by semitones (HyruleAudio.c).
+void Audio_PlaySoundTransposedOot(Vec3f* pos, u16 sfxId, s8 semitone);
+// OoT's Audio_SetFastTempoForTimedMinigame: the timed minigame music speeds up near the end (HyruleAudio.c).
+void Audio_SetFastTempoForTimedMinigameOot(void);
 
 // OoT's func_800F3F3C: the cutscene effects sequence, one of its effects (HyruleAudio.c).
 void Hyrule_PlayCutsceneEffectsSeqOot(u8 effect);

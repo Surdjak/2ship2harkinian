@@ -4,6 +4,7 @@
 #include "HyruleRestrictions.h"
 #include "HyrulePlayer.h"
 #include "HyruleKaleido.h"
+#include "HyrulePort.h"
 #include "PR/gs2dex.h"
 #include "sys_cfb.h"
 #include "z64malloc.h"
@@ -3706,7 +3707,8 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
     if (gSaveContext.save.cutsceneIndex < 0xFFF0) {
         gSaveContext.hudVisibilityForceButtonAlphasByStatus = false;
         if ((player->stateFlags1 & PLAYER_STATE1_800000) || CHECK_WEEKEVENTREG(WEEKEVENTREG_08_01) ||
-            (!CHECK_EVENTINF(EVENTINF_41) && (play->bButtonAmmoPlusOne >= 2))) {
+            (!CHECK_EVENTINF(EVENTINF_41) && (play->bButtonAmmoPlusOne >= 2)) ||
+            Hyrule_IsBombchuBowlingOot(play)) { // 3Ship [Hyrule]
             // Riding Epona OR Honey & Darling minigame OR Horseback balloon minigame OR related to swamp boat
             // (non-minigame?)
             if ((player->stateFlags1 & PLAYER_STATE1_800000) && (player->currentMask == PLAYER_MASK_BLAST) &&
@@ -3749,7 +3751,8 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
                 } else {
                     if ((BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) != ITEM_BOW) &&
                         (BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) != ITEM_BOMB) &&
-                        (BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) != ITEM_BOMBCHU)) {
+                        (BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) != ITEM_BOMBCHU) &&
+                        (BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) != ITEM_SLINGSHOT_Oot)) { // 3Ship [Hyrule]
                         gSaveContext.hudVisibilityForceButtonAlphasByStatus = true;
                         gSaveContext.buttonStatus[EQUIP_SLOT_B] = BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B);
                         gSaveContext.buttonStatus[EQUIP_SLOT_C_LEFT] = BTN_ENABLED;
@@ -3780,9 +3783,10 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
                             gSaveContext.shipSaveContext.dpad.status[EQUIP_SLOT_D_UP] = BTN_DISABLED;
                             // #endregion
                         } else {
-                            BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) = ITEM_BOW;
+                            // 3Ship [Hyrule] OoT's minigames: Bombchu Bowling's Bombchus, child Link's Slingshot.
+                            BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) = Hyrule_MinigameBButtonItem(play, ITEM_BOW);
 
-                            if (play->bButtonAmmoPlusOne >= 2) {
+                            if ((play->bButtonAmmoPlusOne >= 2) || Hyrule_IsBombchuBowlingOot(play)) {
                                 Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
                             } else if (GameInteractor_Should(
                                            VB_CLEAR_B_BUTTON_FOR_NO_BOW,
@@ -6396,6 +6400,8 @@ void Interface_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
             ammo = play->interfaceCtx.minigameAmmo;
         } else if ((button == EQUIP_SLOT_B) && (play->bButtonAmmoPlusOne > 1)) {
             ammo = play->bButtonAmmoPlusOne - 1;
+        } else if ((button == EQUIP_SLOT_B) && Hyrule_IsBombchuBowlingOot(play)) { // 3Ship [Hyrule]
+            ammo = CLAMP_MIN(play->unk_1887D, 0);
         } else if (((i == ITEM_BOW) && (AMMO(i) == CUR_CAPACITY(UPG_QUIVER))) ||
                    ((i == ITEM_BOMB) && (AMMO(i) == CUR_CAPACITY(UPG_BOMB_BAG))) ||
                    ((i == ITEM_DEKU_STICK) && (AMMO(i) == CUR_CAPACITY(UPG_DEKU_STICKS))) ||
@@ -6463,7 +6469,7 @@ void Interface_DrawBButtonIcons(PlayState* play) {
             if (BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) != ITEM_NONE) {
                 Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment[EQUIP_SLOT_B], EQUIP_SLOT_B);
                 if ((player->stateFlags1 & PLAYER_STATE1_800000) || CHECK_WEEKEVENTREG(WEEKEVENTREG_08_01) ||
-                    (play->bButtonAmmoPlusOne >= 2)) {
+                    (play->bButtonAmmoPlusOne >= 2) || Hyrule_IsBombchuBowlingOot(play)) { // 3Ship [Hyrule]
                     gDPPipeSync(OVERLAY_DISP++);
                     gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE,
                                       0, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);

@@ -236,6 +236,12 @@ extern "C" void Hyrule_SetViewpoint(PlayState* play, s16 viewpoint) {
     Camera_ChangeActorCsCamIndex(GET_ACTIVE_CAM(play), sViewpoint - 1);
 }
 
+extern "C" void Hyrule_SetShopBrowsingViewpoint(PlayState* play) {
+    if (sCameraMovement == CAMERA_MOVEMENT_SHOP) {
+        sViewpoint = 2;
+    }
+}
+
 // Play_Update in OoT, after the rooms update.
 extern "C" void Hyrule_UpdateViewpoint(PlayState* play, Input* input) {
     if (sViewpoint == 0) {
@@ -264,7 +270,6 @@ extern "C" s32 Hyrule_CUpChangesViewpoint(void) {
 }
 
 extern "C" void Hyrule_AfterSceneCommands(PlayState* play) {
-    gShootingGalleryStatusOot = 0;
     Hyrule_InitPanorama(IsOotScene(play->sceneId) ? sOotSkyboxId : 0);
     sOotSkyboxId = 0;
     if (!IsOotScene(play->sceneId)) {

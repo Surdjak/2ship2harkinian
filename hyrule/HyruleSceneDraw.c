@@ -6,6 +6,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleScenes.h"
+#include "assets/oot/scenes/indoors/miharigoya/miharigoya_scene.h"
 
 // OoT's SceneDrawConfig.
 typedef enum OotSceneDrawConfig {
@@ -343,6 +344,103 @@ static void Hyrule_SceneDrawChamberOfTheSages(PlayState* play) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
+// SDC_GREAT_FAIRYS_FOUNTAIN (OoT's func_8009A9DC).
+static void Hyrule_SceneDrawGreatFairysFountain(PlayState* play) {
+    u32 gameplayFrames;
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    gameplayFrames = play->gameplayFrames;
+    gSPSegment(POLY_XLU_DISP++, 0x08,
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 127 - gameplayFrames % 128, (gameplayFrames * 3) % 256, 32, 64,
+                                  1, gameplayFrames % 128, (gameplayFrames * 3) % 256, 32, 64, -1, 3, 1, 3));
+    gSPSegment(POLY_XLU_DISP++, 0x09,
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 127 - gameplayFrames % 128, (gameplayFrames * 3) % 128, 32, 32,
+                                  1, gameplayFrames % 128, (gameplayFrames * 3) % 128, 32, 32, -1, 3, 1, 3));
+
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetEnvColor(POLY_OPA_DISP++, 128, 128, 128, 128);
+
+    gDPPipeSync(POLY_XLU_DISP++);
+    gDPSetEnvColor(POLY_XLU_DISP++, 128, 128, 128, 128);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+// SDC_SHOOTING_GALLERY (OoT's func_8009B9BC).
+static void Hyrule_SceneDrawShootingGallery(PlayState* play) {
+    u32 gameplayFrames;
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    gameplayFrames = play->gameplayFrames;
+    gSPSegment(POLY_OPA_DISP++, 0x08, Gfx_TexScrollEx(play->state.gfxCtx, 0, gameplayFrames % 64, 4, 16, 0, 1));
+
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetEnvColor(POLY_OPA_DISP++, 128, 128, 128, 128);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+// SDC_BOMBCHU_BOWLING_ALLEY (OoT's func_8009D0E8).
+static void Hyrule_SceneDrawBombchuBowlingAlley(PlayState* play) {
+    u32 gameplayFrames;
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    gameplayFrames = play->gameplayFrames;
+    gSPSegment(POLY_XLU_DISP++, 0x08,
+               Gfx_TexScrollEx(play->state.gfxCtx, 127 - (gameplayFrames * 4) % 128, 0, 32, 32, -4, 0));
+    gSPSegment(POLY_OPA_DISP++, 0x09, Gfx_TexScrollEx(play->state.gfxCtx, 0, (gameplayFrames * 5) % 64, 16, 16, 0, 5));
+    gSPSegment(POLY_OPA_DISP++, 0x0A,
+               Gfx_TexScrollEx(play->state.gfxCtx, 0, 63 - (gameplayFrames * 2) % 64, 16, 16, 0, -2));
+    gSPSegment(POLY_XLU_DISP++, 0x0B,
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, 127 - (gameplayFrames * 3) % 128, 32, 32, 1, 0, 0, 32, 32,
+                                  0, -1, 0, 0));
+
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetEnvColor(POLY_OPA_DISP++, 128, 128, 128, 128);
+
+    gDPPipeSync(POLY_XLU_DISP++);
+    gDPSetEnvColor(POLY_XLU_DISP++, 128, 128, 128, 128);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+// SDC_MARKET_GUARD_HOUSE (OoT's func_8009D438): the windows show the market by day or night, and the ruins to adult
+// Link.
+static void* sGuardHouseView2TexturesOot[] = {
+    gGuardHouseOutSideView1DayTex,
+    gGuardHouseOutSideView1NightTex,
+};
+static void* sGuardHouseView1TexturesOot[] = {
+    gGuardHouseOutSideView2DayTex,
+    gGuardHouseOutSideView2NightTex,
+};
+
+static void Hyrule_SceneDrawMarketGuardHouse(PlayState* play) {
+    s32 var;
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    if (LINK_IS_ADULT_OOT) {
+        var = 1;
+    } else {
+        var = gSaveContext.save.isNight;
+    }
+
+    gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sGuardHouseView1TexturesOot[var]));
+    gSPSegment(POLY_OPA_DISP++, 0x09, Lib_SegmentedToVirtual(sGuardHouseView2TexturesOot[var]));
+
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetEnvColor(POLY_OPA_DISP++, 128, 128, 128, 128);
+
+    gDPPipeSync(POLY_XLU_DISP++);
+    gDPSetEnvColor(POLY_XLU_DISP++, 128, 128, 128, 128);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
 // SDC_CASTLE_COURTYARD_GUARDS (OoT's func_8009BAA4).
 static void Hyrule_SceneDrawCastleCourtyardGuards(PlayState* play) {
     u32 gameplayFrames;
@@ -431,6 +529,18 @@ void Hyrule_SceneDrawOot(PlayState* play) {
             break;
         case SDC_CHAMBER_OF_THE_SAGES:
             Hyrule_SceneDrawChamberOfTheSages(play);
+            break;
+        case SDC_GREAT_FAIRYS_FOUNTAIN:
+            Hyrule_SceneDrawGreatFairysFountain(play);
+            break;
+        case SDC_SHOOTING_GALLERY:
+            Hyrule_SceneDrawShootingGallery(play);
+            break;
+        case SDC_BOMBCHU_BOWLING_ALLEY:
+            Hyrule_SceneDrawBombchuBowlingAlley(play);
+            break;
+        case SDC_MARKET_GUARD_HOUSE:
+            Hyrule_SceneDrawMarketGuardHouse(play);
             break;
         case SDC_CASTLE_COURTYARD_GUARDS:
             Hyrule_SceneDrawCastleCourtyardGuards(play);

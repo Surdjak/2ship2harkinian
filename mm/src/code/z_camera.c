@@ -5164,7 +5164,84 @@ s32 Camera_Fixed3(Camera* camera) {
 }
 
 s32 Camera_Fixed4(Camera* camera) {
-    return Camera_Noop(camera);
+    // 3Ship [Hyrule] Ported from OoT for CAM_SET_PIVOT_FROM_SIDE: the eye eases to the scene camera's position and
+    // stays there, turning to follow the focal actor.
+    Vec3f* eye = &camera->eye;
+    Vec3f* at = &camera->at;
+    Vec3f* eyeNext = &camera->eyeNext;
+    Vec3f focalActorPosWithOffset;
+    Vec3f atTarget;
+    Vec3f atOffsetTarget;
+    VecGeo atEyeNextOffset;
+    VecGeo atTargetEyeNextOffset;
+    PosRot* focalActorPosRot = &camera->focalActorPosRot;
+    BgCamFuncData* bgCamFuncData;
+    Vec3f* atOffset = &camera->focalActorAtOffset;
+    f32 focalActorHeight = Camera_GetFocalActorHeight(camera);
+    Fixed4ReadOnlyData* roData = &camera->paramData.fixd4.roData;
+    Fixed4ReadWriteData* rwData = &camera->paramData.fixd4.rwData;
+
+    if (RELOAD_PARAMS(camera)) {
+        CameraModeValue* values = sCameraSettings[camera->setting].cameraModes[camera->mode].values;
+        // OoT's OREG(46) is -10.
+        f32 yNormal = 0.9f + 0.1f * (68.0f / focalActorHeight);
+
+        roData->yOffset = GET_NEXT_SCALED_RO_DATA(values) * focalActorHeight * yNormal;
+        roData->speedToEyePos = GET_NEXT_SCALED_RO_DATA(values);
+        roData->followSpeed = GET_NEXT_SCALED_RO_DATA(values);
+        roData->fov = GET_NEXT_RO_DATA(values);
+        roData->interfaceFlags = GET_NEXT_RO_DATA(values);
+        bgCamFuncData = (BgCamFuncData*)Camera_GetBgCamOrActorCsCamFuncData(camera, camera->bgCamIndex);
+        if (bgCamFuncData != NULL) {
+            rwData->eyeTarget = Camera_Vec3sToVec3f(&bgCamFuncData->pos);
+        } else {
+            rwData->eyeTarget = *eye;
+        }
+    }
+
+    sCameraInterfaceFlags = roData->interfaceFlags;
+
+    if (camera->animState == 0) {
+        camera->animState++;
+        if (!(roData->interfaceFlags & FIXED4_FLAG_KEEP_UPDATE_RATES)) {
+            // OoT's func_80043B60, with OREG(27) at its default.
+            camera->rUpdateRateInv = 1800.0f;
+            camera->yawUpdateRateInv = 1800.0f;
+            camera->pitchUpdateRateInv = 1800.0f;
+            camera->xzOffsetUpdateRate = 0.001f;
+            camera->yOffsetUpdateRate = 0.001f;
+            camera->fovUpdateRate = 0.001f;
+        }
+        rwData->followSpeed = roData->followSpeed;
+    }
+
+    VEC3F_LERPIMPDST(eyeNext, eyeNext, &rwData->eyeTarget, roData->speedToEyePos);
+    *eye = *eyeNext;
+
+    atOffsetTarget.x = 0.0f;
+    atOffsetTarget.y = roData->yOffset + focalActorHeight;
+    atOffsetTarget.z = 0.0f;
+    Camera_ScaledStepToCeilVec3f(&atOffsetTarget, atOffset, 0.1f, 0.1f, 0.1f);
+
+    focalActorPosWithOffset.x = focalActorPosRot->pos.x + atOffset->x;
+    focalActorPosWithOffset.y = focalActorPosRot->pos.y + atOffset->y;
+    focalActorPosWithOffset.z = focalActorPosRot->pos.z + atOffset->z;
+    VEC3F_LERPIMPDST(&atTarget, at, &focalActorPosWithOffset, 0.5f);
+
+    atEyeNextOffset = OLib_Vec3fDiffToVecGeo(eyeNext, at);
+    atTargetEyeNextOffset = OLib_Vec3fDiffToVecGeo(eyeNext, &atTarget);
+
+    atEyeNextOffset.r += (atTargetEyeNextOffset.r - atEyeNextOffset.r) * rwData->followSpeed;
+    atEyeNextOffset.pitch = Camera_ScaledStepToCeilS(atTargetEyeNextOffset.pitch, atEyeNextOffset.pitch,
+                                                     rwData->followSpeed * camera->speedRatio, 0xA);
+    atEyeNextOffset.yaw = Camera_ScaledStepToCeilS(atTargetEyeNextOffset.yaw, atEyeNextOffset.yaw,
+                                                   rwData->followSpeed * camera->speedRatio, 0xA);
+    *at = OLib_AddVecGeoToVec3f(eyeNext, &atEyeNextOffset);
+    camera->dist = OLib_Vec3fDist(at, eye);
+    camera->roll = 0;
+    camera->fov = roData->fov;
+    camera->atLerpStepScale = Camera_ClampLerpScale(camera, 1.0f);
+    return true;
 }
 
 s32 Camera_Fixed0(Camera* camera) {
@@ -5334,7 +5411,79 @@ s32 Camera_Data3(Camera* camera) {
 }
 
 s32 Camera_Data4(Camera* camera) {
-    return Camera_Noop(camera);
+    // 3Ship [Hyrule] Ported from OoT for its shops (CAM_SET_PIVOT_SHOP_BROWSING): the eye stays at the scene camera's
+    // position and turns from its direction by camera->data2 degrees of yaw (and data3 of pitch), which the shopkeeper
+    // sets to face the shelf being browsed.
+    Vec3f* eye = &camera->eye;
+    Vec3f* at = &camera->at;
+    Vec3f* eyeNext = &camera->eyeNext;
+    VecGeo eyeAtOffset;
+    VecGeo atOffset;
+    VecGeo eyeNextAtOffset;
+    Vec3f lookAt;
+    BgCamFuncData* bgCamFuncData;
+    f32 focalActorHeight = Camera_GetFocalActorHeight(camera);
+    Data4ReadOnlyData* roData = &camera->paramData.data4.roData;
+    Data4ReadWriteData* rwData = &camera->paramData.data4.rwData;
+
+    if (RELOAD_PARAMS(camera)) {
+        CameraModeValue* values = sCameraSettings[camera->setting].cameraModes[camera->mode].values;
+        // OoT's R_CAM_YOFFSET_NORM is -10.
+        f32 yNormal = 0.9f + 0.1f * (68.0f / focalActorHeight);
+
+        roData->yOffset = GET_NEXT_SCALED_RO_DATA(values) * focalActorHeight * yNormal;
+        roData->fov = GET_NEXT_RO_DATA(values);
+        roData->interfaceFlags = GET_NEXT_RO_DATA(values);
+        bgCamFuncData = (BgCamFuncData*)Camera_GetBgCamOrActorCsCamFuncData(camera, camera->bgCamIndex);
+        if (bgCamFuncData != NULL) {
+            rwData->eyePosRot.pos = Camera_Vec3sToVec3f(&bgCamFuncData->pos);
+            rwData->eyePosRot.rot = bgCamFuncData->rot;
+            rwData->fov = bgCamFuncData->fov;
+            if (rwData->fov != -1) {
+                roData->fov = (rwData->fov < 361) ? rwData->fov : (rwData->fov * 0.01f);
+            }
+            rwData->flags = bgCamFuncData->unk_0E;
+        } else {
+            rwData->eyePosRot.pos = *eye;
+            rwData->eyePosRot.rot.x = rwData->eyePosRot.rot.y = rwData->eyePosRot.rot.z = 0;
+            rwData->flags = 0;
+        }
+        *eye = rwData->eyePosRot.pos;
+    }
+
+    sCameraInterfaceFlags = roData->interfaceFlags;
+
+    if (camera->animState == 0) {
+        camera->animState++;
+        // OoT's func_80043B60, with OREG(27) at its default.
+        camera->rUpdateRateInv = 1800.0f;
+        camera->yawUpdateRateInv = 1800.0f;
+        camera->pitchUpdateRateInv = 1800.0f;
+        camera->xzOffsetUpdateRate = 0.001f;
+        camera->yOffsetUpdateRate = 0.001f;
+        camera->fovUpdateRate = 0.001f;
+    }
+
+    eyeNextAtOffset = OLib_Vec3fDiffToVecGeo(at, eyeNext);
+    Camera_CalcAtDefault(camera, &eyeNextAtOffset, roData->yOffset, false);
+    eyeAtOffset = OLib_Vec3fDiffToVecGeo(eye, at);
+
+    atOffset.r = eyeAtOffset.r;
+    atOffset.yaw = (rwData->flags & 1) ? (CAM_DEG_TO_BINANG(camera->data2) + rwData->eyePosRot.rot.y) : eyeAtOffset.yaw;
+    atOffset.pitch =
+        (rwData->flags & 2) ? (CAM_DEG_TO_BINANG(camera->data3) + rwData->eyePosRot.rot.x) : eyeAtOffset.pitch;
+
+    *at = OLib_AddVecGeoToVec3f(eye, &atOffset);
+
+    lookAt = camera->focalActorPosRot.pos;
+    lookAt.y += focalActorHeight;
+
+    camera->dist = OLib_Vec3fDist(&lookAt, eye);
+    camera->roll = 0;
+    camera->xzSpeed = 0.0f;
+    camera->fov = roData->fov;
+    camera->atLerpStepScale = 0;
+    return true;
 }
 
 s32 Camera_Unique1(Camera* camera) {
