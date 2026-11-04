@@ -128,8 +128,7 @@ light is a cutscene, and the fork plays none of OoT's yet.
    - Done: the castle area and the Temple of Time. The market area, Hyrule Castle, the courtyards, the Temple of Time
      and its exterior, and outside Ganon's Castle are loaded (hyrule/README.md), with the Temple of Time's actors
      (`En_Okarina_Tag`, `Door_Toki`, `Bg_Toki_Hikari`, `Bg_Toki_Swd`, `En_Wonder_Talk`). The song spots offer themselves
-     to MM's ocarina; MM's staff has no Zelda's Lullaby check yet, so the Lullaby spots (Zora's River's waterfall, the
-     royal tomb) take the free-play staff and accept the Lullaby. Checked under gdb with screenshots: from the moat,
+     to MM's ocarina (Zelda's Lullaby's spots with OoT's Lullaby check, SONGS.md). Checked under gdb with screenshots: from the moat,
      Zelda's cutscene leads to her lesson (the Temple of Time's layer 11), where she plays the Song of Double Time's
      notes (OoT's Song of Time is MM's Song of Double Time, SONGS.md), Link plays them back and learns it, and her
      parting words return him to Hyrule Field by the drawbridge; the Temple of Time's first-visit introduction plays;
@@ -145,6 +144,19 @@ light is a cutscene, and the fork plays none of OoT's yet.
      the Master Sword. Adult Link who has learned the Prelude of Light returns the sword and wakes as a child at the
      pedestal; pulling it again makes him an adult at once, as in OoT. Known difference: OoT puts the Master Sword in
      adult Link's hands for the return (`PLAYER_IA_SWORD_CS`); here he may play it empty-handed.
+   - Done: the castle section. Talon (`En_Ta`), Malon (`En_Ma1`), the castle's guards (`En_Heishi3`) and the
+     courtyard's (`En_Heishi1`), Zelda (`En_Zl4`), Impa (`Demo_Im`), Kaepora Gaebora (`En_Owl`) and the gate's torches
+     (`En_Light`) are ported. OoT's camera calls that MM's camera lacks go through `HyruleCamera.c`: a fixed angle, and
+     the CS_0 spline move of OoT's `Camera_Demo1` (Zelda's scenes). The guards' courtyard has OoT's side-scrolling
+     camera (`Camera_Special6`, ported into MM's camera as `CAM_SET_PREREND_SIDE_SCROLL`), and its guards keep OoT's
+     search balls (OoT's `Effect_Ss_Solder_Srch_Ball`, which MM's does not match). Checked under gdb with screenshots:
+     the courtyard guards and the castle's catch Link and put him out, as in OoT; Zelda meets Link, tells the legend
+     (in the cutscene map), shows Ganondorf through the window and gives Zelda's Letter; Impa then teaches Zelda's
+     Lullaby (demonstrated, played back) and leads Link out to Hyrule Field; the owl and Malon speak OoT's lines.
+     Known: the owl's one-point camera while he talks (OoT's `OnePointCutscene_Init`) is not ported, nor is Malon's
+     voice in Lon Lon Ranch's music (`Audio_UpdateMalonSinging`); Talon's milk and cucco game (in Lon Lon Ranch's
+     buildings, not loaded) are untested. OoT's circle transitions (TCA_*) are MM fades of the same colour and speed,
+     for actors as for entrances: MM's circle did not open again.
    - Next: the Chamber of the Sages' other layers (the sages' awakenings) come with their temples. The credits' layers
      (Lon Lon Ranch's, Kakariko's last and others) wait for the ending.
 

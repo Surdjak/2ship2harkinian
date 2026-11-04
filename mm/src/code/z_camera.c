@@ -6807,7 +6807,97 @@ s32 Camera_Special5(Camera* camera) {
 }
 
 s32 Camera_Special6(Camera* camera) {
-    return Camera_Noop(camera);
+    // 3Ship [Hyrule] Ported from OoT for its guarded castle courtyard (CAM_SET_PREREND_SIDE_SCROLL): the eye
+    // follows the focal actor along x from the scene camera's position, looking the way that camera does; a new scene
+    // camera ("screen") is moved to over 12 frames, during which the focal actor is frozen.
+    Vec3f* eye = &camera->eye;
+    Vec3f* at = &camera->at;
+    Vec3f* eyeNext = &camera->eyeNext;
+    VecGeo atOffset;
+    Vec3f sceneCamPos;
+    Vec3f eyePosCalc;
+    Vec3f eyeAnim;
+    Vec3f atAnim;
+    PosRot* focalActorPosRot = &camera->focalActorPosRot;
+    BgCamFuncData* bgCamFuncData;
+    Vec3s sceneCamRot;
+    s16 fov;
+    f32 timerF;
+    f32 timerDivisor;
+    Special6ReadOnlyData* roData = &camera->paramData.spec6.roData;
+    Special6ReadWriteData* rwData = &camera->paramData.spec6.rwData;
+
+    if (RELOAD_PARAMS(camera)) {
+        CameraModeValue* values = sCameraSettings[camera->setting].cameraModes[camera->mode].values;
+
+        roData->interfaceFlags = GET_NEXT_RO_DATA(values);
+    }
+
+    bgCamFuncData = (BgCamFuncData*)Camera_GetBgCamOrActorCsCamFuncData(camera, camera->bgCamIndex);
+    sceneCamPos = Camera_Vec3sToVec3f(&bgCamFuncData->pos);
+    sceneCamRot = bgCamFuncData->rot;
+    fov = bgCamFuncData->fov;
+    if (fov == -1) {
+        fov = 6000;
+    }
+    if (fov < 361) {
+        fov *= 100;
+    }
+
+    sCameraInterfaceFlags = roData->interfaceFlags;
+
+    if ((eyeNext->x != sceneCamPos.x) || (eyeNext->y != sceneCamPos.y) || (eyeNext->z != sceneCamPos.z) ||
+        (camera->animState == 0)) {
+        // A new scene camera: change "screens".
+        camera->focalActor->freezeTimer = 12;
+        sCameraInterfaceFlags = (sCameraInterfaceFlags & ~CAM_HUD_VISIBILITY_MASK) |
+                                CAM_HUD_VISIBILITY_HEARTS_WITH_OVERWRITE; // OoT's 0x300
+        rwData->initialFocalActorY = focalActorPosRot->pos.y;
+        rwData->animTimer = 12;
+        *eyeNext = sceneCamPos;
+        if (camera->animState == 0) {
+            camera->animState++;
+        }
+    }
+
+    if (rwData->animTimer > 0) {
+        // Between "screens".
+        timerF = rwData->animTimer;
+        eyePosCalc = *eyeNext;
+        eyePosCalc.x += (focalActorPosRot->pos.x - eyePosCalc.x) * 0.5f;
+        eyePosCalc.y += (focalActorPosRot->pos.y - rwData->initialFocalActorY) * 0.2f;
+        eyeAnim = eyePosCalc;
+        eyeAnim.y = Camera_ScaledStepToCeilF(eyePosCalc.y, eye->y, 0.5f, 0.01f);
+
+        // The at point is 100 units from the eye, the way the scene camera looks.
+        atOffset.r = 100.0f;
+        atOffset.yaw = sceneCamRot.y;
+        atOffset.pitch = -sceneCamRot.x;
+        atAnim = OLib_AddVecGeoToVec3f(&eyeAnim, &atOffset);
+        timerDivisor = 1.0f / timerF;
+        eye->x += (eyeAnim.x - eye->x) * timerDivisor;
+        eye->y += (eyeAnim.y - eye->y) * timerDivisor;
+        eye->z += (eyeAnim.z - eye->z) * timerDivisor;
+        at->x += (atAnim.x - at->x) * timerDivisor;
+        at->y += (atAnim.y - at->y) * timerDivisor;
+        at->z += (atAnim.z - at->z) * timerDivisor;
+        camera->fov += (fov * 0.01f - camera->fov) / rwData->animTimer;
+        rwData->animTimer--;
+    } else {
+        // Following the focal actor along x.
+        sCameraInterfaceFlags &= ~CAM_HUD_VISIBILITY_MASK;
+        eyePosCalc = *eyeNext;
+        eyePosCalc.x += (focalActorPosRot->pos.x - eyePosCalc.x) * 0.5f;
+        eyePosCalc.y += (focalActorPosRot->pos.y - rwData->initialFocalActorY) * 0.2f;
+        *eye = eyePosCalc;
+        eye->y = Camera_ScaledStepToCeilF(eyePosCalc.y, eye->y, 0.5f, 0.01f);
+
+        atOffset.r = 100.0f;
+        atOffset.yaw = sceneCamRot.y;
+        atOffset.pitch = -sceneCamRot.x;
+        *at = OLib_AddVecGeoToVec3f(eye, &atOffset);
+    }
+    return true;
 }
 
 s32 Camera_Special7(Camera* camera) {

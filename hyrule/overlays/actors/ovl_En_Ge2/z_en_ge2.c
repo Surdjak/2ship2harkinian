@@ -252,7 +252,7 @@ static void EnGe2_CaptureClose(EnGe2* this, PlayState* play) {
         }
 
 
-        play->transitionType = TRANS_TYPE_CIRCLE;
+        play->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
         play->transitionTrigger = TRANS_TRIGGER_START;
     }
 }
@@ -279,7 +279,7 @@ static void EnGe2_CaptureCharge(EnGe2* this, PlayState* play) {
         }
 
 
-        play->transitionType = TRANS_TYPE_CIRCLE;
+        play->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
         play->transitionTrigger = TRANS_TRIGGER_START;
     }
 }

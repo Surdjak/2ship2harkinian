@@ -7,6 +7,7 @@
 #include "HyrulePlayer.h" // OoT's exchange items
 #include "HyruleElfMessage.h"
 #include "HyruleScenes.h" // Navi reads OoT scene cameras
+#include "z64shrink_window.h" // OoT's Letterbox_ calls are MM's ShrinkWindow_Letterbox_
 
 #ifdef __cplusplus
 extern "C" {

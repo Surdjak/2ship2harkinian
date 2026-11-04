@@ -99,7 +99,11 @@ blocks.
    (`OCARINA_ACTION_11`, `OCARINA_ACTION_21`) with the song and OoT's staff text kept aside
    (`Message_SetLessonOot`); a correct playback gives OoT's song, as OoT's does, and a wrong one retries (MM's
    ocarina now resets those songs' playback progress at each prompt, as it does its own). Sheik teaches the Minuet
-   and the Nocturne (docs/CUTSCENES.md step 3); the teachers' check actions are not ported yet. The Song of Double
+   and the Nocturne (docs/CUTSCENES.md step 3); Impa teaches Zelda's Lullaby (docs/CUTSCENES.md). OoT's checks for
+   Zelda's Lullaby and the warp songs (song spots, cutscene scripts) take MM's first check action with the song asked
+   for kept aside (`OCARINA_ACTION_CHECK_SONG_Oot`, `Message_SetCheckSongOot`); a warp song a check asked for counts
+   as the check rather than asking to warp. Checked under gdb: Zelda's Lullaby at Zora's River's song spot parts its
+   waterfall. The Song of Double
    Time's lesson (Zelda's, OoT's Song of Time) gives its own bit: MM teaches it nowhere, and MM's song items end
    before it, so MM's lesson gave a Skulltula token. OoT's texts that name the song call it the Song of Double Time
    (hyrule/README.md, Text). Zelda's lesson plays in the Temple of Time (docs/CUTSCENES.md), and the Door of Time opens to the Song of

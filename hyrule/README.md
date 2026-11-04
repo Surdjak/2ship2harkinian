@@ -182,7 +182,9 @@ Not yet:
   Master Sword's glint, the castle courtyard's guards, outside Ganon's Castle, the Chamber of the Sages); the others
   draw as MM's default.
 - **Cameras:** OoT settings with no MM counterpart (crawlspaces, magic beans, fishing, boss arenas,
-  some temple rooms) use a general MM setting.
+  some temple rooms) use a general MM setting. OoT's side-scrolling camera (PREREND3, the castle's guarded courtyard)
+  is ported into MM's camera (`Camera_Special6`, `CAM_SET_PREREND_SIDE_SCROLL`). MM's `bgCamIndex` carries a
+  scene-camera flag (bit 12) OoT's lacks; ported code that compares it masks it.
 - **MM-only scene commands:** the actor cutscene list (0x1B) is started empty. The other MM-only
   commands are left out.
 
@@ -243,6 +245,7 @@ The scene's sub-keep object (the special files command) is converted like room o
 | 21 | The other people of the six scenes: `En_Ms` (the bean seller), `En_Hs2` (a sulking young man in Kakariko at night), `En_Tg` (the dancing couple), `En_Ge1` and `En_Ge2` (Gerudo guards), `En_Zo` (Lake Hylia's Zoras); `Item_Etcetera` (Ruto's Letter in its bottle, and other items set out), `Elf_Msg2` (Navi's message spots), `Bg_Haka` (gravestones) |
 | 22 | `Obj_Bean` (soft soil for magic beans, and the plants Link rides as an adult), `En_Po_Field` (Hyrule Field's Poes), `Object_Kankyo` (Kokiri Forest's dust motes and OoT's other scene effects), `Bg_Spot00_Hanebasi` (Hyrule Castle's drawbridge) |
 | 23 | The Temple of Time: `En_Okarina_Tag` (song spots: the Door of Time's altar, Zora's River's waterfall...), `Door_Toki` (the Door of Time's collision), `Bg_Toki_Hikari` (its light), `Bg_Toki_Swd` (the Master Sword in its pedestal: MM's Player takes it as OoT's does, `func_808379C0`, and shows "Drop" to adult Link), `En_Wonder_Talk` (message spots, such as the altar's inscription), `En_Rl` (Rauru, who gives the Light Medallion) |
+| 24 | The castle: `En_Ta` (Talon), `En_Ma1` (child Malon), `En_Heishi3` (the castle's guards), `En_Heishi1` (the courtyard's guards, with OoT's search balls), `En_Zl4` (child Zelda), `Demo_Im` (Impa), `En_Owl` (Kaepora Gaebora), `En_Light` (torches and other fires) |
 | Cutscenes | `Demo_Kankyo` (the warp songs' light), `En_Elf` (Navi), `Elf_Msg` (Navi's message spots), `Bg_Treemouth` (the Deku Tree's mouth), `Demo_Effect` (cutscene lights and jewels), `Demo_Sa` (Saria in cutscenes), `En_Xc` (Sheik), `Demo_Shd` (Bongo Bongo's shadow), `Bg_Hidan_Fwbig` and `Bg_Hidan_Curtain` (fire walls), `Bg_Spot17_Funen` (smoke), `En_Syateki_Niw` (archery cuccos), `Efc_Erupc` (Death Mountain's eruption), `En_Viewer` (Zelda, Impa, Ganondorf and their horses), `En_Ganon_Mant` (Ganondorf's cape), `Demo_6K` (cutscene magic, here Ganondorf's), `Eff_Dust` (its sparkles), `Item_Ocarina` (the Ocarina of Time, thrown and in the moat) |
 
 Ported actors live in `overlays/actors/ovl_<Name>/`, copied from SoH and changed as little as
@@ -521,6 +524,10 @@ and roll. OoT's environment flags (`Flags_GetEnvOot`) are kept here and cleared 
 own Player cutscene actions (`HyrulePlayerCsOot.inc`, generated from SoH's `z_player.c` and included by MM's
 `z_player.c`), on MM's Player helpers and MM's copies of OoT's Link animations. While an OoT script plays, MM's camera
 keeps OoT's letterbox and hides the interface, and the script's sub-camera takes MM's `CAM_SET_FREE0`.
+
+Actors' own camera calls that MM's camera lacks go through `HyruleCamera.c`: a fixed angle (`CAM_SET_FREE0` with
+OoT's at, eye, roll and fov) and the spline move of OoT's `CAM_SET_CS_0` (`Camera_Demo1`, from the world or from
+Link), which ends with the camera's `animState` at 2 as OoT's actors expect.
 
 Navi (docs/CUTSCENES.md N1) is OoT's `En_Elf`, which MM's Player spawns in OoT scenes while Link has no Tatl, in
 its fairy slot (`tatlActor`). OoT's targeting context is MM's attention context field for field, so she hovers as

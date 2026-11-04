@@ -180,17 +180,16 @@ static void func_80ABF28C(EnOkarinaTag* this, PlayState* play) {
             if (Actor_OcarinaInteractionAccepted(&this->actor, &play->state)) {
                 switch (this->type) {
                     case 1:
-                    case 6:
-                        // PORT: MM's staff has no Zelda's Lullaby check yet (docs/SONGS.md, step 5): the free-play staff,
-                        // whose Lullaby func_80ABF4C8 accepts.
-                        play->msgCtx.lastPlayedSong = 0xFF;
-                        Message_StartOcarinaOot(play, OCARINA_ACTION_FREE_PLAY_Oot);
+                        Message_StartOcarinaOot(play, OCARINA_ACTION_CHECK_LULLABY_Oot);
                         break;
                     case 2:
                         Message_StartOcarinaOot(play, OCARINA_ACTION_CHECK_STORMS_Oot);
                         break;
                     case 4:
                         Message_StartOcarinaOot(play, OCARINA_ACTION_CHECK_TIME_Oot);
+                        break;
+                    case 6:
+                        Message_StartOcarinaOot(play, OCARINA_ACTION_CHECK_LULLABY_Oot);
                         break;
                     default:
                         Actor_Kill(&this->actor);
@@ -206,14 +205,10 @@ static void func_80ABF28C(EnOkarinaTag* this, PlayState* play) {
 
 static void func_80ABF4C8(EnOkarinaTag* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
-    // PORT: the Lullaby spots' free-played Lullaby counts as the song asked for (OCARINA_MODE_03).
-    s32 playedLullaby = ((this->type == 1) || (this->type == 6)) &&
-                        (Hyrule_GetOcarinaModeOot(play) == OCARINA_MODE_04_Oot) &&
-                        (play->msgCtx.lastPlayedSong == OCARINA_SONG_LULLABY_Oot);
 
-    if ((Hyrule_GetOcarinaModeOot(play) == OCARINA_MODE_04_Oot) && !playedLullaby) {
+    if (Hyrule_GetOcarinaModeOot(play) == OCARINA_MODE_04_Oot) {
         this->actionFunc = func_80ABF28C;
-    } else if ((Hyrule_GetOcarinaModeOot(play) == OCARINA_MODE_03_Oot) || playedLullaby) {
+    } else if (Hyrule_GetOcarinaModeOot(play) == OCARINA_MODE_03_Oot) {
         Audio_PlaySfx(NA_SE_SY_CORRECT_CHIME);
         if ((this->switchFlag >= 0)) {
             Flags_SetSwitch(play, this->switchFlag);

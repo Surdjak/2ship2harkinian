@@ -59,6 +59,19 @@ RENAMES = [
     (r"\buncullZoneDownward\b", "cullingVolumeDownward"),
     (r"\bminVelocityY\b", "terminalVelocity"),
     (r"\bactor\.speedXZ\b", "actor.speed"),
+    # OoT's cutscene camera types (HyruleCutscene.h), letterbox, HUD visibility and camera setting calls.
+    (r"\bCutsceneCameraAngle\b", "CutsceneCameraAngleOot"),
+    (r"\bCutsceneCameraMove\b", "CutsceneCameraMoveOot"),
+    (r"\bLetterbox_SetSizeTarget\(", "ShrinkWindow_Letterbox_SetSizeTarget("),
+    (r"\bInterface_ChangeHudVisibilityMode\(", "Interface_SetHudVisibility("),
+    (r"\bHUD_VISIBILITY_NOTHING_ALT\b", "HUD_VISIBILITY_NONE_ALT"),
+    (r"\bprevHudVisibilityMode\b", "prevHudVisibility"),
+    (r"\bCamera_RequestSetting\(", "Camera_ChangeSetting("),
+    # OoT's audio and interface calls under MM's names.
+    (r"\bfunc_800F4414\(", "Audio_PlaySfx_AtPosWithTimer("),
+    (r"\bfunc_800F44EC\(", "Audio_SetSfxTimerLerpInterval("),
+    (r"\bAudio_QueueSeqCmd\(0x1 << 28 \| SEQ_PLAYER_FANFARE << 24 \| 0xFF\);", "SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 0);"),
+    (r"\bInterface_SetDoAction\(", "Interface_SetAButtonDoAction("),
     (r"\byDistToWater\b", "depthInWater"),
     (r"\bobjBankIndex\b", "objectSlot"),
     (r"\btargetMode\b", "attentionRangeType"),
@@ -98,7 +111,7 @@ RENAMES = [
     (r"\bTOUCH_(\w+)", r"ATELEM_\1"),
     (r"\.elemType\b", ".elemMaterial"),
     (r"\.colType\b", ".colMaterial"),
-    (r"\b(actor|thisx|rideActor)(\.|->)speedXZ\b", r"\1\2speed"),
+    (r"\b(actor|thisx|rideActor|playerx)(\.|->)speedXZ\b", r"\1\2speed"),
     (r"->linearVelocity\b", "->speedXZ"),  # Player's
     (r"\byDistToPlayer\b", "playerHeightRel"),
     # MM's Tatl hints do not cover OoT enemies: init chains keep their shape with no hint.
@@ -325,7 +338,9 @@ RENAMES = [
     (r"\bBEANS_BOUGHT\b", "BEANS_BOUGHT_OOT"),
     (r"\bHIGH_SCORE\((HS_\w+)\)", r"HIGH_SCORE_OOT(\1_Oot)"),
     # MM's circle transition has no starburst, colour or speed parameters.
-    (r"\bTRANS_TYPE_CIRCLE\([^)]*\)", "TRANS_TYPE_CIRCLE"),
+    # OoT's circle transitions are not MM's (whose circle does not open again here): fades of the same color and speed,
+    # as for OoT's entrances (gen_oot_scenes.py).
+    (r"\bTRANS_TYPE_CIRCLE\(\s*\w+\s*,\s*TCC_(BLACK|WHITE)\s*,\s*TCS_(FAST|SLOW)\s*\)", r"TRANS_TYPE_FADE_\1_\2"),
     # OoT's specular highlight setup for opaque and translucent display lists.
     (r"\bfunc_8002EBCC\(", "func_800B8050("),
     (r"\bfunc_8002ED80\(", "func_800B8118("),
@@ -400,6 +415,8 @@ def oot_sequences(soh_root):
 
 
 SEQUENCES = {}
+# MM's music ids by name (mm/include/sequence.h).
+MM_SEQUENCES = set(re.findall(r"#define (NA_BGM_\w+) ", open(os.path.join(HERE, "..", "..", "mm", "include", "sequence.h")).read()))
 
 
 def convert_entrances(text):
@@ -416,7 +433,7 @@ def convert_entrances(text):
 def strip_rando_ifs(text):
     """SoH's randomizer-only blocks without an else (if (IS_RANDO) { ... }, no nested braces) are left out, as are
     randomizer-only terms of conditions and SoH's GameInteractor event calls."""
-    text = re.sub(r"\s*&&\s*!\(?IS_RANDO\)?", "", text)
+    text = re.sub(r"\s*&&\s*!(?:\(IS_RANDO\)|IS_RANDO\b)", "", text)
     text = re.sub(r"\n[ \t]*GameInteractor_Execute\w*\([^;]*\);", "", text)
     return re.sub(r"\n[ \t]*if \(IS_RANDO\) \{\n[^{}]*?\n[ \t]*\}(?=\n)(?![ \t]*else)", "", text)
 
@@ -574,6 +591,10 @@ def convert(text, header):
     text = re.sub(r"\bAudio_QueueSeqCmd\((SEQ_PLAYER_\w+) << 24 \| (NA_BGM_\w+)\);",
                   lambda m: f"SEQCMD_PLAY_SEQUENCE({m.group(1)}, 0, SEQ_OOT(0x{SEQUENCES[m.group(2)]:02X})); // OoT's {m.group(2)}",
                   text)
+    # OoT's fanfares MM lacks play as OoT's sequence.
+    text = re.sub(r"\bAudio_PlayFanfare\((NA_BGM_\w+)\);",
+                  lambda m: m.group(0) if m.group(1) in MM_SEQUENCES else
+                  f"Audio_PlayFanfare(SEQ_OOT(0x{SEQUENCES[m.group(1)]:02X})); // OoT's {m.group(1)}", text)
     text = re.sub(r"\bMATRIX_NEWMTX\(", "Matrix_Finalize(", text)
     text = wrap_exchange_offers(text)
     # OoT damage tables (32 entries) become MM's 64 with DMG_TABLE_FROM_OOT.

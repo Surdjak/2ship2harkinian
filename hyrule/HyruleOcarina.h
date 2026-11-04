@@ -32,8 +32,8 @@ u32 Hyrule_GetLearnedSongBitsOot(void);
 #define OCARINA_SONG_STORMS_Oot OCARINA_SONG_STORMS
 #define OCARINA_SONG_SCARECROW_SPAWN_Oot OCARINA_SONG_SCARECROW_SPAWN
 
-// OoT's ocarina actions MM's staff has. Teaching, prompting or checking Zelda's Lullaby or a warp song, the memory game
-// and the frogs' songs are not here yet (docs/SONGS.md, step 5), so a port that uses one does not build.
+// OoT's ocarina actions MM's staff has. The memory game and the frogs' songs are not here yet (docs/SONGS.md, step 5),
+// so a port that uses one does not build.
 #define OCARINA_ACTION_FREE_PLAY_Oot OCARINA_ACTION_FREE_PLAY
 #define OCARINA_ACTION_FREE_PLAY_DONE_Oot OCARINA_ACTION_FREE_PLAY_DONE
 #define OCARINA_ACTION_TEACH_SARIA_Oot OCARINA_ACTION_DEMONSTRATE_SARIAS
@@ -52,6 +52,16 @@ u32 Hyrule_GetLearnedSongBitsOot(void);
 #define OCARINA_ACTION_CHECK_TIME_Oot OCARINA_ACTION_CHECK_DOUBLE_TIME
 #define OCARINA_ACTION_CHECK_STORMS_Oot OCARINA_ACTION_CHECK_STORMS
 #define OCARINA_ACTION_CHECK_SCARECROW_Oot OCARINA_ACTION_CHECK_SCARECROW_SPAWN
+// OoT's checks for Zelda's Lullaby and the warp songs, past MM's check range: Message_StartOcarinaOot brings up MM's first
+// check with the song asked for kept aside (z_message.c), as the lessons of these songs are.
+#define OCARINA_ACTION_CHECK_SONG_Oot(song) (0x100 + (song))
+#define OCARINA_ACTION_CHECK_LULLABY_Oot OCARINA_ACTION_CHECK_SONG_Oot(OCARINA_SONG_ZELDAS_LULLABY)
+#define OCARINA_ACTION_CHECK_MINUET_Oot OCARINA_ACTION_CHECK_SONG_Oot(OCARINA_SONG_MINUET)
+#define OCARINA_ACTION_CHECK_BOLERO_Oot OCARINA_ACTION_CHECK_SONG_Oot(OCARINA_SONG_BOLERO)
+#define OCARINA_ACTION_CHECK_SERENADE_Oot OCARINA_ACTION_CHECK_SONG_Oot(OCARINA_SONG_SERENADE)
+#define OCARINA_ACTION_CHECK_REQUIEM_Oot OCARINA_ACTION_CHECK_SONG_Oot(OCARINA_SONG_REQUIEM)
+#define OCARINA_ACTION_CHECK_NOCTURNE_Oot OCARINA_ACTION_CHECK_SONG_Oot(OCARINA_SONG_NOCTURNE)
+#define OCARINA_ACTION_CHECK_PRELUDE_Oot OCARINA_ACTION_CHECK_SONG_Oot(OCARINA_SONG_PRELUDE)
 #define OCARINA_ACTION_SCARECROW_LONG_RECORDING_Oot OCARINA_ACTION_SCARECROW_LONG_RECORDING
 #define OCARINA_ACTION_SCARECROW_LONG_PLAYBACK_Oot OCARINA_ACTION_SCARECROW_LONG_DEMONSTRATION
 #define OCARINA_ACTION_SCARECROW_RECORDING_Oot OCARINA_ACTION_SCARECROW_SPAWN_RECORDING
@@ -89,6 +99,8 @@ void Hyrule_SetOcarinaModeOot(struct PlayState* play, u8 ootMode);
 
 // The song and OoT staff text of an OoT lesson that MM's lesson ranges cannot index (z_message.c).
 void Message_SetLessonOot(u8 song, u16 textId);
+// The song an OoT check past MM's check range asks for (OCARINA_ACTION_CHECK_SONG_Oot), or 0xFF (z_message.c).
+void Message_SetCheckSongOot(u8 song);
 
 // OoT's func_8010BD58 and func_8010BD88: bring up the ocarina staff for an action; the second also refuses warp songs
 // (OoT's unk_E40E), which the warp songs will read (docs/SONGS.md, step 4).

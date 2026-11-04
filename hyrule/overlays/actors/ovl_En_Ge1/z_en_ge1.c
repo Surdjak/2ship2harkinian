@@ -240,7 +240,7 @@ static void EnGe1_KickPlayer(EnGe1* this, PlayState* play) {
         }
 
 
-        play->transitionType = TRANS_TYPE_CIRCLE;
+        play->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
         play->transitionTrigger = TRANS_TRIGGER_START;
     }
 }
@@ -594,7 +594,7 @@ static void EnGe1_BeginGame_Archery(EnGe1* this, PlayState* play) {
                     Rupees_ChangeBy(-20);
                     play->nextEntrance = Hyrule_ExitFromOot(0x129); // OoT's ENTR_GERUDOS_FORTRESS_EAST_EXIT
                     gSaveContext.nextCutsceneIndex = 0xFFF0;
-                    play->transitionType = TRANS_TYPE_CIRCLE;
+                    play->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
                     play->transitionTrigger = TRANS_TRIGGER_START;
                     gSaveContext.eventInfOot[0] |= 0x100;
                     SET_EVENTCHKINF_OOT(EVENTCHKINF_PLAYED_HORSEBACK_ARCHERY_Oot);

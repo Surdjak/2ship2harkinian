@@ -272,6 +272,14 @@ void Message_SetLessonOot(u8 song, u16 textId) {
     sLessonTextOot = textId;
 }
 
+// 3Ship [Hyrule] OoT's checks for the same songs, past MM's check range, take its first check action with the song
+// asked for kept here (OCARINA_ACTION_CHECK_SONG_Oot); 0xFF for MM's own checks.
+static u8 sCheckSongOot = 0xFF;
+
+void Message_SetCheckSongOot(u8 song) {
+    sCheckSongOot = song;
+}
+
 static s32 Message_LessonSongOot(s32 rangeIndex) {
     return (rangeIndex == (OCARINA_ACTION_11 - OCARINA_ACTION_DEMONSTRATE_SONATA)) ? sLessonSongOot : rangeIndex;
 }
@@ -3822,6 +3830,7 @@ void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
     msgCtx->ocarinaButtonIndex = OCARINA_BTN_INVALID;
     noStop = false;
     msgCtx->ocarinaAction = ocarinaAction;
+    sCheckSongOot = 0xFF; // 3Ship [Hyrule] Message_StartOcarinaOot sets it again for OoT's checks.
 
     if ((ocarinaAction >= OCARINA_ACTION_TIMED_PROMPT_SONATA) &&
         (ocarinaAction <= OCARINA_ACTION_TIMED_PROMPT_STORMS)) {
@@ -5013,6 +5022,7 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                     if ((msgCtx->songPlayed >= OCARINA_SONG_MINUET) && (msgCtx->songPlayed <= OCARINA_SONG_PRELUDE) &&
                         ((msgCtx->ocarinaAction == OCARINA_ACTION_FREE_PLAY_DONE) ||
                          (msgCtx->ocarinaAction >= OCARINA_ACTION_CHECK_SONATA)) &&
+                        (msgCtx->songPlayed != sCheckSongOot) && // the song an OoT check asked for
                         Hyrule_IsWarpSongPadLoadedOot(msgCtx->songPlayed)) {
                         if (!Hyrule_AreWarpSongsAllowedOot(play)) {
                             Message_StartTextbox(play, TEXT_OOT(0x88C), NULL); // "You can't warp here!"
@@ -5046,7 +5056,9 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                             }
                         }
                     } else if (msgCtx->ocarinaAction >= OCARINA_ACTION_CHECK_SONATA) {
-                        if ((OCARINA_ACTION_CHECK_SONATA + msgCtx->songPlayed) == msgCtx->ocarinaAction) {
+                        if (((sCheckSongOot == 0xFF) &&
+                             ((OCARINA_ACTION_CHECK_SONATA + msgCtx->songPlayed) == msgCtx->ocarinaAction)) ||
+                            ((sCheckSongOot != 0xFF) && (msgCtx->songPlayed == sCheckSongOot))) { // 3Ship [Hyrule]
                             play->msgCtx.ocarinaMode = OCARINA_MODE_EVENT;
                         } else {
                             play->msgCtx.ocarinaMode = msgCtx->songPlayed - 1;

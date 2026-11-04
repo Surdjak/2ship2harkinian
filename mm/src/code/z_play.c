@@ -52,6 +52,7 @@ u8 sMotionBlurStatus;
 #include "HyruleScenes.h"
 #include "HyrulePanorama.h"
 #include "HyruleCutscene.h"
+#include "HyruleCamera.h"
 
 s32 gDbgCamEnabled = false;
 u8 D_801D0D54 = false;
@@ -1098,6 +1099,7 @@ void Play_UpdateMain(PlayState* this) {
     if (!sp5C || gDbgCamEnabled) {
         s32 i;
 
+        Hyrule_UpdateCsCameraOot(this); // 3Ship [Hyrule]
         this->nextCamera = this->activeCamId;
         for (i = 0; i < NUM_CAMS; i++) {
             if ((i != this->nextCamera) && (this->cameraPtrs[i] != NULL)) {

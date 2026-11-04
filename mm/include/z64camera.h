@@ -233,7 +233,8 @@ typedef enum {
     /* 0x58 */ CAM_SET_NORMAL4, // Generic camera 4, used in Ikana Graveyard "NORMAL4"
     /* 0x59 */ CAM_SET_ELEGY_SHELL, // cutscene after playing elegy of emptyness and spawning a shell "SHELL"
     /* 0x5A */ CAM_SET_DUNGEON4, // Used in Pirates Fortress Interior, hidden room near hookshot "DUNGEON4"
-    /* 0x5B */ CAM_SET_MAX
+    /* 0x5B */ CAM_SET_PREREND_SIDE_SCROLL, // 3Ship [Hyrule] OoT's: the camera side-scrolls with Link (Hyrule Castle's guarded courtyard) "PREREND3"
+    /* 0x5C */ CAM_SET_MAX
 } CameraSettingType;
 
 typedef enum {
@@ -1269,6 +1270,29 @@ typedef struct {
     /* 0x8 */ Unique7ReadWriteData rwData;
 } Unique7; // size = 0xC
 
+/*================================
+ *   Camera_Special6() Data
+ *================================
+ */
+
+#define CAM_FUNCDATA_SPEC6(interfaceFlags) \
+    { interfaceFlags, CAM_DATA_INTERFACE_FLAGS }
+
+// 3Ship [Hyrule] Camera_Special6 is ported from OoT for its side-scrolling courtyard (CAM_SET_PREREND_SIDE_SCROLL).
+typedef struct {
+    /* 0x0 */ s16 interfaceFlags;
+} Special6ReadOnlyData; // size = 0x2
+
+typedef struct {
+    /* 0x0 */ f32 initialFocalActorY;
+    /* 0x4 */ s16 animTimer;
+} Special6ReadWriteData; // size = 0x8
+
+typedef struct {
+    /* 0x0 */ Special6ReadOnlyData roData;
+    /* 0x4 */ Special6ReadWriteData rwData;
+} Special6; // size = 0xC
+
 
 /*================================
  *   Camera_Demo1() Data
@@ -1562,6 +1586,7 @@ typedef union {
     Unique0 uniq0;
     Unique6 uniq6;
     Unique7 uniq7; // 3Ship [Hyrule]
+    Special6 spec6; // 3Ship [Hyrule]
     Demo1 demo1;
     Demo2 demo2;
     Demo3 demo3;

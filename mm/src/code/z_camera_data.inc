@@ -351,6 +351,15 @@ CameraModeValue sSetPrerendPivotModeNormalData[] = {
 };
 
 /*=====================================================================
+ *                   Custom Data: PREREND_SIDE_SCROLL Setting (3Ship [Hyrule], OoT's)
+ *=====================================================================
+ */
+
+CameraModeValue sSetPrerendSideScrollModeNormalData[] = {
+    CAM_FUNCDATA_SPEC6(CAM_INTERFACE_FLAGS(CAM_LETTERBOX_NONE, CAM_HUD_VISIBILITY_ALL, 0)),
+};
+
+/*=====================================================================
  *                   Custom Data: DOORC Setting
  *=====================================================================
  */
@@ -2186,6 +2195,10 @@ CameraMode sCamSetPreRendPivotModes[] = {
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_UNIQUE7, sSetPrerendPivotModeNormalData), // CAM_MODE_NORMAL
 };
 
+CameraMode sCamSetPreRendSideScrollModes[] = {
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_SPECIAL6, sSetPrerendSideScrollModeNormalData), // CAM_MODE_NORMAL
+};
+
 CameraMode sCamSetDoorCModes[] = {
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_SPECIAL9, sSetDoorCModeNormalData), // CAM_MODE_NORMAL
 };
@@ -3610,6 +3623,7 @@ CameraSetting sCameraSettings[] = {
     { 0x03FFFFFF, 0x00000005, sCamSetNorm4Modes },                 // CAM_SET_NORMAL4
     { 0x0000002F, 0x00000005, sCamSetElegyShellModes },            // CAM_SET_ELEGY_SHELL
     { 0x03FFFFFF, 0x00000005, sCamSetDungeon4Modes },              // CAM_SET_DUNGEON4
+    { 0x00000001, 0x8000000C, sCamSetPreRendSideScrollModes },     // CAM_SET_PREREND_SIDE_SCROLL (3Ship [Hyrule])
 };
 
 s16 sGlobalCamDataSettings[] = {

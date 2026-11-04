@@ -113,14 +113,25 @@ void Hyrule_SetOcarinaModeOot(PlayState* play, u8 ootMode) {
 
 u8 gWarpSongsDisabledOot;
 
+static void Message_StartOcarinaCheckOot(PlayState* play, u16 ocarinaAction) {
+    u8 checkSong = 0xFF;
+
+    if (ocarinaAction >= OCARINA_ACTION_CHECK_SONG_Oot(0)) {
+        checkSong = ocarinaAction - OCARINA_ACTION_CHECK_SONG_Oot(0);
+        ocarinaAction = OCARINA_ACTION_CHECK_SONATA;
+    }
+    Message_DisplayOcarinaStaff(play, ocarinaAction);
+    Message_SetCheckSongOot(checkSong);
+}
+
 void Message_StartOcarinaOot(PlayState* play, u16 ocarinaAction) {
     gWarpSongsDisabledOot = false;
-    Message_DisplayOcarinaStaff(play, ocarinaAction);
+    Message_StartOcarinaCheckOot(play, ocarinaAction);
 }
 
 void Message_StartOcarinaNoWarpOot(PlayState* play, u16 ocarinaAction) {
     gWarpSongsDisabledOot = true;
-    Message_DisplayOcarinaStaff(play, ocarinaAction);
+    Message_StartOcarinaCheckOot(play, ocarinaAction);
 }
 
 u16 Hyrule_OcarinaActionFromOot(u16 ootAction) {
@@ -160,6 +171,15 @@ u16 Hyrule_OcarinaActionFromOot(u16 ootAction) {
             return OCARINA_ACTION_PLAYBACK_TIME_Oot;
         case 0x1A:
             return OCARINA_ACTION_PLAYBACK_STORMS_Oot;
+        case 0x1C:
+        case 0x1D:
+        case 0x1E:
+        case 0x1F:
+        case 0x20:
+        case 0x21:
+            return OCARINA_ACTION_CHECK_SONG_Oot(OCARINA_SONG_MINUET + ootAction - 0x1C);
+        case 0x24:
+            return OCARINA_ACTION_CHECK_LULLABY_Oot;
         case 0x22:
             return OCARINA_ACTION_CHECK_SARIA_Oot;
         case 0x23:
