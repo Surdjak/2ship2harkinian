@@ -140,3 +140,44 @@ s32 BodyBreak_SpawnParts(Actor* actor, BodyBreak* bodyBreak, PlayState* play, s1
 
 // OoT's Actor_Find: the first actor of this id in a category, or NULL.
 Actor* Actor_FindOot(ActorContext* actorCtx, s32 actorId, s32 actorCategory);
+
+// OoT's actor helpers that MM lacks or names differently (the port tool renames their calls).
+// OoT's func_8002843C: dust drawn with flag 2.
+void EffectSsDust_SpawnDrawFlag2Oot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor,
+                                    Color_RGBA8* envColor, s16 scale, s16 scaleStep, s16 life);
+// OoT's func_80035844: the yaw and pitch from one point to another.
+void Math_Vec3fDiffToRotOot(Vec3f* from, Vec3f* to, Vec3s* rot, s32 upIsPositive);
+Actor* Actor_GetCollidedExplosiveOot(PlayState* play, Collider* collider);
+// The text id for a scene's group of texts (OoT's Actor_SetTextWithPrefix), as an OoT text.
+void Actor_SetTextWithPrefixOot(PlayState* play, Actor* actor, s16 baseTextId);
+void EffectSsDeadDd_SpawnOot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, s16 scaleStep,
+                             s16 primR, s16 primG, s16 primB, s16 primA, s16 envR, s16 envG, s16 envB, s16 alphaStep,
+                             s32 life);
+void EffectSsDeadDs_SpawnStationaryOot(PlayState* play, Vec3f* pos, s16 scale, s16 scaleStep, s16 alpha, s32 life);
+// MM has no fire-circle effect: does nothing.
+void EffectSsFCircle_SpawnOot(PlayState* play, Actor* actor, Vec3f* pos, s16 radius, s16 height);
+// OoT's func_80094E78.
+Gfx* Gfx_TexScrollOot(GraphicsContext* gfxCtx, u32 x, u32 y);
+// OoT's Play_TriggerRespawn.
+void Hyrule_TriggerRespawnOot(PlayState* play);
+// MM's, which its header leaves out.
+Hilite* Hilite_DrawXlu(Vec3f* object, Vec3f* eye, Vec3f* lightDir, GraphicsContext* gfxCtx);
+// OoT's CollisionCheck_GetSwordDamage: a sword hit's damage from OoT's damage flags.
+u8 CollisionCheck_GetSwordDamageOot(u64 dmgFlags, PlayState* play);
+// OoT's func_80064520 and func_80064534: an actor's manual cutscene, in OoT's cutscene context (HyruleCutscene.c).
+void Cutscene_StartManualOot(PlayState* play);
+void Cutscene_StopManualOot(PlayState* play);
+// OoT's OnePointCutscene_AttentionSetSfx; OoT's one-point camera is not ported (HyruleCamera.c).
+s32 OnePointCutscene_AttentionSetSfxOot(PlayState* play, Actor* actor, s32 sfxId);
+// OoT's EffectSsFhgFlash_SpawnLightBall (Phantom Ganon's light balls); MM's effect has only the shock spawner.
+void EffectSsFhgFlash_SpawnLightBallOot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, u8 param);
+// OoT's func_80093C80: Gfx_SetupDL25_Opa, without color dither in rooms of OoT's behavior type 3.
+void Gfx_SetupDL25_OpaRoomOot(PlayState* play);
+// OoT's func_800355E4: whether a Megaton Hammer swing forward hit this collider.
+s32 Actor_IsHitByHammerForwardOot(PlayState* play, Collider* collider);
+// OoT's Actor_SwapHookshotAttachment: the hookshot lets go of actorA and holds actorB.
+void Actor_SwapHookshotAttachmentOot(PlayState* play, Actor* actorA, Actor* actorB);
+// MM's, which its header leaves out.
+void SkelAnime_InterpFrameTable(s32 limbCount, Vec3s* dst, Vec3s* start, Vec3s* target, f32 weight);
+// OoT's Math_StepUntilS.
+s32 Math_StepUntilSOot(s16* pValue, s16 limit, s16 step);

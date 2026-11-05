@@ -8,6 +8,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleActor.h"
+#include "overlays/actors/ovl_En_Arrow/z_en_arrow.h" // MM's
 #include "HyruleScenes.h"
 #include "HyruleCutscene.h"
 #include "assets/oot/scenes/indoors/nakaniwa/nakaniwa_scene.h"
@@ -742,8 +743,8 @@ static void func_809865F8(DemoIm* this, PlayState* play, s32 arg2) {
                 f32 spawnPosY = thisPos->y;
                 f32 spawnPosZ = thisPos->z + (Math_CosS(shapeRotY) * 30.0f);
 
-                Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ARROW_Oot, spawnPosX, spawnPosY, spawnPosZ, 0xFA0,
-                            this->actor.shape.rot.y, 0, -10 /* OoT's ARROW_CS_NUT */);
+                Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ARROW, spawnPosX, spawnPosY, spawnPosZ, 0xFA0,
+                            this->actor.shape.rot.y, 0, ARROW_TYPE_DEKU_NUT); // MM's thrown nut for OoT's ARROW_CS_NUT
                 this->unk_27C = 1;
             }
         } else {

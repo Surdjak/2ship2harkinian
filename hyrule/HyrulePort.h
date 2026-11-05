@@ -66,6 +66,49 @@ void Audio_PlaySoundTransposedOot(Vec3f* pos, u16 sfxId, s8 semitone);
 // OoT's Audio_SetFastTempoForTimedMinigame: the timed minigame music speeds up near the end (HyruleAudio.c).
 void Audio_SetFastTempoForTimedMinigameOot(void);
 
+// OoT's "play for an actor" (HyruleOcarina.c): an actor that wants Link to play for it asks every frame (OoT's
+// PLAYER_STATE2_NEAR_OCARINA_ACTOR), and learns when Link takes out the ocarina for it (OoT's
+// PLAYER_STATE2_ATTEMPT_PLAY_FOR_ACTOR), through MM's ocarina offer.
+void Hyrule_OfferOcarinaOot(struct PlayState* play, struct Actor* actor);
+s32 Hyrule_OcarinaAttemptedOot(struct PlayState* play, struct Actor* actor);
+
+// OoT's Audio_PlayWindmillBgm: the windmill's music, unless it is already playing (HyruleAudio.c).
+void Audio_PlayWindmillBgmOot(void);
+
+// OoT's chamber cutscenes (gSaveContext.chamberCutsceneNum, which MM's save context kept): the sage the Chamber of the
+// Sages awakens.
+typedef enum ChamberCutsceneOot {
+    /* 0 */ CHAMBER_CS_FOREST,
+    /* 1 */ CHAMBER_CS_FIRE,
+    /* 2 */ CHAMBER_CS_WATER,
+    /* 3 */ CHAMBER_CS_SPIRIT,
+    /* 4 */ CHAMBER_CS_SHADOW,
+    /* 5 */ CHAMBER_CS_LIGHT
+} ChamberCutsceneOot;
+
+// OoT's Vec2f, whose second member is y (MM's is z).
+typedef struct {
+    f32 x, y;
+} Vec2fOot;
+
+// OoT's AnimationMinimalInfo: an animation with its mode and morph frames.
+typedef struct {
+    /* 0x00 */ AnimationHeader* animation;
+    /* 0x04 */ u8 mode;
+    /* 0x08 */ f32 morphFrames;
+} AnimationMinimalInfo;
+
+// OoT's func_800F483C: the main BGM's volume (HyruleAudio.c).
+void Audio_SetBgmMainVolumeOot(u8 targetVol, u8 volFadeTimer);
+// OoT's Audio_PlaySoundIncreasinglyTransposed and its reset, and Morpha's table for it (HyruleAudio.c).
+extern u8 gMorphaTransposeTableOot[16];
+void Audio_PlaySoundIncreasinglyTransposedOot(Vec3f* pos, s16 sfxId, u8* semitones);
+void Audio_ResetIncreasingTransposeOot(void);
+// MM's custom lens flare (z_kankyo.c): its scale, color intensity and glare (OoT's screen fill alpha).
+extern f32 D_801F4E44;
+extern f32 D_801F4E48;
+extern s16 D_801F4E4C;
+
 // OoT's func_800F3F3C: the cutscene effects sequence, one of its effects (HyruleAudio.c).
 void Hyrule_PlayCutsceneEffectsSeqOot(u8 effect);
 

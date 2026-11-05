@@ -35,6 +35,8 @@ static void EnViewer_InitImpl(EnViewer* this, PlayState* play);
 static void EnViewer_UpdateImpl(EnViewer* this, PlayState* play);
 
 static u8 sHorseSfxPlayed = false;
+// PORT: set by the update when OoT draws the fire, drawn by EnViewer_Draw (MM has no graphics context in updates).
+static u8 sDrawFireEffects = false;
 
 ActorProfile En_Viewer_Oot_Profile = {
     /**/ ACTOR_EN_VIEWER_Oot,
@@ -711,6 +713,10 @@ static void EnViewer_Draw(Actor* thisx, PlayState* play) {
         }
     }
     CLOSE_DISPS(play->state.gfxCtx);
+    if (sDrawFireEffects) {
+        sDrawFireEffects = false;
+        EnViewer_DrawFireEffects(this, play);
+    }
 }
 
 static void EnViewer_UpdatePosition(EnViewer* this, PlayState* play) {
@@ -777,7 +783,7 @@ static void EnViewer_UpdatePosition(EnViewer* this, PlayState* play) {
         if (type == ENVIEWER_TYPE_5_GANONDORF) {
             AudioSfx_PlaySfx(NA_SE_EV_BURNING - SFX_FLAG, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                                  &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
-            EnViewer_DrawFireEffects(this, play);
+            sDrawFireEffects = true;
         }
     }
 }

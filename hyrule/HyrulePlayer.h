@@ -92,6 +92,8 @@ void Hyrule_RevertSpoilingItemsOot(struct PlayState* play);
 // Adult Link (docs/ADULT_LINK.md): human Link at adult age (LINK_IS_ADULT_OOT), with OoT's adult model.
 s32 Hyrule_IsAdultPlayer(struct Player* player);
 FlexSkeletonHeader* Hyrule_GetAdultSkeleton(void);
+// His age properties (z_player.c), also Dark Link's (En_Torch2).
+extern PlayerAgeProperties sAdultAgeProperties_Oot;
 // His eyes, mouth (segments 8 and 9) and tunic colour, before his skeleton is drawn (OoT's Player_DrawImpl).
 Gfx* Hyrule_SetupAdultDraw(Gfx* gfx, s32 eyeIndex, s32 mouthIndex);
 // His hands, sheath and waist (OoT's Player_OverrideLimbDrawGameplayDefault), for MM's model types; true when the
@@ -195,6 +197,26 @@ u8 Hyrule_GetOwnedMmSwordValue(void);
 // The item a minigame puts on the B button, MM's (mmItem) unless it is one of OoT's: Bombchu Bowling throws Bombchus, and
 // child Link shoots in OoT's galleries with the Slingshot.
 u16 Hyrule_MinigameBButtonItem(struct PlayState* play, u16 mmItem);
+// OoT's strength (Player_GetStrength): its strength upgrade as an adult, the Goron's Bracelet's strength as a child.
+typedef enum PlayerStrengthOot {
+    /* 0 */ PLAYER_STR_NONE,
+    /* 1 */ PLAYER_STR_BRACELET,
+    /* 2 */ PLAYER_STR_SILVER_G,
+    /* 3 */ PLAYER_STR_GOLD_G
+} PlayerStrengthOot;
+u8 Player_GetStrengthOot(void);
+// The OoT cutscene action an actor gave Link that MM's Player has no equal for (0 for none); Link runs it from OoT's
+// tables through MM's action 5 (Player_SetCsActionWithHaltedActorsOot).
+extern u8 gPlayerCsActionOot;
+// OoT's Environment_GetBgsDayCount and Environment_ClearBgsDayCount (inventoryOot.bgsDayCount).
+s32 Environment_GetBgsDayCountOot(void);
+void Environment_ClearBgsDayCountOot(void);
+// Whether that action still has to be set up (OoT's first frame of a new action).
+extern u8 gPlayerCsActionInitOot;
+// OoT's Player_IsDroppingFish (play->isPlayerDroppingFish): Link is releasing a fish from a bottle (z_player.c).
+s32 Player_IsDroppingFishOot(struct PlayState* play);
+// OoT's Player_HasMirrorShieldSetToDraw: Link holds OoT's Mirror Shield in his hand.
+s32 Player_HasMirrorShieldSetToDrawOot(struct PlayState* play);
 // Opens OoT's chest (its En_Box, ACTOR_EN_BOX_Oot): 1 slowly, -1 with a kick. MM's Player opens MM's chests through
 // MM's EnBox fields instead.
 void EnBox_OpenOot(struct Actor* thisx, s16 openType);

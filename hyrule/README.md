@@ -93,6 +93,53 @@ entrance indices to MM entrances (`HyruleOotEntrances.inc`). To add a scene, app
 | Outside Ganon's Castle | `SCENE_OUTSIDE_GANONS_CASTLE_Oot` (0x93) | — |
 | Chamber of the Sages | `SCENE_CHAMBER_OF_THE_SAGES_Oot` (0x94) | `0x12400` |
 | Cutscene Map | `SCENE_CUTSCENE_MAP_Oot` (0x95) | `0x12600` |
+| Treasure Chest Shop | `SCENE_TREASURE_BOX_SHOP_Oot` (0x96) | `0x12800` |
+| Back Alley House | `SCENE_BACK_ALLEY_HOUSE_Oot` (0x97) | `0x12A00` |
+| Bazaar | `SCENE_BAZAAR_Oot` (0x98) | `0x12C00` |
+| Potion Shop Market | `SCENE_POTION_SHOP_MARKET_Oot` (0x99) | `0x12E00` |
+| Bombchu Shop | `SCENE_BOMBCHU_SHOP_Oot` (0x9A) | `0x13000` |
+| Happy Mask Shop | `SCENE_HAPPY_MASK_SHOP_Oot` (0x9B) | `0x13200` |
+| Dog Lady's House | `SCENE_DOG_LADY_HOUSE_Oot` (0x9C) | `0x13400` |
+| Shooting Gallery | `SCENE_SHOOTING_GALLERY_Oot` (0x9D) | `0x13600` |
+| Bombchu Bowling Alley | `SCENE_BOMBCHU_BOWLING_ALLEY_Oot` (0x9E) | `0x13800` |
+| Market Guard House | `SCENE_MARKET_GUARD_HOUSE_Oot` (0x9F) | `0x13A00` |
+| Great Fairy's Fountain (Spells) | `SCENE_GREAT_FAIRYS_FOUNTAIN_SPELLS_Oot` (0xA0) | `0x13C00` |
+| Kakariko Guest House | `SCENE_KAKARIKO_CENTER_GUEST_HOUSE_Oot` (0xA1) | `0x13E00` |
+| Potion Shop Kakariko | `SCENE_POTION_SHOP_KAKARIKO_Oot` (0xA2) | `0x14000` |
+| Impa's House | `SCENE_IMPAS_HOUSE_Oot` (0xA3) | `0x14200` |
+| Gravekeeper's Hut | `SCENE_GRAVEKEEPERS_HUT_Oot` (0xA4) | `0x14400` |
+| Granny's Potion Shop | `SCENE_POTION_SHOP_GRANNY_Oot` (0xA5) | `0x14600` |
+| House Of Skulltula | `SCENE_HOUSE_OF_SKULLTULA_Oot` (0xA6) | `0x14800` |
+| Graveyard | `SCENE_GRAVEYARD_Oot` (0xA7) | `0x14A00` |
+| Windmill and Dampe's Grave | `SCENE_WINDMILL_AND_DAMPES_GRAVE_Oot` (0xA8) | `0x14C00` |
+| ReDead Grave | `SCENE_REDEAD_GRAVE_Oot` (0xA9) | `0x14E00` |
+| Grave with Fairy's Fountain | `SCENE_GRAVE_WITH_FAIRYS_FOUNTAIN_Oot` (0xAA) | `0x15000` |
+| Royal Family's Tomb | `SCENE_ROYAL_FAMILYS_TOMB_Oot` (0xAB) | `0x15200` |
+| Bottom of the Well | `SCENE_BOTTOM_OF_THE_WELL_Oot` (0xAC) | `0x15400` |
+| Death Mountain Crater | `SCENE_DEATH_MOUNTAIN_CRATER_Oot` (0xAD) | `0x15600` |
+| Goron City | `SCENE_GORON_CITY_Oot` (0xAE) | `0x15800` |
+| Goron Shop | `SCENE_GORON_SHOP_Oot` (0xAF) | `0x15A00` |
+| Great Fairy's Fountain (Magic) | `SCENE_GREAT_FAIRYS_FOUNTAIN_MAGIC_Oot` (0xB0) | `0x15C00` |
+| Forest Temple | `SCENE_FOREST_TEMPLE_Oot` (0xB1) | `0x15E00` |
+| Forest Temple (Boss) | `SCENE_FOREST_TEMPLE_BOSS_Oot` (0xB2) | `0x16000` |
+| Fire Temple | `SCENE_FIRE_TEMPLE_Oot` (0xB3) | `0x16200` |
+| Fire Temple (Boss) | `SCENE_FIRE_TEMPLE_BOSS_Oot` (0xB4) | `0x16400` |
+| Zora's Domain | `SCENE_ZORAS_DOMAIN_Oot` (0xB5) | `0x16600` |
+| Zora's Fountain | `SCENE_ZORAS_FOUNTAIN_Oot` (0xB6) | `0x16800` |
+| Zora Shop | `SCENE_ZORA_SHOP_Oot` (0xB7) | `0x16A00` |
+| Ice Cavern | `SCENE_ICE_CAVERN_Oot` (0xB8) | `0x16C00` |
+| Lakeside Laboratory | `SCENE_LAKESIDE_LABORATORY_Oot` (0xB9) | `0x16E00` |
+| Water Temple | `SCENE_WATER_TEMPLE_Oot` (0xBA) | `0x17000` |
+| Water Temple (Boss) | `SCENE_WATER_TEMPLE_BOSS_Oot` (0xBB) | `0x17200` |
+| Shadow Temple | `SCENE_SHADOW_TEMPLE_Oot` (0xBC) | `0x17400` |
+| Shadow Temple (Boss) | `SCENE_SHADOW_TEMPLE_BOSS_Oot` (0xBD) | `0x17600` |
+| Gerudo's Fortress | `SCENE_GERUDOS_FORTRESS_Oot` (0xBE) | `0x17800` |
+| Thieves' Hideout | `SCENE_THIEVES_HIDEOUT_Oot` (0xBF) | `0x17A00` |
+| Carpenters' Tent | `SCENE_CARPENTERS_TENT_Oot` (0xC0) | `0x17C00` |
+| Haunted Wasteland | `SCENE_HAUNTED_WASTELAND_Oot` (0xC1) | `0x17E00` |
+| Desert Colossus | `SCENE_DESERT_COLOSSUS_Oot` (0xC2) | `0x18000` |
+| Spirit Temple | `SCENE_SPIRIT_TEMPLE_Oot` (0xC3) | `0x18200` |
+| Spirit Temple (Boss) | `SCENE_SPIRIT_TEMPLE_BOSS_Oot` (0xC4) | `0x18400` |
 
 The scenes without an entrance (—) are OoT's night and adult variants: no OoT entrance group starts in them, so the
 day scene's entrances lead to them by layer (child at night, adult). Boot the day scene at night or as adult
@@ -542,6 +589,33 @@ ruins' ReDeads and the Poe collector load. Notes:
   after Zelda's Letter is shown to Kakariko's guard, and the Treasure Chest Shop at night.
 - Not checked yet: the Great Fairy's appearance (Zelda's Lullaby on her platform), the Poe collector's trade, the
   dog lady's dog, and the bowling and gallery prizes.
+
+Wave 26 opens the rest of adult Link's Hyrule: Kakariko's interiors and graveyard, the Bottom of the Well, Death
+Mountain Crater, Goron City and its shop, the Great Fairy's magic fountain, the five temples and their bosses, and
+the ways to them (Zora's Domain, Zora's Fountain, the Zora shop, the Ice Cavern, the Lakeside Laboratory, Gerudo's
+Fortress, the Thieves' Hideout, the carpenters' tent, the Haunted Wasteland and the Desert Colossus): 36 scenes and
+about 170 actors. Under gdb, all 36 load and draw. With each boss beaten, Link steps into its blue warp and is taken to
+the Chamber of the Sages, where Saria, Darunia, Ruto, Impa and Nabooru awaken and hand over their medallions, and on as
+in OoT: Kokiri Forest's Deku Sprout, Kakariko's eruption before Darunia then the crater, Lake Hylia refilling, the
+graveyard, the Desert Colossus. Twinrova's intro and Nabooru's Iron Knuckle fight play. Notes:
+
+- OoT's room clear flags are MM's per-cycle ones (`cycleSceneFlags`), so, as Hyrule resets with the cycle
+  (docs/DESIGN.md), the temples' bosses are back after the Song of Time, as Termina's are.
+- MM's `Play_Main` clears `play->state.gfxCtx` while actors update. En_Viewer drew Ganondorf's fire from its update;
+  it now draws it from its draw. The other ported actors draw only from their draws.
+- Dark Link (`En_Torch2`) is a Player, as MM's Kafei (`En_Test3`) is, set up the same way: human form at adult age
+  (`sAdultAgeProperties_Oot`), the Master Sword as MM's Gilded Sword action, his own sword trails, and MM's limb
+  draw callbacks. MM's Player changes the camera mode of a non-Player actor only for Kafei, who has a camera.
+- OoT's prerendered rooms get black bars beside their 4:3 background in widescreen, as in SoH; the room geometry
+  drawn before the background (for its depth) showed there.
+- OoT's song chests (types 9 and 10, the ReDead grave's) stay OoT chests: MM's `En_Box` has no action for them.
+- OoT's dungeons are exported under `oot/scenes/nonmq/` (`Hyrule_GetScenePath`).
+- Biggoron's Sword day count (`inventoryOot.bgsDayCount`, save version 20) counts MM's days too.
+- Not done: OoT's one-point camera cutscenes (doors, switches, boss deaths keep the main camera); boss camera
+  settings take MM's `DUNGEON0`; the fire circle effect (`EffectSsFCircle`) is not drawn; horseback archery (the
+  horses) is left out.
+- Not checked yet: the boss fights themselves, Dark Link's fight, the temples' puzzles, the windmill's Song of
+  Storms and Dampé's race.
 
 ## Cutscenes
 

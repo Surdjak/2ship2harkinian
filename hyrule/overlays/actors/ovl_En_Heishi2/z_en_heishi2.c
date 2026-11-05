@@ -645,7 +645,7 @@ static void func_80A5455C(EnHeishi2* this, PlayState* play) {
         pos.z = Rand_CenteredFloat(20.0f) + (this->unk_274.z - 20.0f);
         rotY = Rand_CenteredFloat(7000.0f) + this->actor.yawTowardsPlayer;
         if ((true)) {
-            bomb = (EnBom*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_BOM_Oot, pos.x, pos.y, pos.z, 0, rotY, 0, 0);
+            bomb = (EnBom*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_BOM, pos.x, pos.y, pos.z, 0, rotY, 0, 0);
             if (bomb != NULL) {
                 bomb->actor.speed = Rand_CenteredFloat(5.0f) + 10.0f;
                 bomb->actor.velocity.y = Rand_CenteredFloat(5.0f) + 10.0f;

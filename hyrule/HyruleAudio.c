@@ -847,3 +847,30 @@ void Audio_SetFastTempoForTimedMinigameOot(void) {
         SEQCMD_SET_TEMPO(SEQ_PLAYER_BGM_MAIN, 5, 210);
     }
 }
+
+void Audio_PlayWindmillBgmOot(void) {
+    // OoT's NA_BGM_WINDMILL.
+    if (AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) != SEQ_OOT(0x4C)) {
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, SEQ_OOT(0x4C));
+    }
+}
+
+void Audio_SetBgmMainVolumeOot(u8 targetVol, u8 volFadeTimer) {
+    // OoT's func_800F483C: scale index 0 is the same in both games.
+    AudioSeq_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 0, targetVol, volFadeTimer);
+}
+
+// OoT's: Morpha's tentacle sound, a semitone step per play.
+u8 gMorphaTransposeTableOot[16] = { 0, 0, 0, 1, 1, 2, 4, 6, 8, 8, 8, 8, 8, 8, 8, 8 };
+static u8 sIncreasingTransposeOot;
+
+void Audio_PlaySoundIncreasinglyTransposedOot(Vec3f* pos, s16 sfxId, u8* semitones) {
+    Audio_PlaySfx_AtPosWithFreq(pos, sfxId, gPitchFrequencies[semitones[sIncreasingTransposeOot] + 39]);
+    if (sIncreasingTransposeOot < 15) {
+        sIncreasingTransposeOot++;
+    }
+}
+
+void Audio_ResetIncreasingTransposeOot(void) {
+    sIncreasingTransposeOot = 0;
+}

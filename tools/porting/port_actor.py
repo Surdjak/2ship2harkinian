@@ -70,6 +70,8 @@ RENAMES = [
     # SoH's options read as their default, which is vanilla's.
     (r"\bCVarGetInteger\(CVAR_\w+\(\"[^\"]*\"\), (-?\w+)\)", r"\1"),
     (r"\bCVarGetColor24\(CVAR_\w+\(\"[^\"]*\"\), ((?:\(Color_RGB8\))?\{[^{}]*\}|[^()]+)\)", r"\1"),
+    (r"\bCVarGetColor\(CVAR_\w+\(\"[^\"]*\"\), ((?:\(Color_RGBA8\))?\{[^{}]*\}|[^()]+)\)", r"\1"),
+    (r"\bCVarGetFloat\(CVAR_\w+\(\"[^\"]*\"\), ([^()]+)\)", r"\1"),
     # OoT's audio and interface calls under MM's names.
     (r"\bfunc_800F4414\(", "Audio_PlaySfx_AtPosWithTimer("),
     (r"\bfunc_800F44EC\(", "Audio_SetSfxTimerLerpInterval("),
@@ -100,6 +102,136 @@ RENAMES = [
     (r"\bfunc_8005B198\(\)", "Hyrule_GetAttentionCategoryOot()"),
     (r"\bEffectSsHitMark_", "EffectSsHitmark_"),
     (r"\bAudio_PlaySoundTransposed\(", "Audio_PlaySoundTransposedOot("),
+    (r"\bAudio_PlayWindmillBgm\(", "Audio_PlayWindmillBgmOot("),
+    (r"\bAudio_StopSfxById\(", "AudioSfx_StopById("),
+    # OoT's actor helpers, as MM names them or as HyruleActor.c ports them.
+    (r"\bfunc_8002EABC\(", "Hilite_DrawOpa("),
+    (r"\bfunc_8002EB44\(", "Hilite_DrawXlu("),
+    (r"\bfunc_8002843C\(", "EffectSsDust_SpawnDrawFlag2Oot("),
+    (r"\bfunc_80035844\(", "Math_Vec3fDiffToRotOot("),
+    (r"\bActor_GetCollidedExplosive\(", "Actor_GetCollidedExplosiveOot("),
+    (r"\bActor_SetTextWithPrefix\(", "Actor_SetTextWithPrefixOot("),
+    (r"\bEffectSsDeadDd_Spawn\(", "EffectSsDeadDd_SpawnOot("),
+    (r"\bEffectSsDeadDs_SpawnStationary\(", "EffectSsDeadDs_SpawnStationaryOot("),
+    (r"\bEffectSsFCircle_Spawn\(", "EffectSsFCircle_SpawnOot("),
+    (r"\bGfx_SetupDL_60NoCDXlu\(", "Gfx_SetupDL60_XluNoCD("),
+    (r"\bfunc_80094E78\(", "Gfx_TexScrollOot("),
+    (r"\bPlay_TriggerRespawn\(", "Hyrule_TriggerRespawnOot("),
+    (r"\bIS_BOSS_RUSH\b", "false"),
+    # OoT's Player fields MM keeps under other names.
+    (r"\b(\w*[pP]layer\w*)->unk_450\b", r"\1->unk_3A0"),
+    (r"\bPlayer_HasMirrorShieldSetToDraw\(", "Player_HasMirrorShieldSetToDrawOot("),
+    (r"\bplayer->unk_860\b", "player->unk_B28"),  # the burning stick's timer
+    # OoT's knockback request (MM's func_800B8D10 fills the same fields).
+    (r"\bplayer->knockbackDamage\b", "player->unk_B74"),
+    (r"\bplayer->knockbackType\b", "player->unk_B75"),
+    (r"\bplayer->knockbackRot\b", "player->unk_B76"),
+    (r"\bplayer->knockbackSpeed\b", "player->unk_B78"),
+    (r"\bplayer->knockbackYVelocity\b", "player->unk_B7C"),
+    (r"\bgMtxFClear\b", "gIdentityMtxF"),
+    (r"\bfunc_8005ACFC\(", "Camera_SetStateFlag("),
+    (r"\bfunc_8005AD1C\(", "Camera_UnsetStateFlag("),
+    (r"\bfunc_800F483C\(", "Audio_SetBgmMainVolumeOot("),
+    (r"\bfunc_800F4190\(", "Audio_PlaySfx_AtPos("),
+    (r"\bfunc_80093C80\(", "Gfx_SetupDL25_OpaRoomOot("),
+    (r"\bfunc_80074CE8\(", "Environment_ChangeLightSetting("),
+    (r"\bfunc_80041EA4\(", "SurfaceType_GetFloorProperty("),
+    (r"\bfunc_8003EE6C\(", "DynaPoly_UpdateBgActorTransforms("),
+    (r"\bfunc_800355E4\(", "Actor_IsHitByHammerForwardOot("),
+    (r"\bfunc_8003435C\(", "func_800BCC68("),  # an Xlu highlight under the scene's light
+    (r"\bfunc_8003424C\(", "CollisionCheck_SpawnShieldParticlesMetal("),
+    (r"\bfunc_8002DD6C\(", "func_800B7118("),
+    (r"\bfunc_8002DD78\(", "func_800B7128("),
+    # MM's z_effect_soft_sprite_old_init.c and z_eff_ss_dead.c keep OoT's helpers in OoT's order.
+    (r"\bfunc_8002865C\(", "func_800B11A0("),
+    (r"\bfunc_800286CC\(", "func_800B1210("),
+    (r"\bfunc_8002873C\(", "func_800B1280("),
+    (r"\bfunc_800287AC\(", "func_800B12F0("),
+    (r"\bfunc_80028990\(", "func_800B14D4("),
+    (r"\bfunc_80028A54\(", "func_800B1598("),
+    (r"\bfunc_80026230\(", "func_800AE2A0("),
+    (r"\bfunc_80026400\(", "func_800AE434("),
+    (r"\bfunc_80026608\(", "func_800AE5A0("),
+    (r"\bfunc_80026690\(", "func_800AE5E4("),
+    (r"\bfunc_80026860\(", "func_800AE778("),
+    (r"\bfunc_80026A6C\(", "func_800AE8EC("),
+    (r"\bPlay_CameraSetAtEyeUp\(", "Play_SetCameraAtEyeUp("),
+    (r"\bLinkAnimation_Update\(", "PlayerAnimation_Update("),
+    (r"\bAnimationContext_SetCopyTrue\(", "AnimTaskQueue_AddCopyUsingMap("),
+    (r"\bActor_SetPlayerKnockback\(", "func_800B8D10("),
+    (r"\bActor_SwapHookshotAttachment\(", "Actor_SwapHookshotAttachmentOot("),
+    (r"\bMath_StepUntilS\(", "Math_StepUntilSOot("),
+    (r"\bAudio_PlaySoundIncreasinglyTransposed\(", "Audio_PlaySoundIncreasinglyTransposedOot("),
+    (r"\bAudio_ResetIncreasingTranspose\(", "Audio_ResetIncreasingTransposeOot("),
+    (r"\bSUBCAM_ACTIVE\b", "CAM_ID_NONE"),
+    # MM's shock effect tracks Goht's limbs where OoT's tracks Phantom Ganon's; this one stays where it is spawned.
+    (r"\bFHGFLASH_SHOCK_PG\b", "FHGFLASH_SHOCK_NO_ACTOR"),
+    (r"\bPLAYER_BOOTS_(IRON|HOVER)\b", r"PLAYER_BOOTS_\1_Oot"),
+    (r"\bResourceGetDataByName\(", "(u8*)ResourceMgr_LoadTexOrDListByName("),
+    (r"(\.|->)childCamIdx\b", r"\1childCamId"),
+    # OoT's Biggoron's Sword flag is 3Ship's owned Biggoron's Sword (HyruleInventory.c gives it with the item).
+    (r"^([ \t]*)gSaveContext\.bgsFlag = \w+;", r"\1// PORT: giving ITEM_SWORD_BGS_Oot records Biggoron's Sword as owned (OoT's bgsFlag)."),
+    (r"\bgSaveContext\.bgsFlag\b", "CHECK_OWNED_EQUIP_OOT(EQUIP_TYPE_SWORD, EQUIP_OWNED_SWORD_BIGGORON)"),
+    (r"\bEnvironment_GetBgsDayCount\(", "Environment_GetBgsDayCountOot("),
+    # OoT's custom lens flare is MM's first (z_kankyo.c), with OoT's scale, intensity and screen fill as MM's.
+    (r"\bgCustomLensFlareOn\b", "gCustomLensFlare1On"),
+    (r"\bgCustomLensFlarePos\b", "gCustomLensFlare1Pos"),
+    (r"\bgLensFlareScale\b", "D_801F4E44"),
+    (r"\bgLensFlareColorIntensity\b", "D_801F4E48"),
+    (r"\bgLensFlareScreenFillAlpha\b", "D_801F4E4C"),
+    (r"\bgMorphaTransposeTable\b", "gMorphaTransposeTableOot"),
+    (r"\bEnvironment_ClearBgsDayCount\(", "Environment_ClearBgsDayCountOot("),
+    # The flag macros, whatever their argument.
+    (r"\b(GET|SET|CLEAR)_(ITEMGETINF|INFTABLE|EVENTCHKINF)\((?=(?:ITEMGETINF|INFTABLE|EVENTCHKINF)_\w+\()", r"\1_\2_OOT("),
+    (r"\bplayer->unk_6A8\b", "player->autoLockOnActor"),
+    (r"\bplayer->unk_A73\b", "player->unk_D57"),  # set to 4 when Link fires an arrow or throws the boomerang
+    (r"\benvCtx\.unk_D6\b", "envCtx.lightBlendRateOverride"),
+    (r"(\.|->)dyna\.unk_154\b", r"\1dyna.unk14C"),
+    # OoT's collider elements name their element info `info`, MM's `elem`.
+    (r"(\.|->)info\.(?=(?:at|ac|oc)\w*|elemType|bumper|toucher)", r"\1elem."),
+    (r"(\b\w*[cC]ollider\w*(?:\[[^\]]*\])?|\belements\[[^\]]*\])\.info\b", r"\1.elem"),
+    (r"\bplay->isPlayerDroppingFish\(play\)", "Player_IsDroppingFishOot(play)"),
+    (r"\bEffectSsFhgFlash_SpawnLightBall\(", "EffectSsFhgFlash_SpawnLightBallOot("),
+    (r"\bAudio_StopSfxByPos\(", "AudioSfx_StopByPos("),
+    (r"\bAudio_QueueSeqCmd\(", "AudioSeq_QueueSeqCmd("),
+    (r"\bActor_UpdateVelocityXYZ\(", "Actor_UpdateVelocityWithoutGravity("),
+    (r"\bRADF_TO_BINANG\(", "RAD_TO_BINANG("),
+    (r"\bplay->activeCamera\b", "play->activeCamId"),
+    (r"\bPlay_TriggerVoidOut\(", "func_80169FDC("),
+    (r"\bfunc_800C08AC\(", "func_80169AFC("),  # return to the main camera
+    (r"\bMATRIX_CHECKFLOATS\(([^()]*)\)", r"\1"),
+    (r"\bInterface_SetSubTimer\(", "Interface_StartTimer(TIMER_ID_MINIGAME_2, "),
+    # OoT's manual cutscenes run in OoT's cutscene context, which MM's mirrors (HyruleCutscene.c).
+    (r"\bfunc_80064520\(play, &play->csCtx\)", "Cutscene_StartManualOot(play)"),
+    (r"\bfunc_80064534\(play, &play->csCtx\)", "Cutscene_StopManualOot(play)"),
+    (r"\bOnePointCutscene_AttentionSetSfx\(", "OnePointCutscene_AttentionSetSfxOot("),
+    (r"\bCollisionCheck_GetSwordDamage\(", "CollisionCheck_GetSwordDamageOot("),
+    (r"\bPlayer_GetStrength\(\)", "Player_GetStrengthOot()"),
+    (r"\bgSaveContext\.inventory\.gsTokens\b", "gSaveContext.save.saveInfo.inventoryOot.gsTokens"),
+    # OoT's Vec2f has x and y where MM's has x and z.
+    (r"\bVec2f\b", "Vec2fOot"),
+    # OoT's curve skeletons are MM's under other names.
+    (r"\bSkelAnimeCurve\b", "SkelCurve"),
+    (r"\bSkelCurveLimbList\b", "CurveSkeletonHeader"),
+    (r"\bTransformUpdateIndex\b", "CurveAnimationHeader"),
+    (r"(\.|->)animCurFrame\b", r"\1curFrame"),
+    # SoH's names for vanilla texts.
+    (r"\bTEXT_GS_(NO_)?FREEZE\b", "TEXT_OOT(0xB4)"),
+    # OoT's "play for an actor": the actor asks (NEAR_OCARINA_ACTOR) and Player answers when Link takes out the
+    # ocarina (ATTEMPT_PLAY_FOR_ACTOR); MM's actor offers itself and is accepted (HyruleOcarina.c). The actor is
+    # first in `this`.
+    (r"\b\w+->stateFlags2 \|= PLAYER_STATE2_NEAR_OCARINA_ACTOR;", "Hyrule_OfferOcarinaOot(play, (Actor*)this);"),
+    (r"\b\w+->stateFlags2 & PLAYER_STATE2_ATTEMPT_PLAY_FOR_ACTOR\b", "Hyrule_OcarinaAttemptedOot(play, (Actor*)this)"),
+    (r"\b\w+->stateFlags2 &= ~PLAYER_STATE2_ATTEMPT_PLAY_FOR_ACTOR;",
+     "// PORT: MM takes an accepted ocarina offer back by itself (OoT's ATTEMPT_PLAY_FOR_ACTOR)."),
+    # OoT's collectibles MM lacks, as Item00_FromOot maps them.
+    (r"\bITEM00_SHIELD_(DEKU|HYLIAN)\b", "ITEM00_SHIELD_HERO"),
+    (r"\bITEM00_TUNIC_(ZORA|GORON)\b", "ITEM00_NOTHING"),
+    (r"\bITEM00_MAGIC_SMALL\b", "ITEM00_MAGIC_JAR_SMALL"),
+    (r"\bITEM00_MAGIC_LARGE\b", "ITEM00_MAGIC_JAR_BIG"),
+    (r"\bITEM00_ARROWS_(SINGLE|SMALL|MEDIUM)\b", "ITEM00_ARROWS_10"),
+    (r"\bITEM00_ARROWS_LARGE\b", "ITEM00_ARROWS_30"),
+    (r"\bITEM00_BOMBS_SPECIAL\b", "ITEM00_BOMBS_A"),
     (r"\bAudio_SetFastTempoForTimedMinigame\(", "Audio_SetFastTempoForTimedMinigameOot("),
     (r"\bActor_UpdateVelocityXZGravity\(", "Actor_UpdateVelocityWithGravity("),
     (r"\bMatrix_RotateAxis\(", "Matrix_RotateAxisF("),
@@ -134,7 +266,7 @@ RENAMES = [
     # MM's Tatl hints do not cover OoT enemies: init chains keep their shape with no hint.
     (r"\bICHAIN_S8\(naviEnemyId, (\w+), (ICHAIN_\w+)\),",
      r"ICHAIN_U8(hintId, TATL_HINT_ID_NONE, \2), // PORT: OoT's Navi enemy info \1"),
-    (r"^([ \t]*)(?:this->actor\.|thisx->)naviEnemyId = (\w+);(?: //)?", r"\1// PORT: OoT gives Navi enemy info \2;"),
+    (r"^([ \t]*)(?:this->actor\.|thisx->)naviEnemyId = ([^;]+);(?: //)?", r"\1// PORT: OoT gives Navi enemy info \2;"),
     (r"^([ \t]*)(?:this->actor\.|thisx->)naviEnemyId \+= (\w+);", r"\1// PORT: OoT gives Navi the enemy info \2 further on."),
     (r"\bActor_SetDropFlag(JntSph)?\(", r"Actor_SetDropFlag\1_Oot("),
     (r"\bEffectSsDeadDb_Spawn\(", "EffectSsDeadDb_Spawn_Oot("),
@@ -284,6 +416,8 @@ RENAMES = [
     (r"\bfunc_80033C30\(", "func_800BC620("),
     (r"\bfunc_800435D8\(", "DynaPolyActor_ValidateMove("),
     (r"\bObject_GetIndex\(", "Object_GetSlot("),
+    # OoT's Object_Spawn loads an object into the next slot: MM's Object_SpawnPersistent.
+    (r"\bObject_Spawn\(", "Object_SpawnPersistent("),
     (r"\bobjectCtx\.status\[", "objectCtx.slots["),
     # OoT's DynaPolyMoveFlag has MM's bits: 1 carries actors on top, 2 turns them.
     (r"\bDPM_UNK3\b", "DYNA_TRANSFORM_POS | DYNA_TRANSFORM_ROT_Y"),
@@ -339,6 +473,11 @@ RENAMES = [
     # MM's chest fanfare is OoT's (both 0x2B); OoT's sequence ids cannot carry the sequence arguments it is played with.
     (r"\bNA_BGM_OPEN_TRE_BOX\b", "NA_BGM_OPEN_CHEST"),
     (r"\benvCtx\.unk_BF\b", "envCtx.lightSettingOverride"),
+    # OoT's indoor light fields, MM's light settings (OoT's layout runs 4 bytes shorter there).
+    (r"\benvCtx(\.|->)unk_BD\b", r"envCtx\1lightSetting"),
+    (r"\benvCtx(\.|->)unk_BE\b", r"envCtx\1prevLightSetting"),
+    (r"\benvCtx(\.|->)unk_D8\b", r"envCtx\1lightBlend"),
+    (r"\benvCtx(\.|->)unk_DC\b", r"envCtx\1lightBlendOverride"),
     (r"\bMAX_HEALTH\b", "(20 * 0x10)"),
     (r"\bSUBCAM_NONE\b", "CAM_ID_NONE"),
     # OoT's camera settings that the exporter maps to MM's (OotToMm.cpp).
@@ -366,6 +505,11 @@ RENAMES = [
     (r"\bfunc_8008EF44\(", "Player_SetBButtonAmmo("),
     (r"\bplay->bombchuBowlingStatus\b", "play->unk_1887D"),
     (r"\bgSaveContext\.timerState\b", "gSaveContext.timerStates[TIMER_ID_MINIGAME_1]"),
+    # OoT's second timer (the trade items' and other timers) is MM's second minigame timer.
+    (r"\bgSaveContext\.subTimerState\b", "gSaveContext.timerStates[TIMER_ID_MINIGAME_2]"),
+    (r"\bgSaveContext\.subTimerSeconds\b", "((s32)(gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] / 100))"),
+    (r"\bSUBTIMER_STATE_OFF\b", "TIMER_STATE_OFF"),
+    (r"\bTIMER_STATE_UP_FREEZE\b", "TIMER_STATE_STOP"),
     (r"\bgSaveContext\.timerSeconds\b", "((s32)(gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_1] / 100))"),
     (r"\bITEM00_RUPEE_ORANGE\b", "ITEM00_RUPEE_HUGE"),
     (r"\bplay->nextEntranceIndex = gSaveContext\.entranceIndex;", "play->nextEntrance = gSaveContext.save.entrance;"),
@@ -437,6 +581,11 @@ RENAMES = [
     (r"\b((?:EVENTCHKINF|INFTABLE|ITEMGETINF|EVENTINF)_[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\b(ACTOR_(?!FLAG_)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\bACTOR_EN_BOM_Oot\b", "ACTOR_EN_BOM"),
+    # Collectibles are MM's En_Item00 (OoT-only types through Item00_FromOot), arrows MM's En_Arrow, whose thrown Deku
+    # Nut stands in for OoT's cutscene nut.
+    (r"\bACTOR_EN_ITEM00_Oot\b", "ACTOR_EN_ITEM00"),
+    (r"\bACTOR_EN_ARROW_Oot\b", "ACTOR_EN_ARROW"),
+    (r"\bARROW_CS_NUT\b", "ARROW_TYPE_DEKU_NUT"),
     (r"\b(OBJECT_(?!GAMEPLAY_KEEP\b)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\bOBJECT_GAMEPLAY_KEEP\b", "GAMEPLAY_KEEP"),
     (r"\b(SCENE_[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
@@ -445,13 +594,71 @@ RENAMES = [
     (r"\bPlayer_UpdateBottleHeld\((\w+), ([^,]+), ITEM_BOTTLE_Oot, PLAYER_IA_BOTTLE\)",
      r"Player_UpdateBottleHeld(\1, \2, ITEM_BOTTLE, PLAYER_IA_BOTTLE_EMPTY)"),
 ]
+
+
+def _generic_renames():
+    """OoT names MM lacks, by value: Player state flags by their bit (MM names bits by value), and camera settings by
+    the exporter's own OoT-to-MM table (OTRExporter's OotToMm.cpp), so actors' settings match their scenes'."""
+    soh = os.path.join(HERE, "..", "..", "..", "Shipwright", "soh", "include")
+    mm = os.path.join(HERE, "..", "..", "mm", "include")
+    out = []
+    mm_flags = set(re.findall(r"#define (PLAYER_STATE[123]_\w+)", open(os.path.join(mm, "z64player.h")).read()))
+    for name, n, bit in re.findall(r"#define (PLAYER_STATE([123])_\w+) \(1u? << (\d+)\)",
+                                   open(os.path.join(soh, "z64player.h")).read()):
+        mm_name = "PLAYER_STATE%s_%X" % (n, 1 << int(bit))
+        if name not in mm_flags and mm_name in mm_flags:
+            out.append((r"\b%s\b" % name, mm_name))
+    oot_sets = re.findall(r"/\* (0x[0-9A-F]+) \*/ (CAM_SET_\w+)", open(os.path.join(soh, "z64camera.h")).read())
+    mm_sets = dict((int(i, 16), n) for i, n in re.findall(r"/\* (0x[0-9A-F]+) \*/ (CAM_SET_\w+)",
+                                                         open(os.path.join(mm, "z64camera.h")).read()))
+    mm_names = set(mm_sets.values())
+    table = dict((int(i, 16), int(m, 16)) for i, m in re.findall(
+        r"/\* (0x[0-9A-F]+) [\w ()]+\*/ (0x[0-9A-F]+),",
+        open(os.path.join(HERE, "..", "..", "OTRExporter", "OTRExporter", "OotToMm.cpp")).read()))
+    for i, name in oot_sets:
+        i = int(i, 16)
+        if name not in mm_names and i in table and table[i] in mm_sets:
+            out.append((r"\b%s\b" % name, mm_sets[table[i]]))
+    # OoT's damage flags by name, as the OoT mask they stand for (DMG_FROM_OOT, as for OoT's masks in code).
+    defs = dict(re.findall(r"#define (DMG_\w+) +\(([^)]*)\)", open(os.path.join(soh, "z64collision_check.h")).read()))
+    values = {}
+
+    def value(name):
+        if name not in values:
+            expr = defs[name]
+            m = re.fullmatch(r"\s*1 << (0x[0-9A-Fa-f]+|\d+)\s*", expr)
+            values[name] = (1 << int(m.group(1), 0)) if m else 0
+            if not m:
+                for part in expr.split("|"):
+                    values[name] |= value(part.strip())
+        return values[name]
+
+    for name in defs:
+        if name.startswith(("DMG_ENTRY", "DMG_TABLE", "DMG_FROM")):
+            continue
+        try:
+            out.append((r"\b%s\b(?!\()" % name, "DMG_FROM_OOT(0x%08X)" % value(name)))
+        except (KeyError, AttributeError):
+            pass
+    return out
+
+
+RENAMES += _generic_renames()
 # Lines that are SoH-only and dropped when they stand alone.
 DROP_LINE = re.compile(r"^\s*#include \"(vt\.h|soh_assets\.h|soh/[^\"]+|overlays/effects/ovl_Effect_Ss_Dead_Sound/[^\"]+)\"\s*$|"
                        r"^\s*#include <libultraship/bridge/[^>]+>\s*$|"
+                       # OoT's actors declare Object_Spawn themselves; MM's is in z64scene.h.
+                       r"^\s*(static )?s32 Object_Spawn\(ObjectContext\* \w+, s16 \w+\);\s*$|"
                        # SoH's randomizer item entries.
                        r"^\s*(/\*[^*]*\*/ )?GetItemEntry getItemEntry( = \(GetItemEntry\)(GI_NONE|GET_ITEM_NONE))?;\s*$|"
                        r"^\s*this->getItemEntry = \(GetItemEntry\)(GI_NONE|GET_ITEM_NONE);\s*$|"
-                       r"^\s*\w+\.trailType = TRAIL_TYPE_\w+;\s*$")
+                       r"^\s*\w+\.trailType = TRAIL_TYPE_\w+;\s*$|"
+                       r"^\s*Flags_SetRandomizerInf\([^;]*\);\s*$|"
+                       # SoH's record of a sale for its randomizer.
+                       r"^\s*gSaveContext\.ship\.pendingSale\w* = [^;]*;\s*$|"
+                       r"^\s*GetItemEntry \w+ = ItemTable_Retrieve\([^;]*\);\s*$|"
+                       # SoH's interpolation and texture-blending hints.
+                       r"^\s*(FrameInterpolation_DontInterpolateChild|Gfx_RegisterBlendedTexture)\([^;]*\);\s*$")
 TEXT_ID = re.compile(r"\b(0x[1-7][0-9A-Fa-f]{3})\b")
 # Lines that give text ids: returns, cases, textId assignments, text calls and a GetTextId's `ret`. A statement that
 # goes on to the next lines (a multi-line ternary) is converted to its end.
@@ -464,7 +671,7 @@ SHORT_TEXT_ID = re.compile(r"(Message_(?:Start|Continue)Textbox\(\s*\w+,\s*|[Tt]
 PROFILE = re.compile(
     r"const ActorInit (\w+)_InitVars = \{\s*(\w+),\s*(\w+),\s*(\w+),\s*(\w+),\s*sizeof\((\w+)\),\s*"
     r"(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),\s*(?:\(ActorFunc\))?(\w+),"
-    r"\s*(?:\(ActorResetFunc\))?(\w+),?\s*\};")
+    r"(?:\s*(?:\(ActorResetFunc\))?(\w+),?)?\s*\};")
 
 
 def sfx_renames(soh_root):
@@ -525,7 +732,7 @@ def convert_entrances(text):
     text = re.sub(r"play->nextEntranceIndex = (ENTR_\w+);",
                   lambda m: f"play->nextEntrance = Hyrule_ExitFromOot(0x{ENTRANCES[m.group(1)]:03X}); // OoT's {m.group(1)}",
                   text)
-    return re.sub(r"gSaveContext\.entranceIndex ([!=]=) (ENTR_\w+)",
+    return re.sub(r"gSaveContext\.entranceIndex ([!=]=)\s+(ENTR_\w+)",
                   lambda m: f"gSaveContext.save.entrance {m.group(1)} Hyrule_EntranceFromOot(0x{ENTRANCES[m.group(2)]:03X} /* {m.group(2)} */)",
                   text)
 
@@ -546,12 +753,62 @@ def PORTED_ACTOR(ovl):
 PORTING = set()
 
 
+COLLIDER_ELEMENT_NAMES = set()
+
+
+def fix_title_card_args(text):
+    """OoT's TitleCard_InitBossName takes the PlayState (MM's the GameState); SoH adds an eighth argument."""
+    out, i = [], 0
+    while True:
+        j = text.find("TitleCard_InitBossName(", i)
+        if j < 0:
+            break
+        k = j + len("TitleCard_InitBossName(")
+        depth, commas = 1, []
+        while depth:
+            c = text[k]
+            depth += (c == "(") - (c == ")")
+            if c == "," and depth == 1:
+                commas.append(k)
+            k += 1
+        call = text[j:k]
+        if len(commas) == 7:
+            call = text[j:commas[6]] + ")"
+        call = call.replace("TitleCard_InitBossName(play,", "TitleCard_InitBossName(&play->state,", 1)
+        out.append(text[i:j] + call)
+        i = k
+    return "".join(out) + text[i:]
+
+
+def drop_camera_data_last_arg(text):
+    """SoH's Camera_SetCameraData has a seventh, unused argument that MM's lacks."""
+    out, i = [], 0
+    while True:
+        j = text.find("Camera_SetCameraData(", i)
+        if j < 0:
+            break
+        k = j + len("Camera_SetCameraData(")
+        depth, commas = 1, []
+        while depth:
+            c = text[k]
+            depth += (c == "(") - (c == ")")
+            if c == "," and depth == 1:
+                commas.append(k)
+            k += 1
+        if len(commas) == 6:
+            out.append(text[i:commas[5]] + ")")
+        else:
+            out.append(text[i:k])
+        i = k
+    return "".join(out) + text[i:]
+
+
 def profile(m):
     name, actor, cat, flags, obj, size, init, destroy, update, draw, reset = m.groups()
     lines = [f"ActorProfile {name}_Oot_Profile = {{"]
     for v in (actor, cat, flags, obj, f"sizeof({size})", init, destroy, update, draw):
         lines.append(f"    /**/ {v},")
-    if reset != "NULL":
+    if reset not in (None, "NULL"):
         lines.append(f"    /**/ {reset},")
     lines.append("};")
     return "\n".join(lines)
@@ -678,6 +935,11 @@ def convert(text, header):
         out.append(line)
     text = "\n".join(out) + "\n"
     text = re.sub(r'#include "objects/(\w+)/(\w+)\.h"', r'#include "assets/oot/objects/\1/\2.h"', text)
+    text = re.sub(r'#include "textures/(\w+)/(\w+)\.h"', r'#include "assets/oot/textures/\1/\2.h"', text)
+    text = drop_camera_data_last_arg(text)
+    text = fix_title_card_args(text)
+    for elem_name in COLLIDER_ELEMENT_NAMES:
+        text = re.sub(r"\b(%s(?:\[[^\]]*\])?)(\.|->)(?:info|elem)\b" % elem_name, r"\1\2base", text)
     text = re.sub(r'#include "scenes/([\w/]+)\.h"', r'#include "assets/oot/scenes/\1.h"', text)
     text = re.sub(r'#include <objects/(\w+)/(\w+)\.h>', r'#include "assets/oot/objects/\1/\2.h"', text)
     text = re.sub(r'#include "overlays/(ovl_\w+)/(\w+)\.h"', r'#include "assets/oot/overlays/\1/\2.h"', text)
@@ -687,8 +949,9 @@ def convert(text, header):
                   if PORTED_ACTOR(m.group(1)) else m.group(0), text)
     # One-line debug prints.
     text = re.sub(r"\n[ \t]*// \"[^\n]*\"(?=\n[ \t]*osSyncPrintf)", "", text)
-    text = re.sub(r"\n[ \t]*osSyncPrintf\((?:[^;]|\n)*?\);", "", text)
-    text = re.sub(r"\n[ \t]*LOG_(?:NUM|STRING|HEX|ADDRESS|FLOAT)\((?:[^;]|\n)*?\);", "", text)
+    # Up to the call's end: a string may hold a semicolon.
+    text = re.sub(r"\n[ \t]*osSyncPrintf\((?:\"(?:[^\"\\]|\\.)*\"|[^;\"])*?\);", "", text)
+    text = re.sub(r"\n[ \t]*LOG_(?:NUM|STRING|HEX|ADDRESS|FLOAT)\((?:\"(?:[^\"\\]|\\.)*\"|[^;\"])*?\);", "", text)
     for pattern, repl in RENAMES:
         text = re.sub(pattern, repl, text, flags=re.M)
     text = re.sub(r"\bNA_SE_\w+\b", lambda m: SFX_RENAMES.get(m.group(0), m.group(0)), text)
@@ -702,6 +965,8 @@ def convert(text, header):
     text = re.sub(r"\bAudio_PlayFanfare\((NA_BGM_\w+)\);",
                   lambda m: m.group(0) if m.group(1) in MM_SEQUENCES else
                   f"Audio_PlayFanfare(SEQ_OOT(0x{SEQUENCES[m.group(1)]:02X})); // OoT's {m.group(1)}", text)
+    text = re.sub(r"\bNA_BGM_\w+\b", lambda m: m.group(0) if (m.group(0) in MM_SEQUENCES or m.group(0) not in SEQUENCES)
+                  else "SEQ_OOT(0x%02X)" % SEQUENCES[m.group(0)], text)
     text = convert_equipment(text)
     text = re.sub(r"\bMATRIX_NEWMTX\(", "Matrix_Finalize(", text)
     text = wrap_exchange_offers(text)
@@ -722,12 +987,12 @@ def convert(text, header):
                   f"{{ DMG_FROM_OOT({m.group(1)}), {m.group(2)}, {m.group(3)} }}", text)
     if not header:
         text = PROFILE.sub(profile, text)
-        text = re.sub(r"^(void|s32|u16|s16|f32|u8|u32) (\w+_\w+\()", r"static \1 \2", text, flags=re.M)
+        text = re.sub(r"^(void|s32|u16|s16|f32|u8|u32|s8|\w+\*) (\w+_\w+\()", r"static \1 \2", text, flags=re.M)
         # After the actor's own header, which comes first.
         extra = '#include "HyruleFlags.h"\n#include "HyrulePort.h"\n#include "HyruleActor.h"\n'
         extra += '#include "z64quake.h"\n' if "Quake_" in text else ""
         extra += '#include "z64rumble.h"\n' if "Rumble_" in text else ""
-        extra += '#include "HyrulePlayer.h"\n' if re.search(r"\bPLAYER_SHIELD_\w+_Oot\b", text) else ""
+        extra += '#include "HyrulePlayer.h"\n' if re.search(r"\bPLAYER_SHIELD_\w+_Oot\b|Player_GetStrengthOot", text) else ""
         extra += '#include "HyruleScenes.h"\n' if "Hyrule_E" in text else ""
         extra += '#include "HyruleInventory.h"\n' if "Inventory_GetDungeonIndexOot" in text else ""
         extra += '#include "z64horse.h"\n' if "Horse_" in text else ""
@@ -759,6 +1024,13 @@ def main():
                         r"Player_SetCsAction|func_8002DF54|dmgFlags|"
                         r"Item_Drop|ITEM00_|MATRIX_NEWMTX|#include \"overlays/|\.table\[|ENTR_|Horse_")
     statics = set()
+    # The actor's sphere-group and triangle collider elements (arrays and pointers), whose info is MM's `base`.
+    COLLIDER_ELEMENT_NAMES.clear()
+    COLLIDER_ELEMENT_NAMES.add("elements")  # ColliderJntSph's and ColliderTris's own member
+    for name in os.listdir(src):
+        if name.endswith((".c", ".h")):
+            COLLIDER_ELEMENT_NAMES.update(
+                re.findall(r"\bCollider(?:JntSph|Tris)Element\b\s*\*?\s*(\w+)", open(os.path.join(src, name)).read()))
     for name in sorted(os.listdir(src), key=lambda n: n.endswith(".h")):
         if not name.endswith((".c", ".h")):
             continue

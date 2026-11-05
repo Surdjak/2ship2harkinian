@@ -57,6 +57,36 @@ static const PanoramaInfo sPanoramas[] = {
       { BG_TEX("vr_KR3VR_pal_static", "gBackAlleyHouseBgTLUT"),
         BG_TEX("vr_KR3VR_pal_static", "gBackAlleyHouseBg2TLUT"),
         BG_TEX("vr_KR3VR_pal_static", "gBackAlleyHouseBg3TLUT") } },
+    { 0x10, // SKYBOX_HOUSE_KAKARIKO
+      4,
+      0.0f,
+      { BG_TEX("vr_KKRVR_static", "gCarpentersHouseBgTex"), BG_TEX("vr_KKRVR_static", "gCarpentersHouse2BgTex"), BG_TEX("vr_KKRVR_static", "gCarpentersHouse3BgTex"), BG_TEX("vr_KKRVR_static", "gCarpentersHouse4BgTex") },
+      { BG_TEX("vr_KKRVR_pal_static", "gCarpentersHouseBgTLUT"), BG_TEX("vr_KKRVR_pal_static", "gCarpentersHouseBg2TLUT"), BG_TEX("vr_KKRVR_pal_static", "gCarpentersHouseBg3TLUT"), BG_TEX("vr_KKRVR_pal_static", "gCarpentersHouseBg4TLUT") } },
+    { 0x13, // SKYBOX_GORON_SHOP
+      2,
+      0.8f,
+      { BG_TEX("vr_GLVR_static", "gGoronShopBgTex"), BG_TEX("vr_GLVR_static", "gGoronShop2BgTex") },
+      { BG_TEX("vr_GLVR_pal_static", "gGoronShopBgTLUT"), BG_TEX("vr_GLVR_pal_static", "gGoronShopBg2TLUT") } },
+    { 0x14, // SKYBOX_ZORA_SHOP
+      2,
+      0.8f,
+      { BG_TEX("vr_ZRVR_static", "gZoraShopBgTex"), BG_TEX("vr_ZRVR_static", "gZoraShop2BgTex") },
+      { BG_TEX("vr_ZRVR_pal_static", "gZoraShopBgTLUT"), BG_TEX("vr_ZRVR_pal_static", "gZoraShopBg2TLUT") } },
+    { 0x16, // SKYBOX_POTION_SHOP_KAKARIKO
+      2,
+      0.8f,
+      { BG_TEX("vr_DGVR_static", "gKakPotionShopBgTex"), BG_TEX("vr_DGVR_static", "gKakPotionShop2BgTex") },
+      { BG_TEX("vr_DGVR_pal_static", "gKakPotionShopBgTLUT"), BG_TEX("vr_DGVR_pal_static", "gKakPotionShopBg2TLUT") } },
+    { 0x1B, // SKYBOX_HOUSE_IMPA
+      4,
+      0.0f,
+      { BG_TEX("vr_LBVR_static", "gCowHouseBgTex"), BG_TEX("vr_LBVR_static", "gCowHouse2BgTex"), BG_TEX("vr_LBVR_static", "gCowHouse3BgTex"), BG_TEX("vr_LBVR_static", "gCowHouse4BgTex") },
+      { BG_TEX("vr_LBVR_pal_static", "gCowHouseBgTLUT"), BG_TEX("vr_LBVR_pal_static", "gCowHouseBg2TLUT"), BG_TEX("vr_LBVR_pal_static", "gCowHouseBg3TLUT"), BG_TEX("vr_LBVR_pal_static", "gCowHouseBg4TLUT") } },
+    { 0x1C, // SKYBOX_TENT
+      3,
+      0.0f,
+      { BG_TEX("vr_TTVR_static", "gCarpentersTentBgTex"), BG_TEX("vr_TTVR_static", "gCarpentersTent2BgTex"), BG_TEX("vr_TTVR_static", "gCarpentersTent3BgTex") },
+      { BG_TEX("vr_TTVR_pal_static", "gCarpentersTentBgTLUT"), BG_TEX("vr_TTVR_pal_static", "gCarpentersTentBg2TLUT"), BG_TEX("vr_TTVR_pal_static", "gCarpentersTentBg3TLUT") } },
     { 0x04, // SKYBOX_MARKET_ADULT
       4,
       0.0f,

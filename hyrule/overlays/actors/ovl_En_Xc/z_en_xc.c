@@ -8,6 +8,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleActor.h"
+#include "overlays/actors/ovl_En_Arrow/z_en_arrow.h" // MM's
 #include "HyruleCutscene.h"
 #include "assets/oot/objects/object_xc/object_xc.h"
 #include "assets/oot/scenes/overworld/spot05/spot05_scene.h"
@@ -108,7 +109,7 @@ static void EnXc_SpawnNut(EnXc* this, PlayState* play) {
     f32 y = pos->y + 3.0f;
     f32 z = (Math_CosS(angle) * 30.0f) + pos->z;
 
-    Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ARROW_Oot, x, y, z, 0xFA0, this->actor.shape.rot.y, 0, -10 /* OoT's ARROW_CS_NUT */);
+    Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ARROW, x, y, z, 0xFA0, this->actor.shape.rot.y, 0, ARROW_TYPE_DEKU_NUT); // MM's thrown nut for OoT's ARROW_CS_NUT
 }
 
 static void EnXc_BgCheck(EnXc* this, PlayState* play) {

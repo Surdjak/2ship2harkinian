@@ -1,0 +1,17 @@
+#ifndef Z_BG_HAKA_MEGANEBG_OOT_H
+#define Z_BG_HAKA_MEGANEBG_OOT_H
+
+#include "global.h"
+
+struct BgHakaMeganeBG;
+
+typedef void (*BgHakaMeganeBGActionFunc)(struct BgHakaMeganeBG*, PlayState*);
+
+typedef struct BgHakaMeganeBG {
+    /* 0x0000 */ DynaPolyActor dyna;
+    /* 0x0164 */ BgHakaMeganeBGActionFunc actionFunc;
+    /* 0x0168 */ u8 switchFlag;
+    /* 0x016A */ s16 timer;
+} BgHakaMeganeBG; // size = 0x016C
+
+#endif

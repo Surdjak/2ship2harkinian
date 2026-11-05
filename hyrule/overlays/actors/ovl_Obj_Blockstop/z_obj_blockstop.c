@@ -1,0 +1,67 @@
+/*
+ * File: z_obj_blockstop.c
+ * Overlay: ovl_Obj_Blockstop
+ * Description: Stops blocks and sets relevant flags when the block is in position.
+ */
+
+#include "z_obj_blockstop.h"
+#include "HyruleFlags.h"
+#include "HyrulePort.h"
+#include "HyruleActor.h"
+#include "../ovl_Obj_Oshihiki/z_obj_oshihiki.h"
+
+#define FLAGS 0
+
+static void ObjBlockstop_Init(Actor* thisx, PlayState* play);
+static void ObjBlockstop_Destroy(Actor* thisx, PlayState* play);
+static void ObjBlockstop_Update(Actor* thisx, PlayState* play);
+
+ActorProfile Obj_Blockstop_Oot_Profile = {
+    /**/ ACTOR_OBJ_BLOCKSTOP_Oot,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ GAMEPLAY_KEEP,
+    /**/ sizeof(ObjBlockstop),
+    /**/ ObjBlockstop_Init,
+    /**/ ObjBlockstop_Destroy,
+    /**/ ObjBlockstop_Update,
+    /**/ NULL,
+};
+
+static void ObjBlockstop_Init(Actor* thisx, PlayState* play) {
+    ObjBlockstop* this = (ObjBlockstop*)thisx;
+
+    if (Flags_GetSwitch(play, this->actor.params)) {
+        Actor_Kill(&this->actor);
+    } else {
+        this->actor.world.pos.y++;
+    }
+}
+
+static void ObjBlockstop_Destroy(Actor* thisx, PlayState* play) {
+}
+
+static void ObjBlockstop_Update(Actor* thisx, PlayState* play) {
+    ObjBlockstop* this = (ObjBlockstop*)thisx;
+    DynaPolyActor* dynaPolyActor;
+    Vec3f sp4C;
+    s32 bgId;
+    s32 pad;
+
+    if (BgCheck_EntityLineTest2(&play->colCtx, &this->actor.home.pos, &this->actor.world.pos, &sp4C,
+                                &this->actor.floorPoly, false, false, true, true, &bgId, &this->actor)) {
+        dynaPolyActor = DynaPoly_GetActor(&play->colCtx, bgId);
+
+        if (dynaPolyActor != NULL && dynaPolyActor->actor.id == ACTOR_OBJ_OSHIHIKI_Oot) {
+            if ((dynaPolyActor->actor.params & 0x000F) == PUSHBLOCK_HUGE_START_ON ||
+                (dynaPolyActor->actor.params & 0x000F) == PUSHBLOCK_HUGE_START_OFF) {
+                Audio_PlaySfx(NA_SE_SY_CORRECT_CHIME);
+            } else {
+                Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
+            }
+
+            Flags_SetSwitch(play, this->actor.params);
+            Actor_Kill(&this->actor);
+        }
+    }
+}

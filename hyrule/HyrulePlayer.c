@@ -336,6 +336,10 @@ void Hyrule_DrawMaskOot(PlayState* play, Player* player) {
 }
 
 void Hyrule_OnNewDay(void) {
+    // OoT counts the dawns while Biggoron mends the broken Giant's Knife.
+    if (gSaveContext.save.saveInfo.inventoryOot.bgsDayCount < 0xFF) {
+        gSaveContext.save.saveInfo.inventoryOot.bgsDayCount++;
+    }
     if ((INV_CONTENT_SLOT_OOT(SLOT_OOT_TRADE_CHILD) == ITEM_WEIRD_EGG_Oot) ||
         (INV_CONTENT_SLOT_OOT(SLOT_OOT_TRADE_ADULT) == ITEM_POCKET_EGG_Oot)) {
         gSaveContext.weirdEggHatchedOot = true;
@@ -850,10 +854,19 @@ s32 Hyrule_IsExchangeAcceptedOot(PlayerItemAction offer, PlayerItemAction shown)
                                         ((offer == PLAYER_IA_BOTTLE_POE) && (shown == PLAYER_IA_BOTTLE_BIG_POE)));
 }
 
+u8 gPlayerCsActionOot;
+u8 gPlayerCsActionInitOot;
+
 void Player_SetCsActionWithHaltedActorsOot(PlayState* play, Actor* csActor, u8 ootCsAction) {
     u8 csAction;
 
+    gPlayerCsActionOot = 0;
     switch (ootCsAction) {
+        case PLAYER_CSACTION_NONE:
+        case PLAYER_CSACTION_1:
+            // The same in both games.
+            csAction = ootCsAction;
+            break;
         case 7:
             csAction = PLAYER_CSACTION_END;
             break;
@@ -864,9 +877,11 @@ void Player_SetCsActionWithHaltedActorsOot(PlayState* play, Actor* csActor, u8 o
             csAction = PLAYER_CSACTION_26;
             break;
         default:
-            // 0 and 1 are the same in both games.
-            assert((ootCsAction == PLAYER_CSACTION_NONE) || (ootCsAction == PLAYER_CSACTION_1));
-            csAction = ootCsAction;
+            // OoT's other actions run from OoT's tables (HyrulePlayerCsOot.inc), through MM's action 5, which hands
+            // Link to them.
+            gPlayerCsActionOot = ootCsAction;
+            gPlayerCsActionInitOot = true;
+            csAction = PLAYER_CSACTION_5;
             break;
     }
     Player_SetCsActionWithHaltedActors(play, csActor, csAction);
@@ -950,4 +965,30 @@ u16 Hyrule_MinigameBButtonItem(PlayState* play, u16 mmItem) {
         return ITEM_SLINGSHOT_Oot;
     }
     return mmItem;
+}
+
+u8 Player_GetStrengthOot(void) {
+    s32 strengthUpgrade = CUR_UPG_VALUE(UPG_STRENGTH);
+
+    if (LINK_IS_ADULT_OOT) {
+        return strengthUpgrade;
+    } else if (strengthUpgrade != 0) {
+        return PLAYER_STR_BRACELET;
+    } else {
+        return PLAYER_STR_NONE;
+    }
+}
+
+s32 Environment_GetBgsDayCountOot(void) {
+    return gSaveContext.save.saveInfo.inventoryOot.bgsDayCount;
+}
+
+void Environment_ClearBgsDayCountOot(void) {
+    gSaveContext.save.saveInfo.inventoryOot.bgsDayCount = 0;
+}
+
+s32 Player_HasMirrorShieldSetToDrawOot(PlayState* play) {
+    Player* this = GET_PLAYER(play);
+
+    return (this->rightHandType == PLAYER_MODELTYPE_RH_SHIELD) && (this->currentShield == PLAYER_SHIELD_MIRROR_Oot);
 }

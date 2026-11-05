@@ -7998,6 +7998,11 @@ s32 func_8083868C(PlayState* play, Player* this) {
         camMode = CAM_MODE_FIRSTPERSON;
     }
 
+    // 3Ship [Hyrule] OoT's Dark Link (En_Torch2) is a Player too, but has no camera of his own (only Kafei has one).
+    if ((this->actor.id != ACTOR_PLAYER) && (this->actor.id != ACTOR_EN_TEST3)) {
+        return false;
+    }
+
     camera = (this->actor.id == ACTOR_PLAYER) ? Play_GetCamera(play, CAM_ID_MAIN)
                                               : Play_GetCamera(play, ((EnTest3*)this)->subCamId);
 
@@ -22114,6 +22119,25 @@ void func_8085AD5C(PlayState* play, Player* this, PlayerCsAction csAction) {
 // 3Ship [Hyrule] OoT's Player cutscene actions, for OoT's scripts.
 #include "HyrulePlayerCsOot.inc"
 
+// 3Ship [Hyrule] OoT's Player_IsDroppingFish: MM's Player_Action_70 is OoT's bottle-release action.
+s32 Player_IsDroppingFishOot(PlayState* play) {
+    Player* this = GET_PLAYER(play);
+
+    return (Player_Action_70 == this->actionFunc) && (this->itemAction == PLAYER_IA_BOTTLE_FISH);
+}
+
+// 3Ship [Hyrule] OoT's Player_Action_CsAction, for the OoT action an actor gave Link (gPlayerCsActionOot).
+static void Player_ActorCsActionOot(PlayState* play, Player* this) {
+    if (gPlayerCsActionInitOot) {
+        gPlayerCsActionInitOot = false;
+        D_80862B6C = this->skelAnime.movementFlags;
+        Player_FinishAnimMovementOot(this);
+        func_80852C0COot(play, this, gPlayerCsActionOot);
+        func_80852B4COot(play, this, NULL, &D_80854B18Oot[gPlayerCsActionOot]);
+    }
+    func_80852B4COot(play, this, NULL, &D_80854E50Oot[gPlayerCsActionOot]);
+}
+
 void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
     CsCmdActorCue* playerCue = (this->actor.id == ACTOR_EN_TEST3)
                                    ? play->csCtx.actorCues[Cutscene_GetCueChannel(play, CS_CMD_ACTOR_CUE_506)]
@@ -22122,9 +22146,14 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
     s32 pad;
     s32 csAction;
 
-    // 3Ship [Hyrule] Link follows an OoT script's cues with OoT's actions (OoT's func_80852C50).
+    // 3Ship [Hyrule] Link follows an OoT script's cues with OoT's actions (OoT's func_80852C50), or runs the OoT
+    // action an actor gave him (OoT's Player_Action_CsAction).
     if (gCsCtxOot.state != CS_STATE_IDLE_Oot) {
         func_80852C50Oot(play, this, NULL);
+        return;
+    }
+    if (gPlayerCsActionOot != 0) {
+        Player_ActorCsActionOot(play, this);
         return;
     }
 

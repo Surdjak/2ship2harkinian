@@ -254,3 +254,12 @@ s32 Hyrule_TakeWarpSongArrivalOot(void) {
     sWarpSongArrivalOot = false;
     return arrival;
 }
+
+void Hyrule_OfferOcarinaOot(PlayState* play, Actor* actor) {
+    // OoT's actor decides by itself whether Link is near enough, so any distance does here.
+    Actor_OfferOcarinaInteraction(actor, play, 10000.0f, 10000.0f);
+}
+
+s32 Hyrule_OcarinaAttemptedOot(PlayState* play, Actor* actor) {
+    return Actor_OcarinaInteractionAccepted(actor, &play->state);
+}

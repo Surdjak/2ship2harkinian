@@ -1,3 +1,4 @@
+#include <cstring>
 #include "HyruleScenes.h"
 #include "HyruleIds.h"
 #include "HyrulePort.h"
@@ -119,8 +120,20 @@ extern "C" const char* Hyrule_GetScenePath(s16 sceneId) {
     if (!IsOotScene(sceneId)) {
         return nullptr;
     }
+    // The dungeons that have a Master Quest version are exported under nonmq/, the others under shared/, as
+    // OTRExporter's DisplayListExporter files them.
+    static const char* const sNonMqScenes[] = {
+        "ydan_scene",    "ddan_scene",      "bdan_scene",        "Bmori1_scene", "HIDAN_scene", "MIZUsin_scene",
+        "jyasinzou_scene", "HAKAdan_scene", "HAKAdanCH_scene", "ice_doukutu_scene", "men_scene", "ganontika_scene",
+    };
     const char* fileName = gSceneTable[sceneId].segment.fileName;
-    sPath = std::string("oot/scenes/shared/") + fileName + "/" + fileName;
+    const char* folder = "shared";
+    for (const char* nonMq : sNonMqScenes) {
+        if (strcmp(fileName, nonMq) == 0) {
+            folder = "nonmq";
+        }
+    }
+    sPath = std::string("oot/scenes/") + folder + "/" + fileName + "/" + fileName;
     return sPath.c_str();
 }
 

@@ -1,0 +1,162 @@
+/*
+ * File: z_bg_jya_lift.c
+ * Overlay: ovl_Bg_Jya_Lift
+ * Description: Chain Platform (Spirit Temple)
+ */
+
+#include "z_bg_jya_lift.h"
+#include "HyruleFlags.h"
+#include "HyrulePort.h"
+#include "HyruleActor.h"
+#include "assets/oot/objects/object_jya_obj/object_jya_obj.h"
+
+#define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
+
+static void BgJyaLift_Init(Actor* thisx, PlayState* play);
+static void BgJyaLift_Destroy(Actor* thisx, PlayState* play);
+static void BgJyaLift_Update(Actor* thisx, PlayState* play);
+static void BgJyaLift_Draw(Actor* thisx, PlayState* play);
+
+static void BgJyaLift_SetFinalPosY(BgJyaLift* this);
+static void BgJyaLift_SetInitPosY(BgJyaLift* this);
+static void BgJyaLift_DelayMove(BgJyaLift* this, PlayState* play);
+static void BgJyaLift_SetupMove(BgJyaLift* this);
+static void BgJyaLift_Move(BgJyaLift* this, PlayState* play);
+
+static s16 sKankyoIsSpawned = false;
+
+ActorProfile Bg_Jya_Lift_Oot_Profile = {
+    /**/ ACTOR_BG_JYA_LIFT_Oot,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_JYA_OBJ_Oot,
+    /**/ sizeof(BgJyaLift),
+    /**/ BgJyaLift_Init,
+    /**/ BgJyaLift_Destroy,
+    /**/ BgJyaLift_Update,
+    /**/ BgJyaLift_Draw,
+};
+
+static InitChainEntry sInitChain[] = {
+    ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 1400, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 1800, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 2500, ICHAIN_STOP),
+};
+
+static void BgJyaLift_InitDynapoly(BgJyaLift* this, PlayState* play, CollisionHeader* collisionHeader, s32 moveFlag) {
+    s32 pad;
+    CollisionHeader* colHeader = NULL;
+
+    DynaPolyActor_Init(&this->dyna, moveFlag);
+    CollisionHeader_GetVirtual(collisionHeader, &colHeader);
+    this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
+}
+
+static void BgJyaLift_Init(Actor* thisx, PlayState* play) {
+    BgJyaLift* this = (BgJyaLift*)thisx;
+
+    this->isSpawned = false;
+    if (sKankyoIsSpawned) {
+        Actor_Kill(thisx);
+        return;
+    }
+
+    BgJyaLift_InitDynapoly(this, play, &gLiftCol, 0);
+    Actor_ProcessInitChain(thisx, sInitChain);
+    if (Flags_GetSwitch(play, (thisx->params & 0x3F))) {
+        BgJyaLift_SetFinalPosY(this);
+    } else {
+        BgJyaLift_SetInitPosY(this);
+    }
+    thisx->room = -1;
+    sKankyoIsSpawned = true;
+    this->isSpawned = true;
+}
+
+static void BgJyaLift_Destroy(Actor* thisx, PlayState* play) {
+    BgJyaLift* this = (BgJyaLift*)thisx;
+
+    if (this->isSpawned) {
+
+        sKankyoIsSpawned = false;
+        DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
+    }
+}
+
+static void BgJyaLift_SetInitPosY(BgJyaLift* this) {
+    this->actionFunc = BgJyaLift_DelayMove;
+    this->dyna.actor.world.pos.y = 1613.0f;
+    this->moveDelay = 0;
+}
+
+static void BgJyaLift_DelayMove(BgJyaLift* this, PlayState* play) {
+    if (Flags_GetSwitch(play, this->dyna.actor.params & 0x3F) || (this->moveDelay > 0)) {
+        this->moveDelay++;
+        if (this->moveDelay >= 20) {
+            // The cutscene of the platform lowering will show the central room in an unloaded state if
+            // Link is not standing on the platform as it lowers. Therefore check for the Sunlight arrows
+            // enhancement and if it's enabled, check that Link is on the platform. Otherwise skip it.
+            if (!(0 ||
+                  0) ||
+                (GET_PLAYER(play)->actor.world.pos.x > -19.0f && GET_PLAYER(play)->actor.world.pos.x < 139.0f &&
+                 GET_PLAYER(play)->actor.world.pos.z > -1172.0f && GET_PLAYER(play)->actor.world.pos.z < -1009.0f)) {
+                OnePointCutscene_Init(play, 3430, -99, &this->dyna.actor, CAM_ID_MAIN);
+            }
+            BgJyaLift_SetupMove(this);
+        }
+    }
+}
+
+static void BgJyaLift_SetupMove(BgJyaLift* this) {
+    this->actionFunc = BgJyaLift_Move;
+}
+
+static void BgJyaLift_Move(BgJyaLift* this, PlayState* play) {
+    f32 distFromBottom;
+    f32 tempVelocity;
+
+    Math_SmoothStepToF(&this->dyna.actor.velocity.y, 4.0f, 0.1f, 1.0f, 0.0f);
+    tempVelocity = (this->dyna.actor.velocity.y < 0.2f) ? 0.2f : this->dyna.actor.velocity.y;
+    distFromBottom = Math_SmoothStepToF(&this->dyna.actor.world.pos.y, 973.0f, 0.1f, tempVelocity, 0.2f);
+    if ((this->dyna.actor.world.pos.y < 1440.0f) && (1440.0f <= this->dyna.actor.prevPos.y)) {
+        Camera_SetFinishedFlag(GET_ACTIVE_CAM(play));
+    }
+    if (fabsf(distFromBottom) < 0.001f) {
+        BgJyaLift_SetFinalPosY(this);
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_CHAINLIFT_STOP);
+    } else {
+        Actor_PlaySfx_Flagged(&this->dyna.actor, NA_SE_EV_BRIDGE_OPEN - SFX_FLAG);
+    }
+}
+
+static void BgJyaLift_SetFinalPosY(BgJyaLift* this) {
+    this->actionFunc = NULL;
+    this->dyna.actor.world.pos.y = 973.0f;
+}
+
+static void BgJyaLift_Update(Actor* thisx, PlayState* play2) {
+    BgJyaLift* this = (BgJyaLift*)thisx;
+    PlayState* play = play2;
+
+    if (this->actionFunc != NULL) {
+        this->actionFunc(this, play);
+    }
+    if ((this->dyna.interactFlags & DYNA_INTERACT_PLAYER_ABOVE) &&
+        ((this->unk_16B & DYNA_INTERACT_PLAYER_ABOVE) == 0)) {
+        Camera_ChangeSetting(play->cameraPtrs[CAM_ID_MAIN], CAM_SET_NORMAL0);
+    } else if (((this->dyna.interactFlags) & 4) == 0 && ((this->unk_16B & 4)) &&
+               (play->cameraPtrs[CAM_ID_MAIN]->setting == CAM_SET_NORMAL0)) {
+        Camera_ChangeSetting(play->cameraPtrs[CAM_ID_MAIN], CAM_SET_DUNGEON0);
+    }
+    this->unk_16B = this->dyna.interactFlags;
+
+    // Spirit Temple room 5 is the main room with the statue room 25 is directly above room 5
+    if ((play->roomCtx.curRoom.num != 5) && (play->roomCtx.curRoom.num != 25)) {
+        Actor_Kill(thisx);
+    }
+}
+
+static void BgJyaLift_Draw(Actor* thisx, PlayState* play) {
+    Gfx_DrawDListOpa(play, gLiftDL);
+}

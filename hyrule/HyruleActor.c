@@ -2,6 +2,10 @@
 
 #include "HyruleActor.h"
 #include "HyruleInventory.h"
+#include "HyruleIds.h"
+#include "HyruleScenes.h"
+#include "HyruleCutscene.h"
+#include "overlays/effects/ovl_Effect_Ss_Fhg_Flash/z_eff_ss_fhg_flash.h"
 #include "overlays/actors/ovl_Arms_Hook/z_arms_hook.h"
 #include "overlays/actors/ovl_En_Part/z_en_part.h" // OoT's, in hyrule/
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
@@ -543,4 +547,220 @@ Actor* Actor_FindOot(ActorContext* actorCtx, s32 actorId, s32 actorCategory) {
         actor = actor->next;
     }
     return NULL;
+}
+
+void EffectSsDust_SpawnDrawFlag2Oot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor,
+                                    Color_RGBA8* envColor, s16 scale, s16 scaleStep, s16 life) {
+    EffectSsDust_Spawn(play, 2, pos, velocity, accel, primColor, envColor, scale, scaleStep, life, 0);
+}
+
+void Math_Vec3fDiffToRotOot(Vec3f* from, Vec3f* to, Vec3s* rot, s32 upIsPositive) {
+    f32 dx = to->x - from->x;
+    f32 dz = to->z - from->z;
+    f32 dy = upIsPositive ? (to->y - from->y) : (from->y - to->y);
+
+    rot->y = Math_Atan2S(dz, dx);
+    rot->x = Math_Atan2S(sqrtf(SQ(dx) + SQ(dz)), dy);
+}
+
+Actor* Actor_GetCollidedExplosiveOot(PlayState* play, Collider* collider) {
+    if ((collider->acFlags & AC_HIT) && (collider->ac->category == ACTORCAT_EXPLOSIVES)) {
+        collider->acFlags &= ~AC_HIT;
+        return collider->ac;
+    }
+    return NULL;
+}
+
+void Actor_SetTextWithPrefixOot(PlayState* play, Actor* actor, s16 baseTextId) {
+    s16 prefix;
+
+    // By OoT's scene id.
+    switch (Hyrule_GetOotSceneId(play->sceneId)) {
+        case 0x00: // SCENE_DEKU_TREE
+        case 0x11: // SCENE_DEKU_TREE_BOSS
+        case 0x14: // SCENE_FOREST_TEMPLE_BOSS
+        case 0x26: // SCENE_KNOW_IT_ALL_BROS_HOUSE
+        case 0x27: // SCENE_TWINS_HOUSE
+        case 0x28: // SCENE_MIDOS_HOUSE
+        case 0x29: // SCENE_SARIAS_HOUSE
+        case 0x2D: // SCENE_KOKIRI_SHOP
+        case 0x34: // SCENE_LINKS_HOUSE
+        case 0x55: // SCENE_KOKIRI_FOREST
+        case 0x56: // SCENE_SACRED_FOREST_MEADOW
+        case 0x5B: // SCENE_LOST_WOODS
+        case 112:
+            prefix = 0x1000;
+            break;
+        case 0x36: // SCENE_STABLE
+        case 0x51: // SCENE_HYRULE_FIELD
+        case 0x63: // SCENE_LON_LON_RANCH
+            prefix = 0x2000;
+            break;
+        case 0x04: // SCENE_FIRE_TEMPLE
+        case 0x12: // SCENE_DODONGOS_CAVERN_BOSS
+        case 0x15: // SCENE_FIRE_TEMPLE_BOSS
+        case 0x60: // SCENE_DEATH_MOUNTAIN_TRAIL
+        case 0x61: // SCENE_DEATH_MOUNTAIN_CRATER
+        case 0x62: // SCENE_GORON_CITY
+            prefix = 0x3000;
+            break;
+        case 0x02: // SCENE_JABU_JABU
+        case 0x13: // SCENE_JABU_JABU_BOSS
+        case 0x54: // SCENE_ZORAS_RIVER
+        case 0x58: // SCENE_ZORAS_DOMAIN
+        case 0x59: // SCENE_ZORAS_FOUNTAIN
+            prefix = 0x4000;
+            break;
+        case 0x07: // SCENE_SHADOW_TEMPLE
+        case 0x18: // SCENE_SHADOW_TEMPLE_BOSS
+        case 0x2A: // SCENE_KAKARIKO_CENTER_GUEST_HOUSE
+        case 0x2B: // SCENE_BACK_ALLEY_HOUSE
+        case 0x35: // SCENE_DOG_LADY_HOUSE
+        case 0x3A: // SCENE_GRAVEKEEPERS_HUT
+        case 0x3F: // SCENE_REDEAD_GRAVE
+        case 0x48: // SCENE_WINDMILL_AND_DAMPES_GRAVE
+        case 0x52: // SCENE_KAKARIKO_VILLAGE
+        case 0x53: // SCENE_GRAVEYARD
+            prefix = 0x5000;
+            break;
+        case 0x06: // SCENE_SPIRIT_TEMPLE
+        case 0x17: // SCENE_SPIRIT_TEMPLE_BOSS
+        case 0x37: // SCENE_IMPAS_HOUSE
+        case 0x39: // SCENE_CARPENTERS_TENT
+        case 0x57: // SCENE_LAKE_HYLIA
+        case 0x5A: // SCENE_GERUDO_VALLEY
+        case 0x5C: // SCENE_DESERT_COLOSSUS
+            prefix = 0x6000;
+            break;
+        case 0x1B: // SCENE_MARKET_ENTRANCE_DAY
+        case 0x1E: // SCENE_BACK_ALLEY_DAY
+        case 0x1F: // SCENE_BACK_ALLEY_NIGHT
+        case 0x20: // SCENE_MARKET_DAY
+        case 0x21: // SCENE_MARKET_NIGHT
+        case 0x22: // SCENE_MARKET_RUINS
+        case 0x5F: // SCENE_HYRULE_CASTLE
+            prefix = 0x7000;
+            break;
+        default:
+            prefix = 0x0000;
+            break;
+    }
+    actor->textId = TEXT_OOT(prefix | baseTextId);
+}
+
+void EffectSsDeadDd_SpawnOot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, s16 scaleStep,
+                             s16 primR, s16 primG, s16 primB, s16 primA, s16 envR, s16 envG, s16 envB, s16 alphaStep,
+                             s32 life) {
+    Color_RGBA8 prim = { primR, primG, primB, primA };
+    Color_RGBA8 env = { envR, envG, envB, 255 };
+
+    EffectSsDeadDd_Spawn(play, pos, velocity, accel, &prim, &env, scale, scaleStep, alphaStep, life);
+}
+
+void EffectSsDeadDs_SpawnStationaryOot(PlayState* play, Vec3f* pos, s16 scale, s16 scaleStep, s16 alpha, s32 life) {
+    static Vec3f sZero = { 0.0f, 0.0f, 0.0f };
+
+    EffectSsDeadDs_Spawn(play, pos, &sZero, &sZero, scale, scaleStep, alpha, life);
+}
+
+void EffectSsFCircle_SpawnOot(PlayState* play, Actor* actor, Vec3f* pos, s16 radius, s16 height) {
+}
+
+Gfx* Gfx_TexScrollOot(GraphicsContext* gfxCtx, u32 x, u32 y) {
+    return Gfx_TexScroll(gfxCtx, x, y, 0, 0);
+}
+
+void Hyrule_TriggerRespawnOot(PlayState* play) {
+    // OoT sends Link back to where he entered the scene; MM's respawn is where he entered the room.
+    func_80169EFC(play);
+}
+
+u8 CollisionCheck_GetSwordDamageOot(u64 dmgFlags, PlayState* play) {
+    // OoT's bits are the upper half of 3Ship's flags (z64collision_check.h).
+    u32 ootFlags = (u32)(dmgFlags >> 32);
+
+    if (ootFlags & 0x00400100) {
+        return 1;
+    } else if (ootFlags & 0x03000242) {
+        return 2;
+    } else if (ootFlags & 0x48800400) {
+        return 4;
+    } else if (ootFlags & 0x04000000) {
+        return 8;
+    }
+    return 0;
+}
+
+void Cutscene_StartManualOot(PlayState* play) {
+    gCsCtxOot.state = CS_STATE_SKIPPABLE_INIT_Oot;
+    gCsCtxOot.linkAction = NULL;
+}
+
+void Cutscene_StopManualOot(PlayState* play) {
+    if (gCsCtxOot.state != CS_STATE_UNSKIPPABLE_EXEC_Oot) {
+        gCsCtxOot.state = CS_STATE_UNSKIPPABLE_INIT_Oot;
+    }
+}
+
+s32 OnePointCutscene_AttentionSetSfxOot(PlayState* play, Actor* actor, s32 sfxId) {
+    // OoT plays the sound as its attention camera reaches the actor; without that camera, it plays now.
+    Audio_PlaySfx(sfxId);
+    return CAM_ID_NONE;
+}
+
+void EffectSsFhgFlash_SpawnLightBallOot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale,
+                                        u8 param) {
+    // MM keeps OoT's effect, but only its shock spawner.
+    EffectSsFhgFlashInitParams initParams;
+
+    Math_Vec3f_Copy(&initParams.pos, pos);
+    Math_Vec3f_Copy(&initParams.velocity, velocity);
+    Math_Vec3f_Copy(&initParams.accel, accel);
+    initParams.scale = scale;
+    initParams.params = param;
+    initParams.type = FHGFLASH_LIGHTBALL;
+    EffectSs_Spawn(play, EFFECT_SS_FHG_FLASH, 128, &initParams);
+}
+
+void Gfx_SetupDL25_OpaRoomOot(PlayState* play) {
+    GraphicsContext* gfxCtx = play->state.gfxCtx;
+
+    Gfx_SetupDL25_Opa(gfxCtx);
+    // OoT's room behavior type 3 (MM's Room.type) turns color dither off.
+    if (play->roomCtx.curRoom.type == 3) {
+        OPEN_DISPS(gfxCtx);
+        gDPSetColorDither(POLY_OPA_DISP++, G_CD_DISABLE);
+        CLOSE_DISPS(gfxCtx);
+    }
+}
+
+s32 Actor_IsHitByHammerForwardOot(PlayState* play, Collider* collider) {
+    // OoT's func_800355E4: a forward Megaton Hammer swing (3Ship's swing is MM's backslash, HyrulePlayer.c).
+    Player* player = GET_PLAYER(play);
+
+    return (collider->acFlags & AC_TYPE_PLAYER) && (player->meleeWeaponState != 0) &&
+           (player->heldItemAction == PLAYER_IA_HAMMER_Oot) &&
+           (player->meleeWeaponAnimation == PLAYER_MWA_HAMMER_FORWARD_Oot);
+}
+
+void Actor_SwapHookshotAttachmentOot(PlayState* play, Actor* actorA, Actor* actorB) {
+    ArmsHook* hookshot = (ArmsHook*)Actor_FindOot(&play->actorCtx, ACTOR_ARMS_HOOK, ACTORCAT_ITEMACTION);
+
+    if (hookshot != NULL) {
+        hookshot->attachedActor = actorB;
+        hookshot->attachPointOffset.x = hookshot->attachPointOffset.y = hookshot->attachPointOffset.z = 0.0f;
+    }
+    actorB->flags |= ACTOR_FLAG_HOOKSHOT_ATTACHED;
+    actorA->flags &= ~ACTOR_FLAG_HOOKSHOT_ATTACHED;
+}
+
+s32 Math_StepUntilSOot(s16* pValue, s16 limit, s16 step) {
+    s16 orig = *pValue;
+
+    *pValue += step;
+    if (((*pValue - limit) * (orig - limit)) <= 0) {
+        *pValue = limit;
+        return true;
+    }
+    return false;
 }

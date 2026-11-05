@@ -350,6 +350,7 @@ typedef struct InventoryOot {
     s16 gsTokens;        // OoT's Gold Skulltula tokens
     s16 knifeHealth;     // hits the Giant's Knife has left before it breaks (OoT's swordHealth)
     u8 beansBought;      // magic beans bought from the bean seller (OoT's BEANS_BOUGHT), back to 0 each cycle
+    u8 bgsDayCount;      // dawns since Biggoron took the broken Giant's Knife to mend (OoT's bgsDayCount)
 } InventoryOot;
 
 // the current ones when his age changes, as OoT swaps childEquips and adultEquips.

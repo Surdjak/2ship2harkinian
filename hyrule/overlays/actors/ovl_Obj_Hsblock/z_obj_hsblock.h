@@ -1,0 +1,15 @@
+#ifndef Z_OBJ_HSBLOCK_OOT_H
+#define Z_OBJ_HSBLOCK_OOT_H
+
+#include "global.h"
+
+struct ObjHsblock;
+
+typedef void (*ObjHsblockActionFunc)(struct ObjHsblock*, PlayState*);
+
+typedef struct ObjHsblock {
+    /* 0x0000 */ DynaPolyActor dyna;
+    /* 0x0164 */ ObjHsblockActionFunc actionFunc;
+} ObjHsblock; // size = 0x0168
+
+#endif

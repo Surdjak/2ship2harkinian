@@ -155,4 +155,62 @@
         <Texture Name="gBackAlleyHouseBg2TLUT" OutName="back_alley_house2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
         <Texture Name="gBackAlleyHouseBg3TLUT" OutName="back_alley_house3_tlut" Format="rgba16" Width="16" Height="16" Offset="0x400"/>
     </File>
+    <File Name="vr_KKRVR_static">
+        <Texture Name="gCarpentersHouseBgTex" OutName="carpenters_house" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_KKRVR_pal_static" ExternalTlutOffset="0x000"/>
+        <Texture Name="gCarpentersHouse2BgTex" OutName="carpenters_house2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_KKRVR_pal_static" ExternalTlutOffset="0x200"/>
+        <Texture Name="gCarpentersHouse3BgTex" OutName="carpenters_house3" Format="ci8" Width="256" Height="256" Offset="0x20000" ExternalTlut="vr_KKRVR_pal_static" ExternalTlutOffset="0x400"/>
+        <Texture Name="gCarpentersHouse4BgTex" OutName="carpenters_house4" Format="ci8" Width="256" Height="256" Offset="0x30000" ExternalTlut="vr_KKRVR_pal_static" ExternalTlutOffset="0x600"/>
+    </File>
+    <File Name="vr_KKRVR_pal_static">
+        <Texture Name="gCarpentersHouseBgTLUT" OutName="carpenters_house_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gCarpentersHouseBg2TLUT" OutName="carpenters_house2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+        <Texture Name="gCarpentersHouseBg3TLUT" OutName="carpenters_house3_tlut" Format="rgba16" Width="16" Height="16" Offset="0x400"/>
+        <Texture Name="gCarpentersHouseBg4TLUT" OutName="carpenters_house4_tlut" Format="rgba16" Width="16" Height="16" Offset="0x600"/>
+    </File>
+    <File Name="vr_GLVR_static">
+        <Texture Name="gGoronShopBgTex" OutName="goron_shop" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_GLVR_pal_static" ExternalTlutOffset="0x0"/>
+        <Texture Name="gGoronShop2BgTex" OutName="goron_shop2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_GLVR_pal_static" ExternalTlutOffset="0x200"/>
+    </File>
+    <File Name="vr_GLVR_pal_static">
+        <Texture Name="gGoronShopBgTLUT" OutName="goron_shop_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gGoronShopBg2TLUT" OutName="goron_shop2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+    </File>
+    <File Name="vr_ZRVR_static">
+        <Texture Name="gZoraShopBgTex" OutName="zora_shop" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_ZRVR_pal_static" ExternalTlutOffset="0x000"/>
+        <Texture Name="gZoraShop2BgTex" OutName="zora_shop2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_ZRVR_pal_static" ExternalTlutOffset="0x200"/>
+    </File>
+    <File Name="vr_ZRVR_pal_static">
+        <Texture Name="gZoraShopBgTLUT" OutName="zora_shop_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gZoraShopBg2TLUT" OutName="zora_shop_tlut2" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+    </File>
+    <File Name="vr_DGVR_static">
+        <Texture Name="gKakPotionShopBgTex" OutName="kak_potion_shop" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_DGVR_pal_static" ExternalTlutOffset="0x0"/>
+        <Texture Name="gKakPotionShop2BgTex" OutName="kak_potion_shop2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_DGVR_pal_static" ExternalTlutOffset="0x200"/>
+    </File>
+    <File Name="vr_DGVR_pal_static">
+        <Texture Name="gKakPotionShopBgTLUT" OutName="kak_potion_shop_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gKakPotionShopBg2TLUT" OutName="kak_potion_shop2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+    </File>
+    <File Name="vr_LBVR_static">
+        <Texture Name="gCowHouseBgTex" OutName="cow_house" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_LBVR_pal_static" ExternalTlutOffset="0x000"/>
+        <Texture Name="gCowHouse2BgTex" OutName="cow_house2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_LBVR_pal_static" ExternalTlutOffset="0x200"/>
+        <Texture Name="gCowHouse3BgTex" OutName="cow_house3" Format="ci8" Width="256" Height="256" Offset="0x20000" ExternalTlut="vr_LBVR_pal_static" ExternalTlutOffset="0x400"/>
+        <Texture Name="gCowHouse4BgTex" OutName="cow_house4" Format="ci8" Width="256" Height="256" Offset="0x30000" ExternalTlut="vr_LBVR_pal_static" ExternalTlutOffset="0x600"/>
+    </File>
+    <File Name="vr_LBVR_pal_static">
+        <Texture Name="gCowHouseBgTLUT" OutName="cow_house_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gCowHouseBg2TLUT" OutName="cow_house2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+        <Texture Name="gCowHouseBg3TLUT" OutName="cow_house3_tlut" Format="rgba16" Width="16" Height="16" Offset="0x400"/>
+        <Texture Name="gCowHouseBg4TLUT" OutName="cow_house4_tlut" Format="rgba16" Width="16" Height="16" Offset="0x600"/>
+    </File>
+    <File Name="vr_TTVR_static">
+        <Texture Name="gCarpentersTentBgTex" OutName="carpenters_tent" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_TTVR_pal_static" ExternalTlutOffset="0x000"/>
+        <Texture Name="gCarpentersTent2BgTex" OutName="carpenters_tent2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_TTVR_pal_static" ExternalTlutOffset="0x200"/>
+        <Texture Name="gCarpentersTent3BgTex" OutName="carpenters_tent3" Format="ci8" Width="256" Height="256" Offset="0x20000" ExternalTlut="vr_TTVR_pal_static" ExternalTlutOffset="0x400"/>
+    </File>
+    <File Name="vr_TTVR_pal_static">
+        <Texture Name="gCarpentersTentBgTLUT" OutName="carpenters_tent_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gCarpentersTentBg2TLUT" OutName="carpenters_tent2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+        <Texture Name="gCarpentersTentBg3TLUT" OutName="carpenters_tent3_tlut" Format="rgba16" Width="16" Height="16" Offset="0x400"/>
+    </File>
 </Root>

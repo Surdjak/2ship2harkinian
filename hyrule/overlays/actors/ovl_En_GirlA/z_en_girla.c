@@ -73,7 +73,6 @@ static void EnGirlA_BuyEvent_ObtainBombchuPack(PlayState* play, EnGirlA* this);
 static void EnGirlA_BuyEvent_GoronTunic(PlayState* play, EnGirlA* this);
 static void EnGirlA_BuyEvent_ZoraTunic(PlayState* play, EnGirlA* this);
 
-static s32 Object_Spawn(ObjectContext* objectCtx, s16 objectId);
 
 ActorProfile En_GirlA_Oot_Profile = {
     /**/ ACTOR_EN_GIRLA_Oot,

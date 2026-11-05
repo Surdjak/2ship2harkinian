@@ -241,6 +241,7 @@ inline void to_json(json& j, const InventoryOot& inventory) {
         { "gsTokens", inventory.gsTokens },
         { "knifeHealth", inventory.knifeHealth },
         { "beansBought", inventory.beansBought },
+        { "bgsDayCount", inventory.bgsDayCount },
     };
 }
 
@@ -257,6 +258,7 @@ inline void from_json(const json& j, InventoryOot& inventory) {
     j.at("gsTokens").get_to(inventory.gsTokens);
     j.at("knifeHealth").get_to(inventory.knifeHealth);
     j.at("beansBought").get_to(inventory.beansBought);
+    j.at("bgsDayCount").get_to(inventory.bgsDayCount);
 }
 
 inline void to_json(json& j, const PermanentSceneFlags& permanentSceneFlags) {

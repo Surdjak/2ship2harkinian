@@ -1,5 +1,6 @@
 #include "global.h"
 #include "HyrulePrerender.h"
+#include "2s2h/BenPort.h"
 #include "PR/gs2dex.h"
 #include "debug.h"
 
@@ -297,6 +298,22 @@ void Room_DrawCullable(PlayState* play, Room* room, u32 flags) {
 #define ROOM_IMAGE_NODRAW_OPA (1 << 1)
 #define ROOM_IMAGE_NODRAW_XLU (1 << 2)
 
+// 3Ship [Hyrule] OoT's prerendered rooms in widescreen (as SoH): black bars beside the 4:3 background, which would
+// otherwise show the room geometry drawn before it to fill the depth buffer.
+static Gfx* Room_DrawImageSideBars(Gfx* gfx) {
+    s16 left = OTRGetRectDimensionFromLeftEdge(0);
+
+    if (left < 0) {
+        gDPPipeSync(gfx++);
+        gDPSetOtherMode(gfx++, G_TL_TILE | G_TD_CLAMP | G_TP_NONE | G_CYC_FILL | G_PM_NPRIMITIVE,
+                        G_AC_THRESHOLD | G_ZS_PIXEL | G_RM_NOOP | G_RM_NOOP2);
+        gDPSetFillColor(gfx++, (GPACK_RGBA5551(0, 0, 0, 1) << 16) | GPACK_RGBA5551(0, 0, 0, 1));
+        gDPFillWideRectangle(gfx++, left, 0, OTRGetRectDimensionFromRightEdge(SCREEN_WIDTH), SCREEN_HEIGHT);
+        gDPPipeSync(gfx++);
+    }
+    return gfx;
+}
+
 void Room_DrawImageSingle(PlayState* play, Room* room, u32 flags) {
     Camera* activeCam;
     Gfx* gfx;
@@ -339,6 +356,7 @@ void Room_DrawImageSingle(PlayState* play, Room* room, u32 flags) {
                 quakeOffset = Camera_GetQuakeOffset(activeCam);
 
                 // 3Ship [Hyrule] The source is OoT's JPEG background, decoded on first use.
+                gfx = Room_DrawImageSideBars(gfx);
                 Prerender_DrawBackground2D(
                     &gfx, Hyrule_GetPrerenderImage(roomShape->source), roomShape->tlut, roomShape->width,
                     roomShape->height, roomShape->fmt, roomShape->siz, roomShape->tlutMode, roomShape->tlutCount,
@@ -440,6 +458,7 @@ void Room_DrawImageMulti(PlayState* play, Room* room, u32 flags) {
                 quakeOffset = Camera_GetQuakeOffset(activeCam);
 
                 // 3Ship [Hyrule] The source is OoT's JPEG background, decoded on first use.
+                gfx = Room_DrawImageSideBars(gfx);
                 Prerender_DrawBackground2D(&gfx, Hyrule_GetPrerenderImage(bgEntry->source), bgEntry->tlut,
                                            bgEntry->width, bgEntry->height, bgEntry->fmt, bgEntry->siz,
                                            bgEntry->tlutMode, bgEntry->tlutCount,
