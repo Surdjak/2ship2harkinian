@@ -53,15 +53,15 @@
         <!-- Other Business Scrub DisplayLists -->
         <DList Name="gBusinessScrubDekuNutDL" Offset="0x4008"/>
 
-        <!-- Business Scrub Animations -->
-        <Animation Name="gBusinessScrubAnim_1EC" Offset="0x1EC"/>
-        <Animation Name="gBusinessScrubAnim_39C" Offset="0x39C"/>
+        <!-- Business Scrub Animations (3Ship: named as SoH's headers name them) -->
+        <Animation Name="gBusinessScrubThrowNutAnim" Offset="0x1EC"/>
+        <Animation Name="gBusinessScrubPeekBurrowAnim" Offset="0x39C"/>
         <Animation Name="gBusinessScrubRotateAnim" Offset="0x764"/>
         <Animation Name="gBusinessScrubNervousTransitionAnim" Offset="0x9A0"/>
         <Animation Name="gBusinessScrubLookAroundAnim" Offset="0xBA0"/>
         <Animation Name="gBusinessScrubNervousIdleAnim" Offset="0x1108"/>
-        <Animation Name="gBusinessScrubAnim_139C" Offset="0x139C"/>
+        <Animation Name="gBusinessScrubInitialAnim" Offset="0x139C"/>
         <Animation Name="gBusinessScrubLeaveBurrowAnim" Offset="0x4404"/>
-        <Animation Name="gBusinessScrubAnim_4574" Offset="0x4574"/>
+        <Animation Name="gBusinessScrubPeekAnim" Offset="0x4574"/>
     </File>
 </Root>

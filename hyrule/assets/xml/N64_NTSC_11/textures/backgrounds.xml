@@ -191,6 +191,18 @@
         <Texture Name="gKakPotionShopBgTLUT" OutName="kak_potion_shop_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
         <Texture Name="gKakPotionShopBg2TLUT" OutName="kak_potion_shop2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
     </File>
+    <File Name="vr_MLVR_static">
+        <Texture Name="gStableBgTex" OutName="stable" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_MLVR_pal_static" ExternalTlutOffset="0x000"/>
+        <Texture Name="gStable2BgTex" OutName="stable2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_MLVR_pal_static" ExternalTlutOffset="0x200"/>
+        <Texture Name="gStable3BgTex" OutName="stable3" Format="ci8" Width="256" Height="256" Offset="0x20000" ExternalTlut="vr_MLVR_pal_static" ExternalTlutOffset="0x400"/>
+        <Texture Name="gStable4BgTex" OutName="stable4" Format="ci8" Width="256" Height="256" Offset="0x30000" ExternalTlut="vr_MLVR_pal_static" ExternalTlutOffset="0x600"/>
+    </File>
+    <File Name="vr_MLVR_pal_static">
+        <Texture Name="gStableBgTLUT" OutName="stable_tlut" Format="rgba16" Width="16" Height="16" Offset="0x0"/>
+        <Texture Name="gStableBg2TLUT" OutName="stable2_tlut" Format="rgba16" Width="16" Height="16" Offset="0x200"/>
+        <Texture Name="gStableBg3TLUT" OutName="stable3_tlut" Format="rgba16" Width="16" Height="16" Offset="0x400"/>
+        <Texture Name="gStableBg4TLUT" OutName="stable4_tlut" Format="rgba16" Width="16" Height="16" Offset="0x600"/>
+    </File>
     <File Name="vr_LBVR_static">
         <Texture Name="gCowHouseBgTex" OutName="cow_house" Format="ci8" Width="256" Height="256" Offset="0x0" ExternalTlut="vr_LBVR_pal_static" ExternalTlutOffset="0x000"/>
         <Texture Name="gCowHouse2BgTex" OutName="cow_house2" Format="ci8" Width="256" Height="256" Offset="0x10000" ExternalTlut="vr_LBVR_pal_static" ExternalTlutOffset="0x200"/>

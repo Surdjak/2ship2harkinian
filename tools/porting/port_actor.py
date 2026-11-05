@@ -97,6 +97,22 @@ RENAMES = [
     (r"\bInterface_SetTimer\(", "Interface_StartTimer(TIMER_ID_MINIGAME_1, "),
     (r"\bfunc_800C0DB4\(", "Play_IsUnderwater("),
     (r"\bfunc_800A9F6C\(", "Rumble_Request("),
+    (r"\bfunc_800AA148\(\)", "Rumble_ControllerOneHasRumblePak()"),
+    (r"\bAudio_PlaySoundRandom\(", "Audio_PlaySfx_Randomized("),
+    (r"\bAudio_SetSfxBanksMute\(", "AudioSfx_MuteBanks("),  # the same seven banks in both games
+    (r"\bGfx_SetupDL_20NoCD\(", "Gfx_SetupDL20_NoCD("),
+    (r"\bgMtxClear\b", "gIdentityMtx"),
+    # OoT's SkinMatrix_SetRotateYXZ(x, y, z) is MM's SkinMatrix_SetRotateYRP(yaw, roll, pitch), argument for argument.
+    (r"\bSkinMatrix_SetTranslateRotateYXZScale\(", "SkinMatrix_SetScaleRotateYRPTranslate("),
+    (r"\bfunc_800A63CC\(", "Skin_DrawImpl("),
+    (r"\bEffectSsDFire_SpawnFixedScale\(", "EffectSsDFire_SpawnFixedScaleOot("),
+    (r"\bEffectSsGMagma(2?)_Spawn\(", r"EffectSsGMagma\1_SpawnOot("),
+    (r"\bMatrix_MtxFToZYXRotS\(", "Matrix_MtxFToZYXRot("),
+    # OoT Player's fishing line fields and left-hand matrix, as MM's leftover En_Fishing names them.
+    (r"\bplayer->unk_858\b", "player->unk_B08"),
+    (r"\bplayer->unk_85C\b", "player->unk_B0C"),
+    (r"\bplayer->mf_9E0\b", "player->leftHandMf"),
+    (r"\binterfaceCtx\.unk_260\b", "interfaceCtx.fishingHUDControl"),
     (r"\bfunc_800433A4\(", "DynaPolyActor_TransformCarriedActor("),
     (r"\bfunc_8003ECA8\(", "DynaPoly_DisableCeilingCollision("),
     (r"\bfunc_8005B198\(\)", "Hyrule_GetAttentionCategoryOot()"),
@@ -351,6 +367,9 @@ RENAMES = [
     (r"\b(GET|SET|CLEAR)_(ITEMGETINF|INFTABLE|EVENTCHKINF)\((\w+)\)", r"\1_\2_OOT(\3)"),
     (r"\bVIRTUAL_TO_PHYSICAL\(", "OS_K0_TO_PHYSICAL("),
     (r"\bGraph_Alloc\(", "GRAPH_ALLOC("),
+    # Matrix modes written as numbers (MTXMODE_NEW 0, MTXMODE_APPLY 1).
+    (r"\bMatrix_Rotate([XYZ])\(([^;]*),\s*1\);", r"Matrix_Rotate\1(\2, MTXMODE_APPLY);"),
+    (r"\bMatrix_Rotate([XYZ])\(([^;]*),\s*0\);", r"Matrix_Rotate\1(\2, MTXMODE_NEW);"),
     (r"\bMatrix_RotateX\(([^;]*),\s*MTXMODE_APPLY\);", r"Matrix_RotateXFApply(\1);"),
     (r"\bMatrix_RotateX\(([^;]*),\s*MTXMODE_NEW\);", r"Matrix_RotateXFNew(\1);"),
     (r"\bMatrix_RotateY\(([^;]*),\s*(MTXMODE_\w+)\);", r"Matrix_RotateYF(\1, \2);"),
@@ -564,6 +583,18 @@ RENAMES = [
     (r"\bfunc_8002ED80\b", "func_800B8118"),
     (r"(atDmgInfo\.dmgFlags & )(0x[0-9A-Fa-f]+)\b", r"\1DMG_FROM_OOT(\2)"),
     (r"\b(?:Player_SetCsActionWithHaltedActors|func_8002DF54)\(", "Player_SetCsActionWithHaltedActorsOot("),
+    (r"\bplay->startPlayerCutscene\(play, ", "Player_TryCsActionOot(play, "),
+    (r"\bplay->linkAgeOnLoad\b", "gLinkAgeOnLoadOot"),
+    (r"\bEnBoom\b", "EnBoomOot"),  # OoT's boomerang (hyrule/overlays/actors/ovl_En_Boom), apart from MM's Zora fins
+    (r"\.skyboxOffset\b", ".quakeOffset"),  # OoT's Camera field at the same offset, the quake's eye offset
+    (r"\b(play|playState)->csCtx\.(npcActions|frames|state|segment|linkAction|unk_1[8AB])\b", r"gCsCtxOot.\2"),
+    (r"(\w+) = &play->csCtx;", r"\1 = &gCsCtxOot;"),
+    (r"\bCutsceneContext\* (\w+);", r"CutsceneContextOot* \1;"),
+    (r"->toucherFlags\b", "->atElemFlags"),
+    (r"->bumperFlags\b", "->acElemFlags"),
+    (r"^([ \t]*)Audio_(?:Toggle|Update)MalonSinging\([^;]*\);",
+     r"\1// PORT: OoT's Malon singing in Lon Lon Ranch's music is not ported."),
+    (r"\bPLAYER_IA_SWORD_MASTER\b", "PLAYER_IA_SWORD_GILDED"),  # the Master Sword is the Gilded Sword's action
     (r"\bPLAYER_MASK_([A-Z_]+)\b(?!_Oot)", r"PLAYER_MASK_\1_Oot"),
     (r"\bgSaveContext\.eventInf\[", "gSaveContext.eventInfOot["),
     (r"\bCUR_EQUIP_VALUE\(", "GET_CUR_EQUIP_VALUE("),
@@ -581,6 +612,8 @@ RENAMES = [
     (r"\b((?:EVENTCHKINF|INFTABLE|ITEMGETINF|EVENTINF)_[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\b(ACTOR_(?!FLAG_)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\bACTOR_EN_BOM_Oot\b", "ACTOR_EN_BOM"),
+    # OoT's ocarina effects are MM's actors of the same names (MM's Oceff_Wipe4 is the same swirl, for other songs).
+    (r"\bACTOR_OCEFF_(SPOT|WIPE|WIPE2|WIPE3|WIPE4|STORM)_Oot\b", r"ACTOR_OCEFF_\1"),
     # Collectibles are MM's En_Item00 (OoT-only types through Item00_FromOot), arrows MM's En_Arrow, whose thrown Deku
     # Nut stands in for OoT's cutscene nut.
     (r"\bACTOR_EN_ITEM00_Oot\b", "ACTOR_EN_ITEM00"),
@@ -732,8 +765,13 @@ def convert_entrances(text):
     text = re.sub(r"play->nextEntranceIndex = (ENTR_\w+);",
                   lambda m: f"play->nextEntrance = Hyrule_ExitFromOot(0x{ENTRANCES[m.group(1)]:03X}); // OoT's {m.group(1)}",
                   text)
-    return re.sub(r"gSaveContext\.entranceIndex ([!=]=)\s+(ENTR_\w+)",
+    text = re.sub(r"gSaveContext\.entranceIndex ([!=]=)\s+(ENTR_\w+)",
                   lambda m: f"gSaveContext.save.entrance {m.group(1)} Hyrule_EntranceFromOot(0x{ENTRANCES[m.group(2)]:03X} /* {m.group(2)} */)",
+                  text)
+    # Exits taken from a variable (a table of OoT entrance indices): the remaining OoT names become their indices.
+    text = re.sub(r"play->nextEntranceIndex = ([^;]+);", r"play->nextEntrance = Hyrule_ExitFromOot(\1);", text)
+    return re.sub(r"\b(ENTR_\w+)\b",
+                  lambda m: f"0x{ENTRANCES[m.group(1)]:03X} /* {m.group(1)} */" if m.group(1) in ENTRANCES else m.group(0),
                   text)
 
 
@@ -941,6 +979,8 @@ def convert(text, header):
     for elem_name in COLLIDER_ELEMENT_NAMES:
         text = re.sub(r"\b(%s(?:\[[^\]]*\])?)(\.|->)(?:info|elem)\b" % elem_name, r"\1\2base", text)
     text = re.sub(r'#include "scenes/([\w/]+)\.h"', r'#include "assets/oot/scenes/\1.h"', text)
+    # SoH's few includes spelled with the assets/ prefix.
+    text = re.sub(r'#include "assets/(objects|scenes)/([\w/]+)\.h"', r'#include "assets/oot/\1/\2.h"', text)
     text = re.sub(r'#include <objects/(\w+)/(\w+)\.h>', r'#include "assets/oot/objects/\1/\2.h"', text)
     text = re.sub(r'#include "overlays/(ovl_\w+)/(\w+)\.h"', r'#include "assets/oot/overlays/\1/\2.h"', text)
     # Another ported OoT actor's header: by relative path, since MM may have an actor of the same name.
@@ -997,7 +1037,7 @@ def convert(text, header):
         extra += '#include "HyruleInventory.h"\n' if "Inventory_GetDungeonIndexOot" in text else ""
         extra += '#include "z64horse.h"\n' if "Horse_" in text else ""
         extra += '#include "HyruleOcarina.h"\n' if re.search(r"OCARINA_\w+_Oot|OcarinaOot\(|StartOcarina\w*Oot", text) else ""
-        extra += '#include "HyruleCutscene.h"\n' if re.search(r"gCsCtxOot|CutsceneOot\(|CS_STATE_\w+_Oot|CsCmdActorCueOot", text) else ""
+        extra += '#include "HyruleCutscene.h"\n' if re.search(r"gCsCtxOot|CutsceneOot\(|CS_STATE_\w+_Oot|CsCmdActorCueOot|gLinkAgeOnLoadOot", text) else ""
         # SoH's soh/ResourceManagerHelpers.h, dropped above; without it C assumes int and truncates pointers.
         extra += '#include "2s2h/BenPort.h"\n' if "ResourceMgr_" in text else ""
         text = re.sub(r'(#include "[^"]+"\n)', lambda m: m.group(1) + extra, text, count=1)

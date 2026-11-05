@@ -4036,8 +4036,19 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList1, G
                     Matrix_MtxFToYXZRot(&sp230, temp_s1, false);
                     heldActor->shape.rot = *temp_s1;
                 } else if (player->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR) {
-                    heldActor->world.rot.y = heldActor->shape.rot.y =
-                        player->actor.shape.rot.y + player->leftHandWorld.rot.y;
+                    // 3Ship [Hyrule] OoT's golden pillars (Bg_Heavy_Block, OoT's ACTOR_FLAG_CARRY_X_ROT_INFLUENCE) tilt
+                    // with the hand's pitch since the lift began, rather than turning with Link.
+                    if (heldActor->id == ACTOR_BG_HEAVY_BLOCK_Oot) {
+                        MtxF handMf;
+                        Vec3s handRot;
+
+                        Matrix_Get(&handMf);
+                        Matrix_MtxFToYXZRot(&handMf, &handRot, false);
+                        heldActor->world.rot.x = heldActor->shape.rot.x = handRot.x - player->leftHandWorld.rot.x;
+                    } else {
+                        heldActor->world.rot.y = heldActor->shape.rot.y =
+                            player->actor.shape.rot.y + player->leftHandWorld.rot.y;
+                    }
                 }
             } else {
                 static f32 sMeleeWeaponLengths[PLAYER_MELEEWEAPON_MAX] = {

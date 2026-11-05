@@ -140,6 +140,23 @@ entrance indices to MM entrances (`HyruleOotEntrances.inc`). To add a scene, app
 | Desert Colossus | `SCENE_DESERT_COLOSSUS_Oot` (0xC2) | `0x18000` |
 | Spirit Temple | `SCENE_SPIRIT_TEMPLE_Oot` (0xC3) | `0x18200` |
 | Spirit Temple (Boss) | `SCENE_SPIRIT_TEMPLE_BOSS_Oot` (0xC4) | `0x18400` |
+| Deku Tree | `SCENE_DEKU_TREE_Oot` (0xC5) | `0x18600` |
+| Deku Tree (Boss) | `SCENE_DEKU_TREE_BOSS_Oot` (0xC6) | `0x18800` |
+| Dodongo's Cavern | `SCENE_DODONGOS_CAVERN_Oot` (0xC7) | `0x18A00` |
+| Dodongo's Cavern (Boss) | `SCENE_DODONGOS_CAVERN_BOSS_Oot` (0xC8) | `0x18C00` |
+| Jabu-Jabu's Belly | `SCENE_JABU_JABU_Oot` (0xC9) | `0x18E00` |
+| Jabu-Jabu's Belly (Boss) | `SCENE_JABU_JABU_BOSS_Oot` (0xCA) | `0x19000` |
+| Stable | `SCENE_STABLE_Oot` (0xCB) | `0x19200` |
+| Lon Lon Buildings | `SCENE_LON_LON_BUILDINGS_Oot` (0xCC) | `0x19400` |
+| Fishing Pond | `SCENE_FISHING_POND_Oot` (0xCD) | `0x19600` |
+| Gerudo Training Ground | `SCENE_GERUDO_TRAINING_GROUND_Oot` (0xCE) | `0x19800` |
+| Inside Ganon's Castle | `SCENE_INSIDE_GANONS_CASTLE_Oot` (0xCF) | `0x19A00` |
+| Ganon's Tower | `SCENE_GANONS_TOWER_Oot` (0xD0) | `0x19C00` |
+| Ganondorf's Chamber | `SCENE_GANONDORF_BOSS_Oot` (0xD1) | `0x19E00` |
+| Ganon's Tower Collapse (Interior) | `SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot` (0xD2) | `0x1A000` |
+| Ganon's Castle Collapse | `SCENE_INSIDE_GANONS_CASTLE_COLLAPSE_Oot` (0xD3) | `0x1A200` |
+| Ganon's Tower Collapse (Exterior) | `SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot` (0xD4) | `0x1A400` |
+| Ganon's Arena | `SCENE_GANON_BOSS_Oot` (0xD5) | `0x1A600` |
 
 The scenes without an entrance (—) are OoT's night and adult variants: no OoT entrance group starts in them, so the
 day scene's entrances lead to them by layer (child at night, adult). Boot the day scene at night or as adult
@@ -616,6 +633,51 @@ graveyard, the Desert Colossus. Twinrova's intro and Nabooru's Iron Knuckle figh
   horses) is left out.
 - Not checked yet: the boss fights themselves, Dark Link's fight, the temples' puzzles, the windmill's Song of
   Storms and Dampé's race.
+
+Wave 27 loads the rest of OoT's scenes: the Deku Tree, Dodongo's Cavern and Jabu-Jabu's Belly with their bosses, the
+stable, the Lon Lon Ranch buildings, the fishing pond, the Gerudo Training Ground, and Ganon's Castle through the
+tower, Ganondorf's chamber, the collapse and Ganon's arena: 17 scenes and 64 more actors. Every OoT scene but SoH's
+test maps is now in the scene table. Under gdb, all 17 load and draw. With each child boss beaten, Link's blue warp
+gives its spiritual stone and plays OoT's sequel: the Great Deku Tree's last words and the creation story, Darunia on
+Death Mountain Trail, Ruto at Zora's Fountain. Ganon's Castle's and Ganondorf's intros play to the fight; his defeat
+plays Zelda's warning and starts the escape. Notes:
+
+- The fishing pond is OoT's `Fishing`, with the Player fields and HUD flag that MM's leftover `En_Fishing` uses for
+  the same jobs (`unk_B08`/`unk_B0C`, `leftHandMf`, `fishingHUDControl`); its records are `HIGH_SCORE_OOT(HS_FISHING_Oot)`
+  with SoH's `HS_FISH_*` bits (z64save.h).
+- Adult Link lifts and throws the golden pillars (`Bg_Heavy_Block`) with the Golden Gauntlets, as OoT's Player does
+  (`Player_Action_HeavyLiftOot`, with OoT's `link_normal_heavy_carry` animations from oot.o2r); the carried pillar
+  tilts with his hand (`z_player_lib.c`).
+- `Player_TryCsActionOot` is OoT's `play->startPlayerCutscene` (Ganon's final blow), the same action mapping as
+  `Player_SetCsActionWithHaltedActorsOot` without halting the other actors. OoT's cutscene actions put the sword of
+  Link's age in his hand (`Player_PutSwordInHandOot`), where MM's picks one by form.
+- OoT's Dodongo fire is MM's `D_Fire` effect, which draws from MM's `object_dodongo`; OoT's Dodongos load it. King
+  Dodongo's lava bubbles (`EffectSsGMagma`, `EffectSsGMagma2`) do not exist in MM and are not drawn. His lava keeps
+  OoT's textures (SoH's HD-texture branches are left out).
+- OoT's cutscene destination 118 (the void-out into Ganon's arena after the collapse) used Ganondorf's chamber's
+  entrance (0x41F) for OoT's `ENTR_GANON_BOSS_0` (0x517); fixed in `HyruleCutscene.c`.
+- The stable is a panorama room (`SKYBOX_STABLES`, `vr_MLVR`); jabu's scene needs OoT's `code/sys_matrix.xml`; the
+  Business Scrub's animations are named in `object_shopnuts.xml` as SoH's headers name them.
+- Ganon's final blow leads into OoT's ending: the Chamber of the Sages, the cutscene map, then the credits across
+  Hyrule. OoT's credits (`staff_message_data_static`, ids 0x0500-0x05FF) are MM's credits table's, with
+  `TEXT_OOT_BASE` added (`Hyrule_AddOotCredits`); MM's credits keep OoT's text encoding, so OTRExporter leaves
+  OoT's credits unconverted.
+- With the six trials done, OoT's cutscene destination 113 plays the tower barrier's cutscene (`gTowerBarrierCs`, in
+  Inside Ganon's Castle), which waited for that scene.
+- The same wave ports the actors left in the scenes loaded earlier that the story needs: Saria (`En_Sa`, her
+  lesson in the Sacred Forest Meadow checked under gdb: Saria's Song is learned), the Deku Sprout (`Obj_Dekujr`,
+  through OoT's generic NPC talk, `func_80037C30`/`func_80037D98` in HyruleActor.c, for its npc id only), the
+  rainbow bridge (`Bg_Gjyo_Bridge`, its cutscene checked: Rauru and the sages raise it), child Zelda and the end card
+  (`En_Zl1`, `End_Title`: OoT's ending ends on "The End"), the credits' Gorons and Lon Lon party (`Demo_Go`,
+  `Demo_Ec`), the Deku Shield in Kokiri Forest, the Deku scrub mask contest (`En_Dnt_Demo`, `En_Dnt_Nomal`,
+  `En_Dnt_Jiji`), Grog, the running man, the cucco chicks and Impa's horse. The rainbow bridge's flag survives the
+  cycle reset (docs/DESIGN.md).
+- Not done: OoT's ocarina games, the frogs (`En_Fr`), the Skull Kid's memory game (`En_Skj`, `En_Skjneedle`) and the
+  scarecrows' song recording (`En_Kakasi`, `En_Kakasi3`), which need OoT's message modes for them; Epona and the other
+  horses (`En_Horse`, `En_Horse_Link_Child`, `En_Horse_Game_Check`, `En_Ma3`, `En_Yabusame_Mark`); OoT's title logo
+  (`En_Mag`). King Dodongo's lava bubbles are not drawn. What follows OoT's ending in the merged game is not decided.
+- Not checked yet: the child bosses' and Ganondorf's and Ganon's fights themselves (their defeats were forced under
+  gdb), the dungeons' puzzles, the Gerudo Training Ground, the trials, the fishing pond's game and the golden pillars.
 
 ## Cutscenes
 

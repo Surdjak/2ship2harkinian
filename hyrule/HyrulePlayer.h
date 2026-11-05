@@ -66,6 +66,7 @@ Gfx** Hyrule_GetHandHoldingBoomerangDLs(void);
 #define PLAYER_MASK_ZORA_Oot 6
 #define PLAYER_MASK_GERUDO_Oot 7
 #define PLAYER_MASK_TRUTH_Oot 8
+#define PLAYER_MASK_MAX_Oot 9
 // The OoT mask Link wears, for OoT's actors (OoT's Player_GetMask).
 s32 Player_GetMaskOot(struct PlayState* play);
 // OoT's Text_GetFaceReaction: what OoT's people say to the OoT mask Link wears, for one of OoT's reaction sets
@@ -189,6 +190,9 @@ s32 Hyrule_IsExchangeAcceptedOot(PlayerItemAction offer, PlayerItemAction shown)
 // OoT's Player_SetCsActionWithHaltedActors with OoT's cutscene action number, which MM numbers differently. Only the
 // actions ported actors use are mapped: OoT's 1 (idle), 7 (end), 8 (wait) and 95 (hands up, caught by a Gerudo).
 void Player_SetCsActionWithHaltedActorsOot(struct PlayState* play, struct Actor* csActor, u8 ootCsAction);
+// OoT's Player_TryCsAction (play->startPlayerCutscene): the same mapping, without halting the other actors; false
+// while Link is in a cutscene he cannot leave.
+s32 Player_TryCsActionOot(struct PlayState* play, struct Actor* actor, u8 ootCsAction);
 
 // The B-button item for an equipped sword value, MM's or 3Ship's (ITEM_NONE for none).
 u16 Hyrule_SwordValueToItem(u8 value);

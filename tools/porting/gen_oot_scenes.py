@@ -116,6 +116,23 @@ SCENES = [
     "SCENE_DESERT_COLOSSUS",
     "SCENE_SPIRIT_TEMPLE",
     "SCENE_SPIRIT_TEMPLE_BOSS",
+    "SCENE_DEKU_TREE",
+    "SCENE_DEKU_TREE_BOSS",
+    "SCENE_DODONGOS_CAVERN",
+    "SCENE_DODONGOS_CAVERN_BOSS",
+    "SCENE_JABU_JABU",
+    "SCENE_JABU_JABU_BOSS",
+    "SCENE_STABLE",
+    "SCENE_LON_LON_BUILDINGS",
+    "SCENE_FISHING_POND",
+    "SCENE_GERUDO_TRAINING_GROUND",
+    "SCENE_INSIDE_GANONS_CASTLE",
+    "SCENE_GANONS_TOWER",
+    "SCENE_GANONDORF_BOSS",
+    "SCENE_GANONS_TOWER_COLLAPSE_INTERIOR",
+    "SCENE_INSIDE_GANONS_CASTLE_COLLAPSE",
+    "SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR",
+    "SCENE_GANON_BOSS",
 ]
 
 # Human-readable names that the enum name spells badly.
@@ -158,6 +175,18 @@ NAMES = {
     "SCENE_THIEVES_HIDEOUT": "Thieves' Hideout",
     "SCENE_CARPENTERS_TENT": "Carpenters' Tent",
     "SCENE_SPIRIT_TEMPLE_BOSS": "Spirit Temple (Boss)",
+    "SCENE_DEKU_TREE_BOSS": "Deku Tree (Boss)",
+    "SCENE_DODONGOS_CAVERN": "Dodongo's Cavern",
+    "SCENE_DODONGOS_CAVERN_BOSS": "Dodongo's Cavern (Boss)",
+    "SCENE_JABU_JABU": "Jabu-Jabu's Belly",
+    "SCENE_JABU_JABU_BOSS": "Jabu-Jabu's Belly (Boss)",
+    "SCENE_INSIDE_GANONS_CASTLE": "Inside Ganon's Castle",
+    "SCENE_GANONS_TOWER": "Ganon's Tower",
+    "SCENE_GANONDORF_BOSS": "Ganondorf's Chamber",
+    "SCENE_GANONS_TOWER_COLLAPSE_INTERIOR": "Ganon's Tower Collapse (Interior)",
+    "SCENE_INSIDE_GANONS_CASTLE_COLLAPSE": "Ganon's Castle Collapse",
+    "SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR": "Ganon's Tower Collapse (Exterior)",
+    "SCENE_GANON_BOSS": "Ganon's Arena",
 }
 
 FIRST_SCENE_ID = 0x71  # after MM's SCENE_ALLEY

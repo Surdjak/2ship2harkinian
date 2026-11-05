@@ -857,10 +857,11 @@ s32 Hyrule_IsExchangeAcceptedOot(PlayerItemAction offer, PlayerItemAction shown)
 u8 gPlayerCsActionOot;
 u8 gPlayerCsActionInitOot;
 
-void Player_SetCsActionWithHaltedActorsOot(PlayState* play, Actor* csActor, u8 ootCsAction) {
+// MM's action for OoT's ootCsAction; OoT's actions that MM has no equal for run from OoT's tables (*ootAction).
+static u8 Player_MapCsActionOot(u8 ootCsAction, u8* ootAction) {
     u8 csAction;
 
-    gPlayerCsActionOot = 0;
+    *ootAction = 0;
     switch (ootCsAction) {
         case PLAYER_CSACTION_NONE:
         case PLAYER_CSACTION_1:
@@ -879,12 +880,34 @@ void Player_SetCsActionWithHaltedActorsOot(PlayState* play, Actor* csActor, u8 o
         default:
             // OoT's other actions run from OoT's tables (HyrulePlayerCsOot.inc), through MM's action 5, which hands
             // Link to them.
-            gPlayerCsActionOot = ootCsAction;
-            gPlayerCsActionInitOot = true;
+            *ootAction = ootCsAction;
             csAction = PLAYER_CSACTION_5;
             break;
     }
+    return csAction;
+}
+
+void Player_SetCsActionWithHaltedActorsOot(PlayState* play, Actor* csActor, u8 ootCsAction) {
+    u8 ootAction;
+    u8 csAction = Player_MapCsActionOot(ootCsAction, &ootAction);
+
+    gPlayerCsActionOot = ootAction;
+    gPlayerCsActionInitOot = (ootAction != 0);
     Player_SetCsActionWithHaltedActors(play, csActor, csAction);
+}
+
+s32 Player_TryCsActionOot(PlayState* play, Actor* actor, u8 ootCsAction) {
+    Player* player = GET_PLAYER(play);
+    u8 ootAction;
+    u8 csAction = Player_MapCsActionOot(ootCsAction, &ootAction);
+
+    if (!play->tryPlayerCsAction(play, player, csAction)) {
+        return false;
+    }
+    gPlayerCsActionOot = ootAction;
+    gPlayerCsActionInitOot = (ootAction != 0);
+    player->csActor = actor;
+    return true;
 }
 
 // OoT's sReactionTextIds (z_face_reaction.c): per reaction set, the text for no mask then each PlayerMask.

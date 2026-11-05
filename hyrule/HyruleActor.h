@@ -181,3 +181,29 @@ void Actor_SwapHookshotAttachmentOot(PlayState* play, Actor* actorA, Actor* acto
 void SkelAnime_InterpFrameTable(s32 limbCount, Vec3s* dst, Vec3s* start, Vec3s* target, f32 weight);
 // OoT's Math_StepUntilS.
 s32 Math_StepUntilSOot(s16* pValue, s16 limit, s16 step);
+// MM's, which its headers leave out.
+void Skin_DrawImpl(Actor* actor, PlayState* play, Skin* skin, SkinPostDraw postDraw,
+                   SkinOverrideLimbDraw overrideLimbDraw, s32 setTranslation, s32 arg6, s32 drawFlags);
+void Play_ClearAllSubCameras(PlayState* play);
+// OoT's dust and sparkle spawners.
+void func_8003555C(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel);
+void func_800283D4(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor,
+                   Color_RGBA8* envColor, s16 scale, s16 scaleStep, s16 life);
+// OoT's func_80033AEC: steps arg1 toward arg0 unless it is between arg4 and arg5 away.
+f32 func_80033AEC(Vec3f* arg0, Vec3f* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5);
+// OoT's Dodongo fire, through MM's D_Fire effect (which draws from MM's object_dodongo; the actor loads it).
+void EffectSsDFire_SpawnFixedScaleOot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 alpha,
+                                      s16 fadeDelay);
+// OoT's lava bubbles and splashes (King Dodongo's lava), which MM lacks: not drawn.
+void EffectSsGMagma_SpawnOot(PlayState* play, Vec3f* pos);
+void EffectSsGMagma2_SpawnOot(PlayState* play, Vec3f* pos, Color_RGBA8* primColor, Color_RGBA8* envColor,
+                              s16 updateRate, s16 drawMode, s16 scale);
+// MM's Player limb override for the gameplay skeleton, which its headers leave out (Dark Link draws with it).
+s32 Player_OverrideLimbDrawGameplayCommon(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,
+                                          Actor* thisx);
+// OoT's generic NPC talk (func_80037C30 picks the text, func_80037D98 offers it and follows it), for the NPCs ported
+// so far: OoT's npc id 0xF (the Deku Sprout). Other ids get no text.
+u16 func_80037C30(PlayState* play, s16 npcId);
+s32 func_80037D98(PlayState* play, Actor* actor, s16 npcId, s32* talkState);
+// OoT's func_800C0808: the camera follows Link with the given setting.
+s32 func_800C0808(PlayState* play, s16 camId, Player* player, s16 setting);

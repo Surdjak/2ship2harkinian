@@ -10,6 +10,7 @@
 #include "HyrulePort.h"
 #include "HyruleScenes.h"
 #include "HyruleOcarina.h"
+#include "assets/oot/scenes/dungeons/ganontika/ganontika_scene.h"
 #include "HyruleInventory.h"
 #include "BenPort.h"
 #include <string.h>
@@ -1307,8 +1308,7 @@ static void Cutscene_Command_Terminator(PlayState* play, CutsceneContextOot* csC
                     GET_EVENTCHKINF_OOT(EVENTCHKINF_COMPLETED_FIRE_TRIAL_Oot) &&
                     GET_EVENTCHKINF_OOT(EVENTCHKINF_COMPLETED_LIGHT_TRIAL_Oot) &&
                     GET_EVENTCHKINF_OOT(EVENTCHKINF_COMPLETED_SPIRIT_TRIAL_Oot)) {
-                    // PORT: Ganon's Tower's barrier cutscene is a scene cutscene, which comes with scene cutscenes.
-                    gCsCtxOot.segment = NULL;
+                    gCsCtxOot.segment = Lib_SegmentedToVirtual(gTowerBarrierCs);
                     gCsCtxOot.frames = 0;
                     Hyrule_TriggerCutsceneOot(1);
                     gSaveContext.save.cutsceneIndex = 0xFFFF;
@@ -1351,7 +1351,7 @@ static void Cutscene_Command_Terminator(PlayState* play, CutsceneContextOot* csC
                 play->transitionType = TRANS_TYPE_FADE_WHITE;
                 break;
             case 118:
-                gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = Hyrule_ExitFromOot(0x41F); // OoT's ENTR_GANON_BOSS_0
+                gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = Hyrule_ExitFromOot(0x517); // OoT's ENTR_GANON_BOSS_0
                 func_80169EFC(play);
                 gSaveContext.respawnFlag = -2;
                 gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK;

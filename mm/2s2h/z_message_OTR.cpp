@@ -57,6 +57,7 @@ MessageTableEntry* OTRMessage_LoadTable(const char* filePath, bool isNES) {
 
 // 3Ship [Hyrule] Adds OoT's messages to the table (hyrule/HyruleText.cpp).
 extern "C" MessageTableEntry* Hyrule_AddOotMessages(MessageTableEntry* mmTable);
+extern "C" MessageTableEntry* Hyrule_AddOotCredits(MessageTableEntry* mmTable, size_t mmCount);
 
 extern "C" void OTRMessage_Init() {
     sMessageTableNES = OTRMessage_LoadTable("text/message_data_static/message_data_static", true);
@@ -73,4 +74,6 @@ extern "C" void OTRMessage_Init() {
         sMessageTableCredits[i].segment = file2->messages[i].msg.c_str();
         sMessageTableCredits[i].msgSize = file2->messages[i].msg.size();
     }
+    // 3Ship [Hyrule] OoT's ending credits (hyrule/HyruleText.cpp).
+    sMessageTableCredits = Hyrule_AddOotCredits(sMessageTableCredits, file2->messages.size());
 }

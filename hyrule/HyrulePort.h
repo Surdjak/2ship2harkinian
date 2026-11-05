@@ -20,6 +20,8 @@ extern "C" {
 #define LINK_AGE_IN_YEARS_OOT (LINK_IS_ADULT_OOT ? YEARS_ADULT : YEARS_CHILD)
 // OoT's gSaveContext.linkAge: LINK_AGE_ADULT 0, LINK_AGE_CHILD 1.
 #define LINK_AGE_OOT (LINK_IS_ADULT_OOT ? 0 : 1)
+#define LINK_AGE_ADULT 0
+#define LINK_AGE_CHILD 1
 // OoT's sub-timer (the escape and minigame countdowns), which MM's timers do not run yet.
 #define Interface_SetSubTimerToFinalSecond(play) ((void)0)
 

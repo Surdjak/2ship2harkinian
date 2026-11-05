@@ -823,7 +823,7 @@ static void func_80851D80Oot(PlayState* play, Player* this, CsCmdActorCueOot* cu
     PlayerAnimation_Update(play, &this->skelAnime);
 
     if (PlayerAnimation_OnFrame(&this->skelAnime, 6.0f)) {
-        Player_PutSwordInHand(play, this, 0);
+        Player_PutSwordInHandOot(play, this, 0);
     } else {
         Player_PlayAnimSfx(this, D_808551B8Oot);
     }
@@ -958,7 +958,7 @@ static void func_80852298Oot(PlayState* play, Player* this, CsCmdActorCueOot* cu
         this->av2.actionVar2 = 1;
     } else if (this->av2.actionVar2 == 0) {
         if (PlayerAnimation_OnFrame(&this->skelAnime, 10.0f)) {
-            Player_PutSwordInHand(play, this, 1);
+            Player_PutSwordInHandOot(play, this, 1);
         }
     }
 }
@@ -1058,7 +1058,7 @@ static void func_808525C0Oot(PlayState* play, Player* this, CsCmdActorCueOot* cu
 }
 
 static void func_80852608Oot(PlayState* play, Player* this, CsCmdActorCueOot* cue) {
-    Player_PutSwordInHand(play, this, 0);
+    Player_PutSwordInHandOot(play, this, 0);
     Player_Anim_PlayOnceAdjusted(play, this, &gPlayerAnim_link_demo_return_to_past);
 }
 
@@ -1120,7 +1120,7 @@ static void func_8085283COot(PlayState* play, Player* this, CsCmdActorCueOot* cu
         // This is when link picks up the sword in the Ganon fight
     } else if (this->av2.actionVar2 == 0) {
         Item_Give(play, ITEM_SWORD_MASTER_Oot);
-        Player_PutSwordInHand(play, this, 0);
+        Player_PutSwordInHandOot(play, this, 0);
     } else {
         func_808484CC(this);
     }
@@ -1131,8 +1131,8 @@ static void func_808528C8Oot(PlayState* play, Player* this, CsCmdActorCueOot* cu
         func_8083FCF0(play, this, 0.0f, 99.0f, this->skelAnime.endFrame - 8.0f);
     }
 
-    if (this->heldItemAction != PLAYER_IA_SWORD_RAZOR) {
-        Player_PutSwordInHand(play, this, 1);
+    if (this->heldItemAction != PLAYER_IA_SWORD_GILDED) {
+        Player_PutSwordInHandOot(play, this, 1);
     }
 }
 

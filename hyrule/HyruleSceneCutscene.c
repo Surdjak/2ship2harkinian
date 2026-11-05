@@ -55,8 +55,10 @@ static const EntranceCutsceneOot sEntranceCutsceneTableOot[] = {
     { 0x5E8, 2, EVENTCHKINF_SPOKE_TO_DEKU_TREE_SPROUT_Oot, CS_PATH_OOT("spot04_scene", "gKokiriForestDekuSproutCs") },
 };
 
-// The first-visit introductions' flags, which the cycle reset keeps (C2).
-static const u16 sIntroFlagsOot[] = {
+// The flags the cycle reset keeps: the first-visit introductions' (C2), and the rainbow bridge to Ganon's Castle,
+// which never resets (docs/DESIGN.md, Cycle reset).
+static const u16 sKeptFlagsOot[] = {
+    EVENTCHKINF_RAINBOW_BRIDGE_BUILT_Oot,
     EVENTCHKINF_ENTERED_HYRULE_FIELD_Oot,       EVENTCHKINF_ENTERED_DEATH_MOUNTAIN_TRAIL_Oot,
     EVENTCHKINF_ENTERED_KAKARIKO_VILLAGE_Oot,   EVENTCHKINF_ENTERED_ZORAS_DOMAIN_Oot,
     EVENTCHKINF_ENTERED_HYRULE_CASTLE_Oot,      EVENTCHKINF_ENTERED_GORON_CITY_Oot,
@@ -156,16 +158,16 @@ void Hyrule_HandleSceneCutscenesOot(PlayState* play) {
 }
 
 void Hyrule_ResetEventChkInfOotForCycle(void) {
-    u16 kept[ARRAY_COUNT(sIntroFlagsOot)];
+    u16 kept[ARRAY_COUNT(sKeptFlagsOot)];
     s32 i;
 
-    for (i = 0; i < ARRAY_COUNT(sIntroFlagsOot); i++) {
-        kept[i] = GET_EVENTCHKINF_OOT(sIntroFlagsOot[i]);
+    for (i = 0; i < ARRAY_COUNT(sKeptFlagsOot); i++) {
+        kept[i] = GET_EVENTCHKINF_OOT(sKeptFlagsOot[i]);
     }
     memset(gSaveContext.save.saveInfo.eventChkInfOot, 0, sizeof(gSaveContext.save.saveInfo.eventChkInfOot));
-    for (i = 0; i < ARRAY_COUNT(sIntroFlagsOot); i++) {
+    for (i = 0; i < ARRAY_COUNT(sKeptFlagsOot); i++) {
         if (kept[i]) {
-            SET_EVENTCHKINF_OOT(sIntroFlagsOot[i]);
+            SET_EVENTCHKINF_OOT(sKeptFlagsOot[i]);
         }
     }
 }

@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "HyrulePlayer.h"
+#include "2s2h/BenPort.h"
 #include "assets/oot/objects/object_torch2/object_torch2.h"
 
 #define FLAGS                                                                                 \

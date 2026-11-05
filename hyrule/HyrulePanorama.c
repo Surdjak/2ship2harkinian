@@ -77,6 +77,11 @@ static const PanoramaInfo sPanoramas[] = {
       0.8f,
       { BG_TEX("vr_DGVR_static", "gKakPotionShopBgTex"), BG_TEX("vr_DGVR_static", "gKakPotionShop2BgTex") },
       { BG_TEX("vr_DGVR_pal_static", "gKakPotionShopBgTLUT"), BG_TEX("vr_DGVR_pal_static", "gKakPotionShopBg2TLUT") } },
+    { 0x0F, // SKYBOX_STABLES
+      4,
+      0.0f,
+      { BG_TEX("vr_MLVR_static", "gStableBgTex"), BG_TEX("vr_MLVR_static", "gStable2BgTex"), BG_TEX("vr_MLVR_static", "gStable3BgTex"), BG_TEX("vr_MLVR_static", "gStable4BgTex") },
+      { BG_TEX("vr_MLVR_pal_static", "gStableBgTLUT"), BG_TEX("vr_MLVR_pal_static", "gStableBg2TLUT"), BG_TEX("vr_MLVR_pal_static", "gStableBg3TLUT"), BG_TEX("vr_MLVR_pal_static", "gStableBg4TLUT") } },
     { 0x1B, // SKYBOX_HOUSE_IMPA
       4,
       0.0f,

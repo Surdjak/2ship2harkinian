@@ -228,6 +228,18 @@ typedef enum HighScoreOot {
     /* 7 */ HS_OOT_MAX
 } HighScoreOot;
 
+// 3Ship [Hyrule] OoT's fishing record bits (HIGH_SCORE_OOT(HS_FISHING_Oot)), as SoH names them.
+#define HS_FISH_LENGTH_CHILD 0x7F       // record length caught as child
+#define HS_FISH_LENGTH_ADULT 0x7F000000 // record length caught as adult
+#define HS_FISH_PLAYED_CHILD 0x100      // talked to the owner as child
+#define HS_FISH_PLAYED_ADULT 0x200      // talked to the owner as adult
+#define HS_FISH_PRIZE_CHILD 0x400       // won the Piece of Heart
+#define HS_FISH_PRIZE_ADULT 0x800       // won the Golden Scale
+#define HS_FISH_STOLE_HAT 0x1000        // the owner is bald to adult Link
+#define HS_FISH_CHEAT_CHILD 0x80        // child record caught with the sinking lure
+#define HS_FISH_CHEAT_ADULT 0x80000000  // adult record caught with the sinking lure
+#define HS_FISH_PLAYED 0x10000          // one per game played, sets the weather
+
 #define PICTO_PHOTO_WIDTH 160
 #define PICTO_PHOTO_HEIGHT 112
 

@@ -2788,6 +2788,426 @@ static EntranceTableEntry* sSpiritTempleBossOotEntranceTable[] = {
     sSpiritTempleBossOotEntrance2,
 };
 
+static EntranceTableEntry sDekuTreeOotEntrance0[] = {
+    /* 0x000 */ { SCENE_DEKU_TREE_Oot, 0, 0x4102 },
+    /* 0x001 */ { SCENE_DEKU_TREE_Oot, 0, 0x4102 },
+    /* 0x002 */ { SCENE_DEKU_TREE_Oot, 0, 0x4102 },
+    /* 0x003 */ { SCENE_DEKU_TREE_Oot, 0, 0x4102 },
+};
+
+static EntranceTableEntry sDekuTreeOotEntrance1[] = {
+    /* 0x252 */ { SCENE_DEKU_TREE_Oot, 1, 0x8102 },
+    /* 0x253 */ { SCENE_DEKU_TREE_Oot, 1, 0x8102 },
+    /* 0x254 */ { SCENE_DEKU_TREE_Oot, 1, 0x8102 },
+    /* 0x255 */ { SCENE_DEKU_TREE_Oot, 1, 0x8102 },
+};
+
+static EntranceTableEntry* sDekuTreeOotEntranceTable[] = {
+    sDekuTreeOotEntrance0,
+    sDekuTreeOotEntrance1,
+};
+
+static EntranceTableEntry sDekuTreeBossOotEntrance0[] = {
+    /* 0x40F */ { SCENE_DEKU_TREE_BOSS_Oot, 0, 0x8102 },
+    /* 0x410 */ { SCENE_DEKU_TREE_BOSS_Oot, 0, 0x8102 },
+    /* 0x411 */ { SCENE_DEKU_TREE_BOSS_Oot, 0, 0x8102 },
+    /* 0x412 */ { SCENE_DEKU_TREE_BOSS_Oot, 0, 0x8102 },
+};
+
+static EntranceTableEntry* sDekuTreeBossOotEntranceTable[] = {
+    sDekuTreeBossOotEntrance0,
+};
+
+static EntranceTableEntry sDodongosCavernOotEntrance0[] = {
+    /* 0x004 */ { SCENE_DODONGOS_CAVERN_Oot, 0, 0x4102 },
+    /* 0x005 */ { SCENE_DODONGOS_CAVERN_Oot, 0, 0x4102 },
+    /* 0x006 */ { SCENE_DODONGOS_CAVERN_Oot, 0, 0x4102 },
+    /* 0x007 */ { SCENE_DODONGOS_CAVERN_Oot, 0, 0x4102 },
+};
+
+static EntranceTableEntry sDodongosCavernOotEntrance1[] = {
+    /* 0x0C5 */ { SCENE_DODONGOS_CAVERN_Oot, 1, 0x8102 },
+    /* 0x0C6 */ { SCENE_DODONGOS_CAVERN_Oot, 1, 0x8102 },
+    /* 0x0C7 */ { SCENE_DODONGOS_CAVERN_Oot, 1, 0x8102 },
+    /* 0x0C8 */ { SCENE_DODONGOS_CAVERN_Oot, 1, 0x8102 },
+};
+
+static EntranceTableEntry* sDodongosCavernOotEntranceTable[] = {
+    sDodongosCavernOotEntrance0,
+    sDodongosCavernOotEntrance1,
+};
+
+static EntranceTableEntry sDodongosCavernBossOotEntrance0[] = {
+    /* 0x40B */ { SCENE_DODONGOS_CAVERN_BOSS_Oot, 0, 0x8102 },
+    /* 0x40C */ { SCENE_DODONGOS_CAVERN_BOSS_Oot, 0, 0x8102 },
+    /* 0x40D */ { SCENE_DODONGOS_CAVERN_BOSS_Oot, 0, 0x8102 },
+    /* 0x40E */ { SCENE_DODONGOS_CAVERN_BOSS_Oot, 0, 0x8102 },
+};
+
+static EntranceTableEntry* sDodongosCavernBossOotEntranceTable[] = {
+    sDodongosCavernBossOotEntrance0,
+};
+
+static EntranceTableEntry sJabuJabuOotEntrance0[] = {
+    /* 0x028 */ { SCENE_JABU_JABU_Oot, 0, 0x4102 },
+    /* 0x029 */ { SCENE_JABU_JABU_Oot, 0, 0x4102 },
+    /* 0x02A */ { SCENE_JABU_JABU_Oot, 0, 0x4102 },
+    /* 0x02B */ { SCENE_JABU_JABU_Oot, 0, 0x4102 },
+    /* 0x02C */ { SCENE_JABU_JABU_Oot, 0, 0x4102 },
+};
+
+static EntranceTableEntry sJabuJabuOotEntrance1[] = {
+    /* 0x407 */ { SCENE_JABU_JABU_Oot, 1, 0xC102 },
+    /* 0x408 */ { SCENE_JABU_JABU_Oot, 1, 0xC102 },
+    /* 0x409 */ { SCENE_JABU_JABU_Oot, 1, 0xC102 },
+    /* 0x40A */ { SCENE_JABU_JABU_Oot, 1, 0xC102 },
+};
+
+static EntranceTableEntry* sJabuJabuOotEntranceTable[] = {
+    sJabuJabuOotEntrance0,
+    sJabuJabuOotEntrance1,
+};
+
+static EntranceTableEntry sJabuJabuBossOotEntrance0[] = {
+    /* 0x301 */ { SCENE_JABU_JABU_BOSS_Oot, 0, 0xC102 },
+    /* 0x302 */ { SCENE_JABU_JABU_BOSS_Oot, 0, 0xC102 },
+    /* 0x303 */ { SCENE_JABU_JABU_BOSS_Oot, 0, 0xC102 },
+    /* 0x304 */ { SCENE_JABU_JABU_BOSS_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry* sJabuJabuBossOotEntranceTable[] = {
+    sJabuJabuBossOotEntrance0,
+};
+
+static EntranceTableEntry sStableOotEntrance0[] = {
+    /* 0x2F9 */ { SCENE_STABLE_Oot, 0, 0x4204 },
+    /* 0x2FA */ { SCENE_STABLE_Oot, 0, 0x4204 },
+    /* 0x2FB */ { SCENE_STABLE_Oot, 0, 0x4204 },
+    /* 0x2FC */ { SCENE_STABLE_Oot, 0, 0x4204 },
+};
+
+static EntranceTableEntry* sStableOotEntranceTable[] = {
+    sStableOotEntrance0,
+};
+
+static EntranceTableEntry sLonLonBuildingsOotEntrance0[] = {
+    /* 0x04F */ { SCENE_LON_LON_BUILDINGS_Oot, 0, 0x4204 },
+    /* 0x050 */ { SCENE_LON_LON_BUILDINGS_Oot, 0, 0x4204 },
+    /* 0x051 */ { SCENE_LON_LON_BUILDINGS_Oot, 0, 0x4204 },
+    /* 0x052 */ { SCENE_LON_LON_BUILDINGS_Oot, 0, 0x4204 },
+};
+
+static EntranceTableEntry sLonLonBuildingsOotEntrance1[] = {
+    /* 0x5D0 */ { SCENE_LON_LON_BUILDINGS_Oot, 1, 0x4204 },
+    /* 0x5D1 */ { SCENE_LON_LON_BUILDINGS_Oot, 1, 0x4204 },
+    /* 0x5D2 */ { SCENE_LON_LON_BUILDINGS_Oot, 1, 0x4204 },
+    /* 0x5D3 */ { SCENE_LON_LON_BUILDINGS_Oot, 1, 0x4204 },
+};
+
+static EntranceTableEntry sLonLonBuildingsOotEntrance2[] = {
+    /* 0x5E4 */ { SCENE_LON_LON_BUILDINGS_Oot, 2, 0x4204 },
+    /* 0x5E5 */ { SCENE_LON_LON_BUILDINGS_Oot, 2, 0x4204 },
+    /* 0x5E6 */ { SCENE_LON_LON_BUILDINGS_Oot, 2, 0x4204 },
+    /* 0x5E7 */ { SCENE_LON_LON_BUILDINGS_Oot, 2, 0x4204 },
+};
+
+static EntranceTableEntry* sLonLonBuildingsOotEntranceTable[] = {
+    sLonLonBuildingsOotEntrance0,
+    sLonLonBuildingsOotEntrance1,
+    sLonLonBuildingsOotEntrance2,
+};
+
+static EntranceTableEntry sFishingPondOotEntrance0[] = {
+    /* 0x45F */ { SCENE_FISHING_POND_Oot, 0, 0x4104 },
+    /* 0x460 */ { SCENE_FISHING_POND_Oot, 0, 0x4104 },
+    /* 0x461 */ { SCENE_FISHING_POND_Oot, 0, 0x4104 },
+    /* 0x462 */ { SCENE_FISHING_POND_Oot, 0, 0x4104 },
+};
+
+static EntranceTableEntry* sFishingPondOotEntranceTable[] = {
+    sFishingPondOotEntrance0,
+};
+
+static EntranceTableEntry sGerudoTrainingGroundOotEntrance0[] = {
+    /* 0x008 */ { SCENE_GERUDO_TRAINING_GROUND_Oot, 0, 0x4102 },
+    /* 0x009 */ { SCENE_GERUDO_TRAINING_GROUND_Oot, 0, 0x4102 },
+    /* 0x00A */ { SCENE_GERUDO_TRAINING_GROUND_Oot, 0, 0x4102 },
+    /* 0x00B */ { SCENE_GERUDO_TRAINING_GROUND_Oot, 0, 0x4102 },
+};
+
+static EntranceTableEntry* sGerudoTrainingGroundOotEntranceTable[] = {
+    sGerudoTrainingGroundOotEntrance0,
+};
+
+static EntranceTableEntry sInsideGanonsCastleOotEntrance0[] = {
+    /* 0x467 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+    /* 0x468 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+    /* 0x469 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+    /* 0x46A */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+    /* 0x46B */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+    /* 0x46C */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+    /* 0x46D */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+    /* 0x46E */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+    /* 0x46F */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+    /* 0x470 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+    /* 0x471 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 0, 0x4202 },
+};
+
+static EntranceTableEntry sInsideGanonsCastleOotEntrance1[] = {
+    /* 0x534 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 1, 0x0202 },
+    /* 0x535 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 1, 0x0202 },
+    /* 0x536 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 1, 0x0202 },
+    /* 0x537 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 1, 0x0202 },
+};
+
+static EntranceTableEntry sInsideGanonsCastleOotEntrance2[] = {
+    /* 0x538 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 2, 0x4202 },
+    /* 0x539 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 2, 0x4202 },
+    /* 0x53A */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 2, 0x4202 },
+    /* 0x53B */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 2, 0x4202 },
+};
+
+static EntranceTableEntry sInsideGanonsCastleOotEntrance3[] = {
+    /* 0x53C */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 3, 0x4202 },
+    /* 0x53D */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 3, 0x4202 },
+    /* 0x53E */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 3, 0x4202 },
+    /* 0x53F */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 3, 0x4202 },
+};
+
+static EntranceTableEntry sInsideGanonsCastleOotEntrance4[] = {
+    /* 0x540 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 4, 0x4202 },
+    /* 0x541 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 4, 0x4202 },
+    /* 0x542 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 4, 0x4202 },
+    /* 0x543 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 4, 0x4202 },
+};
+
+static EntranceTableEntry sInsideGanonsCastleOotEntrance5[] = {
+    /* 0x544 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 5, 0x4202 },
+    /* 0x545 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 5, 0x4202 },
+    /* 0x546 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 5, 0x4202 },
+    /* 0x547 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 5, 0x4202 },
+};
+
+static EntranceTableEntry sInsideGanonsCastleOotEntrance6[] = {
+    /* 0x548 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 6, 0x4202 },
+    /* 0x549 */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 6, 0x4202 },
+    /* 0x54A */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 6, 0x4202 },
+    /* 0x54B */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 6, 0x4202 },
+};
+
+static EntranceTableEntry sInsideGanonsCastleOotEntrance7[] = {
+    /* 0x54C */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 7, 0x4202 },
+    /* 0x54D */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 7, 0x4202 },
+    /* 0x54E */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 7, 0x4202 },
+    /* 0x54F */ { SCENE_INSIDE_GANONS_CASTLE_Oot, 7, 0x4202 },
+};
+
+static EntranceTableEntry* sInsideGanonsCastleOotEntranceTable[] = {
+    sInsideGanonsCastleOotEntrance0,
+    sInsideGanonsCastleOotEntrance1,
+    sInsideGanonsCastleOotEntrance2,
+    sInsideGanonsCastleOotEntrance3,
+    sInsideGanonsCastleOotEntrance4,
+    sInsideGanonsCastleOotEntrance5,
+    sInsideGanonsCastleOotEntrance6,
+    sInsideGanonsCastleOotEntrance7,
+};
+
+static EntranceTableEntry sGanonsTowerOotEntrance0[] = {
+    /* 0x41B */ { SCENE_GANONS_TOWER_Oot, 0, 0x4102 },
+    /* 0x41C */ { SCENE_GANONS_TOWER_Oot, 0, 0x4102 },
+    /* 0x41D */ { SCENE_GANONS_TOWER_Oot, 0, 0x4102 },
+    /* 0x41E */ { SCENE_GANONS_TOWER_Oot, 0, 0x4102 },
+};
+
+static EntranceTableEntry sGanonsTowerOotEntrance1[] = {
+    /* 0x427 */ { SCENE_GANONS_TOWER_Oot, 1, 0xC102 },
+    /* 0x428 */ { SCENE_GANONS_TOWER_Oot, 1, 0xC102 },
+    /* 0x429 */ { SCENE_GANONS_TOWER_Oot, 1, 0xC102 },
+    /* 0x42A */ { SCENE_GANONS_TOWER_Oot, 1, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerOotEntrance2[] = {
+    /* 0x42B */ { SCENE_GANONS_TOWER_Oot, 2, 0x4102 },
+    /* 0x42C */ { SCENE_GANONS_TOWER_Oot, 2, 0x4102 },
+    /* 0x42D */ { SCENE_GANONS_TOWER_Oot, 2, 0x4102 },
+    /* 0x42E */ { SCENE_GANONS_TOWER_Oot, 2, 0x4102 },
+};
+
+static EntranceTableEntry* sGanonsTowerOotEntranceTable[] = {
+    sGanonsTowerOotEntrance0,
+    sGanonsTowerOotEntrance1,
+    sGanonsTowerOotEntrance2,
+};
+
+static EntranceTableEntry sGanondorfBossOotEntrance0[] = {
+    /* 0x41F */ { SCENE_GANONDORF_BOSS_Oot, 0, 0xC102 },
+    /* 0x420 */ { SCENE_GANONDORF_BOSS_Oot, 0, 0xC102 },
+    /* 0x421 */ { SCENE_GANONDORF_BOSS_Oot, 0, 0xC102 },
+    /* 0x422 */ { SCENE_GANONDORF_BOSS_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry* sGanondorfBossOotEntranceTable[] = {
+    sGanondorfBossOotEntrance0,
+};
+
+static EntranceTableEntry sGanonsTowerCollapseInteriorOotEntrance0[] = {
+    /* 0x179 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 0, 0xC102 },
+    /* 0x17A */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 0, 0xC102 },
+    /* 0x17B */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 0, 0xC102 },
+    /* 0x17C */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseInteriorOotEntrance1[] = {
+    /* 0x134 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 1, 0xC102 },
+    /* 0x135 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 1, 0xC102 },
+    /* 0x136 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 1, 0xC102 },
+    /* 0x137 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 1, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseInteriorOotEntrance2[] = {
+    /* 0x1B5 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 2, 0xC102 },
+    /* 0x1B6 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 2, 0xC102 },
+    /* 0x1B7 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 2, 0xC102 },
+    /* 0x1B8 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 2, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseInteriorOotEntrance3[] = {
+    /* 0x256 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 3, 0xC102 },
+    /* 0x257 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 3, 0xC102 },
+    /* 0x258 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 3, 0xC102 },
+    /* 0x259 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 3, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseInteriorOotEntrance4[] = {
+    /* 0x3DC */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 4, 0xC102 },
+    /* 0x3DD */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 4, 0xC102 },
+    /* 0x3DE */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 4, 0xC102 },
+    /* 0x3DF */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 4, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseInteriorOotEntrance5[] = {
+    /* 0x3E0 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 5, 0xC102 },
+    /* 0x3E1 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 5, 0xC102 },
+    /* 0x3E2 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 5, 0xC102 },
+    /* 0x3E3 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 5, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseInteriorOotEntrance6[] = {
+    /* 0x3E4 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 6, 0xC102 },
+    /* 0x3E5 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 6, 0xC102 },
+    /* 0x3E6 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 6, 0xC102 },
+    /* 0x3E7 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 6, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseInteriorOotEntrance7[] = {
+    /* 0x4B6 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 7, 0xC102 },
+    /* 0x4B7 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 7, 0xC102 },
+    /* 0x4B8 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 7, 0xC102 },
+    /* 0x4B9 */ { SCENE_GANONS_TOWER_COLLAPSE_INTERIOR_Oot, 7, 0xC102 },
+};
+
+static EntranceTableEntry* sGanonsTowerCollapseInteriorOotEntranceTable[] = {
+    sGanonsTowerCollapseInteriorOotEntrance0,
+    sGanonsTowerCollapseInteriorOotEntrance1,
+    sGanonsTowerCollapseInteriorOotEntrance2,
+    sGanonsTowerCollapseInteriorOotEntrance3,
+    sGanonsTowerCollapseInteriorOotEntrance4,
+    sGanonsTowerCollapseInteriorOotEntrance5,
+    sGanonsTowerCollapseInteriorOotEntrance6,
+    sGanonsTowerCollapseInteriorOotEntrance7,
+};
+
+static EntranceTableEntry sInsideGanonsCastleCollapseOotEntrance0[] = {
+    /* 0x56C */ { SCENE_INSIDE_GANONS_CASTLE_COLLAPSE_Oot, 0, 0xC102 },
+    /* 0x56D */ { SCENE_INSIDE_GANONS_CASTLE_COLLAPSE_Oot, 0, 0xC102 },
+    /* 0x56E */ { SCENE_INSIDE_GANONS_CASTLE_COLLAPSE_Oot, 0, 0xC102 },
+    /* 0x56F */ { SCENE_INSIDE_GANONS_CASTLE_COLLAPSE_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry* sInsideGanonsCastleCollapseOotEntranceTable[] = {
+    sInsideGanonsCastleCollapseOotEntrance0,
+};
+
+static EntranceTableEntry sGanonsTowerCollapseExteriorOotEntrance0[] = {
+    /* 0x43F */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 0, 0xC102 },
+    /* 0x440 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 0, 0xC102 },
+    /* 0x441 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 0, 0xC102 },
+    /* 0x442 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 0, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseExteriorOotEntrance1[] = {
+    /* 0x4BA */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 1, 0xC102 },
+    /* 0x4BB */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 1, 0xC102 },
+    /* 0x4BC */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 1, 0xC102 },
+    /* 0x4BD */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 1, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseExteriorOotEntrance2[] = {
+    /* 0x32C */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 2, 0xC102 },
+    /* 0x32D */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 2, 0xC102 },
+    /* 0x32E */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 2, 0xC102 },
+    /* 0x32F */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 2, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseExteriorOotEntrance3[] = {
+    /* 0x330 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 3, 0xC102 },
+    /* 0x331 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 3, 0xC102 },
+    /* 0x332 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 3, 0xC102 },
+    /* 0x333 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 3, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseExteriorOotEntrance4[] = {
+    /* 0x334 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 4, 0xC102 },
+    /* 0x335 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 4, 0xC102 },
+    /* 0x336 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 4, 0xC102 },
+    /* 0x337 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 4, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseExteriorOotEntrance5[] = {
+    /* 0x1C9 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 5, 0xC102 },
+    /* 0x1CA */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 5, 0xC102 },
+    /* 0x1CB */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 5, 0xC102 },
+    /* 0x1CC */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 5, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseExteriorOotEntrance6[] = {
+    /* 0x51C */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 6, 0xC102 },
+    /* 0x51D */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 6, 0xC102 },
+    /* 0x51E */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 6, 0xC102 },
+    /* 0x51F */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 6, 0xC102 },
+};
+
+static EntranceTableEntry sGanonsTowerCollapseExteriorOotEntrance7[] = {
+    /* 0x524 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 7, 0xC102 },
+    /* 0x525 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 7, 0xC102 },
+    /* 0x526 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 7, 0xC102 },
+    /* 0x527 */ { SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR_Oot, 7, 0xC102 },
+};
+
+static EntranceTableEntry* sGanonsTowerCollapseExteriorOotEntranceTable[] = {
+    sGanonsTowerCollapseExteriorOotEntrance0,
+    sGanonsTowerCollapseExteriorOotEntrance1,
+    sGanonsTowerCollapseExteriorOotEntrance2,
+    sGanonsTowerCollapseExteriorOotEntrance3,
+    sGanonsTowerCollapseExteriorOotEntrance4,
+    sGanonsTowerCollapseExteriorOotEntrance5,
+    sGanonsTowerCollapseExteriorOotEntrance6,
+    sGanonsTowerCollapseExteriorOotEntrance7,
+};
+
+static EntranceTableEntry sGanonBossOotEntrance0[] = {
+    /* 0x517 */ { SCENE_GANON_BOSS_Oot, 0, 0x4183 },
+    /* 0x518 */ { SCENE_GANON_BOSS_Oot, 0, 0x4183 },
+    /* 0x519 */ { SCENE_GANON_BOSS_Oot, 0, 0x4183 },
+    /* 0x51A */ { SCENE_GANON_BOSS_Oot, 0, 0x4183 },
+    /* 0x51B */ { SCENE_GANON_BOSS_Oot, 0, 0x4183 },
+};
+
+static EntranceTableEntry* sGanonBossOotEntranceTable[] = {
+    sGanonBossOotEntrance0,
+};
+
 // The entrance scenes from ENTR_SCENE_KOKIRI_FOREST_Oot on, in order.
 #define HYRULE_SCENE_ENTRANCES \
     /* 0x6E */ SCENE_ENTRANCE(sKokiriForestOotEntranceTable, "SCENE_KOKIRI_FOREST"), \
@@ -2874,4 +3294,21 @@ static EntranceTableEntry* sSpiritTempleBossOotEntranceTable[] = {
     /* 0xBF */ SCENE_ENTRANCE(sHauntedWastelandOotEntranceTable, "SCENE_HAUNTED_WASTELAND"), \
     /* 0xC0 */ SCENE_ENTRANCE(sDesertColossusOotEntranceTable, "SCENE_DESERT_COLOSSUS"), \
     /* 0xC1 */ SCENE_ENTRANCE(sSpiritTempleOotEntranceTable, "SCENE_SPIRIT_TEMPLE"), \
-    /* 0xC2 */ SCENE_ENTRANCE(sSpiritTempleBossOotEntranceTable, "SCENE_SPIRIT_TEMPLE_BOSS"),
+    /* 0xC2 */ SCENE_ENTRANCE(sSpiritTempleBossOotEntranceTable, "SCENE_SPIRIT_TEMPLE_BOSS"), \
+    /* 0xC3 */ SCENE_ENTRANCE(sDekuTreeOotEntranceTable, "SCENE_DEKU_TREE"), \
+    /* 0xC4 */ SCENE_ENTRANCE(sDekuTreeBossOotEntranceTable, "SCENE_DEKU_TREE_BOSS"), \
+    /* 0xC5 */ SCENE_ENTRANCE(sDodongosCavernOotEntranceTable, "SCENE_DODONGOS_CAVERN"), \
+    /* 0xC6 */ SCENE_ENTRANCE(sDodongosCavernBossOotEntranceTable, "SCENE_DODONGOS_CAVERN_BOSS"), \
+    /* 0xC7 */ SCENE_ENTRANCE(sJabuJabuOotEntranceTable, "SCENE_JABU_JABU"), \
+    /* 0xC8 */ SCENE_ENTRANCE(sJabuJabuBossOotEntranceTable, "SCENE_JABU_JABU_BOSS"), \
+    /* 0xC9 */ SCENE_ENTRANCE(sStableOotEntranceTable, "SCENE_STABLE"), \
+    /* 0xCA */ SCENE_ENTRANCE(sLonLonBuildingsOotEntranceTable, "SCENE_LON_LON_BUILDINGS"), \
+    /* 0xCB */ SCENE_ENTRANCE(sFishingPondOotEntranceTable, "SCENE_FISHING_POND"), \
+    /* 0xCC */ SCENE_ENTRANCE(sGerudoTrainingGroundOotEntranceTable, "SCENE_GERUDO_TRAINING_GROUND"), \
+    /* 0xCD */ SCENE_ENTRANCE(sInsideGanonsCastleOotEntranceTable, "SCENE_INSIDE_GANONS_CASTLE"), \
+    /* 0xCE */ SCENE_ENTRANCE(sGanonsTowerOotEntranceTable, "SCENE_GANONS_TOWER"), \
+    /* 0xCF */ SCENE_ENTRANCE(sGanondorfBossOotEntranceTable, "SCENE_GANONDORF_BOSS"), \
+    /* 0xD0 */ SCENE_ENTRANCE(sGanonsTowerCollapseInteriorOotEntranceTable, "SCENE_GANONS_TOWER_COLLAPSE_INTERIOR"), \
+    /* 0xD1 */ SCENE_ENTRANCE(sInsideGanonsCastleCollapseOotEntranceTable, "SCENE_INSIDE_GANONS_CASTLE_COLLAPSE"), \
+    /* 0xD2 */ SCENE_ENTRANCE(sGanonsTowerCollapseExteriorOotEntranceTable, "SCENE_GANONS_TOWER_COLLAPSE_EXTERIOR"), \
+    /* 0xD3 */ SCENE_ENTRANCE(sGanonBossOotEntranceTable, "SCENE_GANON_BOSS"),

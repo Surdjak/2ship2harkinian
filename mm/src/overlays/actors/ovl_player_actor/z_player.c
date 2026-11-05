@@ -11,6 +11,13 @@
 #include "HyruleMagic.h"
 #include "HyruleOcarina.h"
 #include "HyruleCutscene.h"
+#include "HyrulePort.h"
+#include "overlays/actors/ovl_Bg_Heavy_Block/z_bg_heavy_block.h" // OoT's, in hyrule/
+// 3Ship [Hyrule] OoT's heavy-lift animations (Player_Action_HeavyLiftOot), which MM's gameplay_keep lacks.
+static const ALIGN_ASSET(2) char gPlayerAnim_link_normal_heavy_carry_Oot[] =
+    "__OTR__oot/objects/gameplay_keep/gPlayerAnim_link_normal_heavy_carry";
+static const ALIGN_ASSET(2) char gPlayerAnim_link_normal_heavy_carry_end_Oot[] =
+    "__OTR__oot/objects/gameplay_keep/gPlayerAnim_link_normal_heavy_carry_end";
 #include "z64horse.h"
 #include "z64malloc.h"
 #include "z64quake.h"
@@ -168,6 +175,7 @@ void Player_Action_35(Player* this, PlayState* play);
 void Player_Action_36(Player* this, PlayState* play);
 void Player_Action_37(Player* this, PlayState* play);
 void Player_Action_38(Player* this, PlayState* play);
+void Player_Action_HeavyLiftOot(Player* this, PlayState* play);
 void Player_Action_39(Player* this, PlayState* play);
 void Player_Action_40(Player* this, PlayState* play);
 void Player_Action_41(Player* this, PlayState* play);
@@ -7674,6 +7682,14 @@ void func_808379C0(PlayState* play, Player* this) {
             return;
         }
 
+        // 3Ship [Hyrule] OoT's golden pillars (Player_Action_HeavyLiftOot).
+        if (interactRangeActor->id == ACTOR_BG_HEAVY_BLOCK_Oot) {
+            Player_SetAction(play, this, Player_Action_HeavyLiftOot, 0);
+            this->stateFlags1 |= PLAYER_STATE1_20000000;
+            Player_Anim_PlayOnce(play, this, (PlayerAnimationHeader*)gPlayerAnim_link_normal_heavy_carry_Oot);
+            return;
+        }
+
         // 3Ship [Hyrule] OoT's rocks keep their size in the same bit.
         if (((interactRangeActor->id == ACTOR_EN_ISHI) || (interactRangeActor->id == ACTOR_EN_ISHI_Oot)) &&
             (ENISHI_GET_SIZE_FLAG(interactRangeActor) != ISHI_SIZE_SMALL_ROCK)) {
@@ -10290,6 +10306,20 @@ s32 Player_ActionHandler_5(Player* this, PlayState* play) {
 
                 if ((this->actor.wallBgId != BGCHECK_SCENE) &&
                     ((dyna = DynaPoly_GetActor(&play->colCtx, this->actor.wallBgId)) != NULL)) {
+                    // 3Ship [Hyrule] OoT's golden pillars (Bg_Heavy_Block): Link lifts them with the Golden
+                    // Gauntlets, as OoT's Player does, and cannot grab them without.
+                    if (dyna->actor.id == ACTOR_BG_HEAVY_BLOCK_Oot) {
+                        if (Player_GetStrengthOot() < PLAYER_STR_GOLD_G) {
+                            return false;
+                        }
+                        Player_SetupWaitForPutAway(play, this, func_808379C0);
+                        this->stateFlags1 |= PLAYER_STATE1_CARRYING_ACTOR;
+                        this->interactRangeActor = &dyna->actor;
+                        this->getItemId = GI_NONE;
+                        this->yaw = this->actor.wallYaw + 0x8000;
+                        func_8082DAD4(this);
+                        return true;
+                    }
                     this->rightHandActor = &dyna->actor;
                 } else {
                     this->rightHandActor = NULL;
@@ -11423,6 +11453,26 @@ void Player_PutSwordInHand(PlayState* play, Player* this, s32 playSfx) {
         swordItemId = sSwordItemIds[this->transformation];
     }
     PlayerItemAction swordItemAction = sItemItemActions[swordItemId];
+    Player_DestroyHookshot(this);
+    Player_DetachHeldActor(play, this);
+
+    this->heldItemId = swordItemId;
+    this->nextModelGroup = Player_ActionToModelGroup(this, swordItemAction);
+
+    Player_InitItemAction(play, this, swordItemAction);
+    func_808309CC(play, this);
+
+    if (playSfx) {
+        Player_PlaySfx(this, NA_SE_IT_SWORD_PICKOUT);
+    }
+}
+
+// 3Ship [Hyrule] OoT's func_80846720, for OoT's cutscene actions (Ganon's fight hands Link back his sword): the
+// sword of Link's age, the Master Sword or the Kokiri Sword, where MM's picks by form.
+void Player_PutSwordInHandOot(PlayState* play, Player* this, s32 playSfx) {
+    ItemId swordItemId = LINK_IS_ADULT_OOT ? ITEM_SWORD_MASTER_Oot : ITEM_SWORD_KOKIRI;
+    PlayerItemAction swordItemAction = Player_ItemToItemAction(this, swordItemId);
+
     Player_DestroyHookshot(this);
     Player_DetachHeldActor(play, this);
 
@@ -16993,6 +17043,45 @@ void Player_Action_38(Player* this, PlayState* play) {
         Player_SetAction(play, this, Player_Action_39, 1);
         Player_Anim_PlayOnce(play, this, &gPlayerAnim_link_silver_throw);
     }
+}
+
+// 3Ship [Hyrule] OoT's Player_Action_80846120: Link heaves a golden pillar (Bg_Heavy_Block) over his head, takes it at
+// frame 41 and throws it at frame 229.
+static AnimSfxEntry sHeavyLiftAnimSfxOot[] = {
+    ANIMSFX(ANIMSFX_TYPE_VOICE, 49, NA_SE_VO_LI_SWORD_L, CONTINUE),
+    ANIMSFX(ANIMSFX_TYPE_VOICE, 230, NA_SE_VO_LI_SWORD_N, STOP),
+};
+
+void Player_Action_HeavyLiftOot(Player* this, PlayState* play) {
+    if (PlayerAnimation_Update(play, &this->skelAnime) && (this->av2.actionVar2++ > 20)) {
+        if (!Player_ActionHandler_13(this, play)) {
+            func_80836A98(this, (PlayerAnimationHeader*)gPlayerAnim_link_normal_heavy_carry_end_Oot, play);
+        }
+        return;
+    }
+
+    if (PlayerAnimation_OnFrame(&this->skelAnime, 41.0f)) {
+        BgHeavyBlock* heavyBlock = (BgHeavyBlock*)this->interactRangeActor;
+
+        this->heldActor = &heavyBlock->dyna.actor;
+        this->actor.child = &heavyBlock->dyna.actor;
+        heavyBlock->dyna.actor.parent = &this->actor;
+        Actor_WorldToActorCoords(&heavyBlock->dyna.actor, &heavyBlock->unk_164, &this->leftHandWorld.pos);
+        return;
+    }
+
+    if (PlayerAnimation_OnFrame(&this->skelAnime, 229.0f)) {
+        Actor* heldActor = this->heldActor;
+
+        heldActor->speed = Math_SinS(heldActor->shape.rot.x) * 40.0f;
+        heldActor->velocity.y = Math_CosS(heldActor->shape.rot.x) * 40.0f;
+        heldActor->gravity = -2.0f;
+        heldActor->terminalVelocity = -30.0f;
+        Player_DetachHeldActor(play, this);
+        return;
+    }
+
+    Player_PlayAnimSfx(this, sHeavyLiftAnimSfxOot);
 }
 
 // throw held actor (?)

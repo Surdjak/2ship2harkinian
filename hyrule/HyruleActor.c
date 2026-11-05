@@ -1,6 +1,7 @@
 // OoT's actor helpers from code (z_actor.c) that MM does not have. Ported from SoH.
 
 #include "HyruleActor.h"
+#include "HyruleFlags.h"
 #include "HyruleInventory.h"
 #include "HyruleIds.h"
 #include "HyruleScenes.h"
@@ -763,4 +764,108 @@ s32 Math_StepUntilSOot(s16* pValue, s16 limit, s16 step) {
         return true;
     }
     return false;
+}
+
+void func_8003555C(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel) {
+    // OoT leaves the alphas unset (a bug); opaque here.
+    Color_RGBA8 primColor = { 200, 160, 120, 255 };
+    Color_RGBA8 envColor = { 130, 90, 50, 255 };
+
+    EffectSsKirakira_SpawnSmall(play, pos, velocity, accel, &primColor, &envColor);
+}
+
+void func_800283D4(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor,
+                   Color_RGBA8* envColor, s16 scale, s16 scaleStep, s16 life) {
+    EffectSsDust_Spawn(play, 1, pos, velocity, accel, primColor, envColor, scale, scaleStep, life, 0);
+}
+
+f32 func_80033AEC(Vec3f* arg0, Vec3f* arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5) {
+    f32 ret = 0.0f;
+
+    if ((arg4 <= Math_Vec3f_DistXYZ(arg0, arg1)) || (arg5 < Math_Vec3f_DistXYZ(arg0, arg1))) {
+        ret = Math_SmoothStepToF(&arg1->x, arg0->x, arg2, arg3, 0.0f);
+        ret += Math_SmoothStepToF(&arg1->y, arg0->y, arg2, arg3, 0.0f);
+        ret += Math_SmoothStepToF(&arg1->z, arg0->z, arg2, arg3, 0.0f);
+    }
+    return ret;
+}
+
+void EffectSsDFire_SpawnFixedScaleOot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 alpha,
+                                      s16 fadeDelay) {
+    // OoT's fades by 5 a frame once its life is down to fadeDelay; MM's once fewer than (life - fadeDelay)
+    // frames are left. OoT's also fades in by 15 a frame before that, which MM's does not.
+    EffectSsDFire_Spawn(play, pos, velocity, accel, 100, 35, alpha, 5, 8 - fadeDelay - 1, 8);
+}
+
+void EffectSsGMagma_SpawnOot(PlayState* play, Vec3f* pos) {
+}
+
+void EffectSsGMagma2_SpawnOot(PlayState* play, Vec3f* pos, Color_RGBA8* primColor, Color_RGBA8* envColor,
+                              s16 updateRate, s16 drawMode, s16 scale) {
+}
+
+u16 func_80037C30(PlayState* play, s16 npcId) {
+    switch (npcId) {
+        case 0xF: // the Deku Sprout
+            if (GET_EVENTCHKINF_OOT(EVENTCHKINF_5C_Oot)) {
+                return TEXT_OOT(0x1078);
+            }
+            return GET_INFTABLE_OOT(INFTABLE_66_Oot) ? TEXT_OOT(0x1066) : TEXT_OOT(0x1062);
+        default:
+            return 0;
+    }
+}
+
+// OoT's func_80036E50: what a closed text leaves set.
+static void Npc_OnTextClosedOot(u16 textId, s16 npcId) {
+    if ((npcId == 0xF) && (textId == TEXT_OOT(0x1062))) {
+        SET_INFTABLE_OOT(INFTABLE_66_Oot);
+    }
+}
+
+s32 func_80037D98(PlayState* play, Actor* actor, s16 npcId, s32* talkState) {
+    s16 screenX;
+    s16 screenY;
+    s16 yawDiff;
+
+    if (Actor_TalkOfferAccepted(actor, &play->state)) {
+        *talkState = 1;
+        return true;
+    }
+
+    if (*talkState == 1) {
+        // OoT's func_80037CB8: the talk ends when the text closes (the Deku Sprout's texts ask nothing).
+        if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
+            Npc_OnTextClosedOot(actor->textId, npcId);
+            *talkState = 0;
+        }
+        return false;
+    }
+
+    Actor_GetScreenPos(play, actor, &screenX, &screenY);
+    if ((screenX < 0) || (screenX > SCREEN_WIDTH) || (screenY < 0) || (screenY > SCREEN_HEIGHT)) {
+        return false;
+    }
+    yawDiff = actor->yawTowardsPlayer - actor->shape.rot.y;
+    if (ABS(yawDiff) >= 0x4300) {
+        return false;
+    }
+    if ((actor->xyzDistToPlayerSq > SQ(160.0f)) && !actor->isLockedOn) {
+        return false;
+    }
+    if (actor->xyzDistToPlayerSq <= SQ(80.0f)) {
+        if (Actor_OfferTalk(actor, play, 80.0f)) {
+            actor->textId = func_80037C30(play, npcId);
+        }
+    } else if (Actor_OfferTalkNearColChkInfoCylinder(actor, play)) {
+        actor->textId = func_80037C30(play, npcId);
+    }
+    return false;
+}
+
+s32 func_800C0808(PlayState* play, s16 camId, Player* player, s16 setting) {
+    Camera* camera = Play_GetCamera(play, camId);
+
+    Camera_InitFocalActorSettings(camera, &player->actor);
+    return Camera_ChangeSetting(camera, setting);
 }
