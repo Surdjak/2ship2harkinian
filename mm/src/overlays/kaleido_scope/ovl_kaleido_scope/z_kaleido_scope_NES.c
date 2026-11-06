@@ -3765,8 +3765,12 @@ void KaleidoScope_Update(PlayState* play) {
                                     gSaveContext.save.isOwlSave = currentOwlSaveState;
                                     SavingEnhancements_ClearSaveEntranceInfo();
                                 } else {
-                                    Sram_SetFlashPagesDefault(sramCtx, gFlashSaveStartPages[gSaveContext.fileNum],
-                                                              gFlashSaveNumPages[gSaveContext.fileNum]);
+                                    // 3Ship [Hyrule] The file's own slot and its backup, as MM's other permanent
+                                    // saves (this path indexed the slots by file number, writing file 2 into file 1's
+                                    // backup).
+                                    Sram_SetFlashPagesDefault(
+                                        sramCtx, gFlashSaveStartPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER],
+                                        gFlashSpecialSaveNumPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER]);
                                     Sram_StartWriteToFlashDefault(sramCtx);
                                 }
                                 pauseCtx->savePromptState = PAUSE_SAVEPROMPT_STATE_4;
@@ -4043,8 +4047,10 @@ void KaleidoScope_Update(PlayState* play) {
                     if (!gSaveContext.flashSaveAvailable) {
                         pauseCtx->state = PAUSE_STATE_GAMEOVER_8;
                     } else {
-                        Sram_SetFlashPagesDefault(sramCtx, gFlashSaveStartPages[gSaveContext.fileNum],
-                                                  gFlashSaveNumPages[gSaveContext.fileNum]);
+                        // 3Ship [Hyrule] the file's own slot and its backup (see the pause save above)
+                        Sram_SetFlashPagesDefault(
+                            sramCtx, gFlashSaveStartPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER],
+                            gFlashSpecialSaveNumPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER]);
                         Sram_StartWriteToFlashDefault(sramCtx);
                         pauseCtx->state = PAUSE_STATE_GAMEOVER_7;
                     }

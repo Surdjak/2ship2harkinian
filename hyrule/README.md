@@ -796,6 +796,9 @@ Fixes from the first play test:
   stops driving it (`CsCamera_Update` only drives a camera with the cutscene setting, as OoT's `Camera_Demo1`). The
   opening's narration shows Link's house from above with Link in bed, then his bed, as SoH does. Link's eyes stay open
   (blinking) while he sleeps there, as in SoH: the opening's animations carry no face, and OoT's blinking runs.
+- Hyrule's pause save (MM's pause save prompt, unused in MM's US release) and the game-over save wrote to the slot at
+  the file's number, so file 2 went into file 1's backup and reloaded as new; they now write the file's own slot and
+  its backup, as MM's other permanent saves do. Checked under gdb as file 2 (with the saves restored after).
 - OoT's `Audio_PlayFanfare(... | 0x900)` (its fanfare arguments) crashed 2Ship's audio thread, which no longer masks
   the sequence id: the Kokiri Sword's chest (`En_Box`) and `En_Hy` now pass the plain id, and the port tool drops it.
 
