@@ -706,10 +706,71 @@ Wave 28 continues the game after OoT's ending and adds Epona, Hyrule's horse gam
   from `msgCtx.ocarinaButtonIndex` (OoT's `lastOcaNoteIdx`). The scarecrows' long song uses MM's unused
   `saveInfo.unk_F40` as OoT's flag and MM's own scarecrow song. Checked under gdb: the memory game (the Skull Kids
   play, then Link's turn; a wrong note fails it) and the frogs' first note.
-- Not done: Epona's theft in MM's intro (DESIGN.md: the song calls no horse until she is recovered at Romani
-  Ranch). OoT's texts are unchanged, so Ingo's second-race challenge (0x203A) still offers the horse.
+- Epona's theft and Ingo's race texts came with "Into Termina" (below).
 - Not checked yet: a full frogs' game, the scarecrows' recording, Malon's obstacle course, child horseback archery and
   the race won by riding.
+
+### Into Termina
+
+The way between OoT's opening and Termina (docs/TERMINA.md). Notes:
+
+- A new file starts as OoT's (`Hyrule_InitNewFileOot`, from `Sram_InitSave`): Link owns no sword, shield or ocarina,
+  and the file opens in Link's house with OoT's cutscene index 0xFFF1, so the narration, Zelda's escape in Link's
+  nightmare, the Deku Tree sending Navi and Navi waking Link play in turn. `HYRULE_BOOT_NEWFILE=1` boots a new file
+  this way for tests (`HyruleScenes.cpp`), in the debug slot, which never writes a save.
+- Saving (`HyruleSave.c`, T4): in Hyrule the pause menu's B opens the save prompt, as in OoT, and the save is a
+  permanent one even with 2Ship's pause save on. A file whose last save was made in an OoT scene (`savedSceneId`)
+  reloads where OoT's `Sram_OpenSave` puts Link: a dungeon's or boss's room at the dungeon's entrance, Ganon's tower
+  and collapse at the tower, elsewhere Link's house as a child and the Temple of Time as an adult; the day and time
+  stay as saved. MM's own permanent saves (the Song of Time, the first entry to Clock Town, the game's end) forget an
+  OoT `savedSceneId`, so they reload in Termina as before.
+- Until Link first reaches Clock Town, MM's day stays 0: `En_Test4`, which counts MM's days and brings the moon, is
+  not spawned, and the three-day clock is hidden as OoT has none. MM's `isFirstCycle` ("finished intro sequence") is
+  the permanent first-entry flag.
+- Navi is Link's fairy in every OoT scene and Tatl in every MM one (T1): Player spawns OoT's `En_Elf` in OoT scenes
+  and MM's Tatl only in MM scenes.
+- The Happy Mask Salesman (`En_Ossan`, OoT's mask shop): after the Bunny Hood's payment and the Mask of Truth, his line
+  gives the Goron, Zora and Gerudo Masks too (`Hyrule_GiveMaskShopGift`). When Link owns the Ocarina of Time, the
+  Kokiri Sword and Epona's Song (`Hyrule_OwnsTerminaGateItems`), then or on a later visit, he offers the Hero's Shield
+  (MM's `GI_SHIELD_HERO`), says farewell, sets Termina unlocked (OoT event flag 0xCF, unused by OoT and kept through
+  the cycle reset) and Link is back in the market; the shop then stands empty, as before Zelda's Letter. His lines
+  are 3Ship's (`HyruleLines.cpp`, through 2Ship's custom messages). MM's Player stopped a talk cutscene that had
+  already ended when an OoT shop gave a second item in one conversation, and crashed; `Player_StopCutscene` now stops
+  only a running one.
+- The first passage (`Hyrule_TakeTerminaPassage`, from Player's scene exits): once Termina is unlocked, child Link taking
+  the Lost Woods' first clearing's straight-ahead wrong turn (room 0, -z) before reaching Clock Town goes to MM's Lost
+  Woods with its cutscene layer (`ENTRANCE(LOST_WOODS, 0)`, 0xFFF0), skipping MM's narration about the Hero of Time.
+  The Skull Kid takes the Ocarina of Time (off the inventory and C buttons) and Epona.
+- Epona's theft: OoT event flag 0xCE (kept through the cycle reset) marks Epona stolen. MM's checks of Epona's Song
+  that mean "Link has Epona" (her call, her waiting spots, Romani's lesson and notebook event, the ranch fences, Tatl's
+  hint, saving her position) read `Hyrule_HasEpona`, so the song calls nothing and Romani teaches it again; the song's
+  `Item_Give` recovers her. OoT's own checks of the song (Malon's lessons, the quest page, the ranch's Epona before the
+  song) are about knowing it and stay.
+- Ingo's two race lines (0x203A, 0x203B) are rewritten for E3: the second race is for the ranch
+  (`HyruleLines.cpp` rewrites an OoT line by id through 2Ship's `OnOpenText` hook).
+- Checked under gdb: a new file's opening (screenshots); the save prompt on B in the Lost Woods and OoT's reload
+  spots; Navi in the Lost Woods and Tatl in Termina; the salesman's whole sequence from the Bunny Hood's payment to
+  the market (screenshots); the passage into MM's Lost Woods ride with the ocarina and Epona taken.
+- The way back and later trips (T5, T6; `Hyrule_UpdateTerminaPassage`, `Hyrule_SkipsIntroCutscene`): once Link has
+  reached Clock Town, MM's Lost Woods, the opening dungeon and the Clock Tower entered from its corridor (spawn 0) start
+  no entrance cutscene (`Cutscene_HandleEntranceTriggers`); MM keeps those scenes' intro flags through the cycle, so
+  the dungeon's shutter stays open. Once the Deku Mask is Link's, the dungeon's landing spot (the big flower, within
+  50 of (0, 0, 309)) takes him up to MM's Lost Woods' spawn 1 after he has walked 150 away from it, and the Lost
+  Woods' clearing's west edge (x < -1000, behind where Link wakes) leads into OoT's first clearing through its
+  straight-ahead opening (OoT's 0x1B1). The other way, the first clearing's exit leads to MM's Lost Woods without
+  its ride, and its hollow log to the dungeon's landing spot (spawn 2), not spawn 0's dark ledge, from which only the
+  curse's cutscene carries Link down. The Clock Tower's back door into the corridor is MM's own.
+- The moon in Hyrule (step 7): from day 1, Play_Init spawns `En_Test4` in OoT scenes as MM does in dungeons, so MM's
+  days turn and the moon falls there too.
+- Checked under gdb: the wake-up spot's edge into OoT's first clearing; the landing spot up to MM's Lost Woods; OoT's
+  first clearing to MM's Lost Woods and its log to the landing spot, without cutscenes (screenshot); the Clock Tower
+  from its corridor without a cutscene; day 1 turning to day 2 in Hyrule Field, and the moon crash from Hyrule Field on
+  the third dawn, then the Clock Tower.
+- Not checked yet: MM's intro played through to Clock Town after the passage, Romani's lesson giving Epona back, a
+  real save written and reloaded (the debug slot writes none), the whole way back walked in one run, and Ingo's
+  rewritten lines on screen.
+- Found while checking: in Zora's River, SoH has 12 OoT grass bushes (`En_Kusa`) on the scene's second frame that 3Ship
+  lacks; a difference on the first frame had hidden it from the SoH comparison until now.
 
 ## Cutscenes
 

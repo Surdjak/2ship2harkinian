@@ -50,6 +50,7 @@ u8 sMotionBlurStatus;
 #include <string.h>
 #include "Harness.h"
 #include "HyruleScenes.h"
+#include "HyruleTermina.h"
 #include "HyrulePanorama.h"
 #include "HyruleCutscene.h"
 #include "HyruleCamera.h"
@@ -1060,6 +1061,7 @@ void Play_UpdateMain(PlayState* this) {
                     if (!this->haltAllActors) {
                         Actor_UpdateAll(this, &this->actorCtx);
                     }
+                    Hyrule_UpdateTerminaPassage(this); // 3Ship [Hyrule] the way back from Termina
                     // 3Ship [Hyrule] OoT's scripts play with OoT's interpreter (docs/CUTSCENES.md).
                     if (Hyrule_IsCutsceneOotPlaying()) {
                         Hyrule_UpdateCutsceneOot(this);
@@ -2504,8 +2506,11 @@ void Play_Init(GameState* thisx) {
     // Busyloop until the room loads
     while (!Room_ProcessRoomRequest(this, &this->roomCtx)) {}
 
+    // 3Ship [Hyrule] Once Link has reached Clock Town (day 1 on), MM's days and the moon run in Hyrule too, whose scenes
+    // do not place En_Test4 as MM's do (docs/TERMINA.md step 7).
     if ((CURRENT_DAY != 0) &&
-        ((this->roomCtx.curRoom.type == ROOM_TYPE_DUNGEON) || (this->roomCtx.curRoom.type == ROOM_TYPE_BOSS))) {
+        ((this->roomCtx.curRoom.type == ROOM_TYPE_DUNGEON) || (this->roomCtx.curRoom.type == ROOM_TYPE_BOSS) ||
+         (Hyrule_GetOotSceneId(this->sceneId) >= 0))) {
         Actor_Spawn(&this->actorCtx, this, ACTOR_EN_TEST4, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0);
     }
 

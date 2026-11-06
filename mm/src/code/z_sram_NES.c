@@ -4,6 +4,7 @@
 #include "HyruleMagic.h"
 #include "HyrulePlayer.h"
 #include "HyrulePort.h"
+#include "HyruleSave.h"
 #include "z64horse.h"
 #include "overlays/gamestates/ovl_file_choose/z_file_select.h"
 #include <string.h>
@@ -469,6 +470,8 @@ void Sram_SaveEndOfCycle(PlayState* play) {
     s32 i;
     u8 slot;
     u8 item;
+
+    Hyrule_ForgetSavedSceneOot(); // 3Ship [Hyrule] MM's saves reload in Termina
 
     gSaveContext.save.timeSpeedOffset = 0;
     gSaveContext.save.eventDayCount = 0;
@@ -1408,7 +1411,9 @@ void Sram_OpenSave(FileSelectState* fileSelect, SramContext* sramCtx) {
             gSaveContext.timerPausedOsTimes[i] = 0;
         }
 
-        if (gSaveContext.save.isFirstCycle) {
+        if (Hyrule_OpenSaveOot()) {
+            // 3Ship [Hyrule] saved in Hyrule, or a new file: OoT's reload spot, at the saved time
+        } else if (gSaveContext.save.isFirstCycle) {
             gSaveContext.save.entrance = ENTRANCE(SOUTH_CLOCK_TOWN, 0);
             gSaveContext.save.day = 0;
             gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
@@ -1956,6 +1961,7 @@ void Sram_InitSave(FileSelectState* fileSelect2, SramContext* sramCtx) {
         if (fileSelect->buttonIndex == 0) {
             gSaveContext.save.cutsceneIndex = 0xFFF0;
         }
+        Hyrule_InitNewFileOot(); // 3Ship [Hyrule] a new file starts in OoT's opening (docs/TERMINA.md)
 
         for (phi_v0 = 0; phi_v0 < ARRAY_COUNT(gSaveContext.save.saveInfo.playerData.playerName); phi_v0++) {
             gSaveContext.save.saveInfo.playerData.playerName[phi_v0] =
@@ -2086,6 +2092,8 @@ void Sram_SaveSpecialEnterClockTown(PlayState* play) {
     s32 pad[2];
     SramContext* sramCtx = &play->sramCtx;
 
+    Hyrule_ForgetSavedSceneOot(); // 3Ship [Hyrule] MM's saves reload in Termina
+
     gSaveContext.save.isFirstCycle = true;
     gSaveContext.save.isOwlSave = false;
     // 2S2H [Enhancement] Store playtime before saving
@@ -2103,6 +2111,7 @@ void Sram_SaveSpecialNewDay(PlayState* play) {
     s32 day;
     u16 time = CURRENT_TIME;
 
+    Hyrule_ForgetSavedSceneOot(); // 3Ship [Hyrule] MM's saves reload in Termina
     day = gSaveContext.save.day;
 
     CLEAR_WEEKEVENTREG(WEEKEVENTREG_84_20);

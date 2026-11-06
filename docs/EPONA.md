@@ -1,7 +1,7 @@
 # Epona and Hyrule's horses
 
-**Status: decisions E1-E4 taken 2026-11-05 (below); implemented in wave 28 except the theft (point 4); see
-hyrule/README.md.** It follows [DESIGN.md](DESIGN.md) (Epona), which
+**Status: decisions E1-E4 taken 2026-11-05 (below); implemented in wave 28, and the theft (point 4) with
+docs/TERMINA.md; see hyrule/README.md.** It follows [DESIGN.md](DESIGN.md) (Epona), which
 already settles three rules:
 
 - Child Link can ride Epona once he knows Epona's Song, and the song works in both eras.

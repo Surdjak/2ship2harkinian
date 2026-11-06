@@ -166,4 +166,4 @@ light is a cutscene, and the fork plays none of OoT's yet.
 |-|----------|----------|
 | C1 | Play OoT's scripts natively, or convert them to MM's commands | natively, with OoT's interpreter |
 | C2 | OoT's first-visit introductions (Death Mountain Trail's...) once the cycle resets Hyrule | once per save, though Hyrule's world resets |
-| N1 | Who plays Navi's part (her cues, lines and companion role) in Hyrule | Navi, ported, until Link first enters Termina (where Tatl joins him); then Tatl, in both worlds, takes Navi's later cues and lines |
+| N1 | Who plays Navi's part (her cues, lines and companion role) in Hyrule | Navi, ported. Until 2026-11-06 Tatl took over once she had joined; TERMINA.md T1 replaces that: Navi stays Link's fairy in Hyrule, Tatl in Termina |

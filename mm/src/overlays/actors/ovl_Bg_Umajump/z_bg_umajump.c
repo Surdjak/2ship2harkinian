@@ -5,6 +5,7 @@
  */
 
 #include "z_bg_umajump.h"
+#include "HyruleTermina.h"
 #include "assets/objects/object_umajump/object_umajump.h"
 
 #define FLAGS 0x00000000
@@ -92,7 +93,7 @@ void BgUmajump_Init(Actor* thisx, PlayState* play) {
 
     if (thisx->params == BG_UMAJUMP_TYPE_2) {
         if ((play->sceneId == SCENE_F01) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_89_20) &&
-            !CHECK_QUEST_ITEM(QUEST_SONG_EPONA) && (thisx->csId != CS_ID_NONE)) {
+            !Hyrule_HasEpona() /* 3Ship [Hyrule] */ && (thisx->csId != CS_ID_NONE)) {
             this->actionFunc = BgUmajump_CheckDistance;
             thisx->update = func_8091A5A0;
             thisx->flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
@@ -107,7 +108,7 @@ void BgUmajump_Init(Actor* thisx, PlayState* play) {
             Actor_Kill(thisx);
         }
 
-        if ((thisx->params == BG_UMAJUMP_TYPE_3) && CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+        if ((thisx->params == BG_UMAJUMP_TYPE_3) && Hyrule_HasEpona() /* 3Ship [Hyrule] */) {
             Actor_Spawn(&play->actorCtx, play, ACTOR_EN_KANBAN, thisx->world.pos.x, thisx->world.pos.y,
                         thisx->world.pos.z, thisx->shape.rot.x, thisx->shape.rot.y, thisx->shape.rot.z, 0x3E);
             Actor_Kill(thisx);
@@ -179,7 +180,7 @@ void func_8091A5A0(Actor* thisx, PlayState* play) {
         this->actionFunc(this, play);
     }
 
-    if ((this->dyna.actor.params == BG_UMAJUMP_TYPE_3) && CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+    if ((this->dyna.actor.params == BG_UMAJUMP_TYPE_3) && Hyrule_HasEpona() /* 3Ship [Hyrule] */) {
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_KANBAN, this->dyna.actor.world.pos.x, this->dyna.actor.world.pos.y,
                     this->dyna.actor.world.pos.z, this->dyna.actor.shape.rot.x, this->dyna.actor.shape.rot.y,
                     this->dyna.actor.shape.rot.z, 0x3E);

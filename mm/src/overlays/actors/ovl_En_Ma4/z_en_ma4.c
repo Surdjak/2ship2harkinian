@@ -5,6 +5,7 @@
  */
 
 #include "z_en_ma4.h"
+#include "HyruleTermina.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS                                                                                  \
@@ -447,7 +448,7 @@ void EnMa4_HandlePlayerChoice(EnMa4* this, PlayState* play) {
                     Audio_PlaySfx_MessageDecide();
                     Message_StartTextbox(play, 0x334E, &this->actor);
                     this->textId = 0x334E;
-                    if (CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+                    if (Hyrule_HasEpona()) { // 3Ship [Hyrule] unless the Skull Kid has her
                         Message_BombersNotebookQueueEvent(play, BOMBERS_NOTEBOOK_EVENT_PROMISED_TO_HELP_WITH_ALIENS);
                     }
                     Message_BombersNotebookQueueEvent(play, BOMBERS_NOTEBOOK_EVENT_MET_ROMANI);
@@ -622,7 +623,8 @@ void EnMa4_ChooseNextDialogue(EnMa4* this, PlayState* play) {
                 EnMa4_SetFaceExpression(this, 0, 0);
 
                 // Check if player has Epona's song
-                if (GameInteractor_Should(VB_ROMANI_CONSIDER_EPONA_SONG_GIVEN, CHECK_QUEST_ITEM(QUEST_SONG_EPONA),
+                if (GameInteractor_Should(VB_ROMANI_CONSIDER_EPONA_SONG_GIVEN,
+                                          Hyrule_HasEpona(), // 3Ship [Hyrule] unless the Skull Kid has her
                                           true)) {
                     Message_StartTextbox(play, 0x334C, &this->actor);
                     this->textId = 0x334C;
@@ -635,7 +637,7 @@ void EnMa4_ChooseNextDialogue(EnMa4* this, PlayState* play) {
                 break;
 
             case 0x3358:
-                if ((GET_PLAYER_FORM != PLAYER_FORM_HUMAN) || !CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+                if ((GET_PLAYER_FORM != PLAYER_FORM_HUMAN) || !Hyrule_HasEpona()) { // 3Ship [Hyrule]
                     Message_StartTextbox(play, 0x335C, &this->actor);
                     this->textId = 0x335C;
                     Message_BombersNotebookQueueEvent(play, BOMBERS_NOTEBOOK_EVENT_MET_ROMANI);

@@ -12,6 +12,7 @@
 #include "HyruleOcarina.h"
 #include "HyruleCutscene.h"
 #include "HyrulePort.h"
+#include "HyruleTermina.h"
 #include "overlays/actors/ovl_Bg_Heavy_Block/z_bg_heavy_block.h" // OoT's, in hyrule/
 // 3Ship [Hyrule] OoT's heavy-lift animations (Player_Action_HeavyLiftOot), which MM's gameplay_keep lacks.
 static const ALIGN_ASSET(2) char gPlayerAnim_link_normal_heavy_carry_Oot[] =
@@ -6758,6 +6759,10 @@ u8 sReturnEntranceGroupIndices[] = {
 
 // subfunction of OoT's func_80839034
 void func_808354A4(PlayState* play, s32 exitIndex, s32 arg2) {
+    // 3Ship [Hyrule] The Lost Woods' passage into MM's intro (docs/TERMINA.md).
+    if (Hyrule_TakeTerminaPassage(play, exitIndex)) {
+        return;
+    }
     play->nextEntrance = play->setupExitList[exitIndex];
 
     if (play->nextEntrance == 0xFFFF) {
@@ -8027,7 +8032,12 @@ s32 func_8083868C(PlayState* play, Player* this) {
 
 void Player_StopCutscene(Player* this) {
     if (this->csId > CS_ID_NONE) {
-        CutsceneManager_Stop(this->csId);
+        // 3Ship [Hyrule] OoT's shops give a second item in the same conversation (the Lon Lon milk, the Hero's
+        // Shield), by which time Player's talk cutscene has already ended. MM's CutsceneManager_Stop reads the running
+        // cutscene's entry, which needs one running.
+        if (CutsceneManager_GetCurrentCsId() > CS_ID_NONE) {
+            CutsceneManager_Stop(this->csId);
+        }
         this->csId = CS_ID_NONE;
     }
 }
@@ -11923,8 +11933,11 @@ void Player_Init(Actor* thisx, PlayState* play) {
         (play->sceneId != SCENE_SPOT00)) {
         static Vec3f sTatlSpawnPosOffset = { 0.0f, 50.0f, 0.0f };
 
-        this->tatlActor = Player_SpawnFairy(play, this, &this->actor.world.pos, &sTatlSpawnPosOffset,
-                                            FAIRY_PARAMS(FAIRY_TYPE_0, false, 0));
+        // 3Ship [Hyrule] Tatl stays Link's fairy in Termina; in Hyrule, Navi is (docs/TERMINA.md T1).
+        if (Hyrule_GetOotSceneId(play->sceneId) < 0) {
+            this->tatlActor = Player_SpawnFairy(play, this, &this->actor.world.pos, &sTatlSpawnPosOffset,
+                                                FAIRY_PARAMS(FAIRY_TYPE_0, false, 0));
+        }
 
         if (gSaveContext.dogParams != 0) {
             gSaveContext.dogParams |= 0x8000;
@@ -11943,10 +11956,9 @@ void Player_Init(Actor* thisx, PlayState* play) {
         }
     }
 
-    // 3Ship [Hyrule] Navi is Link's fairy in Hyrule until Tatl joins him (docs/CUTSCENES.md N1). She takes Tatl's
-    // place in Player (C-up, the fairy's text), as OoT's Player keeps her in naviActor.
-    if ((this->tatlActor == NULL) && (this->actor.draw != NULL) && !gSaveContext.save.hasTatl &&
-        (Hyrule_GetOotSceneId(play->sceneId) >= 0) &&
+    // 3Ship [Hyrule] Navi is Link's fairy in Hyrule, Tatl in Termina (docs/TERMINA.md T1). Navi takes Tatl's place
+    // in Player (C-up, the fairy's text), as OoT's Player keeps her in naviActor.
+    if ((this->tatlActor == NULL) && (this->actor.draw != NULL) && (Hyrule_GetOotSceneId(play->sceneId) >= 0) &&
         ((gSaveContext.gameMode == GAMEMODE_NORMAL) || (gSaveContext.gameMode == GAMEMODE_END_CREDITS))) {
         static Vec3f sNaviSpawnPosOffset = { 0.0f, 50.0f, 0.0f };
         Vec3f naviPos;
@@ -17939,7 +17951,7 @@ void Player_Action_53(Player* this, PlayState* play) {
         this->actor.parent = NULL;
         gHorseIsMounted = false;
 
-        if (CHECK_QUEST_ITEM(QUEST_SONG_EPONA) || (DREG(1) != 0)) {
+        if (Hyrule_HasEpona() || (DREG(1) != 0)) { // 3Ship [Hyrule] unless the Skull Kid has her
             gSaveContext.save.saveInfo.horseData.sceneId = play->sceneId;
             gSaveContext.save.saveInfo.horseData.pos.x = rideActor->world.pos.x;
             gSaveContext.save.saveInfo.horseData.pos.y = rideActor->world.pos.y;

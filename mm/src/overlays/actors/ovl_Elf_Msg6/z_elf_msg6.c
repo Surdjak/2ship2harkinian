@@ -5,6 +5,7 @@
  */
 
 #include "z_elf_msg6.h"
+#include "HyruleTermina.h"
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
@@ -400,7 +401,7 @@ void func_80BA21C4(ElfMsg6* this, PlayState* play) {
     }
 
     if (((ELFMSG6_SWITCH_FLAG(&this->actor) != 0x7F) && Flags_GetSwitch(play, ELFMSG6_SWITCH_FLAG(&this->actor))) ||
-        CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+        Hyrule_HasEpona()) { // 3Ship [Hyrule] unless the Skull Kid has her
         Actor_Kill(&this->actor);
         return;
     }

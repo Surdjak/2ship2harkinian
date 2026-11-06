@@ -5,6 +5,7 @@
  */
 
 #include "z_en_horse.h"
+#include "HyruleTermina.h"
 #include "z64horse.h"
 #include "z64rumble.h"
 #include "z64voice.h"
@@ -1090,7 +1091,7 @@ void EnHorse_Init(Actor* thisx, PlayState* play2) {
         this->stateFlags = ENHORSE_FLAG_19 | ENHORSE_CANT_JUMP | ENHORSE_UNRIDEABLE;
     } else if (thisx->params == ENHORSE_8) {
         this->stateFlags = ENHORSE_FLAG_19 | ENHORSE_CANT_JUMP;
-        if (CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+        if (Hyrule_HasEpona()) { // 3Ship [Hyrule] unless the Skull Kid has her
             this->stateFlags &= ~ENHORSE_CANT_JUMP;
             this->stateFlags |= ENHORSE_FLAG_26;
         }

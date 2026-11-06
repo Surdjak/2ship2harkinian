@@ -5,6 +5,7 @@
 #include "BenPort.h"
 #include "HyruleCutscene.h"
 #include "HyruleFlags.h"
+#include "HyruleTermina.h"
 #include "HyrulePort.h"
 #include "HyruleScenes.h"
 #include <string.h>
@@ -59,6 +60,8 @@ static const EntranceCutsceneOot sEntranceCutsceneTableOot[] = {
 // which never resets (docs/DESIGN.md, Cycle reset).
 static const u16 sKeptFlagsOot[] = {
     EVENTCHKINF_RAINBOW_BRIDGE_BUILT_Oot,
+    EVENTCHKINF_TERMINA_UNLOCKED_3SHIP, // which also keeps the Happy Mask Shop closed (docs/TERMINA.md)
+    EVENTCHKINF_EPONA_STOLEN_3SHIP,
     EVENTCHKINF_ENTERED_HYRULE_FIELD_Oot,       EVENTCHKINF_ENTERED_DEATH_MOUNTAIN_TRAIL_Oot,
     EVENTCHKINF_ENTERED_KAKARIKO_VILLAGE_Oot,   EVENTCHKINF_ENTERED_ZORAS_DOMAIN_Oot,
     EVENTCHKINF_ENTERED_HYRULE_CASTLE_Oot,      EVENTCHKINF_ENTERED_GORON_CITY_Oot,

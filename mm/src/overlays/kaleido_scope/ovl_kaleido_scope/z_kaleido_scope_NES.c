@@ -7,6 +7,7 @@
 #include "z_kaleido_scope.h"
 #include "HyruleKaleido.h"
 #include "HyruleKaleidoMap.h"
+#include "HyruleSave.h"
 #include "z64map.h"
 #include "z64skybox.h"
 #include "z64view.h"
@@ -3602,7 +3603,8 @@ void KaleidoScope_Update(PlayState* play) {
                     if (!pauseCtx->itemDescriptionOn &&
                         (CHECK_BTN_ALL(input->press.button, BTN_START) || CHECK_BTN_ALL(input->press.button, BTN_B))) {
                         Interface_SetAButtonDoAction(play, DO_ACTION_NONE);
-                        if (GameInteractor_Should(VB_SAVE_ON_B_BUTTON_IN_PAUSE_MENU, false)) {
+                        if (GameInteractor_Should(VB_SAVE_ON_B_BUTTON_IN_PAUSE_MENU, Hyrule_CanPauseSaveOot(play) &&
+                                                                           CHECK_BTN_ALL(input->press.button, BTN_B))) {
                             pauseCtx->state = PAUSE_STATE_SAVEPROMPT;
                             Audio_PlaySfx_MessageDecide();
                             break;
@@ -3641,7 +3643,8 @@ void KaleidoScope_Update(PlayState* play) {
                         // Abort having the player play the song and close the pause menu
                         AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
                         Interface_SetAButtonDoAction(play, DO_ACTION_NONE);
-                        if (GameInteractor_Should(VB_SAVE_ON_B_BUTTON_IN_PAUSE_MENU, false)) {
+                        if (GameInteractor_Should(VB_SAVE_ON_B_BUTTON_IN_PAUSE_MENU, Hyrule_CanPauseSaveOot(play) &&
+                                                                           CHECK_BTN_ALL(input->press.button, BTN_B))) {
                             pauseCtx->state = PAUSE_STATE_SAVEPROMPT;
                             Audio_PlaySfx_MessageDecide();
                             break;
@@ -3682,7 +3685,8 @@ void KaleidoScope_Update(PlayState* play) {
                     if (CHECK_BTN_ALL(input->press.button, BTN_START) || CHECK_BTN_ALL(input->press.button, BTN_B)) {
                         AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
                         Interface_SetAButtonDoAction(play, DO_ACTION_NONE);
-                        if (GameInteractor_Should(VB_SAVE_ON_B_BUTTON_IN_PAUSE_MENU, false)) {
+                        if (GameInteractor_Should(VB_SAVE_ON_B_BUTTON_IN_PAUSE_MENU, Hyrule_CanPauseSaveOot(play) &&
+                                                                           CHECK_BTN_ALL(input->press.button, BTN_B))) {
                             pauseCtx->state = PAUSE_STATE_SAVEPROMPT;
                             Audio_PlaySfx_MessageDecide();
                             break;
@@ -3734,7 +3738,10 @@ void KaleidoScope_Update(PlayState* play) {
                             Audio_PlaySfx(NA_SE_SY_PIECE_OF_HEART);
                             // 2S2H [Enhancement] Persist this in case the user is 0th daying
                             bool currentOwlSaveState = gSaveContext.save.isOwlSave;
-                            if (CVarGetInteger("gEnhancements.Saving.PauseSave", 0)) {
+                            // 3Ship [Hyrule] Hyrule's pause save is OoT's permanent save (docs/TERMINA.md T4).
+                            bool owlStylePauseSave = CVarGetInteger("gEnhancements.Saving.PauseSave", 0) &&
+                                                     !Hyrule_IsPermanentPauseSaveOot(play);
+                            if (owlStylePauseSave) {
                                 gSaveContext.save.isOwlSave = true;
                                 SavingEnhancements_PersistSaveEntranceInfo();
                                 SavingEnhancements_AdvancePlaytime();
@@ -3747,7 +3754,7 @@ void KaleidoScope_Update(PlayState* play) {
                                     255) { // 2S2H [Enhancement] Don't let them save if they are in debug save
                                 pauseCtx->savePromptState = PAUSE_SAVEPROMPT_STATE_5;
                             } else {
-                                if (CVarGetInteger("gEnhancements.Saving.PauseSave", 0)) {
+                                if (owlStylePauseSave) {
                                     Sram_SetFlashPagesOwlSave(
                                         sramCtx,
                                         gFlashOwlSaveStartPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER],

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "HyruleTermina.h"
 #include "z64horse.h"
 #include "overlays/actors/ovl_Bg_Umajump/z_bg_umajump.h"
 #include "overlays/actors/ovl_En_Horse/z_en_horse.h"
@@ -133,7 +134,8 @@ void Horse_SpawnOverworld(PlayState* play, Player* player) {
         return;
     }
 
-    if (gHorseIsMounted && CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+    // 3Ship [Hyrule] Epona answers unless the Skull Kid has her (docs/TERMINA.md)
+    if (gHorseIsMounted && Hyrule_HasEpona()) {
         s32 pad;
         Vec3f pos = player->actor.world.pos;
         f32 yIntersect;
@@ -151,7 +153,7 @@ void Horse_SpawnOverworld(PlayState* play, Player* player) {
                                         player->actor.shape.rot.z, ENHORSE_PARAMS(ENHORSE_PARAM_4000, ENHORSE_11));
         Player_MountHorse(play, player, player->rideActor);
         Player_SetCameraHorseSetting(play, player);
-    } else if ((play->sceneId == gSaveContext.save.saveInfo.horseData.sceneId) && CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+    } else if ((play->sceneId == gSaveContext.save.saveInfo.horseData.sceneId) && Hyrule_HasEpona()) {
         if (Horse_IsValidSpawn(gSaveContext.save.saveInfo.horseData.sceneId)) {
             Actor_Spawn(&play->actorCtx, play, ACTOR_EN_HORSE, gSaveContext.save.saveInfo.horseData.pos.x,
                         gSaveContext.save.saveInfo.horseData.pos.y, gSaveContext.save.saveInfo.horseData.pos.z, 0,
@@ -163,10 +165,10 @@ void Horse_SpawnOverworld(PlayState* play, Player* player) {
         // 3Ship [Hyrule] Epona waits at Lon Lon Ranch, where OoT has the foal, until Link knows her song (EPONA.md E2).
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_HORSE, -4.0f, 0.0f, -572.0f, 0, 0x4000, 0,
                     ENHORSE_PARAMS(ENHORSE_PARAM_4000, ENHORSE_1));
-    } else if ((play->sceneId == SCENE_F01) && !CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+    } else if ((play->sceneId == SCENE_F01) && !Hyrule_HasEpona()) { // 3Ship [Hyrule] and while stolen
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_HORSE, -1420.0f, 257.0f, -1285.0f, 0, 0x2AAA, 0,
                     ENHORSE_PARAMS(ENHORSE_PARAM_4000, ENHORSE_1));
-    } else if (CHECK_QUEST_ITEM(QUEST_SONG_EPONA) && Horse_IsValidSpawn(play->sceneId)) {
+    } else if (Hyrule_HasEpona() && Horse_IsValidSpawn(play->sceneId)) {
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_HORSE, player->actor.world.pos.x, player->actor.world.pos.y,
                     player->actor.world.pos.z, 0, player->actor.shape.rot.y, 0,
                     ENHORSE_PARAMS(ENHORSE_PARAM_4000, ENHORSE_2));

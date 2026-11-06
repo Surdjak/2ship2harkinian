@@ -106,7 +106,12 @@ typedef enum {
     /* 23 */ OSSAN_STATE_QUICK_BUY,
     /* 24 */ OSSAN_STATE_SELECT_ITEM_MASK,
     /* 25 */ OSSAN_STATE_LEND_MASK_OF_TRUTH, // First time all masks are sold
-    /* 26 */ OSSAN_STATE_DISCOUNT_DIALOG     // Hylian Shield Discount
+    /* 26 */ OSSAN_STATE_DISCOUNT_DIALOG,    // Hylian Shield Discount
+    // 3Ship [Hyrule] The Happy Mask Salesman gives the Hero's Shield and leaves for Termina (docs/TERMINA.md).
+    /* 27 */ OSSAN_STATE_OFFER_HERO_SHIELD_3SHIP,
+    /* 28 */ OSSAN_STATE_GIVE_HERO_SHIELD_3SHIP,
+    /* 29 */ OSSAN_STATE_HERO_SHIELD_GIVEN_3SHIP,
+    /* 30 */ OSSAN_STATE_LEAVE_FOR_TERMINA_3SHIP
 } EnOssanState;
 
 typedef enum {
@@ -117,7 +122,8 @@ typedef enum {
     OSSAN_HAPPY_STATE_BORROWED_FIRST_MASK,
     OSSAN_HAPPY_STATE_ANGRY,          // Give me my money man!
     OSSAN_HAPPY_STATE_ALL_MASKS_SOLD, // All masks have been sold
-    OSSAN_HAPPY_STATE_NONE = 8        // No Action / Payment received!
+    OSSAN_HAPPY_STATE_NONE = 8,       // No Action / Payment received!
+    OSSAN_HAPPY_STATE_OFFER_HERO_SHIELD_3SHIP // 3Ship [Hyrule] Link owns the Termina gate's items
 } EnOssanHappyMaskState;
 
 #endif

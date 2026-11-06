@@ -5,6 +5,7 @@
 #include "HyrulePlayer.h"
 #include "HyruleKaleido.h"
 #include "HyrulePort.h"
+#include "HyruleTermina.h"
 #include "PR/gs2dex.h"
 #include "sys_cfb.h"
 #include "z64malloc.h"
@@ -4221,6 +4222,10 @@ u8 Item_GiveImpl(PlayState* play, u8 item) {
 
     } else if ((item >= ITEM_SONG_SONATA) && (item <= ITEM_SONG_LULLABY_INTRO)) {
         SET_QUEST_ITEM(item - ITEM_SONG_SONATA + QUEST_SONG_SONATA);
+        // 3Ship [Hyrule] Romani's lesson gives Epona back after the Skull Kid's theft (docs/TERMINA.md).
+        if (item == ITEM_SONG_EPONA) {
+            Hyrule_RecoverEpona();
+        }
         return ITEM_NONE;
 
     } else if ((item >= ITEM_SWORD_KOKIRI) && (item <= ITEM_SWORD_GILDED)) {
@@ -6927,7 +6932,9 @@ void Interface_DrawClock(PlayState* play) {
 
     GameInteractor_ExecuteBeforeInterfaceClockDraw();
 
-    if (GameInteractor_Should(VB_PREVENT_CLOCK_DISPLAY, false)) {
+    // 3Ship [Hyrule] Before Link first reaches Clock Town (day 0), time keeps OoT's rules and OoT shows no clock
+    // (docs/TERMINA.md step 2).
+    if (GameInteractor_Should(VB_PREVENT_CLOCK_DISPLAY, gSaveContext.save.day == 0)) {
         GameInteractor_ExecuteAfterInterfaceClockDraw();
         return;
     }

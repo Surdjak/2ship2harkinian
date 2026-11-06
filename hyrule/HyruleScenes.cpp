@@ -6,6 +6,7 @@
 #include "HyruleInventory.h"
 #include "HyruleFlags.h"
 #include "HyruleCutscene.h"
+#include "HyruleSave.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -71,10 +72,38 @@ void LoadOotArchive() {
     Ship::Context::GetRawInstance()->GetResourceManager()->GetArchiveManager()->AddArchive(path);
 }
 
+// For tests: HYRULE_BOOT_NEWFILE=1 skips the title screen and starts a new file as file select creates and opens
+// one (Sram_InitSave, then Sram_OpenSave), in the debug file slot, which never writes to a save file.
+void BootToNewFile() {
+    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnConsoleLogoUpdate>([]() {
+        static bool sBooted = false;
+        if (sBooted) {
+            return;
+        }
+        sBooted = true;
+        gSaveContext.fileNum = 0xFF;
+        MapSelect_LoadGame((MapSelectState*)gGameState, ENTRANCE(SOUTH_CLOCK_TOWN, 0), 0);
+        // Replace the debug save MapSelect_LoadGame made with a new file.
+        memset(&gSaveContext.save, 0, sizeof(gSaveContext.save));
+        memset(gSaveContext.cycleSceneFlags, 0, sizeof(gSaveContext.cycleSceneFlags));
+        memset(gSaveContext.eventInf, 0, sizeof(gSaveContext.eventInf));
+        Sram_InitNewSave();
+        Hyrule_InitNewFileOot();
+        if (!Hyrule_OpenSaveOot()) {
+            gSaveContext.save.entrance = ENTRANCE(CUTSCENE, 0);
+        }
+    });
+}
+
 // For tests and quick checks: HYRULE_BOOT_ENTRANCE=<entrance> skips the title screen and starts a debug
 // save at that entrance, the same way map select does. HYRULE_BOOT_TIME=<hhmm> sets the time of day, and
 // HYRULE_BOOT_ADULT=1 starts as adult Link.
 void BootToEntrance() {
+    const char* newFileValue = std::getenv("HYRULE_BOOT_NEWFILE");
+    if ((newFileValue != nullptr) && (newFileValue[0] == '1')) {
+        BootToNewFile();
+        return;
+    }
     const char* value = std::getenv("HYRULE_BOOT_ENTRANCE");
     if (value == nullptr || value[0] == '\0') {
         return;

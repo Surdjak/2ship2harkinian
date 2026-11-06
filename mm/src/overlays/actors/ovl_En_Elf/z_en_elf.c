@@ -811,8 +811,9 @@ void func_8088E304(EnElf* this, PlayState* play) {
     Actor_PlaySfx(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
 }
 
-// 3Ship [Hyrule] Tatl's cue: MM's, or in an OoT script Navi's (OoT's slot 8), which she takes once she has joined Link
-// (docs/CUTSCENES.md N1). OoT's cue has MM's layout up to its normal, which Tatl does not read.
+// 3Ship [Hyrule] Tatl's cue: MM's, or Navi's (OoT's slot 8) in an OoT script playing in Termina, such as a warp
+// song's warp-out; in Hyrule Navi is Link's fairy (docs/TERMINA.md T1). OoT's cue has MM's layout up to its normal,
+// which Tatl does not read.
 static CsCmdActorCue* EnElf_GetTatlCue(EnElf* this, PlayState* play) {
     if (gCsCtxOot.state != CS_STATE_IDLE_Oot) {
         return (&this->actor == GET_PLAYER(play)->tatlActor) ? (CsCmdActorCue*)gCsCtxOot.npcActions[8] : NULL;

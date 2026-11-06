@@ -1,4 +1,5 @@
 #include "prevent_bss_reordering.h"
+#include "HyruleTermina.h"
 #include "prevent_bss_reordering2.h"
 #include "PR/ultratypes.h"
 
@@ -1551,8 +1552,9 @@ void Cutscene_HandleEntranceTriggers(PlayState* play) {
     SceneTableEntry* scene;
     s32 scriptIndex;
 
+    // 3Ship [Hyrule] MM's intro areas are walked without their cutscenes once Link has reached Clock Town.
     if (((gSaveContext.gameMode == GAMEMODE_NORMAL) || (gSaveContext.gameMode == GAMEMODE_TITLE_SCREEN)) &&
-        (gSaveContext.respawnFlag <= 0)) {
+        (gSaveContext.respawnFlag <= 0) && !Hyrule_SkipsIntroCutscene(play)) {
         // Try to find an actor cutscene that's triggered by the current spawn
         csId = CutsceneManager_FindEntranceCsId();
         if (csId != CS_ID_NONE) {

@@ -6,6 +6,8 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "HyruleScenes.h"
+#include "HyruleTermina.h"
+#include "HyruleLines.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/object_ossan/object_ossan.h"
 #include "assets/oot/objects/object_oF1d_map/object_oF1d_map.h"
@@ -90,6 +92,10 @@ static void EnOssan_State_QuickBuyDialog(EnOssan* this, PlayState* play, Player*
 static void EnOssan_State_SelectMaskItem(EnOssan* this, PlayState* play, Player* player);
 static void EnOssan_State_LendMaskOfTruth(EnOssan* this, PlayState* play, Player* player);
 static void EnOssan_State_GiveDiscountDialog(EnOssan* this, PlayState* play, Player* player);
+static void EnOssan_State_OfferHeroShield(EnOssan* this, PlayState* play, Player* player);
+static void EnOssan_State_GiveHeroShield(EnOssan* this, PlayState* play, Player* player);
+static void EnOssan_State_HeroShieldGiven(EnOssan* this, PlayState* play, Player* player);
+static void EnOssan_State_LeaveForTermina(EnOssan* this, PlayState* play, Player* player);
 
 static void EnOssan_Obj3ToSeg6(EnOssan* this, PlayState* play);
 
@@ -365,6 +371,10 @@ static EnOssanStateFunc sStateFunc[] = {
     EnOssan_State_SelectMaskItem,
     EnOssan_State_LendMaskOfTruth,
     EnOssan_State_GiveDiscountDialog,
+    EnOssan_State_OfferHeroShield,
+    EnOssan_State_GiveHeroShield,
+    EnOssan_State_HeroShieldGiven,
+    EnOssan_State_LeaveForTermina,
 };
 
 static void EnOssan_SetupAction(EnOssan* this, EnOssanActionFunc actionFunc) {
@@ -591,6 +601,12 @@ static void EnOssan_Init(Actor* thisx, PlayState* play) {
 
     // If you haven't given Zelda's Letter to the Kakariko Guard
     if (this->actor.params == OSSAN_TYPE_MASK && !GET_INFTABLE_OOT(INFTABLE_SHOWED_ZELDAS_LETTER_TO_GATE_GUARD_Oot)) {
+        Actor_Kill(&this->actor);
+        return;
+    }
+
+    // 3Ship [Hyrule] Once he has left for Termina, his shop stands empty for good (docs/TERMINA.md).
+    if ((this->actor.params == OSSAN_TYPE_MASK) && Hyrule_IsTerminaUnlocked()) {
         Actor_Kill(&this->actor);
         return;
     }
@@ -910,6 +926,11 @@ static void EnOssan_State_StartConversation(EnOssan* this, PlayState* play, Play
                 return;
             case OSSAN_HAPPY_STATE_BORROWED_FIRST_MASK:
                 EnOssan_EndInteraction(play, this);
+                return;
+            case OSSAN_HAPPY_STATE_OFFER_HERO_SHIELD_3SHIP:
+                // 3Ship [Hyrule] Link owns the Termina gate's items: the Hero's Shield (docs/TERMINA.md).
+                Hyrule_ContinueTextbox(play, HYRULE_LINE_HERO_SHIELD_OFFER);
+                this->stateFlag = OSSAN_STATE_OFFER_HERO_SHIELD_3SHIP;
                 return;
             case OSSAN_HAPPY_STATE_REQUEST_PAYMENT_KEATON_MASK:
             case OSSAN_HAPPY_STATE_REQUEST_PAYMENT_SPOOKY_MASK:
@@ -1694,8 +1715,16 @@ static void EnOssan_State_ItemPurchased(EnOssan* this, PlayState* play, Player* 
             item->updateStockedItemFunc(play, item);
             if (itemTemp->actor.params == SI_MASK_OF_TRUTH && !GET_ITEMGETINF_OOT(ITEMGETINF_3F_Oot)) {
                 SET_ITEMGETINF_OOT(ITEMGETINF_3F_Oot);
-                Message_ContinueTextbox(play, TEXT_OOT(0x70AB));
-                this->happyMaskShopState = OSSAN_HAPPY_STATE_BORROWED_FIRST_MASK;
+                // 3Ship [Hyrule] After the fourth sale he gives the other masks too, and the Hero's Shield once Link
+                // owns the Termina gate's other items (DESIGN.md: Mask Shop). OoT's line was 0x70AB.
+                Hyrule_GiveMaskShopGift(play);
+                if (Hyrule_OwnsTerminaGateItems()) {
+                    Hyrule_ContinueTextbox(play, HYRULE_LINE_MASK_GIFT);
+                    this->happyMaskShopState = OSSAN_HAPPY_STATE_OFFER_HERO_SHIELD_3SHIP;
+                } else {
+                    Hyrule_ContinueTextbox(play, HYRULE_LINE_MASK_GIFT_WITH_HINT);
+                    this->happyMaskShopState = OSSAN_HAPPY_STATE_BORROWED_FIRST_MASK;
+                }
                 EnOssan_UpdateShopOfferings(this, play);
                 this->stateFlag = OSSAN_STATE_START_CONVERSATION;
                 return;
@@ -1785,6 +1814,50 @@ static void EnOssan_State_LendMaskOfTruth(EnOssan* this, PlayState* play, Player
         SET_ITEMGETINF_OOT(ITEMGETINF_2A_Oot);
         this->cursorIndex = 2;
         EnOssan_GiveItemWithFanfare(play, this);
+    }
+}
+
+// 3Ship [Hyrule] The Hero's Shield and the salesman's departure for Termina (docs/TERMINA.md). His offer is an event
+// line; Link then holds up the shield, the salesman says farewell, and Link is back in the market.
+static void EnOssan_State_OfferHeroShield(EnOssan* this, PlayState* play, Player* player) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
+        Actor_OfferGetItem(&this->actor, play, GI_SHIELD_HERO, 120.0f, 120.0f);
+        play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
+        play->msgCtx.stateTimer = 4;
+        player->stateFlags2 &= ~PLAYER_STATE2_20000000;
+        Hyrule_SetViewpoint(play, 1);
+        Interface_SetHudVisibility(50);
+        this->drawCursor = 0;
+        EnOssan_UpdateCameraDirection(this, play, 0.0f);
+        this->stateFlag = OSSAN_STATE_GIVE_HERO_SHIELD_3SHIP;
+    }
+}
+
+static void EnOssan_State_GiveHeroShield(EnOssan* this, PlayState* play, Player* player) {
+    if (Actor_HasParent(&this->actor, play)) {
+        this->actor.parent = NULL;
+        this->stateFlag = OSSAN_STATE_HERO_SHIELD_GIVEN_3SHIP;
+        return;
+    }
+    Actor_OfferGetItem(&this->actor, play, GI_SHIELD_HERO, 120.0f, 120.0f);
+}
+
+static void EnOssan_State_HeroShieldGiven(EnOssan* this, PlayState* play, Player* player) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_DONE) && Message_ShouldAdvance(play)) {
+        Hyrule_ContinueTextbox(play, HYRULE_LINE_SALESMAN_FAREWELL);
+        this->stateFlag = OSSAN_STATE_LEAVE_FOR_TERMINA_3SHIP;
+    }
+}
+
+static void EnOssan_State_LeaveForTermina(EnOssan* this, PlayState* play, Player* player) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
+        Hyrule_UnlockTermina();
+        play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
+        play->msgCtx.stateTimer = 4;
+        play->nextEntrance = Hyrule_ExitFromOot(0x1D1); // OoT's ENTR_MARKET_DAY_OUTSIDE_HAPPY_MASK_SHOP
+        play->transitionTrigger = TRANS_TRIGGER_START;
+        play->transitionType = TRANS_TYPE_FADE_WHITE;
+        this->stateFlag = OSSAN_STATE_IDLE;
     }
 }
 
@@ -2070,6 +2143,13 @@ static void EnOssan_InitBombchuShopkeeper(EnOssan* this, PlayState* play) {
 
 static u16 EnOssan_SetupHelloDialog(EnOssan* this) {
     this->happyMaskShopState = OSSAN_HAPPY_STATE_NONE;
+    // 3Ship [Hyrule] Link comes back with the Termina gate's items after the masks' gift: after his welcome, the
+    // salesman gives the Hero's Shield (docs/TERMINA.md).
+    if ((this->actor.params == OSSAN_TYPE_MASK) && GET_ITEMGETINF_OOT(ITEMGETINF_3F_Oot) &&
+        !Hyrule_IsTerminaUnlocked() && Hyrule_OwnsTerminaGateItems()) {
+        this->happyMaskShopState = OSSAN_HAPPY_STATE_OFFER_HERO_SHIELD_3SHIP;
+        return TEXT_OOT(0x70AC);
+    }
     // mask shop messages
     if (this->actor.params == OSSAN_TYPE_MASK) {
         if ((INV_CONTENT_OOT(ITEM_TRADE_CHILD_Oot) == ITEM_SOLD_OUT_Oot)) {
