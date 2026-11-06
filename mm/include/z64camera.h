@@ -236,6 +236,7 @@ typedef enum {
     /* 0x5B */ CAM_SET_PREREND_SIDE_SCROLL, // 3Ship [Hyrule] OoT's: the camera side-scrolls with Link (Hyrule Castle's guarded courtyard) "PREREND3"
     /* 0x5C */ CAM_SET_PIVOT_SHOP_BROWSING, // 3Ship [Hyrule] OoT's: shopping and browsing the shelves, the camera turning to the shelf "CIRCLE2"
     /* 0x5D */ CAM_SET_PIVOT_FROM_SIDE, // 3Ship [Hyrule] OoT's: a fixed eye that turns to follow Link (OoT's minigame rooms, its potion shops) "CIRCLE7"
+    /* 0x5E */ CAM_SET_CRAWLSPACE, // 3Ship [Hyrule] OoT's: Link's own view while he crawls through a crawlspace "RAIL3"
     /* 0x5E */ CAM_SET_MAX
 } CameraSettingType;
 
@@ -1341,6 +1342,29 @@ typedef struct {
 #define CAM_FUNCDATA_SPEC6(interfaceFlags) \
     { interfaceFlags, CAM_DATA_INTERFACE_FLAGS }
 
+// 3Ship [Hyrule] Camera_Subject4 is ported from OoT's Camera_Subj4 for its crawlspaces (CAM_SET_CRAWLSPACE).
+#define CAM_FUNCDATA_SUBJ4(interfaceFlags) \
+    { interfaceFlags, CAM_DATA_INTERFACE_FLAGS }
+
+typedef struct {
+    /* 0x0 */ s16 interfaceFlags;
+} Subject4ReadOnlyData; // size = 0x2
+
+typedef struct {
+    /* 0x00 */ InfiniteLine crawlLine; // from the crawlspace's end Link is nearest, along it
+    /* 0x18 */ f32 initialXzSpeed;
+    /* 0x1C */ f32 prevBob;            // the head bob's last cosine
+    /* 0x20 */ s16 bobPhase;
+    /* 0x22 */ s16 isBobSfxPlayed;
+    /* 0x24 */ s16 crawlYaw;
+    /* 0x26 */ s16 enterTimer;
+} Subject4ReadWriteData; // size = 0x28
+
+typedef struct {
+    /* 0x00 */ Subject4ReadOnlyData roData;
+    /* 0x04 */ Subject4ReadWriteData rwData;
+} Subject4; // size = 0x2C
+
 // 3Ship [Hyrule] Camera_Special6 is ported from OoT for its side-scrolling courtyard (CAM_SET_PREREND_SIDE_SCROLL).
 typedef struct {
     /* 0x0 */ s16 interfaceFlags;
@@ -1650,6 +1674,7 @@ typedef union {
     Unique6 uniq6;
     Unique7 uniq7; // 3Ship [Hyrule]
     Special6 spec6; // 3Ship [Hyrule]
+    Subject4 subj4; // 3Ship [Hyrule]
     Data4 data4; // 3Ship [Hyrule]
     Fixed4 fixd4; // 3Ship [Hyrule]
     Demo1 demo1;

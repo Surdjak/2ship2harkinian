@@ -369,6 +369,16 @@ CameraModeValue sSetPivotShopBrowsingModeNormalData[] = {
 };
 
 /*=====================================================================
+ *                   Custom Data: CRAWLSPACE Setting (3Ship [Hyrule], OoT's)
+ *=====================================================================
+ */
+
+// OoT's 0x3200: the large letterbox, and the HUD hidden.
+CameraModeValue sSetCrawlspaceModeNormalData[] = {
+    CAM_FUNCDATA_SUBJ4(CAM_INTERFACE_FLAGS(CAM_LETTERBOX_LARGE, CAM_HUD_VISIBILITY_NONE_ALT, 0)),
+};
+
+/*=====================================================================
  *                   Custom Data: PIVOT_FROM_SIDE Setting (3Ship [Hyrule], OoT's)
  *=====================================================================
  */
@@ -2223,6 +2233,10 @@ CameraMode sCamSetPivotShopBrowsingModes[] = {
 };
 
 // OoT's modes for this setting: its pivot when free or following a target, NORMAL0's for the rest.
+CameraMode sCamSetCrawlspaceModes[] = {
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_SUBJECT4, sSetCrawlspaceModeNormalData), // CAM_MODE_NORMAL
+};
+
 CameraMode sCamSetPivotFromSideModes[] = {
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_FIXED4, sSetPivotFromSideModeNormalData),     // CAM_MODE_NORMAL
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORMAL1, sSetNormal0ModeJumpData),            // CAM_MODE_JUMP
@@ -3683,6 +3697,7 @@ CameraSetting sCameraSettings[] = {
     { 0x00000001, 0x8000000C, sCamSetPreRendSideScrollModes },     // CAM_SET_PREREND_SIDE_SCROLL (3Ship [Hyrule])
     { 0x00000001, 0x80000005, sCamSetPivotShopBrowsingModes },     // CAM_SET_PIVOT_SHOP_BROWSING (3Ship [Hyrule])
     { 0x08103A49, 0xC0000005, sCamSetPivotFromSideModes },         // CAM_SET_PIVOT_FROM_SIDE (3Ship [Hyrule])
+    { 0x00000001, 0xC0000005, sCamSetCrawlspaceModes },            // CAM_SET_CRAWLSPACE (3Ship [Hyrule])
 };
 
 s16 sGlobalCamDataSettings[] = {

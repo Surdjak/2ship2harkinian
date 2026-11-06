@@ -779,15 +779,18 @@ Fixes from the first play test:
   types, MM's `WALL_FLAG_4 | WALL_FLAG_5`), gets "Enter" on A, crawls with the stick, and climbs out at the inner exit
   walls. While crawling, Player keeps OoT's narrow wall and ceiling checks and OoT's crawling limb hiding; the state
   is `PLAYER_STATE2_CRAWLING_OOT` (bit 18, which only Kafei's own Player copy sets in MM, hence
-  `PLAYER_IS_CRAWLING_OOT`). Checked under gdb: Kokiri Forest's crawlspace into the training area. Not done: OoT's
-  crawlspace camera (RAIL3), which MM lacks; MM's normal camera follows close behind.
+  `PLAYER_IS_CRAWLING_OOT`). OoT's crawlspace camera (RAIL3, `Camera_Subj4`) is MM's `CAM_SET_CRAWLSPACE` (0x5E,
+  OTRExporter maps it): `Camera_Subject4`, a stub in MM, is OoT's, Link's own view along the crawlspace's points,
+  bobbing with each step and keeping him on that line, with OoT's letterbox and hidden HUD. Checked under gdb with
+  screenshots: Kokiri Forest's crawlspace into the training area.
 - OoT scenes' chests (MM's `En_Box`) turn the other way round from MM's own, as OoT's do (OoT turns their direction,
   MM their model), and small ones take OoT's scale (0.005, MM's 0.0075).
 - Hyrule's save prompt is drawn (MM drew it only with 2Ship's pause save or game-over options on); its page title is
   MM's Japanese one, as with 2Ship's pause save.
 - Navi rests white and blue (OoT's colours for her player target) where MM's attention colours gave her Tatl's yellow.
-- The house viewpoints (`Hyrule_UpdateViewpoint`) no longer take over an OoT script's camera: the opening's narration
-  framed the room from the house's fixed camera instead of Link in his bed.
+- The house viewpoints (`Hyrule_UpdateViewpoint`, and `Hyrule_SetViewpoint` from scripts' misc command 14) no longer
+  take over an OoT script's camera, as OoT's camera priorities refuse it: the opening's narration framed the room from
+  the house's fixed camera instead of Link in his bed.
 
 ## Cutscenes
 

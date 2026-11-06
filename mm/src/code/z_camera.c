@@ -5387,7 +5387,136 @@ s32 Camera_Subject3(Camera* camera) {
 }
 
 s32 Camera_Subject4(Camera* camera) {
-    return Camera_Noop(camera);
+    // 3Ship [Hyrule] Ported from OoT's Camera_Subj4 for its crawlspaces (CAM_SET_CRAWLSPACE): Link's own view along
+    // the crawlspace's line (the scene camera's list of points under him), bobbing with each crawling step, which also
+    // keeps him on that line; it first eases from where the camera was to just behind his head.
+    Vec3f* eye = &camera->eye;
+    Vec3f* eyeNext = &camera->eyeNext;
+    Vec3f* at = &camera->at;
+    Player* player = (Player*)camera->focalActor;
+    PosRot* focalActorPosRot = &camera->focalActorPosRot;
+    Subject4ReadOnlyData* roData = &camera->paramData.subj4.roData;
+    Subject4ReadWriteData* rwData = &camera->paramData.subj4.rwData;
+    PosRot playerPosRot;
+    VecGeo eyeAtGeo;
+    VecGeo offsetGeo;
+    Vec3f lineEnd;
+    Vec3f target;
+    f32 dist;
+    f32 bob;
+    s16 lookYaw;
+
+    if (RELOAD_PARAMS(camera)) {
+        CameraModeValue* values = sCameraSettings[camera->setting].cameraModes[camera->mode].values;
+
+        roData->interfaceFlags = GET_NEXT_RO_DATA(values);
+    }
+
+    if (camera->play->view.unk164 == 0) {
+        camera->play->view.unk164 = camera->camId | 0x50;
+        rwData->initialXzSpeed = camera->xzSpeed;
+        return true;
+    }
+
+    playerPosRot = Actor_GetWorldPosShapeRot(camera->focalActor);
+    eyeAtGeo = OLib_Vec3fDiffToVecGeo(at, eye);
+    sCameraInterfaceFlags = roData->interfaceFlags;
+
+    if (camera->animState == 0) {
+        Vec3s* crawlPoints;
+        s32 numPoints;
+
+        if (player->actor.floorPoly == NULL) {
+            return false;
+        }
+        crawlPoints = BgCheck_GetBgCamFuncData(&camera->play->colCtx, player->actor.floorPoly, player->actor.floorBgId);
+        numPoints = BgCheck_GetBgCamCount(&camera->play->colCtx, player->actor.floorPoly, player->actor.floorBgId);
+        if ((crawlPoints == NULL) || (numPoints < 3)) {
+            return false;
+        }
+        rwData->crawlLine.point = Camera_Vec3sToVec3f(&crawlPoints[1]);
+        lineEnd = Camera_Vec3sToVec3f(&crawlPoints[numPoints - 2]);
+
+        offsetGeo.yaw = Camera_CalcXZAngle(&lineEnd, &rwData->crawlLine.point);
+        dist = OLib_Vec3fDist(&focalActorPosRot->pos, &rwData->crawlLine.point);
+        // The line starts at the end Link is nearer, and points the way he crawls.
+        if (OLib_Vec3fDist(&focalActorPosRot->pos, &lineEnd) < dist) {
+            rwData->crawlLine.dir.x = rwData->crawlLine.point.x - lineEnd.x;
+            rwData->crawlLine.dir.y = rwData->crawlLine.point.y - lineEnd.y;
+            rwData->crawlLine.dir.z = rwData->crawlLine.point.z - lineEnd.z;
+            rwData->crawlLine.point = lineEnd;
+        } else {
+            rwData->crawlLine.dir.x = lineEnd.x - rwData->crawlLine.point.x;
+            rwData->crawlLine.dir.y = lineEnd.y - rwData->crawlLine.point.y;
+            rwData->crawlLine.dir.z = lineEnd.z - rwData->crawlLine.point.z;
+            offsetGeo.yaw = BINANG_ROT180(offsetGeo.yaw);
+        }
+        rwData->crawlYaw = offsetGeo.yaw;
+        rwData->enterTimer = 10;
+        rwData->bobPhase = 0;
+        rwData->isBobSfxPlayed = false;
+        rwData->prevBob = 0.0f;
+        camera->animState++;
+    }
+
+    if (rwData->enterTimer != 0) {
+        offsetGeo.r = 10.0f;
+        offsetGeo.pitch = 0x238C; // ~50 degrees
+        offsetGeo.yaw = rwData->crawlYaw;
+        target = OLib_AddVecGeoToVec3f(&playerPosRot.pos, &offsetGeo);
+        dist = rwData->enterTimer + 1.0f;
+        at->x += (target.x - at->x) / dist;
+        at->y += (target.y - at->y) / dist;
+        at->z += (target.z - at->z) / dist;
+        eyeAtGeo.r -= eyeAtGeo.r / dist;
+        eyeAtGeo.yaw = BINANG_LERPIMPINV(eyeAtGeo.yaw, BINANG_ROT180(playerPosRot.rot.y), rwData->enterTimer);
+        eyeAtGeo.pitch = BINANG_LERPIMPINV(eyeAtGeo.pitch, playerPosRot.rot.x, rwData->enterTimer);
+        *eyeNext = OLib_AddVecGeoToVec3f(at, &eyeAtGeo);
+        *eye = *eyeNext;
+        rwData->enterTimer--;
+        return false;
+    } else if (rwData->initialXzSpeed < 0.5f) {
+        return false;
+    }
+
+    playerPosRot = Actor_GetWorldPosShapeRot(camera->focalActor);
+    Math3D_LineClosestToPoint(&rwData->crawlLine, &playerPosRot.pos, eyeNext);
+    at->x = eyeNext->x + rwData->crawlLine.dir.x;
+    at->y = eyeNext->y + rwData->crawlLine.dir.y;
+    at->z = eyeNext->z + rwData->crawlLine.dir.z;
+    *eye = *eyeNext;
+
+    // The head bob of each crawling step, with its sound.
+    offsetGeo.yaw = rwData->crawlYaw;
+    offsetGeo.r = 5.0f;
+    offsetGeo.pitch = 0x238C;
+    lineEnd = OLib_AddVecGeoToVec3f(eyeNext, &offsetGeo);
+    rwData->bobPhase += 0xBB8;
+    bob = Math_CosS(rwData->bobPhase);
+    eye->x += (lineEnd.x - eye->x) * fabsf(bob);
+    eye->y += (lineEnd.y - eye->y) * fabsf(bob);
+    eye->z += (lineEnd.z - eye->z) * fabsf(bob);
+
+    if ((rwData->prevBob < bob) && !rwData->isBobSfxPlayed) {
+        rwData->isBobSfxPlayed = true;
+        Audio_PlaySfx_AtPosWithFreq(&player->actor.projectedPos, player->floorSfxOffset + NA_SE_PL_CRAWL, 4.0f);
+    } else if (rwData->prevBob > bob) {
+        rwData->isBobSfxPlayed = false;
+    }
+    rwData->prevBob = bob;
+
+    // Link stays on the crawlspace's line, facing along it.
+    camera->focalActor->world.pos = *eyeNext;
+    camera->focalActor->world.pos.y = camera->focalActorFloorHeight;
+    camera->focalActor->shape.rot.y = offsetGeo.yaw;
+
+    bob = (240.0f * bob) * (rwData->initialXzSpeed * 0.416667f);
+    lookYaw = bob + rwData->crawlYaw;
+    at->x = eye->x + (Math_SinS(lookYaw) * 10.0f);
+    at->y = eye->y;
+    at->z = eye->z + (Math_CosS(lookYaw) * 10.0f);
+    camera->roll = Camera_ScaledStepToCeilS(0, camera->roll, 0.5f, 10);
+    return true;
 }
 
 s32 Camera_Subject0(Camera* camera) {
