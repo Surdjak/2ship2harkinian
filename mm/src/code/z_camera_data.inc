@@ -373,9 +373,9 @@ CameraModeValue sSetPivotShopBrowsingModeNormalData[] = {
  *=====================================================================
  */
 
-// OoT's 0x3200: the large letterbox, and the HUD hidden.
+// OoT's Camera_Subj4 reads only the first of its six values (0x0000): no letterbox, the whole HUD.
 CameraModeValue sSetCrawlspaceModeNormalData[] = {
-    CAM_FUNCDATA_SUBJ4(CAM_INTERFACE_FLAGS(CAM_LETTERBOX_LARGE, CAM_HUD_VISIBILITY_NONE_ALT, 0)),
+    CAM_FUNCDATA_SUBJ4(CAM_INTERFACE_FLAGS(CAM_LETTERBOX_NONE, CAM_HUD_VISIBILITY_ALL, 0)),
 };
 
 /*=====================================================================

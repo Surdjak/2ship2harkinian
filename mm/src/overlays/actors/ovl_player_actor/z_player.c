@@ -10359,6 +10359,7 @@ static s32 Player_TryLeavingCrawlspaceOot(Player* this, PlayState* play) {
                                        0.0f);
             }
             Player_AnimReplace_Setup(play, this, 0x9D);
+            Hyrule_StartCrawlspaceExitCameraOot(play, this->speedXZ < 0.0f); // OoT's one-point cutscenes 9601, 9602
             this->yaw = this->actor.shape.rot.y;
             Player_StopHorizontalMovement(this);
             return true;

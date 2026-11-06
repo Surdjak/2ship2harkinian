@@ -275,11 +275,6 @@ extern "C" void Hyrule_SetViewpoint(PlayState* play, s16 viewpoint) {
     if ((sCameraMovement != CAMERA_MOVEMENT_SHOP) && (gSaveContext.save.cutsceneIndex < 0xFFF0)) {
         Audio_PlaySfx((viewpoint == 1) ? NA_SE_SY_CAMERA_ZOOM_DOWN : NA_SE_SY_CAMERA_ZOOM_UP);
     }
-    // While an OoT script plays (its misc command 14 sets the viewpoint), OoT's camera priorities keep the script's
-    // camera; the main camera takes the viewpoint once the script ends (Hyrule_UpdateViewpoint).
-    if (Hyrule_IsCutsceneOotPlaying()) {
-        return;
-    }
     Camera_ChangeActorCsCamIndex(GET_ACTIVE_CAM(play), sViewpoint - 1);
 }
 

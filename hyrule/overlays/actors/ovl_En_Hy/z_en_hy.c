@@ -599,7 +599,7 @@ static s16 EnHy_UpdateTalkState(PlayState* play, Actor* thisx) {
                 case TEXT_OOT(0x70F3):
                     if (this->skelAnime.animation != &gObjOsAnim_33B4) {
                         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, ENHY_ANIM_23);
-                        Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
+                        Audio_PlayFanfare(NA_BGM_GET_ITEM); // 3Ship [Hyrule] OoT's | 0x900 arguments crash 2Ship's fanfare
                     }
                     break;
             }

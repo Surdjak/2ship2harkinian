@@ -781,16 +781,23 @@ Fixes from the first play test:
   is `PLAYER_STATE2_CRAWLING_OOT` (bit 18, which only Kafei's own Player copy sets in MM, hence
   `PLAYER_IS_CRAWLING_OOT`). OoT's crawlspace camera (RAIL3, `Camera_Subj4`) is MM's `CAM_SET_CRAWLSPACE` (0x5E,
   OTRExporter maps it): `Camera_Subject4`, a stub in MM, is OoT's, Link's own view along the crawlspace's points,
-  bobbing with each step and keeping him on that line, with OoT's letterbox and hidden HUD. Checked under gdb with
+  bobbing with each step and keeping him on that line; like OoT's, it reads only the first of its data values (no
+  letterbox, the whole HUD). Leaving the crawlspace plays OoT's one-point shots 9601 and 9602
+  (`Hyrule_StartCrawlspaceExitCameraOot`): a sub-camera on OoT's spline relative to Link, rising in front of (or
+  behind) him for 90 frames with a small letterbox, which the main camera then continues from. Checked under gdb with
   screenshots: Kokiri Forest's crawlspace into the training area.
 - OoT scenes' chests (MM's `En_Box`) turn the other way round from MM's own, as OoT's do (OoT turns their direction,
   MM their model), and small ones take OoT's scale (0.005, MM's 0.0075).
 - Hyrule's save prompt is drawn (MM drew it only with 2Ship's pause save or game-over options on); its page title is
   MM's Japanese one, as with 2Ship's pause save.
 - Navi rests white and blue (OoT's colours for her player target) where MM's attention colours gave her Tatl's yellow.
-- The house viewpoints (`Hyrule_UpdateViewpoint`, and `Hyrule_SetViewpoint` from scripts' misc command 14) no longer
-  take over an OoT script's camera, as OoT's camera priorities refuse it: the opening's narration framed the room from
-  the house's fixed camera instead of Link in his bed.
+- Scripts and house viewpoints: the viewpoint's per-frame update (`Hyrule_UpdateViewpoint`) leaves an OoT script's
+  camera alone, but a script's own misc command 14 hands it to the house's fixed camera, and the script's spline then
+  stops driving it (`CsCamera_Update` only drives a camera with the cutscene setting, as OoT's `Camera_Demo1`). The
+  opening's narration shows Link's house from above with Link in bed, then his bed, as SoH does. Link's eyes stay open
+  (blinking) while he sleeps there, as in SoH: the opening's animations carry no face, and OoT's blinking runs.
+- OoT's `Audio_PlayFanfare(... | 0x900)` (its fanfare arguments) crashed 2Ship's audio thread, which no longer masks
+  the sequence id: the Kokiri Sword's chest (`En_Box`) and `En_Hy` now pass the plain id, and the port tool drops it.
 
 ## Cutscenes
 

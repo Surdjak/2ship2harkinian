@@ -1062,6 +1062,7 @@ void Play_UpdateMain(PlayState* this) {
                         Actor_UpdateAll(this, &this->actorCtx);
                     }
                     Hyrule_UpdateTerminaPassage(this); // 3Ship [Hyrule] the way back from Termina
+                    Hyrule_UpdateOnePointCameraOot(this); // 3Ship [Hyrule] OoT's crawlspace exit shots
                     // 3Ship [Hyrule] OoT's scripts play with OoT's interpreter (docs/CUTSCENES.md).
                     if (Hyrule_IsCutsceneOotPlaying()) {
                         Hyrule_UpdateCutsceneOot(this);

@@ -42,6 +42,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_ROOT = os.path.join(HERE, "..", "..", "hyrule", "overlays", "actors")
 
 RENAMES = [
+    # OoT's fanfare sequence arguments (| 0x900): 2Ship's Audio_PlayFanfare no longer masks the id, so they crash it.
+    (r"\bAudio_PlayFanfare\((\w+) \| 0x900\)", r"Audio_PlayFanfare(\1)"),
     (r"\bCOLTYPE_", "COL_MATERIAL_"),
     (r"\bELEMTYPE_", "ELEM_MATERIAL_"),
     (r"\bTOUCH_ON\b", "ATELEM_ON"),

@@ -317,6 +317,10 @@ void Hyrule_HandleConditionalTriggersOot(struct PlayState* play);
 void Hyrule_ResetEventChkInfOotForCycle(void);
 // Whether an OoT script is playing, during which MM's cutscene update stands aside.
 s32 Hyrule_IsCutsceneOotPlaying(void);
+
+// OoT's one-point camera as Link leaves a crawlspace (its 9601 and 9602), started by Player and updated each frame.
+void Hyrule_StartCrawlspaceExitCameraOot(struct PlayState* play, s32 backwards);
+void Hyrule_UpdateOnePointCameraOot(struct PlayState* play);
 // Called each frame from Play_Update in place of MM's cutscene update while an OoT script plays or waits to start.
 void Hyrule_UpdateCutsceneOot(struct PlayState* play);
 // OoT's func_800BB2B4: a point on a cutscene camera spline, then a step along it; true at its end (the warp light's

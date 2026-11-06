@@ -173,7 +173,9 @@ static void CsCamera_Update(PlayState* play) {
         return;
     }
     camera = Play_GetCamera(play, sCsCamera.camId);
-    if (camera == NULL) {
+    // The spline drives the script's camera only while it has the cutscene setting (OoT's Camera_Demo1 runs for
+    // CAM_SET_CS_0 only): a script that shows a house's fixed view (misc command 14) hands it to that scene camera.
+    if ((camera == NULL) || (camera->setting != CAM_SET_FREE0)) {
         return;
     }
     fov = camera->fov;
@@ -2180,7 +2182,75 @@ void Flags_UnsetEnvOot(PlayState* play, s16 flag) {
     sEnvFlagsOot[flag >> 4] &= ~(1 << (flag & 0xF));
 }
 
+// OoT's one-point cutscenes 9601 and 9602 (z_onepointdemo.c), as Link leaves a crawlspace forwards or backwards: on
+// a sub-camera with the cutscene setting (OoT's CAM_SET_CS_3, Camera_Demo1), relative to Link, the camera rises from
+// his feet to up in front of (or behind) him over 90 frames, with OoT's small letterbox (its 0x1000 flag).
+static CutsceneCameraPointOot sCrawlExitAtPointsOot[] = {
+    { CS_CMD_CONTINUE_Oot, 0, 10, 40.0f, { 0, 4, 0 } },  { CS_CMD_CONTINUE_Oot, 0, 10, 40.000004f, { 0, 4, 0 } },
+    { CS_CMD_CONTINUE_Oot, 0, 10, 50.0f, { 0, 9, 0 } },  { CS_CMD_CONTINUE_Oot, 0, 12, 55.0f, { 0, 12, 0 } },
+    { CS_CMD_CONTINUE_Oot, 0, 15, 61.0f, { 0, 18, 0 } }, { CS_CMD_CONTINUE_Oot, 0, 20, 65.0f, { 0, 29, 0 } },
+    { CS_CMD_CONTINUE_Oot, 0, 40, 60.0f, { 0, 34, 0 } }, { CS_CMD_STOP_Oot, 0, 40, 60.0f, { 0, 34, 0 } },
+    { CS_CMD_STOP_Oot, 0, 10, 60.0f, { 0, 34, 0 } },
+};
+static CutsceneCameraPointOot sCrawlExitEyePointsForwardsOot[] = {
+    { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 9, 45 } },   { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 8, 50 } },
+    { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 17, 58 } },  { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 21, 78 } },
+    { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 46, 109 } }, { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 58, 118 } },
+    { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 63, 119 } }, { CS_CMD_STOP_Oot, 0, 0, 60.0f, { 0, 62, 119 } },
+    { CS_CMD_STOP_Oot, 0, 0, 60.0f, { 0, 62, 119 } },
+};
+static CutsceneCameraPointOot sCrawlExitEyePointsBackwardsOot[] = {
+    { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 9, -45 } },   { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 9, -45 } },
+    { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 8, -50 } },   { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 17, -58 } },
+    { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 21, -78 } },  { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 46, -109 } },
+    { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 58, -118 } }, { CS_CMD_CONTINUE_Oot, 0, 0, 60.0f, { 0, 63, -119 } },
+    { CS_CMD_STOP_Oot, 0, 0, 60.0f, { 0, 62, -119 } },     { CS_CMD_STOP_Oot, 0, 0, 60.0f, { 0, 62, -119 } },
+};
+#define CRAWL_EXIT_CAMERA_FRAMES 90
+
+static s16 sOnePointCamIdOot = CAM_ID_NONE;
+static s16 sOnePointTimerOot = 0;
+
+void Hyrule_StartCrawlspaceExitCameraOot(PlayState* play, s32 backwards) {
+    if ((sOnePointCamIdOot != CAM_ID_NONE) || Hyrule_IsCutsceneOotPlaying()) {
+        return;
+    }
+    sOnePointCamIdOot = Play_CreateSubCamera(play);
+    if (sOnePointCamIdOot == CAM_ID_NONE) {
+        return;
+    }
+    Play_CopyCamera(play, sOnePointCamIdOot, CAM_ID_MAIN);
+    Play_ChangeCameraSetting(play, sOnePointCamIdOot, CAM_SET_FREE0);
+    Play_ChangeCameraStatus(play, CAM_ID_MAIN, CAM_STATUS_WAIT);
+    Play_ChangeCameraStatus(play, sOnePointCamIdOot, CAM_STATUS_ACTIVE);
+    CsCamera_Start(play, sOnePointCamIdOot, sCrawlExitAtPointsOot,
+                   backwards ? sCrawlExitEyePointsBackwardsOot : sCrawlExitEyePointsForwardsOot, true);
+    sOnePointTimerOot = CRAWL_EXIT_CAMERA_FRAMES;
+    ShrinkWindow_Letterbox_SetSizeTarget(0x1A);
+}
+
+void Hyrule_UpdateOnePointCameraOot(PlayState* play) {
+    if (sOnePointCamIdOot == CAM_ID_NONE) {
+        return;
+    }
+    if (!Hyrule_IsCutsceneOotPlaying()) {
+        CsCamera_Update(play);
+    }
+    // The shot holds its last framing once the spline ends, until OoT's 90 frames are up; the main camera then goes on
+    // from it.
+    sOnePointTimerOot--;
+    if (sOnePointTimerOot <= 0) {
+        ShrinkWindow_Letterbox_SetSizeTarget(0);
+        Play_CopyCamera(play, CAM_ID_MAIN, sOnePointCamIdOot);
+        Play_ChangeCameraStatus(play, CAM_ID_MAIN, CAM_STATUS_ACTIVE);
+        Play_ClearCamera(play, sOnePointCamIdOot);
+        Camera_SetFinishedFlag(play->cameraPtrs[CAM_ID_MAIN]);
+        sOnePointCamIdOot = CAM_ID_NONE;
+    }
+}
+
 void Hyrule_InitCutsceneOot(PlayState* play) {
+    sOnePointCamIdOot = CAM_ID_NONE;
     memset(sEnvFlagsOot, 0, sizeof(sEnvFlagsOot));
     memset(&gCsCtxOot, 0, sizeof(gCsCtxOot));
     gCsCtxOot.state = CS_STATE_IDLE_Oot;
