@@ -1060,6 +1060,10 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE2_20000      (1 << 17)
 // 
 #define PLAYER_STATE2_40000      (1 << 18)
+// 3Ship [Hyrule] OoT's PLAYER_STATE2_CRAWLING, on MM's Player (MM only sets bit 18 on En_Test3's own Player copy)
+#define PLAYER_STATE2_CRAWLING_OOT PLAYER_STATE2_40000
+#define PLAYER_IS_CRAWLING_OOT(player) \
+    (((player)->actor.id == ACTOR_PLAYER) && ((player)->stateFlags2 & PLAYER_STATE2_CRAWLING_OOT))
 // 
 #define PLAYER_STATE2_80000      (1 << 19)
 // 

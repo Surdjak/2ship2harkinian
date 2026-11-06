@@ -633,6 +633,9 @@ void func_8082DD2C(PlayState* play, Player* this) {
     this->stateFlags1 &=
         ~(PLAYER_STATE1_4 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_100000 | PLAYER_STATE1_200000);
     this->stateFlags2 &= ~(PLAYER_STATE2_10 | PLAYER_STATE2_80);
+    if (this->actor.id == ACTOR_PLAYER) {
+        this->stateFlags2 &= ~PLAYER_STATE2_CRAWLING_OOT; // 3Ship [Hyrule]
+    }
     this->unk_ADD = 0;
     this->unk_ADC = 0;
     this->actor.shape.rot.x = 0;
@@ -10300,10 +10303,159 @@ void func_8083DF38(Player* this, PlayerAnimationHeader* anim, PlayState* play) {
     this->actor.shape.rot.y = this->yaw = this->actor.wallYaw + 0x8000;
 }
 
+// 3Ship [Hyrule] OoT's crawlspaces (Player_TryEnteringCrawlspace, Player_TryLeavingCrawlspace and their actions in OoT's
+// z_player.c), which MM dropped: child Link crawls through the holes OoT's scenes mark with its crawlspace wall types,
+// which MM's wall flags still read as WALL_FLAG_4 and WALL_FLAG_5 (OoT's WALL_FLAG_CRAWLSPACE).
+#define WALL_FLAG_CRAWLSPACE_OOT (WALL_FLAG_4 | WALL_FLAG_5)
+
+// Shows "Enter" on A in front of a crawlspace (OoT's PLAYER_STATE2_DO_ACTION_ENTER: MM has no free state bit).
+static s32 sCrawlspaceEnterPromptOot = false;
+
+static AnimSfxEntry sCrawlAnimSfxOot[] = {
+    ANIMSFX(ANIMSFX_TYPE_GENERAL, 40, NA_SE_PL_CRAWL, CONTINUE), ANIMSFX(ANIMSFX_TYPE_GENERAL, 48, NA_SE_PL_CRAWL, CONTINUE),
+    ANIMSFX(ANIMSFX_TYPE_GENERAL, 56, NA_SE_PL_CRAWL, CONTINUE), ANIMSFX(ANIMSFX_TYPE_GENERAL, 64, NA_SE_PL_CRAWL, CONTINUE),
+    ANIMSFX(ANIMSFX_TYPE_GENERAL, 72, NA_SE_PL_CRAWL, CONTINUE), ANIMSFX(ANIMSFX_TYPE_GENERAL, 80, NA_SE_PL_CRAWL, CONTINUE),
+    ANIMSFX(ANIMSFX_TYPE_GENERAL, 88, NA_SE_PL_CRAWL, CONTINUE), ANIMSFX(ANIMSFX_TYPE_GENERAL, 96, NA_SE_PL_CRAWL, STOP),
+};
+
+static AnimSfxEntry sLeaveCrawlspaceAnimSfxOot[] = {
+    ANIMSFX(ANIMSFX_TYPE_GENERAL, 10, NA_SE_PL_CRAWL, CONTINUE), ANIMSFX(ANIMSFX_TYPE_GENERAL, 18, NA_SE_PL_CRAWL, CONTINUE),
+    ANIMSFX(ANIMSFX_TYPE_GENERAL, 26, NA_SE_PL_CRAWL, CONTINUE), ANIMSFX(ANIMSFX_TYPE_GENERAL, 34, NA_SE_PL_CRAWL, CONTINUE),
+    ANIMSFX(ANIMSFX_TYPE_GENERAL, 52, NA_SE_PL_CRAWL, CONTINUE), ANIMSFX(ANIMSFX_TYPE_GENERAL, 60, NA_SE_PL_CRAWL, CONTINUE),
+    ANIMSFX(ANIMSFX_TYPE_GENERAL, 68, NA_SE_PL_CRAWL, CONTINUE), ANIMSFX(ANIMSFX_TYPE_GENERAL, 76, NA_SE_PL_CRAWL, CONTINUE),
+    ANIMSFX(ANIMSFX_TYPE_GENERAL, 84, NA_SE_PL_CRAWL, STOP),
+};
+
+// OoT's Player_Action_8084C81C: Link climbs out of the crawlspace, then stands.
+void Player_Action_LeaveCrawlspaceOot(Player* this, PlayState* play) {
+    if (PlayerAnimation_Update(play, &this->skelAnime)) {
+        func_80839E74(this, play);
+        this->stateFlags2 &= ~PLAYER_STATE2_CRAWLING_OOT;
+        return;
+    }
+    Player_PlayAnimSfx(this, sLeaveCrawlspaceAnimSfxOot);
+}
+
+// OoT's Player_TryLeavingCrawlspace: the crawlspace's inner walls, at each end, start Link's way out.
+static s32 Player_TryLeavingCrawlspaceOot(Player* this, PlayState* play) {
+    s16 yawToWall;
+
+    if ((this->speedXZ != 0.0f) && (this->actor.bgCheckFlags & BGCHECKFLAG_WALL) &&
+        (sPlayerTouchedWallFlags & WALL_FLAG_CRAWLSPACE_OOT)) {
+        // The exit walls' yaws point inward: the one ahead is 0x8000 from Link's, the one behind 0.
+        yawToWall = this->actor.shape.rot.y - this->actor.wallYaw;
+        if (this->speedXZ < 0.0f) {
+            yawToWall += 0x8000;
+        }
+        if (ABS_ALT(yawToWall) > 0x4000) {
+            Player_SetAction(play, this, Player_Action_LeaveCrawlspaceOot, 0);
+            if (this->speedXZ > 0.0f) {
+                this->actor.shape.rot.y = this->actor.wallYaw + 0x8000;
+                Player_Anim_PlayOnce(play, this, &gPlayerAnim_link_child_tunnel_end);
+            } else {
+                this->actor.shape.rot.y = this->actor.wallYaw;
+                PlayerAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_child_tunnel_start, -1.0f,
+                                       Animation_GetLastFrame(&gPlayerAnim_link_child_tunnel_start), 0.0f, ANIMMODE_ONCE,
+                                       0.0f);
+            }
+            Player_AnimReplace_Setup(play, this, 0x9D);
+            this->yaw = this->actor.shape.rot.y;
+            Player_StopHorizontalMovement(this);
+            return true;
+        }
+    }
+    return false;
+}
+
+// OoT's Player_Action_8084C760: once in, Link crawls forward and back with the stick.
+void Player_Action_CrawlOot(Player* this, PlayState* play) {
+    if (PlayerAnimation_Update(play, &this->skelAnime)) {
+        if (!(this->stateFlags1 & PLAYER_STATE1_20000000)) {
+            if (this->skelAnime.movementFlags != 0) {
+                this->skelAnime.movementFlags = 0;
+                return;
+            }
+            if (!Player_TryLeavingCrawlspaceOot(this, play)) {
+                this->speedXZ = sPlayerControlInput->rel.stick_y * 0.03f;
+            }
+        }
+        return;
+    }
+    Player_PlayAnimSfx(this, sCrawlAnimSfxOot);
+}
+
+static void Player_SetupCrawlOot(PlayState* play, Player* this) {
+    Player_SetAction_PreserveMoveFlags(play, this, Player_Action_CrawlOot, 0);
+}
+
+// OoT's Player_TryEnteringCrawlspace: child Link lined up with a crawlspace's entrance wall enters it on A.
+static s32 Player_TryEnteringCrawlspaceOot(Player* this, PlayState* play, u32 interactWallFlags) {
+    CollisionPoly* wallPoly;
+    Vec3f wallVertices[3];
+    f32 xMin;
+    f32 xMax;
+    f32 zMin;
+    f32 zMax;
+    f32 sideDist;
+    s32 i;
+
+    if ((Hyrule_GetOotSceneId(play->sceneId) < 0) || (this->transformation != PLAYER_FORM_HUMAN) ||
+        LINK_IS_ADULT_OOT || (this->stateFlags1 & PLAYER_STATE1_8000000) ||
+        !(interactWallFlags & WALL_FLAG_CRAWLSPACE_OOT)) {
+        return false;
+    }
+
+    wallPoly = this->actor.wallPoly;
+    CollisionPoly_GetVerticesByBgId(wallPoly, this->actor.wallBgId, &play->colCtx, wallVertices);
+
+    // The hole's edges, its center, and Link's sideways distance from the line through it.
+    xMin = xMax = wallVertices[0].x;
+    zMin = zMax = wallVertices[0].z;
+    for (i = 1; i < 3; i++) {
+        if (xMin > wallVertices[i].x) {
+            xMin = wallVertices[i].x;
+        } else if (xMax < wallVertices[i].x) {
+            xMax = wallVertices[i].x;
+        }
+        if (zMin > wallVertices[i].z) {
+            zMin = wallVertices[i].z;
+        } else if (zMax < wallVertices[i].z) {
+            zMax = wallVertices[i].z;
+        }
+    }
+    xMin = (xMin + xMax) * 0.5f;
+    zMin = (zMin + zMax) * 0.5f;
+    sideDist = ((this->actor.world.pos.x - xMin) * COLPOLY_GET_NORMAL(wallPoly->normal.z)) -
+               ((this->actor.world.pos.z - zMin) * COLPOLY_GET_NORMAL(wallPoly->normal.x));
+
+    if (fabsf(sideDist) < 8.0f) {
+        sCrawlspaceEnterPromptOot = true;
+
+        if (CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_A)) {
+            f32 wallPolyNormX = COLPOLY_GET_NORMAL(wallPoly->normal.x);
+            f32 wallPolyNormZ = COLPOLY_GET_NORMAL(wallPoly->normal.z);
+            f32 distToInteractWall = this->distToInteractWall;
+
+            Player_SetupWaitForPutAway(play, this, Player_SetupCrawlOot);
+            this->stateFlags2 |= PLAYER_STATE2_CRAWLING_OOT;
+            this->actor.shape.rot.y = this->yaw = this->actor.wallYaw + 0x8000;
+            this->actor.world.pos.x = xMin + (distToInteractWall * wallPolyNormX);
+            this->actor.world.pos.z = zMin + (distToInteractWall * wallPolyNormZ);
+            func_8082DAD4(this);
+            this->actor.prevPos = this->actor.world.pos;
+            Player_Anim_PlayOnce(play, this, &gPlayerAnim_link_child_tunnel_start);
+            Player_AnimReplace_Setup(play, this, 0x9D);
+            return true;
+        }
+    }
+    return false;
+}
+
 s32 Player_ActionHandler_5(Player* this, PlayState* play) {
     if (!(this->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR) &&
         (this->actor.bgCheckFlags & BGCHECKFLAG_PLAYER_WALL_INTERACT) && (sShapeYawToTouchedWall < 0x3000)) {
-        if ((this->speedXZ > 0.0f) && func_8083D860(this, play)) {
+        if (((this->speedXZ > 0.0f) && func_8083D860(this, play)) ||
+            Player_TryEnteringCrawlspaceOot(this, play, sPlayerTouchedWallFlags)) { // 3Ship [Hyrule]
             return true;
         }
 
@@ -12121,6 +12273,8 @@ void Player_UpdateInterface(PlayState* play, Player* this) {
             doActionA = DO_ACTION_OPEN;
         } else if (!sp38 && (this->stateFlags2 & PLAYER_STATE2_1)) {
             doActionA = DO_ACTION_GRAB;
+        } else if (sCrawlspaceEnterPromptOot) { // 3Ship [Hyrule] a crawlspace
+            doActionA = DO_ACTION_ENTER;
         } else if ((this->stateFlags2 & PLAYER_STATE2_4) ||
                    (!(this->stateFlags1 & PLAYER_STATE1_800000) && (this->rideActor != NULL))) {
             doActionA = DO_ACTION_CLIMB;
@@ -12299,6 +12453,7 @@ void Player_ProcessSceneCollision(PlayState* play, Player* this) {
     u8 nextLedgeClimbType = PLAYER_LEDGE_CLIMB_NONE;
     CollisionPoly* floorPoly;
     f32 wallCheckRadius;
+    f32 wallCheckHeight; // 3Ship [Hyrule]
     f32 speedScale;
     f32 ceilingCheckHeight;
     u32 updBgCheckInfoFlags;
@@ -12308,6 +12463,13 @@ void Player_ProcessSceneCollision(PlayState* play, Player* this) {
 
     wallCheckRadius = this->ageProperties->wallCheckRadius;
     ceilingCheckHeight = this->ageProperties->ceilingCheckHeight;
+    wallCheckHeight = 268 * 0.1f;
+    // 3Ship [Hyrule] OoT's narrower, lower checks while Link crawls.
+    if (PLAYER_IS_CRAWLING_OOT(this)) {
+        wallCheckRadius = 10.0f;
+        wallCheckHeight = 15.0f;
+        ceilingCheckHeight = 30.0f;
+    }
 
     if (this->stateFlags1 & (PLAYER_STATE1_20000000 | PLAYER_STATE1_80000000)) {
         if ((!(this->stateFlags1 & PLAYER_STATE1_DEAD) && !(this->stateFlags2 & PLAYER_STATE2_4000) &&
@@ -12353,7 +12515,7 @@ void Player_ProcessSceneCollision(PlayState* play, Player* this) {
         updBgCheckInfoFlags &= ~(UPDBGCHECKINFO_FLAG_8 | UPDBGCHECKINFO_FLAG_10);
     }
 
-    Actor_UpdateBgCheckInfo(play, &this->actor, 268 * 0.1f, wallCheckRadius, ceilingCheckHeight, updBgCheckInfoFlags);
+    Actor_UpdateBgCheckInfo(play, &this->actor, wallCheckHeight, wallCheckRadius, ceilingCheckHeight, updBgCheckInfoFlags);
 
     this->unk_AC0 -= (this->actor.world.pos.y - this->actor.prevPos.y) / this->actor.scale.y;
     this->unk_AC0 = CLAMP(this->unk_AC0, -1000.0f, 1000.0f);
@@ -13336,6 +13498,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
             ~(PLAYER_STATE2_1 | PLAYER_STATE2_4 | PLAYER_STATE2_8 | PLAYER_STATE2_20 | PLAYER_STATE2_40 |
               PLAYER_STATE2_100 | PLAYER_STATE2_FORCE_SAND_FLOOR_SOUND | PLAYER_STATE2_1000 | PLAYER_STATE2_4000 |
               PLAYER_STATE2_10000 | PLAYER_STATE2_400000 | PLAYER_STATE2_4000000);
+        sCrawlspaceEnterPromptOot = false; // 3Ship [Hyrule]
         this->stateFlags3 &= ~(PLAYER_STATE3_10 | PLAYER_STATE3_40 | PLAYER_STATE3_100 | PLAYER_STATE3_800 |
                                PLAYER_STATE3_1000 | PLAYER_STATE3_100000 | PLAYER_STATE3_2000000 |
                                PLAYER_STATE3_4000000 | PLAYER_STATE3_8000000 | PLAYER_STATE3_10000000);
@@ -13933,6 +14096,8 @@ void Player_Draw(Actor* thisx, PlayState* play) {
                 if (sp74.z < -4.0f) {
                     sp84 = Player_OverrideLimbDrawGameplayFirstPerson;
                 }
+            } else if (PLAYER_IS_CRAWLING_OOT(this) && (this->actor.projectedPos.z < 0.0f)) {
+                sp84 = Player_OverrideLimbDrawGameplayCrawling; // 3Ship [Hyrule] as in OoT
             }
 
             if (this->stateFlags2 & PLAYER_STATE2_4000000) {

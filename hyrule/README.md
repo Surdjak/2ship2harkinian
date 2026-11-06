@@ -772,6 +772,23 @@ The way between OoT's opening and Termina (docs/TERMINA.md). Notes:
 - Found while checking: in Zora's River, SoH has 12 OoT grass bushes (`En_Kusa`) on the scene's second frame that 3Ship
   lacks; a difference on the first frame had hidden it from the SoH comparison until now.
 
+Fixes from the first play test:
+
+- Crawlspaces (`Player_TryEnteringCrawlspaceOot`, `Player_Action_CrawlOot`, `Player_Action_LeaveCrawlspaceOot` in MM's
+  Player, from OoT's): child Link in an OoT scene, lined up with a crawlspace's entrance wall (OoT's crawlspace wall
+  types, MM's `WALL_FLAG_4 | WALL_FLAG_5`), gets "Enter" on A, crawls with the stick, and climbs out at the inner exit
+  walls. While crawling, Player keeps OoT's narrow wall and ceiling checks and OoT's crawling limb hiding; the state
+  is `PLAYER_STATE2_CRAWLING_OOT` (bit 18, which only Kafei's own Player copy sets in MM, hence
+  `PLAYER_IS_CRAWLING_OOT`). Checked under gdb: Kokiri Forest's crawlspace into the training area. Not done: OoT's
+  crawlspace camera (RAIL3), which MM lacks; MM's normal camera follows close behind.
+- OoT scenes' chests (MM's `En_Box`) turn the other way round from MM's own, as OoT's do (OoT turns their direction,
+  MM their model), and small ones take OoT's scale (0.005, MM's 0.0075).
+- Hyrule's save prompt is drawn (MM drew it only with 2Ship's pause save or game-over options on); its page title is
+  MM's Japanese one, as with 2Ship's pause save.
+- Navi rests white and blue (OoT's colours for her player target) where MM's attention colours gave her Tatl's yellow.
+- The house viewpoints (`Hyrule_UpdateViewpoint`) no longer take over an OoT script's camera: the opening's narration
+  framed the room from the house's fixed camera instead of Link in his bed.
+
 ## Cutscenes
 
 OoT's scripts play with OoT's interpreter (`HyruleCutscene.c`, from SoH's `z_demo.c`, docs/CUTSCENES.md), in OoT's

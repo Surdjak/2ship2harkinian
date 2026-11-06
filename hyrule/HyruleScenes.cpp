@@ -286,7 +286,9 @@ extern "C" void Hyrule_SetShopBrowsingViewpoint(PlayState* play) {
 
 // Play_Update in OoT, after the rooms update.
 extern "C" void Hyrule_UpdateViewpoint(PlayState* play, Input* input) {
-    if (sViewpoint == 0) {
+    // While an OoT script plays, the active camera is its sub-camera, which OoT's camera priorities keep on the script
+    // (MM's would let the house's fixed scene camera take it over, away from Link in his bed in the opening).
+    if ((sViewpoint == 0) || Hyrule_IsCutsceneOotPlaying()) {
         return;
     }
     if (CHECK_BTN_ALL(input->press.button, BTN_CUP) && !IS_PAUSED(&play->pauseCtx) && !Player_InCsMode(play)) {

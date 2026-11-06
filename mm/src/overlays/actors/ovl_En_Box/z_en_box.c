@@ -5,6 +5,7 @@
  */
 
 #include "z_en_box.h"
+#include "HyruleScenes.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "objects/object_box/object_box.h"
 #include "overlays/actors/ovl_En_Elforg/z_en_elforg.h"
@@ -266,14 +267,21 @@ void EnBox_Init(Actor* thisx, PlayState* play) {
         this->dyna.actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     }
 
-    this->dyna.actor.shape.rot.y += 0x8000;
+    // 3Ship [Hyrule] OoT's chests (OoT scenes' chests are MM's En_Box) face the other way round from MM's: OoT turns
+    // their direction rather than their model, so that Link opens them from the side OoT's scene data means.
+    if (Hyrule_GetOotSceneId(play->sceneId) >= 0) {
+        this->dyna.actor.world.rot.y += 0x8000;
+    } else {
+        this->dyna.actor.shape.rot.y += 0x8000;
+    }
     this->dyna.actor.home.rot.z = this->dyna.actor.world.rot.z = this->dyna.actor.shape.rot.z = 0;
 
     SkelAnime_Init(play, &this->skelAnime, &gBoxChestSkel, &gBoxChestOpenAnim, this->jointTable, this->morphTable,
                    OBJECT_BOX_CHEST_LIMB_MAX);
     Animation_Change(&this->skelAnime, &gBoxChestOpenAnim, 1.5f, startFrame, endFrame, ANIMMODE_ONCE, 0.0f);
     if (Actor_IsSmallChest(this)) {
-        Actor_SetScale(&this->dyna.actor, 0.0075f);
+        // 3Ship [Hyrule] OoT's small chests are smaller than MM's.
+        Actor_SetScale(&this->dyna.actor, (Hyrule_GetOotSceneId(play->sceneId) >= 0) ? 0.005f : 0.0075f);
         Actor_SetFocus(&this->dyna.actor, 20.0f);
     } else {
         Actor_SetScale(&this->dyna.actor, 0.01f);

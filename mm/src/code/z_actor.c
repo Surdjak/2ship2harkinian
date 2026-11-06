@@ -6,6 +6,7 @@
 #include "z64actor.h"
 #include "z64door.h"
 #include "HyruleMagic.h"
+#include "HyruleScenes.h"
 
 #include "prevent_bss_reordering.h"
 #include "fault.h"
@@ -495,8 +496,16 @@ void Attention_InitReticle(Attention* attention, ActorType actorCategory, PlaySt
     }
 }
 
+// 3Ship [Hyrule] In Hyrule, Link's fairy is Navi (docs/TERMINA.md T1), who rests white and blue where Tatl rests
+// yellow (OoT's sNaviColorList); the other categories' colours are the same in both games.
+static AttentionColor sNaviPlayerColorOot = { { 255, 255, 255, 255 }, { 0, 0, 255, 0 } };
+
 void Attention_SetTatlState(Attention* attention, Actor* actor, ActorType actorCategory, PlayState* play) {
     AttentionColor* attentionColor = &sAttentionColors[actorCategory];
+
+    if ((actorCategory == ACTORCAT_PLAYER) && (Hyrule_GetOotSceneId(play->sceneId) >= 0)) {
+        attentionColor = &sNaviPlayerColorOot;
+    }
 
     attention->tatlHoverPos.x = actor->focus.pos.x;
     attention->tatlHoverPos.y = actor->focus.pos.y + (actor->lockOnArrowOffset * actor->scale.y);
