@@ -106,6 +106,15 @@ typedef enum HorseType {
     /* 5 */ HORSE_TYPE_MAX
 } HorseType;
 
+// 3Ship [Hyrule] Epona: MM's (HORSE_TYPE_2, OoT's young Epona model) or adult Link's (OoT's grown Epona, docs/EPONA.md).
+#define EnHorse_IsEpona(horse) (((horse)->type == HORSE_TYPE_2) || ((horse)->type == HORSE_TYPE_EPONA))
+
+// 3Ship [Hyrule] OoT's Ingo horse (OoT's params & 0x8000, MM's donkey bit), in a bit MM leaves free; 0x1FFF stays
+// MM's "no params".
+#define ENHORSE_PARAM_HNI_OOT 0x1000
+#define ENHORSE_IS_HNI_OOT(thisx) ((((thisx)->params & ENHORSE_PARAM_HNI_OOT) != 0) && (((thisx)->params & 0x1FFF) != 0x1FFF))
+// 3Ship [Hyrule] OoT's Ingo (hyrule/overlays/actors/ovl_En_In), whose race animation MM's horse sets.
+void EnIn_SetRaceAnimationOot(struct Actor* thisx, s16 animationIdx, f32 curFrame);
 #define ENHORSE_PARAM_BANDIT 0x2000
 #define ENHORSE_PARAM_4000 0x4000
 #define ENHORSE_PARAM_DONKEY 0x8000

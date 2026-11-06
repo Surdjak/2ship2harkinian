@@ -824,10 +824,19 @@ static void func_80A7ABD4(EnIn* this, PlayState* play) {
     if (this->interactInfo.talkState != NPC_TALK_STATE_IDLE) {
         if (this->interactInfo.talkState == NPC_TALK_STATE_ACTION) {
             if (this->actor.textId == TEXT_OOT(0x203B)) {
-                this->actor.textId = TEXT_OOT(0x203C);
-                Message_StartTextbox(play, this->actor.textId, NULL);
-                this->interactInfo.talkState = NPC_TALK_STATE_TALKING;
-                EnIn_ChangeAnim(this, ENIN_ANIM_3);
+                // PORT: 3Ship's race frees the ranch (docs/EPONA.md E3): Link already has Epona, so OoT's "she's yours,
+                // but you'll never leave" (0x203C), the gate and the fence jump are left out.
+                play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
+                this->interactInfo.talkState = NPC_TALK_STATE_IDLE;
+                SET_EVENTCHKINF_OOT(EVENTCHKINF_EPONA_OBTAINED_Oot);
+                SET_EVENTCHKINF_OOT(EVENTCHKINF_TALON_RETURNED_FROM_KAKARIKO_Oot);
+                gSaveContext.eventInfOot[0] = 0;
+                Play_ChangeCameraStatus(play, this->activeCamId, CAM_STATUS_ACTIVE);
+                Play_ClearCamera(play, this->camId);
+                ShrinkWindow_Letterbox_SetSizeTarget(0);
+                Player_SetCsActionWithHaltedActorsOot(play, &this->actor, 7);
+                Interface_SetHudVisibility(0x32);
+                this->actionFunc = func_80A7B018;
             } else {
                 play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
                 this->interactInfo.talkState = NPC_TALK_STATE_IDLE;
@@ -1016,4 +1025,12 @@ static void EnIn_Draw(Actor* thisx, PlayState* play) {
 
 static void EnIn_Reset(void) {
     D_80A7B998 = 0;
+}
+
+// 3Ship [Hyrule] MM's horse sets OoT's Ingo's race animation (OoT's horse wrote these fields itself).
+void EnIn_SetRaceAnimationOot(Actor* thisx, s16 animationIdx, f32 curFrame) {
+    EnIn* this = (EnIn*)thisx;
+
+    this->animationIdx = animationIdx;
+    this->unk_1E0 = curFrame;
 }

@@ -113,8 +113,20 @@ void Hyrule_SetOcarinaModeOot(PlayState* play, u8 ootMode) {
 
 u8 gWarpSongsDisabledOot;
 
+u8 gOcarinaGameRoundNumOot = 0;
+
 static void Message_StartOcarinaCheckOot(PlayState* play, u16 ocarinaAction) {
     u8 checkSong = 0xFF;
+
+    if ((ocarinaAction == OCARINA_ACTION_FROGS_Oot) || (ocarinaAction == OCARINA_ACTION_MEMORY_GAME_Oot)) {
+        Message_StartOcarinaGameOot(play, ocarinaAction);
+        return;
+    }
+    if (ocarinaAction == OCARINA_ACTION_CHECK_NOWARP_Oot) {
+        // OoT's check for Saria's Song to the Song of Storms: free play with the warp songs refused.
+        gWarpSongsDisabledOot = true;
+        ocarinaAction = OCARINA_ACTION_FREE_PLAY;
+    }
 
     if (ocarinaAction >= OCARINA_ACTION_CHECK_SONG_Oot(0)) {
         checkSong = ocarinaAction - OCARINA_ACTION_CHECK_SONG_Oot(0);
@@ -202,6 +214,14 @@ u16 Hyrule_OcarinaActionFromOot(u16 ootAction) {
             return OCARINA_ACTION_SCARECROW_RECORDING_Oot;
         case 0x2D:
             return OCARINA_ACTION_SCARECROW_PLAYBACK_Oot;
+        case 0x2E:
+            return OCARINA_ACTION_MEMORY_GAME_Oot;
+        case 0x2F:
+            return OCARINA_ACTION_FROGS_Oot;
+        case 0x30:
+            return OCARINA_ACTION_CHECK_NOWARP_Oot;
+        case 0x31:
+            return OCARINA_ACTION_CHECK_NOWARP_DONE_Oot;
         default:
             return OCARINA_ACTION_FREE_PLAY;
     }

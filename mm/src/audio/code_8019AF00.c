@@ -3490,6 +3490,25 @@ void AudioOcarina_MemoryGameInit(u8 minigameRound) {
     }
 }
 
+// 3Ship [Hyrule] OoT's memory game borrows song slot 14 (Goron Lullaby Intro): it is saved when a game starts
+// (Message_StartOcarinaGameOot) and restored at the next ocarina session (AudioOcarina_RestoreMemoryGameSongOot).
+static OcarinaNote sSavedMemoryGameSlotOot[ARRAY_COUNT(sOcarinaSongNotes[0])];
+static u8 sMemoryGameSlotSavedOot = false;
+
+void AudioOcarina_SaveMemoryGameSongOot(void) {
+    if (!sMemoryGameSlotSavedOot) {
+        memcpy(sSavedMemoryGameSlotOot, sOcarinaSongNotes[14], sizeof(sSavedMemoryGameSlotOot));
+        sMemoryGameSlotSavedOot = true;
+    }
+}
+
+void AudioOcarina_RestoreMemoryGameSongOot(void) {
+    if (sMemoryGameSlotSavedOot) {
+        memcpy(sOcarinaSongNotes[14], sSavedMemoryGameSlotOot, sizeof(sSavedMemoryGameSlotOot));
+        sMemoryGameSlotSavedOot = false;
+    }
+}
+
 /**
  * Unused remnant of OoT, Id 14 now represent Goron Lullaby Intro instead of the OoT ocarina memory game
  * //! @bug calling this function in MM will overwrite Goron Lullaby Intro

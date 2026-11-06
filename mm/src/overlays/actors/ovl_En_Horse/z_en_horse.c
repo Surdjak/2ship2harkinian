@@ -13,6 +13,51 @@
 #include "overlays/actors/ovl_En_Horse_Game_Check/z_en_horse_game_check.h"
 #include "objects/object_horse_link_child/object_horse_link_child.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "HyrulePort.h"
+#include "HyruleScenes.h"
+
+// 3Ship [Hyrule] OoT's grown Epona (object_horse), which adult Link rides (docs/EPONA.md E1) as HORSE_TYPE_EPONA, the
+// type MM kept from OoT; MM's own Epona (HORSE_TYPE_2) is OoT's young Epona model.
+#define EPONA_OOT_ASSET(name) "__OTR__oot/objects/object_horse/" name
+static const ALIGN_ASSET(2) char sEponaSkelOot[] = EPONA_OOT_ASSET("gEponaSkel");
+static const ALIGN_ASSET(2) char sEponaIdleAnimOot[] = EPONA_OOT_ASSET("gEponaIdleAnim");
+static const ALIGN_ASSET(2) char sEponaWhinnyAnimOot[] = EPONA_OOT_ASSET("gEponaWhinnyAnim");
+static const ALIGN_ASSET(2) char sEponaRefuseAnimOot[] = EPONA_OOT_ASSET("gEponaRefuseAnim");
+static const ALIGN_ASSET(2) char sEponaRearingAnimOot[] = EPONA_OOT_ASSET("gEponaRearingAnim");
+static const ALIGN_ASSET(2) char sEponaWalkingAnimOot[] = EPONA_OOT_ASSET("gEponaWalkingAnim");
+static const ALIGN_ASSET(2) char sEponaTrottingAnimOot[] = EPONA_OOT_ASSET("gEponaTrottingAnim");
+static const ALIGN_ASSET(2) char sEponaGallopingAnimOot[] = EPONA_OOT_ASSET("gEponaGallopingAnim");
+static const ALIGN_ASSET(2) char sEponaJumpingAnimOot[] = EPONA_OOT_ASSET("gEponaJumpingAnim");
+static const ALIGN_ASSET(2) char sEponaJumpingHighAnimOot[] = EPONA_OOT_ASSET("gEponaJumpingHighAnim");
+
+// 3Ship [Hyrule] OoT's other horse (object_hni): Ingo's, the ranch's and the Gerudo's, as HORSE_TYPE_HNI.
+#define HNI_OOT_ASSET(name) "__OTR__oot/objects/object_hni/" name
+static const ALIGN_ASSET(2) char sHniSkelOot[] = HNI_OOT_ASSET("gHorseIngoSkel");
+static const ALIGN_ASSET(2) char sHniIdleAnimOot[] = HNI_OOT_ASSET("gHorseIngoIdleAnim");
+static const ALIGN_ASSET(2) char sHniWhinnyAnimOot[] = HNI_OOT_ASSET("gHorseIngoWhinnyAnim");
+static const ALIGN_ASSET(2) char sHniRefuseAnimOot[] = HNI_OOT_ASSET("gHorseIngoRefuseAnim");
+static const ALIGN_ASSET(2) char sHniRearingAnimOot[] = HNI_OOT_ASSET("gHorseIngoRearingAnim");
+static const ALIGN_ASSET(2) char sHniWalkingAnimOot[] = HNI_OOT_ASSET("gHorseIngoWalkingAnim");
+static const ALIGN_ASSET(2) char sHniTrottingAnimOot[] = HNI_OOT_ASSET("gHorseIngoTrottingAnim");
+static const ALIGN_ASSET(2) char sHniGallopingAnimOot[] = HNI_OOT_ASSET("gHorseIngoGallopingAnim");
+static const ALIGN_ASSET(2) char sHniJumpingAnimOot[] = HNI_OOT_ASSET("gHorseIngoJumpingAnim");
+static const ALIGN_ASSET(2) char sHniJumpingHighAnimOot[] = HNI_OOT_ASSET("gHorseIngoJumpingHighAnim");
+
+static AnimationHeader* sHniAnimationsOot[] = {
+    (AnimationHeader*)sHniIdleAnimOot,      (AnimationHeader*)sHniWhinnyAnimOot,
+    (AnimationHeader*)sHniRefuseAnimOot,    (AnimationHeader*)sHniRearingAnimOot,
+    (AnimationHeader*)sHniWalkingAnimOot,   (AnimationHeader*)sHniTrottingAnimOot,
+    (AnimationHeader*)sHniGallopingAnimOot, (AnimationHeader*)sHniJumpingAnimOot,
+    (AnimationHeader*)sHniJumpingHighAnimOot,
+};
+
+static AnimationHeader* sEponaAnimationsOot[] = {
+    (AnimationHeader*)sEponaIdleAnimOot,      (AnimationHeader*)sEponaWhinnyAnimOot,
+    (AnimationHeader*)sEponaRefuseAnimOot,    (AnimationHeader*)sEponaRearingAnimOot,
+    (AnimationHeader*)sEponaWalkingAnimOot,   (AnimationHeader*)sEponaTrottingAnimOot,
+    (AnimationHeader*)sEponaGallopingAnimOot, (AnimationHeader*)sEponaJumpingAnimOot,
+    (AnimationHeader*)sEponaJumpingHighAnimOot,
+};
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -134,8 +179,8 @@ static AnimationHeader* sHniAnimations[ENHORSE_ANIM_MAX] = {
 };
 
 static AnimationHeader** sAnimationHeaders[HORSE_TYPE_MAX] = {
-    NULL,             // HORSE_TYPE_EPONA
-    NULL,             // HORSE_TYPE_HNI
+    sEponaAnimationsOot, // HORSE_TYPE_EPONA (3Ship [Hyrule] OoT's grown Epona)
+    sHniAnimationsOot,   // HORSE_TYPE_HNI (3Ship [Hyrule] OoT's Ingo horse)
     sEponaAnimations, // HORSE_TYPE_2
     sHniAnimations,   // HORSE_TYPE_BANDIT
     sHniAnimations,   // HORSE_TYPE_DONKEY
@@ -154,8 +199,8 @@ static f32 sPlaybackSpeeds[ENHORSE_ANIM_MAX] = {
 };
 
 static SkeletonHeader* sSkeletonHeaders[HORSE_TYPE_MAX] = {
-    NULL,        // HORSE_TYPE_EPONA
-    NULL,        // HORSE_TYPE_HNI
+    (SkeletonHeader*)sEponaSkelOot, // HORSE_TYPE_EPONA (3Ship [Hyrule] OoT's grown Epona)
+    (SkeletonHeader*)sHniSkelOot,   // HORSE_TYPE_HNI (3Ship [Hyrule] OoT's Ingo horse)
     &gEponaSkel, // HORSE_TYPE_2
     NULL,        // HORSE_TYPE_BANDIT
     NULL,        // HORSE_TYPE_DONKEY
@@ -290,6 +335,15 @@ static RaceWaypoint sHbaWaypoints[] = {
 };
 
 static RaceInfo sHbaInfo = { 5, sHbaWaypoints };
+
+// 3Ship [Hyrule] OoT's race course around Lon Lon Ranch, for Ingo.
+static RaceWaypoint sIngoRaceWaypoints[] = {
+    { 1056, 1, -1540, 11, 0x2A8D },  { 1593, 1, -985, 10, 0xFC27 },   { 1645, 1, -221, 11, 0xE891 },
+    { 985, 1, 403, 10, 0xBB9C },     { -1023, 1, 354, 11, 0xA37D },   { -1679, 1, -213, 10, 0x889C },
+    { -1552, 1, -1008, 11, 0x638D }, { -947, -1, -1604, 10, 0x4002 },
+};
+
+static RaceInfo sIngoRace = { 8, sIngoRaceWaypoints };
 
 static EnHorseCsFunc D_808890F0[] = {
     NULL,          func_80883BEC, func_80883D64, func_80883E10, func_80883F18, func_80884010,
@@ -605,7 +659,232 @@ void EnHorse_IdleAnimSounds(EnHorse* this, PlayState* play) {
     }
 }
 
+// 3Ship [Hyrule] OoT's points where Epona arrives when called in its horse scenes (OoT's sHorseSpawns), which have
+// no jumping-fence path. In Lon Lon Ranch OoT kept her inside the corral until she was won; she is Link's here
+// (docs/EPONA.md E3), so every point counts.
+typedef struct {
+    /* 0x0 */ s16 scene;
+    /* 0x2 */ Vec3s pos;
+    /* 0x8 */ s16 angle;
+} EnHorseSpawnpointOot;
+
+static EnHorseSpawnpointOot sHorseSpawnsOot[] = {
+    // Hyrule Field
+    { SCENE_HYRULE_FIELD_Oot, 16, 0, 1341, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -1297, 0, 1459, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5416, -300, 1296, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4667, -300, 3620, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -3837, 81, 5537, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5093, -226, 6661, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -6588, -79, 5053, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -7072, -500, 7538, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -6139, -500, 8910, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -8497, -300, 7802, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5481, -499, 12127, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4808, -700, 13583, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -3416, -490, 12092, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -2915, 100, 8339, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -2277, -500, 13247, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -1026, -500, 12101, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1427, -500, 13341, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -200, -486, 10205, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -1469, 100, 7496, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -995, 168, 5652, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1938, 89, 6232, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1387, -105, 9206, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1571, -223, 7701, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 3893, -121, 7068, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 3179, 373, 5221, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 4678, -20, 3869, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 3460, 246, 4207, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 3686, 128, 2366, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1791, 18, 152, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 3667, -16, 1399, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1827, -15, 983, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1574, 399, 4318, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 716, 95, 3391, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -1189, -41, 4739, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -1976, -171, 4172, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1314, 391, 5665, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 112, 0, 1959, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -3011, -111, 9397, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5674, -270, 8585, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -8861, -300, 7836, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -6056, -500, 7810, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -7306, -500, 5994, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -7305, -500, 7605, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -7439, -300, 7600, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -7464, -300, 6268, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -8080, -300, 7553, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -8091, -300, 7349, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -8785, -300, 7383, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -8745, -300, 7508, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -8777, -300, 7788, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -8048, -299, 7738, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -7341, -184, 7730, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -6410, -288, 7824, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -6326, -290, 8205, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -6546, -292, 8400, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -7533, -180, 8459, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -8024, -295, 7903, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -8078, -308, 7994, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -9425, -287, 7696, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -9322, -292, 7577, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -9602, -199, 7160, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -9307, -300, 7758, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -9230, -300, 7642, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -7556, -499, 8695, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -6438, -500, 8606, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -6078, -500, 8258, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -6233, -500, 7613, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5035, -205, 7814, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5971, -500, 8501, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5724, -498, 10123, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5094, -392, 11106, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5105, -393, 11312, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4477, -314, 11132, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -3867, -380, 11419, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -2952, -500, 11944, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -2871, -488, 11743, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -3829, -372, 11327, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4439, -293, 10989, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5014, -381, 11086, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5113, -188, 10968, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5269, -188, 11156, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5596, -178, 9972, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5801, -288, 8518, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4910, -178, 7931, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -3586, 73, 8140, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4487, -106, 9362, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4339, -112, 6412, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -3417, 105, 8194, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4505, -20, 6608, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5038, -199, 6603, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4481, 1, 6448, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5032, -168, 6418, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5256, -700, 14329, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5749, -820, 15380, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -3122, -700, 13608, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -3758, -525, 13228, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -3670, -500, 13123, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -2924, -500, 13526, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1389, -115, 9370, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 548, -116, 8889, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -106, -107, 8530, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -1608, 85, 7646, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5300, -700, 13772, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5114, -700, 13400, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4561, -700, 13700, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4762, -700, 14084, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -2954, 100, 8216, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1460, -104, 9246, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 629, -105, 8791, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -10, -90, 8419, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -1462, 100, 7504, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -3018, -500, 12493, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -2994, -311, 10331, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4006, -700, 14152, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4341, -500, 12743, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -5879, -497, 6799, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 22, -473, 10103, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -1389, -192, 8874, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -4, 92, 6866, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 483, 104, 6637, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1580, 183, 5987, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1548, 308, 5077, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1511, 399, 4267, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1358, 385, 4271, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1379, 395, 5063, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1360, 394, 5870, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 813, 283, 6194, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -57, 101, 6743, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 91, 325, 5143, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1425, -214, 7659, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 3487, -19, 880, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 2933, 152, 2094, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 2888, -145, 6862, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 1511, 67, 6471, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 4051, -47, 1722, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -7335, -500, 8627, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -7728, -462, 8498, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -7791, -446, 8832, 0 },
+    { SCENE_HYRULE_FIELD_Oot, -2915, -435, 11334, 0 },
+    { SCENE_HYRULE_FIELD_Oot, 165, -278, 3352, 0 },
+
+    // Lake Hylia
+    { SCENE_LAKE_HYLIA_Oot, -2109, -882, 1724, 0 },
+    { SCENE_LAKE_HYLIA_Oot, -328, -1238, 2705, 0 },
+    { SCENE_LAKE_HYLIA_Oot, -3092, -1033, 3527, 0 },
+
+    // Gerudo Valley
+    { SCENE_GERUDO_VALLEY_Oot, 2687, -269, 753, 0 },
+    { SCENE_GERUDO_VALLEY_Oot, 2066, -132, 317, 0 },
+    { SCENE_GERUDO_VALLEY_Oot, 523, -8, 635, 0 },
+    { SCENE_GERUDO_VALLEY_Oot, 558, 36, -323, 0 },
+    { SCENE_GERUDO_VALLEY_Oot, 615, 51, -839, 0 },
+    { SCENE_GERUDO_VALLEY_Oot, -614, 32, 29, 0 },
+    { SCENE_GERUDO_VALLEY_Oot, -639, -3, 553, 0 },
+    { SCENE_GERUDO_VALLEY_Oot, -540, 10, -889, 0 },
+    { SCENE_GERUDO_VALLEY_Oot, -1666, 58, 378, 0 },
+    { SCENE_GERUDO_VALLEY_Oot, -3044, 210, -648, 0 },
+
+    // Gerudo's Fortress
+    { SCENE_GERUDOS_FORTRESS_Oot, -678, 21, -623, 0 },
+    { SCENE_GERUDOS_FORTRESS_Oot, 149, 333, -2499, 0 },
+    { SCENE_GERUDOS_FORTRESS_Oot, 499, 581, -547, 0 },
+    { SCENE_GERUDOS_FORTRESS_Oot, 3187, 1413, -3775, 0 },
+    { SCENE_GERUDOS_FORTRESS_Oot, 3198, 1413, 307, 0 },
+    { SCENE_GERUDOS_FORTRESS_Oot, 3380, 1413, -1200, 0 },
+    { SCENE_GERUDOS_FORTRESS_Oot, -966, 1, -56, 0 },
+    { SCENE_GERUDOS_FORTRESS_Oot, -966, 24, -761, 0 },
+    { SCENE_GERUDOS_FORTRESS_Oot, -694, 174, -2820, 0 },
+
+    // Lon Lon Ranch
+    { SCENE_LON_LON_RANCH_Oot, 1039, 0, 2051, 0 },
+    { SCENE_LON_LON_RANCH_Oot, -1443, 0, 1429, 0 },
+    { SCENE_LON_LON_RANCH_Oot, 856, 0, -918, 0 }, // Hardcoded to always load in lon lon
+    { SCENE_LON_LON_RANCH_Oot, 882, 0, -2256, 0 },
+    { SCENE_LON_LON_RANCH_Oot, -1003, 0, -755, 0 }, // Hardcoded to always load in lon lon
+    { SCENE_LON_LON_RANCH_Oot, -2254, 0, -629, 0 },
+    { SCENE_LON_LON_RANCH_Oot, 907, 0, -2336, 0 },
+};
+
+static s32 EnHorse_SpawnOot(EnHorse* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+    f32 minDist = 1e38f;
+    s32 spawn = false;
+    Vec3f spawnPos;
+    f32 dist;
+    s32 i;
+
+    for (i = 0; i < ARRAY_COUNT(sHorseSpawnsOot); i++) {
+        if (sHorseSpawnsOot[i].scene != play->sceneId) {
+            continue;
+        }
+        spawnPos.x = sHorseSpawnsOot[i].pos.x;
+        spawnPos.y = sHorseSpawnsOot[i].pos.y;
+        spawnPos.z = sHorseSpawnsOot[i].pos.z;
+        dist = Math3D_Vec3f_DistXYZ(&player->actor.world.pos, &spawnPos);
+        if (!(minDist < dist) && !func_8087C38C(play, this, &spawnPos)) {
+            minDist = dist;
+            this->actor.world.pos = spawnPos;
+            this->actor.prevPos = this->actor.world.pos;
+            this->actor.world.rot.y = sHorseSpawnsOot[i].angle;
+            this->actor.shape.rot.y = Actor_WorldYawTowardActor(&this->actor, &player->actor);
+            spawn = true;
+            SkinMatrix_Vec3fMtxFMultXYZW(&play->viewProjectionMtxF, &this->actor.world.pos, &this->actor.projectedPos,
+                                         &this->actor.projectedW);
+        }
+    }
+    return spawn;
+}
+
 s32 EnHorse_Spawn(EnHorse* this, PlayState* play) {
+    // 3Ship [Hyrule] OoT's scenes have OoT's arrival points.
+    if (Hyrule_GetOotSceneId(play->sceneId) >= 0) {
+        return EnHorse_SpawnOot(this, play);
+    }
+
     s32 i;
     f32 dist;
     Path* path;
@@ -745,6 +1024,32 @@ void EnHorse_Init(Actor* thisx, PlayState* play2) {
         }
         this->unk_1EC |= 1;
         thisx->update = func_8087D540;
+    } else if (ENHORSE_IS_HNI_OOT(&this->actor)) {
+        // 3Ship [Hyrule] OoT's Ingo horse (OoT's params & 0x8000).
+        this->type = HORSE_TYPE_HNI;
+        this->boostSpeed = 12;
+        if ((this->objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_HNI_Oot)) <= OBJECT_SLOT_NONE) {
+            thisx->objectSlot = Object_SpawnPersistent(&play->objectCtx, OBJECT_HNI_Oot);
+            Actor_SetObjectDependency(play, &this->actor);
+            Skin_Init(&play->state, &this->skin, sSkeletonHeaders[this->type], sAnimationHeaders[this->type][0]);
+            Animation_PlayOnce(&this->skin.skelAnime, sAnimationHeaders[this->type][this->animIndex]);
+            this->unk_1EC |= 0x200;
+        } else {
+            thisx->update = func_8087D540;
+        }
+    } else if (ENHORSE_IS_4000_TYPE(&this->actor) && LINK_IS_ADULT_OOT) {
+        // 3Ship [Hyrule] Adult Link's Epona is OoT's grown one (docs/EPONA.md E1).
+        this->type = HORSE_TYPE_EPONA;
+        this->boostSpeed = 15;
+        if ((this->objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_HORSE_Oot)) <= OBJECT_SLOT_NONE) {
+            thisx->objectSlot = Object_SpawnPersistent(&play->objectCtx, OBJECT_HORSE_Oot);
+            Actor_SetObjectDependency(play, &this->actor);
+            Skin_Init(&play->state, &this->skin, sSkeletonHeaders[this->type], sAnimationHeaders[this->type][0]);
+            Animation_PlayOnce(&this->skin.skelAnime, sAnimationHeaders[this->type][this->animIndex]);
+            this->unk_1EC |= 0x200;
+        } else {
+            thisx->update = func_8087D540;
+        }
     } else if (ENHORSE_IS_4000_TYPE(&this->actor)) {
         this->type = HORSE_TYPE_2;
         this->unk_528 = 64.8f;
@@ -773,6 +1078,9 @@ void EnHorse_Init(Actor* thisx, PlayState* play2) {
         Actor_Kill(&this->actor);
     }
 
+    if (ENHORSE_IS_HNI_OOT(&this->actor)) {
+        this->actor.params &= ~ENHORSE_PARAM_HNI_OOT; // 3Ship [Hyrule]
+    }
     this->actor.params &= ~(ENHORSE_PARAM_DONKEY | ENHORSE_PARAM_4000 | ENHORSE_PARAM_BANDIT);
     if (this->actor.params == 0x1FFF) {
         this->actor.params = ENHORSE_1;
@@ -876,9 +1184,17 @@ void EnHorse_Init(Actor* thisx, PlayState* play2) {
         EnHorse_InitInactive(this);
     } else if (thisx->params == ENHORSE_3) {
         EnHorse_InitIngoHorse(this);
-        this->rider = (EnIn*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_IN, thisx->world.pos.x, thisx->world.pos.y,
-                                         thisx->world.pos.z, thisx->shape.rot.x, thisx->shape.rot.y, 1, 1);
+        // 3Ship [Hyrule] In Lon Lon Ranch the rider is OoT's Ingo (OoT's rider params 1), driven through
+        // EnIn_SetRaceAnimationOot; MM's struct EnIn is not his.
+        this->rider = (EnIn*)Actor_Spawn(&play->actorCtx, play,
+                                         (Hyrule_GetOotSceneId(play->sceneId) >= 0) ? ACTOR_EN_IN_Oot : ACTOR_EN_IN,
+                                         thisx->world.pos.x, thisx->world.pos.y, thisx->world.pos.z,
+                                         thisx->shape.rot.x, thisx->shape.rot.y, 1, 1);
         this->unk_398 = 14.34f;
+        if (Hyrule_GetOotSceneId(play->sceneId) >= 0) {
+            // 3Ship [Hyrule] OoT's Ingo's top speed, faster in the second race (eventInfOot bit 0x40).
+            this->unk_398 = (gSaveContext.eventInfOot[0] & 0x40) ? 12.625f : 12.07f;
+        }
     } else if (thisx->params == ENHORSE_4) {
         func_80881634(this);
         this->unk_398 = 14.34f;
@@ -1905,7 +2221,7 @@ void EnHorse_InitInactive(EnHorse* this) {
 }
 
 void EnHorse_Inactive(EnHorse* this, PlayState* play) {
-    if (gHorsePlayedEponasSong && (this->type == HORSE_TYPE_2)) {
+    if (gHorsePlayedEponasSong && EnHorse_IsEpona(this)) {
         gHorsePlayedEponasSong = false;
         if (EnHorse_Spawn(this, play)) {
             if (this->type == HORSE_TYPE_2) {
@@ -1985,7 +2301,7 @@ void EnHorse_Idle(EnHorse* this, PlayState* play) {
     this->actor.speed = 0.0f;
     EnHorse_IdleAnimSounds(this, play);
 
-    if (gHorsePlayedEponasSong && (this->type == HORSE_TYPE_2)) {
+    if (gHorsePlayedEponasSong && EnHorse_IsEpona(this)) {
         gHorsePlayedEponasSong = false;
         if (!func_8087C38C(play, this, &this->actor.world.pos)) {
             if (EnHorse_Spawn(this, play)) {
@@ -2178,6 +2494,32 @@ void EnHorse_InitIngoHorse(EnHorse* this) {
     }
 }
 
+// 3Ship [Hyrule] OoT's EnHorse_SetIngoAnimation, for OoT's Ingo (its animation and frame, OoT's ENHORSE_INGO_WON pose).
+static void EnHorse_SetIngoAnimationOot(EnHorse* this, EnIn* rider) {
+    static s16 sIngoAnimationsOot[] = { 7, 6, 2, 2, 1, 1, 0, 0, 0, 0 };
+    s32 idx = this->animIndex;
+    f32 curFrame = this->skin.skelAnime.curFrame;
+    s16 animIdx = sIngoAnimationsOot[idx];
+
+    if (this->stateFlags & ENHORSE_INGO_WON) {
+        EnIn_SetRaceAnimationOot(&rider->actor, 7, 0.0f);
+        return;
+    }
+    if ((idx == 3) || (idx == 7) || (idx == 8) || (idx == 4)) {
+        curFrame = 0.0f;
+    }
+    if (this->unk_394 & 1) {
+        if (idx == 5) {
+            animIdx = 4;
+            curFrame = this->skin.skelAnime.curFrame;
+        } else if (idx == 6) {
+            animIdx = 3;
+            curFrame = this->skin.skelAnime.curFrame;
+        }
+    }
+    EnIn_SetRaceAnimationOot(&rider->actor, animIdx, curFrame);
+}
+
 void EnHorse_SetIngoAnimation(s32 animIndex, f32 curFrame, s32 arg2, s16* animIndexOut) {
     *animIndexOut = sIngoAnimIndices[animIndex];
     if (arg2 == 1) {
@@ -2249,8 +2591,82 @@ void EnHorse_UpdateIngoHorseAnim(EnHorse* this) {
     }
 }
 
+// 3Ship [Hyrule] OoT's EnHorse_UpdateIngoRaceInfo: Ingo follows OoT's waypoints around Lon Lon Ranch (sIngoRace), which
+// MM kept but replaced with scene paths for its own races. OoT's ingoHorseMaxSpeed and ingoRaceFlags are MM's unk_398
+// and unk_394.
+static void EnHorse_UpdateIngoRaceInfoOot(EnHorse* this, PlayState* play, RaceInfo* raceInfo) {
+    Vec3f curWaypointPos;
+    Vec3f prevWaypointPos;
+    f32 playerDist;
+    f32 px;
+    f32 pz;
+    f32 d;
+    f32 distSq;
+    s16 relPlayerYaw;
+    s32 prevWaypoint;
+
+    EnHorse_RaceWaypointPos(raceInfo->waypoints, this->curRaceWaypoint, &curWaypointPos);
+    Math3D_RotateXZPlane(&curWaypointPos, raceInfo->waypoints[this->curRaceWaypoint].angle, &px, &pz, &d);
+    if (((this->actor.world.pos.x * px) + (pz * this->actor.world.pos.z) + d) > 0.0f) {
+        this->curRaceWaypoint++;
+        if (this->curRaceWaypoint >= raceInfo->numWaypoints) {
+            this->curRaceWaypoint = 0;
+        }
+    }
+    EnHorse_RaceWaypointPos(raceInfo->waypoints, this->curRaceWaypoint, &curWaypointPos);
+    prevWaypoint = this->curRaceWaypoint - 1;
+    if (prevWaypoint < 0) {
+        prevWaypoint = raceInfo->numWaypoints - 1;
+    }
+    EnHorse_RaceWaypointPos(raceInfo->waypoints, prevWaypoint, &prevWaypointPos);
+    Math3D_PointDistSqToLine2D(this->actor.world.pos.x, this->actor.world.pos.z, prevWaypointPos.x, prevWaypointPos.z,
+                               curWaypointPos.x, curWaypointPos.z, &distSq);
+    EnHorse_RotateToPoint(this, play, &curWaypointPos, 400);
+
+    if (distSq < 90000.0f) {
+        playerDist = this->actor.xzDistToPlayer;
+        if ((playerDist < 130.0f) || (this->colliderJntSph.elements[0].base.ocElemFlags & OCELEM_HIT)) {
+            if (Math_SinS(this->actor.yawTowardsPlayer - this->actor.world.rot.y) > 0.0f) {
+                this->actor.world.rot.y -= 280;
+            } else {
+                this->actor.world.rot.y += 280;
+            }
+        } else if (playerDist < 300.0f) {
+            if (Math_SinS(this->actor.yawTowardsPlayer - this->actor.world.rot.y) > 0.0f) {
+                this->actor.world.rot.y += 280;
+            } else {
+                this->actor.world.rot.y -= 280;
+            }
+        }
+        this->actor.shape.rot.y = this->actor.world.rot.y;
+    }
+
+    playerDist = Actor_WorldDistXZToActor(&this->actor, &GET_PLAYER(play)->actor);
+    relPlayerYaw = Actor_WorldYawTowardActor(&this->actor, &GET_PLAYER(play)->actor) - this->actor.world.rot.y;
+    if ((playerDist <= 200.0f) || ((fabsf(Math_SinS(relPlayerYaw)) < 0.8f) && (Math_CosS(relPlayerYaw) > 0.0f))) {
+        if (this->actor.speed < this->unk_398) {
+            this->actor.speed += 0.47f;
+        } else {
+            this->actor.speed -= 0.47f;
+        }
+        this->unk_394 |= 1;
+        return;
+    }
+    if (this->actor.speed < raceInfo->waypoints[this->curRaceWaypoint].speed) {
+        this->actor.speed += 0.4f;
+    } else {
+        this->actor.speed -= 0.4f;
+    }
+    this->unk_394 &= ~1;
+}
+
 void EnHorse_UpdateIngoRace(EnHorse* this, PlayState* play) {
     f32 playSpeed;
+
+    // 3Ship [Hyrule] OoT's race at Lon Lon Ranch.
+    if ((Hyrule_GetOotSceneId(play->sceneId) >= 0) && this->inRace) {
+        EnHorse_UpdateIngoRaceInfoOot(this, play, &sIngoRace);
+    }
 
     if ((this->animIndex == ENHORSE_ANIM_IDLE) || (this->animIndex == ENHORSE_ANIM_WHINNY)) {
         EnHorse_IdleAnimSounds(this, play);
@@ -2491,7 +2907,9 @@ void func_808819D8(EnHorse* this, PlayState* play) {
         func_8088168C(this);
     }
 
-    if (GET_WEEKEVENTREG_HORSE_RACE_STATE == WEEKEVENTREG_HORSE_RACE_STATE_3) {
+    if ((this->rider != NULL) && (this->rider->actor.id == ACTOR_EN_IN_Oot)) {
+        EnHorse_SetIngoAnimationOot(this, this->rider);
+    } else if (GET_WEEKEVENTREG_HORSE_RACE_STATE == WEEKEVENTREG_HORSE_RACE_STATE_3) {
         this->rider->animIndex2 = ENIN_ANIM2_7;
     } else {
         EnHorse_SetIngoAnimation(this->animIndex, this->skin.skelAnime.curFrame, this->unk_394 & 1,
@@ -2946,6 +3364,10 @@ void EnHorse_UpdateHorsebackArchery(EnHorse* this, PlayState* play) {
     if (((this->hbaFlags & 1) || (this->hbaTimer > 45)) && (sp28 != 1) &&
         (gSaveContext.minigameStatus != MINIGAME_STATUS_END)) {
         gSaveContext.save.cutsceneIndex = 0;
+        // 3Ship [Hyrule] OoT's course ends back at the Gerudo's post (OoT's ENTR_GERUDOS_FORTRESS_16).
+        if (play->sceneId == SCENE_GERUDOS_FORTRESS_Oot) {
+            play->nextEntrance = Hyrule_ExitFromOot(0x3B0);
+        }
         play->transitionTrigger = TRANS_TRIGGER_START;
         play->transitionType = TRANS_TYPE_64;
     }

@@ -290,7 +290,7 @@ static s32 ObjBean_CheckForHorseTrample(ObjBean* this, PlayState* play) {
     Actor* currentActor = play->actorCtx.actorLists[ACTORCAT_BG].first;
 
     while (currentActor != NULL) {
-        if ((currentActor->id == ACTOR_EN_HORSE_Oot) &&
+        if ((currentActor->id == ACTOR_EN_HORSE) &&
             (Math3D_Vec3fDistSq(&currentActor->world.pos, &this->dyna.actor.world.pos) < 10000.0f)) {
             return true;
         }

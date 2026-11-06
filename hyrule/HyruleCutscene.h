@@ -335,3 +335,11 @@ void Flags_UnsetEnvOot(struct PlayState* play, s16 flag);
 #ifdef __cplusplus
 }
 #endif
+// After OoT's ending (its end card in Zelda's courtyard): the game goes on, with child Link back in the courtyard by
+// day, where Impa shows him out as on any visit after Zelda's Letter (Demo_Im). Ganon can be fought again.
+void Hyrule_ContinueAfterOotEnding(struct PlayState* play);
+// OoT's end card reports "The End" fully shown; A or START then calls Hyrule_ContinueAfterOotEnding.
+void Hyrule_SetOotEndCardShown(void);
+// Whether this courtyard visit is the one after OoT's ending (true once): Impa (Demo_Im) then shows Link out whatever
+// the story's flags say, rather than teach Zelda's Lullaby again or be gone with Zelda.
+s32 Hyrule_TakeAfterOotEndingVisit(void);

@@ -66,6 +66,21 @@ u32 Hyrule_GetLearnedSongBitsOot(void);
 #define OCARINA_ACTION_SCARECROW_LONG_PLAYBACK_Oot OCARINA_ACTION_SCARECROW_LONG_DEMONSTRATION
 #define OCARINA_ACTION_SCARECROW_RECORDING_Oot OCARINA_ACTION_SCARECROW_SPAWN_RECORDING
 #define OCARINA_ACTION_SCARECROW_PLAYBACK_Oot OCARINA_ACTION_SCARECROW_SPAWN_DEMONSTRATION
+// OoT's ocarina games and its check for any song but the warp songs, past MM's actions and OoT's song checks
+// (Message_StartOcarinaOot starts them).
+#define OCARINA_ACTION_FROGS_Oot 0x200
+#define OCARINA_ACTION_MEMORY_GAME_Oot 0x201
+#define OCARINA_ACTION_CHECK_NOWARP_Oot 0x202
+#define OCARINA_ACTION_CHECK_NOWARP_DONE_Oot OCARINA_ACTION_FREE_PLAY_DONE
+// OoT's memory game round (gSaveContext.ocarinaGameRoundNum, unsaved): 0 to 2, five to eight notes.
+extern u8 gOcarinaGameRoundNumOot;
+// OoT's memory game plays its tune in MM's song slot 14, restored afterwards (z_message.c, code_8019AF00.c).
+#define OCARINA_SONG_MEMORY_GAME_Oot 14
+// MM's leftover OoT frogs' song (code_8019AF00.c): the fourteen notes of the frogs' game.
+extern u8* gFrogsSongPtr;
+// OoT's ocarina games, in z_message.c.
+void Message_StartOcarinaGameOot(struct PlayState* play, u16 ocarinaAction);
+void Message_UpdateOcarinaGameOot(struct PlayState* play);
 
 // OoT's ocarina modes. MM's share OoT's first five (none, playing, warp, the song asked for was played, done) but number
 // the rest differently, and MM ends a free-played song with its own mode for some songs; so ported code reads and sets

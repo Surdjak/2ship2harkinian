@@ -146,8 +146,25 @@ typedef enum MessageMode {
     /* 0x4C */ MSGMODE_NEW_CYCLE_2,
     /* 0x4D */ MSGMODE_OWL_SAVE_0,
     /* 0x4E */ MSGMODE_OWL_SAVE_1,
-    /* 0x4F */ MSGMODE_OWL_SAVE_2
+    /* 0x4F */ MSGMODE_OWL_SAVE_2,
+    // 3Ship [Hyrule] OoT's ocarina games, in OoT's order (Message_UpdateOcarinaGameOot steps through them): the Skull
+    // Kid's memory game in the Lost Woods and the frogs' game in Zora's River.
+    /* 0x50 */ MSGMODE_MEMORY_GAME_START_Oot,
+    /* 0x51 */ MSGMODE_MEMORY_GAME_LEFT_SKULLKID_PLAYING_Oot,
+    /* 0x52 */ MSGMODE_MEMORY_GAME_LEFT_SKULLKID_WAIT_Oot,
+    /* 0x53 */ MSGMODE_MEMORY_GAME_RIGHT_SKULLKID_PLAYING_Oot,
+    /* 0x54 */ MSGMODE_MEMORY_GAME_RIGHT_SKULLKID_WAIT_Oot,
+    /* 0x55 */ MSGMODE_MEMORY_GAME_PLAYER_PLAYING_Oot,
+    /* 0x56 */ MSGMODE_MEMORY_GAME_ROUND_SUCCESS_Oot,
+    /* 0x57 */ MSGMODE_MEMORY_GAME_START_NEXT_ROUND_Oot,
+    /* 0x58 */ MSGMODE_FROGS_START_Oot,
+    /* 0x59 */ MSGMODE_FROGS_PLAYING_Oot,
+    /* 0x5A */ MSGMODE_FROGS_WAITING_Oot
 } MessageMode;
+
+// 3Ship [Hyrule] OoT's ocarina games show the textbox and the ocarina staff like MM's ocarina modes.
+#define MSGMODE_IS_OCARINA_GAME_Oot(mode) \
+    (((mode) >= MSGMODE_MEMORY_GAME_START_Oot) && ((mode) <= MSGMODE_FROGS_WAITING_Oot))
 
 typedef enum FaceReactionSet {
     /* 0x11 */ FACE_REACTION_SET_JIM = 0x11,

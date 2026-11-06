@@ -76,6 +76,10 @@ static void EndTitle_DrawFull(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
 
     // Draw title cards on the screen
+    // PORT: OoT's game ends here; 3Ship's goes on, back in Zelda's courtyard (Hyrule_ContinueAfterOotEnding).
+    if (this->endAlpha >= 200) {
+        Hyrule_SetOotEndCardShown();
+    }
     if ((frameCount > 890) && (this->endAlpha < 200)) {
         this->endAlpha += 7;
     }

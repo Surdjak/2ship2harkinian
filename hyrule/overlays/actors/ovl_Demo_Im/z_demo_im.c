@@ -933,6 +933,9 @@ static void func_80986D40(DemoIm* this, PlayState* play) {
     if (gSaveContext.sceneLayer == 6) {
         this->action = 19;
         this->drawConfig = 1;
+    } else if (Hyrule_TakeAfterOotEndingVisit()) {
+        // PORT: 3Ship's game goes on after OoT's ending; Impa shows Link out (Hyrule_ContinueAfterOotEnding).
+        this->action = 20;
     } else if (GET_EVENTCHKINF_OOT(EVENTCHKINF_ZELDA_FLED_HYRULE_CASTLE_Oot)) {
         Actor_Kill(&this->actor);
     } else if (!GET_EVENTCHKINF_OOT(EVENTCHKINF_LEARNED_ZELDAS_LULLABY_Oot)) {

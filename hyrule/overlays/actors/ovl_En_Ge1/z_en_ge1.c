@@ -602,7 +602,7 @@ static void EnGe1_BeginGame_Archery(EnGe1* this, PlayState* play) {
                     if (!(player->stateFlags1 & PLAYER_STATE1_800000)) {
                         Player_SetCsActionWithHaltedActorsOot(play, &this->actor, 1);
                     } else {
-                        horse = Actor_FindNearby(play, &player->actor, ACTOR_EN_HORSE_Oot, ACTORCAT_BG, 1200.0f);
+                        horse = Actor_FindNearby(play, &player->actor, ACTOR_EN_HORSE, ACTORCAT_BG, 1200.0f);
                         player->actor.freezeTimer = 1200;
 
                         if (horse != NULL) {

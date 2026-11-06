@@ -2,6 +2,8 @@
 #include "z64horse.h"
 #include "overlays/actors/ovl_Bg_Umajump/z_bg_umajump.h"
 #include "overlays/actors/ovl_En_Horse/z_en_horse.h"
+#include "HyruleScenes.h"
+#include "HyruleFlags.h"
 
 s32 Horse_GetJumpingFencePathIndex(PlayState* play) {
     Actor* actor;
@@ -67,6 +69,12 @@ HorseValidScene sHorseValidScenes[] = {
     { SCENE_ROMANYMAE, 0 },      // Milk road
     { SCENE_IKANAMAE, 0 },       // Road to Ikana
     { SCENE_13HUBUKINOMITI, 0 }, // Path to Mountain Village
+    // 3Ship [Hyrule] OoT's horse scenes, where Epona's Song calls her for both ages (docs/EPONA.md).
+    { SCENE_HYRULE_FIELD_Oot, 0 },
+    { SCENE_LAKE_HYLIA_Oot, 0 },
+    { SCENE_GERUDO_VALLEY_Oot, 0 },
+    { SCENE_GERUDOS_FORTRESS_Oot, 0 },
+    { SCENE_LON_LON_RANCH_Oot, 0 },
 };
 
 s32 Horse_IsValidSpawn(s16 sceneId) {
@@ -104,6 +112,10 @@ s32 Horse_IsValidSceneLayer(PlayState* play, Player* player) {
     s32 i;
 
     if (gSaveContext.sceneLayer == 0) {
+        return true;
+    }
+    // 3Ship [Hyrule] OoT's layers 0 to 3 are its child and adult day and night (its cutscene layers follow).
+    if ((Hyrule_GetOotSceneId(play->sceneId) >= 0) && (gSaveContext.sceneLayer < SCENE_LAYER_CUTSCENE_FIRST_OOT)) {
         return true;
     }
 
@@ -147,6 +159,10 @@ void Horse_SpawnOverworld(PlayState* play, Player* player) {
         } else {
             Horse_ResetHorseData(play);
         }
+    } else if ((play->sceneId == SCENE_LON_LON_RANCH_Oot) && !CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+        // 3Ship [Hyrule] Epona waits at Lon Lon Ranch, where OoT has the foal, until Link knows her song (EPONA.md E2).
+        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_HORSE, -4.0f, 0.0f, -572.0f, 0, 0x4000, 0,
+                    ENHORSE_PARAMS(ENHORSE_PARAM_4000, ENHORSE_1));
     } else if ((play->sceneId == SCENE_F01) && !CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_HORSE, -1420.0f, 257.0f, -1285.0f, 0, 0x2AAA, 0,
                     ENHORSE_PARAMS(ENHORSE_PARAM_4000, ENHORSE_1));
@@ -178,7 +194,79 @@ void Horse_SpawnMinigame(PlayState* play, Player* player) {
     }
 }
 
+// 3Ship [Hyrule] OoT's horseback archery (its Horse_SetupInCutscene): the Gerudo's game reloads Gerudo's Fortress in
+// its cutscene layer, where Link starts the course on Epona (docs/EPONA.md E4: either age).
+static s32 Horse_SpawnArcheryOot(PlayState* play, Player* player) {
+    if ((play->sceneId != SCENE_GERUDOS_FORTRESS_Oot) || (gSaveContext.sceneLayer != SCENE_LAYER_CUTSCENE_FIRST_OOT) ||
+        !(gSaveContext.eventInfOot[0] & 0x100)) {
+        return false;
+    }
+    player->rideActor = Actor_Spawn(&play->actorCtx, play, ACTOR_EN_HORSE, 3600.0f, 1413.0f, 360.0f, 0, 0x8001, 0,
+                                    ENHORSE_PARAMS(ENHORSE_PARAM_4000, ENHORSE_10));
+    if (player->rideActor == NULL) {
+        return false;
+    }
+    player->rideActor->room = -1;
+    player->actor.world.pos = player->rideActor->world.pos;
+    player->actor.shape.rot.x = player->actor.shape.rot.z = 0;
+    player->actor.shape.rot.y = 0x8001;
+    Player_MountHorse(play, player, player->rideActor);
+    Player_SetCameraHorseSetting(play, player);
+    return true;
+}
+
+// 3Ship [Hyrule] OoT's race with Ingo at Lon Lon Ranch (its Horse_SetupInCutscene): its cutscene layer starts the race
+// with Link mounted, Epona or the rented horse (eventInfOot bit 0x10, OoT's horse type), and the second race's win brings
+// him back mounted (race state 6). docs/EPONA.md E3.
+static s32 Horse_SpawnRaceOot(PlayState* play, Player* player) {
+    Vec3f pos;
+    s16 yaw;
+    s32 params;
+
+    if (play->sceneId != SCENE_LON_LON_RANCH_Oot) {
+        return false;
+    }
+    if (gSaveContext.sceneLayer == SCENE_LAYER_CUTSCENE_FIRST_OOT) {
+        pos.x = -250.0f;
+        pos.y = 1.0f;
+        pos.z = -1580.0f;
+        yaw = 0x4000;
+        // OoT's type 6, MM's ENHORSE_8 (it cannot jump).
+        params = ENHORSE_PARAMS((gSaveContext.eventInfOot[0] & 0x10) ? ENHORSE_PARAM_HNI_OOT : ENHORSE_PARAM_4000,
+                                ENHORSE_8);
+    } else if (((gSaveContext.eventInfOot[0] & 0xF) == 6) && !GET_EVENTCHKINF_OOT(EVENTCHKINF_EPONA_OBTAINED_Oot)) {
+        pos.x = 894.0f;
+        pos.y = 0.0f;
+        pos.z = -2084.0f;
+        yaw = -0x7FFF;
+        // OoT's type 5, a plain ridden horse (MM's ENHORSE_17).
+        params = ENHORSE_PARAMS((gSaveContext.eventInfOot[0] & 0x10) ? ENHORSE_PARAM_HNI_OOT : ENHORSE_PARAM_4000,
+                                ENHORSE_17);
+    } else {
+        return false;
+    }
+    player->rideActor = Actor_Spawn(&play->actorCtx, play, ACTOR_EN_HORSE, pos.x, pos.y, pos.z, 0, yaw, 0, params);
+    if (player->rideActor == NULL) {
+        return false;
+    }
+    player->actor.world.pos = pos;
+    player->actor.shape.rot.x = player->actor.shape.rot.z = 0;
+    player->actor.shape.rot.y = yaw;
+    Player_MountHorse(play, player, player->rideActor);
+    Player_SetCameraHorseSetting(play, player);
+    gSaveContext.save.saveInfo.horseData.sceneId = play->sceneId;
+    return true;
+}
+
 void Horse_Spawn(PlayState* play, Player* player) {
+    if (Horse_SpawnRaceOot(play, player)) {
+        D_801BDAA0 = false;
+        return;
+    }
+    if (Horse_SpawnArcheryOot(play, player)) {
+        D_801BDAA0 = false;
+        return;
+    }
     if (((play->sceneId == SCENE_KOEPONARACE) &&
          (GET_WEEKEVENTREG_HORSE_RACE_STATE == WEEKEVENTREG_HORSE_RACE_STATE_START)) ||
         ((play->sceneId == SCENE_F01) && (((gSaveContext.sceneLayer == 1)) || (gSaveContext.sceneLayer == 5)) &&

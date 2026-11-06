@@ -2210,11 +2210,30 @@ s32 Hyrule_IsCutsceneOotPlaying(void) {
            ((gCsCtxOot.segment != NULL) && (gSaveContext.save.cutsceneIndex >= 0xFFF0));
 }
 
+// Set by OoT's end card once "The End" is fully shown (End_Title's draw).
+static u8 sOotEndCardShown = false;
+
+void Hyrule_SetOotEndCardShown(void) {
+    sOotEndCardShown = true;
+}
+
 void Hyrule_UpdateCutsceneOot(PlayState* play) {
     // OoT's Cutscene_UpdateManual and Cutscene_UpdateScripted. The cutscene index means the same in both games (0xFFFD
     // while a script plays, 0xFFF0 and up for the next scene's cutscene layer) and is shared.
     func_80064558(play, &gCsCtxOot);
     func_800645A0(play, &gCsCtxOot);
+
+    // After OoT's ending, A or START goes on with the game. Checked here: the ending halts the actors' updates, and MM
+    // blanks the controller while drawing.
+    // The end card keeps drawing (and reporting) through the fade out, so only the credits' mode counts.
+    if (sOotEndCardShown && (gSaveContext.gameMode != GAMEMODE_END_CREDITS)) {
+        sOotEndCardShown = false;
+    }
+    if (sOotEndCardShown && (play->transitionTrigger == TRANS_TRIGGER_OFF) &&
+        CHECK_BTN_ANY(CONTROLLER1(&play->state)->press.button, BTN_A | BTN_START)) {
+        sOotEndCardShown = false;
+        Hyrule_ContinueAfterOotEnding(play);
+    }
 
     // MM's engine (Player, the interface) sees a cutscene while OoT's plays.
     if (gCsCtxOot.state != CS_STATE_IDLE_Oot) {
@@ -2235,4 +2254,28 @@ void Hyrule_ApplyAgeOnLoadOot(void) {
 s32 Hyrule_CsSplineStepOot(Vec3f* pos, f32* roll, f32* fov, CutsceneCameraPointOot* point, s16* keyFrame,
                            f32* curFrame) {
     return CsCamera_Step(pos, roll, fov, point, keyFrame, curFrame);
+}
+
+// Set by Hyrule_ContinueAfterOotEnding for the courtyard visit it starts; Impa takes it (Hyrule_TakeAfterOotEndingVisit).
+static u8 sAfterOotEndingVisit = false;
+
+s32 Hyrule_TakeAfterOotEndingVisit(void) {
+    s32 visit = sAfterOotEndingVisit;
+
+    sAfterOotEndingVisit = false;
+    return visit;
+}
+
+void Hyrule_ContinueAfterOotEnding(PlayState* play) {
+    sAfterOotEndingVisit = true;
+    // OoT's credits leave the game in its credits mode with most sound banks muted (cutscene destination 117).
+    gSaveContext.gameMode = GAMEMODE_NORMAL;
+    AudioSfx_MuteBanks(0);
+    // Impa waits in the courtyard once Link has Zelda's Letter, which the cycle reset may have cleared.
+    SET_EVENTCHKINF_OOT(EVENTCHKINF_OBTAINED_ZELDAS_LETTER_Oot);
+    gLinkAgeOnLoadOot = 1;
+    gSaveContext.save.cutsceneIndex = 0;
+    play->nextEntrance = Hyrule_ExitFromOot(0x400); // OoT's ENTR_CASTLE_COURTYARD_ZELDA_0
+    play->transitionType = TRANS_TYPE_FADE_BLACK_SLOW;
+    play->transitionTrigger = TRANS_TRIGGER_START;
 }

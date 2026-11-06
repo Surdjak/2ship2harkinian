@@ -3778,6 +3778,8 @@ u16 D_801D028C[] = {
 
 u16 sOcarinaSongFlagsMap[] = { 1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800 };
 
+void AudioOcarina_RestoreMemoryGameSongOot(void);
+
 void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
     MessageContext* msgCtx = &play->msgCtx;
     s16 j;
@@ -3826,6 +3828,7 @@ void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
         Message_ResetOcarinaButtonState(play);
     }
 
+    AudioOcarina_RestoreMemoryGameSongOot(); // 3Ship [Hyrule] after an OoT memory game
     sLastPlayedSong = 0xFF;
     msgCtx->lastPlayedSong = 0xFF;
     msgCtx->ocarinaButtonIndex = OCARINA_BTN_INVALID;
@@ -3930,6 +3933,56 @@ void Message_DisplayOcarinaStaffImpl(PlayState* play, u16 ocarinaAction) {
     };
 
     msgCtx->stateTimer = 3;
+}
+
+// 3Ship [Hyrule] OoT's memory game plays its random tune in MM's song slot 14 (the Goron Lullaby's intro), as MM's
+// leftover AudioOcarina_MemoryGameNextNote does; the slot is restored at the next ocarina session.
+s32 AudioOcarina_MemoryGameNextNote(void);
+void AudioOcarina_MemoryGameInit(u8 minigameRound);
+void AudioOcarina_SaveMemoryGameSongOot(void);
+
+// 3Ship [Hyrule] OoT's ocarina games (OoT's Message_StartOcarina for OCARINA_ACTION_MEMORY_GAME and _FROGS): MM's ocarina
+// staff comes up as for free play, then OoT's game takes over.
+void Message_StartOcarinaGameOot(PlayState* play, u16 ocarinaAction) {
+    MessageContext* msgCtx = &play->msgCtx;
+
+    Message_DisplayOcarinaStaffImpl(play, OCARINA_ACTION_FREE_PLAY);
+    msgCtx->ocarinaAction = ocarinaAction;
+    if (ocarinaAction == OCARINA_ACTION_MEMORY_GAME_Oot) {
+        AudioOcarina_SaveMemoryGameSongOot();
+        Message_OpenText(play, TEXT_OOT(0x86D)); // Play using [A] and [C].
+        Message_SetTextboxColor(play);
+        msgCtx->textboxColorAlphaCurrent = msgCtx->textboxColorAlphaTarget;
+        Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
+        Message_Decode(play);
+        msgCtx->msgMode = MSGMODE_MEMORY_GAME_START_Oot;
+    } else {
+        msgCtx->msgMode = MSGMODE_FROGS_START_Oot;
+        msgCtx->textBoxType = TEXTBOX_TYPE_BLUE;
+        Message_SetTextboxColor(play);
+        msgCtx->textboxColorAlphaCurrent = msgCtx->textboxColorAlphaTarget;
+    }
+}
+
+// 3Ship [Hyrule] OoT's Message_UpdateOcarinaGame: the Skull Kids' turn ends, then Link's or the next Skull Kid's starts.
+void Message_UpdateOcarinaGameOot(PlayState* play) {
+    MessageContext* msgCtx = &play->msgCtx;
+
+    msgCtx->msgMode++;
+    if (msgCtx->msgMode == MSGMODE_MEMORY_GAME_PLAYER_PLAYING_Oot) {
+        AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_DEFAULT);
+        msgCtx->ocarinaStaff = AudioOcarina_GetPlayingStaff();
+        msgCtx->ocarinaStaff->pos = sOcarinaButtonIndexBufPos = 0;
+        AudioOcarina_StartDefault((1 << OCARINA_SONG_MEMORY_GAME_Oot) | 0x80000000);
+        msgCtx->textDrawPos = msgCtx->decodedTextLen;
+    } else if (msgCtx->msgMode == MSGMODE_MEMORY_GAME_RIGHT_SKULLKID_PLAYING_Oot) {
+        AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_WHISTLING_FLUTE);
+        msgCtx->ocarinaStaff = AudioOcarina_GetPlaybackStaff();
+        msgCtx->ocarinaStaff->pos = sOcarinaButtonIndexBufPos = 0;
+        AudioOcarina_SetPlaybackSong(OCARINA_SONG_MEMORY_GAME_Oot + 1, 1);
+        msgCtx->stateTimer = 2;
+    }
+    Message_ResetOcarinaButtonState(play);
 }
 
 void Message_DisplayOcarinaStaff(PlayState* play, u16 ocarinaAction) {
@@ -4318,7 +4371,8 @@ void Message_DrawOcarinaButtons(PlayState* play, Gfx** gfxP) {
     u16 i;
     u16 notePosX;
 
-    if ((play->msgCtx.msgMode >= MSGMODE_OCARINA_PLAYING) && (msgCtx->msgMode <= MSGMODE_40)) {
+    if (((play->msgCtx.msgMode >= MSGMODE_OCARINA_PLAYING) && (msgCtx->msgMode <= MSGMODE_40)) ||
+        MSGMODE_IS_OCARINA_GAME_Oot(msgCtx->msgMode)) { // 3Ship [Hyrule]
         if ((msgCtx->ocarinaAction != OCARINA_ACTION_FREE_PLAY) &&
             (msgCtx->ocarinaAction != OCARINA_ACTION_CHECK_NOTIME)) {
             Gfx_SetupDL39_Ptr(&gfx);
@@ -4566,7 +4620,8 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                     (msgCtx->msgMode != MSGMODE_3A) && (msgCtx->msgMode != MSGMODE_3D) &&
                     (msgCtx->msgMode != MSGMODE_40) &&
                     (((msgCtx->msgMode >= MSGMODE_TEXT_BOX_GROWING) && (msgCtx->msgMode <= MSGMODE_TEXT_DONE)) ||
-                     ((msgCtx->msgMode >= MSGMODE_NEW_CYCLE_0) && (msgCtx->msgMode <= MSGMODE_OWL_SAVE_2))) &&
+                     ((msgCtx->msgMode >= MSGMODE_NEW_CYCLE_0) && (msgCtx->msgMode <= MSGMODE_OWL_SAVE_2)) ||
+                     MSGMODE_IS_OCARINA_GAME_Oot(msgCtx->msgMode)) && // 3Ship [Hyrule]
                     (gTextBoxBackgroundTypes[msgCtx->textBoxType] != TEXTBOX_BG_NONE)) {
                     if (GameInteractor_Should(VB_DRAW_OCARINA_STAFF, true)) {
                         Message_DrawTextBox(play, &gfx);
@@ -5195,6 +5250,132 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                         msgCtx->textBoxType = TEXTBOX_TYPE_BLACK;
                     }
                 }
+                break;
+
+            // 3Ship [Hyrule] OoT's memory game (the Skull Kids in the Lost Woods) and frogs' game (Zora's River), as
+            // OoT's Message_DrawMain runs them.
+            case MSGMODE_MEMORY_GAME_START_Oot:
+                AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_DEFAULT);
+                AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_WHISTLING_FLUTE);
+                AudioOcarina_MemoryGameInit(gOcarinaGameRoundNumOot);
+                msgCtx->ocarinaStaff = AudioOcarina_GetPlaybackStaff();
+                msgCtx->ocarinaStaff->pos = sOcarinaButtonIndexBufPos = 0;
+                Message_ResetOcarinaButtonState(play);
+                AudioOcarina_SetPlaybackSong(OCARINA_SONG_MEMORY_GAME_Oot + 1, 1);
+                msgCtx->msgMode = MSGMODE_MEMORY_GAME_LEFT_SKULLKID_PLAYING_Oot;
+                msgCtx->stateTimer = 2;
+                break;
+
+            case MSGMODE_MEMORY_GAME_LEFT_SKULLKID_PLAYING_Oot:
+            case MSGMODE_MEMORY_GAME_RIGHT_SKULLKID_PLAYING_Oot:
+                Audio_PlaySfx(NA_SE_SY_METRONOME_LV - SFX_FLAG);
+                msgCtx->ocarinaStaff = AudioOcarina_GetPlaybackStaff();
+                if ((msgCtx->ocarinaStaff->pos != 0) && (sOcarinaButtonIndexBufPos == msgCtx->ocarinaStaff->pos - 1)) {
+                    sOcarinaButtonIndexBuf[msgCtx->ocarinaStaff->pos - 1] = msgCtx->ocarinaStaff->buttonIndex;
+                    sOcarinaButtonIndexBuf[msgCtx->ocarinaStaff->pos] = OCARINA_BTN_INVALID;
+                    sOcarinaButtonIndexBufPos++;
+                }
+                if (msgCtx->stateTimer == 0) {
+                    if (msgCtx->ocarinaStaff->state == 0) {
+                        if (msgCtx->msgMode == MSGMODE_MEMORY_GAME_LEFT_SKULLKID_PLAYING_Oot) {
+                            Audio_PlaySfx(NA_SE_SY_METRONOME);
+                        } else {
+                            Audio_PlaySfx(NA_SE_SY_METRONOME_2);
+                        }
+                        msgCtx->msgMode++;
+                    }
+                } else {
+                    msgCtx->stateTimer--;
+                }
+                break;
+
+            case MSGMODE_MEMORY_GAME_LEFT_SKULLKID_WAIT_Oot:
+            case MSGMODE_MEMORY_GAME_RIGHT_SKULLKID_WAIT_Oot:
+                msgCtx->ocarinaStaff = AudioOcarina_GetPlaybackStaff();
+                if ((msgCtx->ocarinaStaff->pos != 0) && (sOcarinaButtonIndexBufPos == msgCtx->ocarinaStaff->pos - 1)) {
+                    sOcarinaButtonIndexBuf[msgCtx->ocarinaStaff->pos - 1] = msgCtx->ocarinaStaff->buttonIndex;
+                    sOcarinaButtonIndexBuf[msgCtx->ocarinaStaff->pos] = OCARINA_BTN_INVALID;
+                    sOcarinaButtonIndexBufPos++;
+                }
+                break;
+
+            case MSGMODE_MEMORY_GAME_PLAYER_PLAYING_Oot:
+                Audio_PlaySfx(NA_SE_SY_METRONOME_LV - SFX_FLAG);
+                msgCtx->ocarinaStaff = AudioOcarina_GetPlayingStaff();
+                if ((msgCtx->ocarinaStaff->pos != 0) && (sOcarinaButtonIndexBufPos == msgCtx->ocarinaStaff->pos - 1)) {
+                    sOcarinaButtonIndexBuf[msgCtx->ocarinaStaff->pos - 1] = msgCtx->ocarinaStaff->buttonIndex;
+                    sOcarinaButtonIndexBuf[msgCtx->ocarinaStaff->pos] = OCARINA_BTN_INVALID;
+                    sOcarinaButtonIndexBufPos++;
+                }
+                if (msgCtx->ocarinaStaff->state == 0xFF) {
+                    // The round failed (OoT's OCARINA_MODE_03).
+                    AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
+                    Audio_PlaySfx(NA_SE_SY_OCARINA_ERROR);
+                    msgCtx->stateTimer = 10;
+                    play->msgCtx.ocarinaMode = OCARINA_MODE_EVENT;
+                } else if (msgCtx->ocarinaStaff->state == (OCARINA_SONG_MEMORY_GAME_Oot + 1)) {
+                    // The round's tune was played back (OoT's song 13, its memory game slot, here MM's 14).
+                    Audio_PlaySfx(NA_SE_SY_GET_ITEM);
+                    msgCtx->msgMode = MSGMODE_MEMORY_GAME_ROUND_SUCCESS_Oot;
+                    msgCtx->stateTimer = 30;
+                }
+                Message_DrawText(play, &gfx);
+                break;
+
+            case MSGMODE_MEMORY_GAME_ROUND_SUCCESS_Oot:
+                msgCtx->ocarinaStaff = AudioOcarina_GetPlayingStaff();
+                if ((msgCtx->ocarinaStaff->pos != 0) && (sOcarinaButtonIndexBufPos == msgCtx->ocarinaStaff->pos - 1)) {
+                    sOcarinaButtonIndexBuf[msgCtx->ocarinaStaff->pos - 1] = msgCtx->ocarinaStaff->buttonIndex;
+                    sOcarinaButtonIndexBuf[msgCtx->ocarinaStaff->pos] = OCARINA_BTN_INVALID;
+                    sOcarinaButtonIndexBufPos++;
+                }
+                msgCtx->stateTimer--;
+                if (msgCtx->stateTimer == 0) {
+                    if (AudioOcarina_MemoryGameNextNote() != true) {
+                        Audio_PlaySfx(NA_SE_SY_METRONOME);
+                        msgCtx->ocarinaStaff = AudioOcarina_GetPlayingStaff();
+                        msgCtx->ocarinaStaff->pos = sOcarinaButtonIndexBufPos = 0;
+                        Message_ResetOcarinaButtonState(play);
+                        msgCtx->msgMode = MSGMODE_MEMORY_GAME_START_NEXT_ROUND_Oot;
+                    } else {
+                        // The whole tune was played back (OoT's OCARINA_MODE_0F).
+                        play->msgCtx.ocarinaMode = OCARINA_MODE_F;
+                    }
+                }
+                Message_DrawText(play, &gfx);
+                break;
+
+            case MSGMODE_MEMORY_GAME_START_NEXT_ROUND_Oot:
+                if (!AudioSfx_IsPlaying(NA_SE_SY_METRONOME)) {
+                    msgCtx->ocarinaStaff = AudioOcarina_GetPlaybackStaff();
+                    msgCtx->ocarinaStaff->pos = sOcarinaButtonIndexBufPos = 0;
+                    Message_ResetOcarinaButtonState(play);
+                    AudioOcarina_SetPlaybackSong(OCARINA_SONG_MEMORY_GAME_Oot + 1, 1);
+                }
+                break;
+
+            case MSGMODE_FROGS_START_Oot:
+                AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_DEFAULT);
+                msgCtx->ocarinaStaff = AudioOcarina_GetPlayingStaff();
+                msgCtx->ocarinaStaff->pos = sOcarinaButtonIndexBufPos = 0;
+                play->msgCtx.ocarinaMode = OCARINA_MODE_ACTIVE;
+                Message_ResetOcarinaButtonState(play);
+                AudioOcarina_StartDefault(msgCtx->ocarinaAvailableSongs | 0xC0000000);
+                msgCtx->msgMode = MSGMODE_FROGS_PLAYING_Oot;
+                break;
+
+            case MSGMODE_FROGS_PLAYING_Oot:
+                // Each note the frogs ask for (OoT's lastOcaNoteIdx is MM's ocarinaButtonIndex).
+                msgCtx->ocarinaStaff = AudioOcarina_GetPlayingStaff();
+                if ((msgCtx->ocarinaStaff->pos != 0) && (sOcarinaButtonIndexBufPos == msgCtx->ocarinaStaff->pos - 1)) {
+                    msgCtx->ocarinaButtonIndex = msgCtx->ocarinaStaff->buttonIndex;
+                    msgCtx->ocarinaStaff->pos = sOcarinaButtonIndexBufPos = 0;
+                    Message_ResetOcarinaButtonState(play);
+                    msgCtx->msgMode = MSGMODE_FROGS_WAITING_Oot;
+                }
+                break;
+
+            case MSGMODE_FROGS_WAITING_Oot:
                 break;
 
             case MSGMODE_SCARECROW_LONG_RECORDING_START:

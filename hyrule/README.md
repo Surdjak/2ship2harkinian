@@ -629,8 +629,7 @@ graveyard, the Desert Colossus. Twinrova's intro and Nabooru's Iron Knuckle figh
 - OoT's dungeons are exported under `oot/scenes/nonmq/` (`Hyrule_GetScenePath`).
 - Biggoron's Sword day count (`inventoryOot.bgsDayCount`, save version 20) counts MM's days too.
 - Not done: OoT's one-point camera cutscenes (doors, switches, boss deaths keep the main camera); boss camera
-  settings take MM's `DUNGEON0`; the fire circle effect (`EffectSsFCircle`) is not drawn; horseback archery (the
-  horses) is left out.
+  settings take MM's `DUNGEON0`; the fire circle effect (`EffectSsFCircle`) is not drawn.
 - Not checked yet: the boss fights themselves, Dark Link's fight, the temples' puzzles, the windmill's Song of
   Storms and Dampé's race.
 
@@ -672,12 +671,45 @@ plays Zelda's warning and starts the escape. Notes:
   `Demo_Ec`), the Deku Shield in Kokiri Forest, the Deku scrub mask contest (`En_Dnt_Demo`, `En_Dnt_Nomal`,
   `En_Dnt_Jiji`), Grog, the running man, the cucco chicks and Impa's horse. The rainbow bridge's flag survives the
   cycle reset (docs/DESIGN.md).
-- Not done: OoT's ocarina games, the frogs (`En_Fr`), the Skull Kid's memory game (`En_Skj`, `En_Skjneedle`) and the
-  scarecrows' song recording (`En_Kakasi`, `En_Kakasi3`), which need OoT's message modes for them; Epona and the other
-  horses (`En_Horse`, `En_Horse_Link_Child`, `En_Horse_Game_Check`, `En_Ma3`, `En_Yabusame_Mark`); OoT's title logo
-  (`En_Mag`). King Dodongo's lava bubbles are not drawn. What follows OoT's ending in the merged game is not decided.
+- Not done: OoT's title logo (`En_Mag`). King Dodongo's lava bubbles are not drawn. Wave 28 adds the horses, the
+  ocarina games and what follows OoT's ending.
 - Not checked yet: the child bosses' and Ganondorf's and Ganon's fights themselves (their defeats were forced under
   gdb), the dungeons' puzzles, the Gerudo Training Ground, the trials, the fishing pond's game and the golden pillars.
+
+Wave 28 continues the game after OoT's ending and adds Epona, Hyrule's horse games and OoT's ocarina games
+(docs/EPONA.md). Notes:
+
+- After the credits, A or START on "The End" (`End_Title` tells `Hyrule_UpdateCutsceneOot` the card is up) puts
+  child Link in Zelda's courtyard (`Hyrule_ContinueAfterOotEnding`), Zelda's Letter's flag set. Impa waits there
+  (`Demo_Im`'s action 20, as at the first visit), and talking to her leads out to Hyrule Field as the first time;
+  the game then goes on. Nothing marks Ganondorf or Ganon as beaten, so their fights can be played again (not
+  checked).
+- Epona is MM's `En_Horse` in both worlds. Adult Link rides OoT's grown Epona (`HORSE_TYPE_EPONA`, OoT's
+  `object_horse` and animations from oot.o2r); child Link rides MM's (`HORSE_TYPE_2`); `EnHorse_IsEpona` covers both
+  for MM's Player and the song checks. Epona's Song calls her in OoT's five horse scenes (`z_horse.c`), where she
+  arrives from OoT's arrival points (`sHorseSpawnsOot`). Lon Lon Ranch keeps her rideable from the start, without a
+  foal (`En_Horse_Link_Child` is not ported).
+- OoT's scene horses are MM's: OTRExporter maps OoT's `En_Horse` (0x14) to MM's with converted params; Ingo's horse
+  is `HORSE_TYPE_HNI` (OoT's `object_hni`, the new `ENHORSE_PARAM_HNI_OOT`).
+- Ingo's race (`En_Horse_Game_Check`, `Horse_SpawnRaceOot`): MM's race code lacked OoT's waypoint steering, so
+  `EnHorse_UpdateIngoRaceInfoOot` and OoT's course (`sIngoRace`) are back, with OoT's top speeds for Ingo (12.07,
+  then 12.625 in the second race). Winning the second race frees the ranch (E3): after Ingo's "Is that Epona?" (OoT's
+  0x203B), Epona is Link's, Talon is back and Malon is free; OoT's gate and fence jump are left out (`En_In`).
+  Checked under gdb: Ingo laps the course and wins when Link stays put; a forced win leads to the freed ranch, where
+  Malon's obstacle course (`En_Ma3`) and Ingo load.
+- Horseback archery (`En_Yabusame_Mark`, `Horse_SpawnArcheryOot`) uses MM's archery HUD and OoT's rules for both ages;
+  the targets' score effect loads MM's `object_yabusame_point`. Checked under gdb as adult: the course and the return to
+  the fortress.
+- OoT's ocarina games are MM message modes 0x50-0x5A (`MSGMODE_*_Oot`, `MSGMODE_IS_OCARINA_GAME_Oot`):
+  `Message_StartOcarinaGameOot` and `Message_UpdateOcarinaGameOot` are OoT's. The Skull Kid's memory game borrows MM's
+  song slot 14 (the Goron Lullaby intro) for its random tune and restores it after. The frogs' game reads Link's note
+  from `msgCtx.ocarinaButtonIndex` (OoT's `lastOcaNoteIdx`). The scarecrows' long song uses MM's unused
+  `saveInfo.unk_F40` as OoT's flag and MM's own scarecrow song. Checked under gdb: the memory game (the Skull Kids
+  play, then Link's turn; a wrong note fails it) and the frogs' first note.
+- Not done: Epona's theft in MM's intro (DESIGN.md: the song calls no horse until she is recovered at Romani
+  Ranch). OoT's texts are unchanged, so Ingo's second-race challenge (0x203A) still offers the horse.
+- Not checked yet: a full frogs' game, the scarecrows' recording, Malon's obstacle course, child horseback archery and
+  the race won by riding.
 
 ## Cutscenes
 

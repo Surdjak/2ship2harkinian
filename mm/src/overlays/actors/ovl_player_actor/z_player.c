@@ -9792,7 +9792,8 @@ s32 Player_ActionHandler_3(Player* this, PlayState* play) {
     EnHorse* rideActor = (EnHorse*)this->rideActor;
 
     if (rideActor != NULL) {
-        if ((rideActor->type != HORSE_TYPE_2) && (this->transformation != PLAYER_FORM_FIERCE_DEITY)) {
+        // 3Ship [Hyrule] adult Link's Epona is OoT's grown one (HORSE_TYPE_EPONA, docs/EPONA.md).
+        if (!EnHorse_IsEpona(rideActor) && (this->transformation != PLAYER_FORM_FIERCE_DEITY)) {
             if (CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_A)) {
                 if (CutsceneManager_IsNext(CS_ID_GLOBAL_TALK)) {
                     rideActor->actor.textId = D_8085D254[this->transformation - 1];
@@ -9802,7 +9803,7 @@ s32 Player_ActionHandler_3(Player* this, PlayState* play) {
             }
 
             CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
-        } else if ((rideActor->type == HORSE_TYPE_2) && (this->transformation != PLAYER_FORM_HUMAN)) {
+        } else if (EnHorse_IsEpona(rideActor) && (this->transformation != PLAYER_FORM_HUMAN)) {
             if (CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_A)) {
                 if (CutsceneManager_IsNext(CS_ID_GLOBAL_TALK)) {
                     rideActor->actor.textId = D_8085D25C[this->transformation];

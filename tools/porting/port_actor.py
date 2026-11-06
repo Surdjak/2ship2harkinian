@@ -99,7 +99,23 @@ RENAMES = [
     (r"\bfunc_800A9F6C\(", "Rumble_Request("),
     (r"\bfunc_800AA148\(\)", "Rumble_ControllerOneHasRumblePak()"),
     (r"\bAudio_PlaySoundRandom\(", "Audio_PlaySfx_Randomized("),
-    (r"\bAudio_SetSfxBanksMute\(", "AudioSfx_MuteBanks("),  # the same seven banks in both games
+    (r"\bAudio_SetSfxBanksMute\(", "AudioSfx_MuteBanks("),
+    # OoT's ocarina games (z_message.c's ports; docs/SONGS.md).
+    (r"\bMessage_UpdateOcarinaGame\(", "Message_UpdateOcarinaGameOot("),
+    (r"\bgSaveContext\.ocarinaGameRoundNum\b", "gOcarinaGameRoundNumOot"),
+    (r"\bMSGMODE_(MEMORY_GAME|FROGS)_(\w+)\b(?!_Oot)", r"MSGMODE_\1_\2_Oot"),
+    (r"\bAudio_IsSfxPlaying\(", "AudioSfx_IsPlaying("),
+    (r"\bOCARINA_INSTRUMENT_FLUTE\b", "OCARINA_INSTRUMENT_WHISTLING_FLUTE"),
+    # OoT's scarecrow songs (docs/SONGS.md W3: one spawn song, MM's): the long song's flag is MM's unused oca_rec_flag.
+    (r"\bgSaveContext\.scarecrowLongSongSet\b", "gSaveContext.save.saveInfo.unk_F40"),
+    (r"\bgSaveContext\.scarecrowSpawnSongSet\b", "gSaveContext.save.saveInfo.scarecrowSpawnSongSet"),
+    (r"\bmsgCtx\.lastOcaNoteIdx\b", "msgCtx.ocarinaButtonIndex"),
+    (r"(->|\.)lastOcaNoteIdx\b", r"\1ocarinaButtonIndex"),
+    (r"\bENEMY_RANDOMIZER_OFF\s*==\s*ENEMY_RANDOMIZER_OFF\b", "true"),
+    # OoT's switch to the nature ambience (the Skull Kids' ocarina game) and back: MM's scene music plays on.
+    (r"^([ \t]*)func_800F5BF0\([^;]*\);", r"\1// PORT: OoT switches to the nature ambience here; the scene's music plays on."),
+    (r"^([ \t]*)func_800F5C2C\(\);", r"\1// PORT: OoT brings its music back here."),
+    (r"\bLOG_HUNGUP_THREAD\(\);", "(void)0; // OoT's debug hang"),  # the same seven banks in both games
     (r"\bGfx_SetupDL_20NoCD\(", "Gfx_SetupDL20_NoCD("),
     (r"\bgMtxClear\b", "gIdentityMtx"),
     # OoT's SkinMatrix_SetRotateYXZ(x, y, z) is MM's SkinMatrix_SetRotateYRP(yaw, roll, pitch), argument for argument.
@@ -526,6 +542,12 @@ RENAMES = [
     (r"\bgSaveContext\.timerState\b", "gSaveContext.timerStates[TIMER_ID_MINIGAME_1]"),
     # OoT's second timer (the trade items' and other timers) is MM's second minigame timer.
     (r"\bgSaveContext\.subTimerState\b", "gSaveContext.timerStates[TIMER_ID_MINIGAME_2]"),
+    # Written, OoT's timer seconds are MM's minigame timer in centiseconds (En_Ma3 reads them through a pointer).
+    (r"^[ \t]*s16\* timerSecondsPtr;[^\n]*\n", ""),
+    (r"^[ \t]*timerSecondsPtr = &gSaveContext\.timerSeconds;\n", ""),
+    (r"\*timerSecondsPtr\b", "gSaveContext.timerSeconds"),
+    (r"\bgSaveContext\.(sub)?[tT]imerSeconds = ([^;]+);",
+     lambda m: "gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_%d] = SECONDS_TO_TIMER(%s);" % (2 if m.group(1) else 1, m.group(2))),
     (r"\bgSaveContext\.subTimerSeconds\b", "((s32)(gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] / 100))"),
     (r"\bSUBTIMER_STATE_OFF\b", "TIMER_STATE_OFF"),
     (r"\bTIMER_STATE_UP_FREEZE\b", "TIMER_STATE_STOP"),
@@ -612,6 +634,7 @@ RENAMES = [
     (r"\b((?:EVENTCHKINF|INFTABLE|ITEMGETINF|EVENTINF)_[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\b(ACTOR_(?!FLAG_)[A-Z0-9_]+)\b(?!_Oot)", r"\1_Oot"),
     (r"\bACTOR_EN_BOM_Oot\b", "ACTOR_EN_BOM"),
+    (r"\bACTOR_EN_HORSE_Oot\b", "ACTOR_EN_HORSE"),  # Epona is MM's horse actor in both worlds (docs/EPONA.md)
     # OoT's ocarina effects are MM's actors of the same names (MM's Oceff_Wipe4 is the same swirl, for other songs).
     (r"\bACTOR_OCEFF_(SPOT|WIPE|WIPE2|WIPE3|WIPE4|STORM)_Oot\b", r"ACTOR_OCEFF_\1"),
     # Collectibles are MM's En_Item00 (OoT-only types through Item00_FromOot), arrows MM's En_Arrow, whose thrown Deku
