@@ -2694,6 +2694,8 @@ void Actor_SpawnSetupActors(PlayState* play, ActorContext* actorCtx) {
             currentActorListIndex = i;
 
             actorEntryHalfDayBit = ((actorEntry->rot.x & 7) << 7) | (actorEntry->rot.z & 0x7F);
+            // 2S2H [Enhancement] Let hooks override the half-days this entry exists in
+            GameInteractor_ExecuteOnActorEntryHalfDaysBits(actorEntry, &actorEntryHalfDayBit);
             // 3Ship [Hyrule] OoT actors keep OoT's raw rotations, which hold no half-day bits. Unified ids stay
             // below 0x800, so the flag in bit 11 is not mistaken for an OoT id.
             if ((actorEntryHalfDayBit == 0) || ((actorEntry->id & 0x7FF) >= ACTOR_OOT_BASE)) {
@@ -3920,6 +3922,10 @@ Actor* Actor_SpawnEntry(ActorContext* actorCtx, ActorEntry* actorEntry, PlayStat
     s16 rotY = (actorEntry->rot.y >> 7) & 0x1FF;
     s16 rotZ = (actorEntry->rot.z >> 7) & 0x1FF;
 
+    // 2S2H [Enhancement] Let hooks override the half-days this entry exists in
+    s32 halfDaysBits = ((actorEntry->rot.x & 7) << 7) | (actorEntry->rot.z & 0x7F);
+    GameInteractor_ExecuteOnActorEntryHalfDaysBits(actorEntry, &halfDaysBits);
+
     if (!(actorEntry->id & 0x8000)) {
         rotY = DEG_TO_BINANG(rotY);
     } else if (rotY > 180) {
@@ -3940,8 +3946,7 @@ Actor* Actor_SpawnEntry(ActorContext* actorCtx, ActorEntry* actorEntry, PlayStat
 
     return Actor_SpawnAsChildAndCutscene(actorCtx, play, actorEntry->id & 0x1FFF, actorEntry->pos.x, actorEntry->pos.y,
                                          actorEntry->pos.z, rotX, rotY, rotZ, actorEntry->params & 0xFFFF,
-                                         actorEntry->rot.y & 0x7F,
-                                         ((actorEntry->rot.x & 7) << 7) | (actorEntry->rot.z & 0x7F), NULL);
+                                         actorEntry->rot.y & 0x7F, /* 2S2H (see above) */ halfDaysBits, NULL);
 }
 
 Actor* Actor_Delete(ActorContext* actorCtx, Actor* actor, PlayState* play) {
