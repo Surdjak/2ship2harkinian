@@ -65,6 +65,8 @@ static struct {
     s16 keyframe;
     f32 curFrame;
     u8 active;
+    u8 lerpAt; // OoT's Camera_Demo9 (one-point shots) eases the point looked at; Camera_Demo1 (scripts) does not.
+    u8 atSet;
 } sCsCamera;
 
 // OoT's func_800BB0A0: a uniform cubic B-spline through four points (pos, roll and view angle).
@@ -149,6 +151,15 @@ static void CsCamera_Start(PlayState* play, s16 camId, CutsceneCameraPointOot* a
     sCsCamera.keyframe = 0;
     sCsCamera.curFrame = 0.0f;
     sCsCamera.active = true;
+    sCsCamera.lerpAt = false;
+    sCsCamera.atSet = false;
+}
+
+// OoT's Camera_LERPCeilF: halfway (by stepScale) to target, or onto it once within minDiff.
+static f32 CsCamera_LerpCeil(f32 target, f32 cur, f32 stepScale, f32 minDiff) {
+    f32 diff = target - cur;
+
+    return (fabsf(diff) >= minDiff) ? (cur + (diff * stepScale)) : target;
 }
 
 // OoT's Camera_RotateAroundPoint: pos turned by the yaw of `at` and added to its position.
@@ -191,6 +202,12 @@ static void CsCamera_Update(PlayState* play) {
             CsCamera_RotateAroundPoint(&playerPosRot, &at, &at);
         }
     }
+    if (sCsCamera.lerpAt && sCsCamera.atSet) {
+        at.x = CsCamera_LerpCeil(at.x, camera->at.x, 0.5f, 0.1f);
+        at.y = CsCamera_LerpCeil(at.y, camera->at.y, 0.5f, 0.1f);
+        at.z = CsCamera_LerpCeil(at.z, camera->at.z, 0.5f, 0.1f);
+    }
+    sCsCamera.atSet = true;
     Play_SetCameraAtEye(play, sCsCamera.camId, &at, &eye);
     Play_SetCameraFov(play, sCsCamera.camId, fov);
     Play_SetCameraRoll(play, sCsCamera.camId, roll * 256.0f);
@@ -2184,7 +2201,7 @@ void Flags_UnsetEnvOot(PlayState* play, s16 flag) {
 
 // OoT's one-point cutscenes 9601 and 9602 (z_onepointdemo.c), as Link leaves a crawlspace forwards or backwards: on
 // a sub-camera with the cutscene setting (OoT's CAM_SET_CS_3, Camera_Demo1), relative to Link, the camera rises from
-// his feet to up in front of (or behind) him over 90 frames, with OoT's small letterbox (its 0x1000 flag).
+// his feet to up in front of (or behind) him over 90 camera updates, with OoT's small letterbox (its 0x1000 flag).
 static CutsceneCameraPointOot sCrawlExitAtPointsOot[] = {
     { CS_CMD_CONTINUE_Oot, 0, 10, 40.0f, { 0, 4, 0 } },  { CS_CMD_CONTINUE_Oot, 0, 10, 40.000004f, { 0, 4, 0 } },
     { CS_CMD_CONTINUE_Oot, 0, 10, 50.0f, { 0, 9, 0 } },  { CS_CMD_CONTINUE_Oot, 0, 12, 55.0f, { 0, 12, 0 } },
@@ -2225,20 +2242,41 @@ void Hyrule_StartCrawlspaceExitCameraOot(PlayState* play, s32 backwards) {
     Play_ChangeCameraStatus(play, sOnePointCamIdOot, CAM_STATUS_ACTIVE);
     CsCamera_Start(play, sOnePointCamIdOot, sCrawlExitAtPointsOot,
                    backwards ? sCrawlExitEyePointsBackwardsOot : sCrawlExitEyePointsForwardsOot, true);
+    sCsCamera.lerpAt = true;
     sOnePointTimerOot = CRAWL_EXIT_CAMERA_FRAMES;
     ShrinkWindow_Letterbox_SetSizeTarget(0x1A);
 }
 
+// Whether Link's head is over a crawlspace's floor, which keeps OoT's main camera on CAM_SET_CRAWLSPACE.
+static s32 Hyrule_IsOverCrawlspaceOot(PlayState* play) {
+    Player* player = GET_PLAYER(play);
+    CollisionPoly* floorPoly;
+    s32 floorBgId;
+    Vec3f headPos = player->actor.world.pos;
+
+    headPos.y += Player_GetHeight(player);
+    return (BgCheck_EntityRaycastFloor3(&play->colCtx, &floorPoly, &floorBgId, &headPos) != BGCHECK_Y_MIN) &&
+           (BgCheck_GetBgCamSetting(&play->colCtx, floorPoly, floorBgId) == CAM_SET_CRAWLSPACE);
+}
+
 void Hyrule_UpdateOnePointCameraOot(PlayState* play) {
+    s32 steps;
+
     if (sOnePointCamIdOot == CAM_ID_NONE) {
         return;
     }
-    if (!Hyrule_IsCutsceneOotPlaying()) {
-        CsCamera_Update(play);
+    // OoT's main camera keeps the crawlspace setting while Link's head is over its floor, and Camera_Subj4 then has
+    // Play_Draw update the active camera a second time each frame: the shot's spline (Camera_Demo9) and its timer run
+    // twice as fast until Link is out (SoH: the rise takes 26 frames, the whole shot 66).
+    steps = Hyrule_IsOverCrawlspaceOot(play) ? 2 : 1;
+    while (steps-- > 0) {
+        if (!Hyrule_IsCutsceneOotPlaying()) {
+            CsCamera_Update(play);
+        }
+        sOnePointTimerOot--;
     }
-    // The shot holds its last framing once the spline ends, until OoT's 90 frames are up; the main camera then goes on
-    // from it.
-    sOnePointTimerOot--;
+    // The shot holds its last framing once the spline ends, until OoT's 90 updates are up; the main camera then goes
+    // on from it.
     if (sOnePointTimerOot <= 0) {
         ShrinkWindow_Letterbox_SetSizeTarget(0);
         Play_CopyCamera(play, CAM_ID_MAIN, sOnePointCamIdOot);

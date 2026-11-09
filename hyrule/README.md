@@ -782,10 +782,18 @@ Fixes from the first play test:
   `PLAYER_IS_CRAWLING_OOT`). OoT's crawlspace camera (RAIL3, `Camera_Subj4`) is MM's `CAM_SET_CRAWLSPACE` (0x5E,
   OTRExporter maps it): `Camera_Subject4`, a stub in MM, is OoT's, Link's own view along the crawlspace's points,
   bobbing with each step and keeping him on that line; like OoT's, it reads only the first of its data values (no
-  letterbox, the whole HUD). Leaving the crawlspace plays OoT's one-point shots 9601 and 9602
-  (`Hyrule_StartCrawlspaceExitCameraOot`): a sub-camera on OoT's spline relative to Link, rising in front of (or
-  behind) him for 90 frames with a small letterbox, which the main camera then continues from. Checked under gdb with
-  screenshots: Kokiri Forest's crawlspace into the training area.
+  letterbox, the whole HUD). It finds the crawlspace's points on the floor under Link's head, as OoT's does (his own
+  floor stays the ground outside until he is in, which held the camera still for half a second). Leaving the
+  crawlspace plays OoT's one-point shots 9601 and 9602 (`Hyrule_StartCrawlspaceExitCameraOot`): a sub-camera on OoT's
+  spline relative to Link, rising in front of (or behind) him with a small letterbox, which the main camera then
+  continues from. As in OoT (`Camera_Demo9`), the shot eases the point it looks at and lasts 90 camera updates, two
+  per frame while Link's head is still over the crawlspace (OoT's `Camera_Subj4` makes `Play_Draw` update the active
+  camera again). Timed against SoH under gdb, frame by frame in Kokiri Forest's crawlspace into the training area: the
+  camera reaches Link's view 10 frames after the setting changes, the exit shot rises in about 25 frames and hands
+  back after about 65, within 3 frames of SoH's.
+- Hyrule's big chests play MM's long chest opening (`CS_ID_GLOBAL_LONG_CHEST_OOT`, MM's unused global cutscene slot
+  0x7A, with the entry MM's scenes give their own big chests: `CAM_SET_LONG_CHEST_OPENING`). MM's chests take it from
+  their scene's actor cutscene list, which OoT's scenes do not have.
 - OoT scenes' chests (MM's `En_Box`) turn the other way round from MM's own, as OoT's do (OoT turns their direction,
   MM their model), and small ones take OoT's scale (0.005, MM's 0.0075).
 - Hyrule's save prompt is drawn (MM drew it only with 2Ship's pause save or game-over options on); its page title is

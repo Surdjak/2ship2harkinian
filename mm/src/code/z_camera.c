@@ -5425,12 +5425,18 @@ s32 Camera_Subject4(Camera* camera) {
     if (camera->animState == 0) {
         Vec3s* crawlPoints;
         s32 numPoints;
+        CollisionPoly* floorPoly;
+        s32 floorBgId;
+        Vec3f headPos = playerPosRot.pos;
 
-        if (player->actor.floorPoly == NULL) {
+        // OoT's Camera_GetCamBgDataUnderPlayer: the floor under Link's head, as the setting was chosen from. Link's own
+        // floor stays the ground outside until his way in is over, which held the camera for half a second.
+        headPos.y += Player_GetHeight(player);
+        if (BgCheck_EntityRaycastFloor3(&camera->play->colCtx, &floorPoly, &floorBgId, &headPos) == BGCHECK_Y_MIN) {
             return false;
         }
-        crawlPoints = BgCheck_GetBgCamFuncData(&camera->play->colCtx, player->actor.floorPoly, player->actor.floorBgId);
-        numPoints = BgCheck_GetBgCamCount(&camera->play->colCtx, player->actor.floorPoly, player->actor.floorBgId);
+        crawlPoints = BgCheck_GetBgCamFuncData(&camera->play->colCtx, floorPoly, floorBgId);
+        numPoints = BgCheck_GetBgCamCount(&camera->play->colCtx, floorPoly, floorBgId);
         if ((crawlPoints == NULL) || (numPoints < 3)) {
             return false;
         }

@@ -10025,8 +10025,13 @@ s32 Player_ActionHandler_2(Player* this, PlayState* play) {
                                                       (giEntry->itemId != ITEM_NONE) && (giEntry->gid >= 0) &&
                                                           (Item_CheckObtainability(giEntry->itemId) == ITEM_NONE),
                                                       chest)) {
-                                // 3Ship [Hyrule] OoT's chests have no MM chest cutscene.
+                                // 3Ship [Hyrule] OoT's chests, and MM's in Hyrule, have no MM chest cutscene of their
+                                // scene: they play MM's own (OoT's camera setting CAM_SET_SLOW_CHEST_CS is MM's
+                                // LONG_CHEST_OPENING) from a global entry.
                                 this->csId = (interactRangeActor->id == ACTOR_EN_BOX_Oot) ? CS_ID_NONE : chest->csId2;
+                                if ((this->csId <= CS_ID_NONE) && (Hyrule_GetOotSceneId(play->sceneId) >= 0)) {
+                                    this->csId = CS_ID_GLOBAL_LONG_CHEST_OOT;
+                                }
                                 Player_Anim_PlayOnceAdjusted(play, this, this->ageProperties->openChestAnim);
                                 Player_AnimReplace_Setup(play, this,
                                                          ANIM_FLAG_1 | ANIM_FLAG_UPDATE_Y | ANIM_FLAG_4 |

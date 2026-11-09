@@ -641,6 +641,7 @@ typedef enum {
     /* 0x78 */ CS_ID_GLOBAL_78 = 120,
     /* 0x79 */ CS_ID_GLOBAL_79,
     /* 0x7A */ CS_ID_GLOBAL_7A,
+#define CS_ID_GLOBAL_LONG_CHEST_OOT CS_ID_GLOBAL_7A // 3Ship [Hyrule] Hyrule's big chests (z_eventmgr.c)
     /* 0x7B */ CS_ID_GLOBAL_ELEGY,
     /* 0x7C */ CS_ID_GLOBAL_TALK,
     /* 0x7D */ CS_ID_GLOBAL_DOOR,
