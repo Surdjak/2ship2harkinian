@@ -3636,6 +3636,19 @@ void Actor_AddToCategory(ActorContext* actorCtx, Actor* actor, u8 actorCategory)
     actorCtx->actorLists[actorCategory].length++;
     lastActor = actorCtx->actorLists[actorCategory].first;
 
+    // 3Ship [Hyrule] OoT adds an actor at the head of its category's list, so in OoT's scenes the actors update newest
+    // first, as in OoT: which of two actors acts first in a frame (the door an attention shot turns to) depends on it.
+    // Player's category keeps MM's order, since MM's GET_PLAYER reads its first actor.
+    if ((gPlayState != NULL) && (Hyrule_GetOotSceneId(gPlayState->sceneId) >= 0) &&
+        (actorCategory != ACTORCAT_PLAYER)) {
+        if (lastActor != NULL) {
+            lastActor->prev = actor;
+        }
+        actorCtx->actorLists[actorCategory].first = actor;
+        actor->next = lastActor;
+        return;
+    }
+
     if (lastActor == NULL) {
         actorCtx->actorLists[actorCategory].first = actor;
         return;

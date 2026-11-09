@@ -824,6 +824,10 @@ Fixes from the first play test:
   - MM's `Player_SetCsAction` refuses a new action while its action 5 runs, which here carries any OoT action MM has
     no equal for; `Player_SetCsActionWithHaltedActorsOot` and the new `Player_SetCsActionOot` refuse only OoT's own
     action 5, as OoT does, so Link stands still for a door's shot after looking around for his own.
+- In OoT's scenes, actors are added at the head of their category's list, as OoT's `Actor_AddToCategory` does (MM's
+  appends them), so they update newest first, as in OoT. In the Deku Tree's first scrub room both barred doors ask
+  for an attention shot in the same frame and the first one gets it: the camera turned to the far door instead of
+  SoH's. Player's category keeps MM's order, since MM's `GET_PLAYER` reads its first actor.
 - Closing one of Navi's forced messages (`Elf_Msg`, the Deku Tree's vines among them) crashed: those messages run
   with no talk cutscene, as in OoT, and Player's `CutsceneManager_Stop(CS_ID_GLOBAL_TALK)` then read the running
   cutscene's entry -1. MM reads it just before its scene's actor cutscene list; OoT's scenes have none. With nothing
