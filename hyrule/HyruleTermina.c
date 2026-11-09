@@ -126,12 +126,18 @@ s32 Hyrule_SkipsIntroCutscene(PlayState* play) {
     }
 }
 
-// The opening dungeon's landing spot, where Link lands from MM's Lost Woods (its spawn 0 falls onto it). It carries
-// him back up once he has walked away from it and returns, so that landing on it does not.
-static Vec3f sOpeningDungeonLandingSpot = { 0.0f, 0.0f, 309.0f };
+// The opening dungeon's landing flower, where Link lands from MM's Lost Woods (its spawn 0 falls onto it). Once the way
+// back is open it is gold, and Deku Link launched from it rises back up the shaft he fell down: past this height above
+// it (a full charge reaches about 360; a short one does not), he comes out in MM's Lost Woods.
+static Vec3f sOpeningDungeonLandingFlower = { 0.0f, -16.0f, 310.0f };
 #define OPENING_DUNGEON_LANDING_RADIUS 50.0f
-#define OPENING_DUNGEON_LANDING_ARM_RADIUS 150.0f
-static s32 sLandingSpotArmed = false;
+#define OPENING_DUNGEON_SHAFT_RADIUS 250.0f
+#define OPENING_DUNGEON_SHAFT_EXIT_HEIGHT 250.0f
+
+s32 Hyrule_IsWayBackLandingFlower(PlayState* play, Actor* actor) {
+    return (play->sceneId == SCENE_OPENINGDAN) && Hyrule_IsWayBackOpen() &&
+           (Math_Vec3f_DistXZ(&actor->world.pos, &sOpeningDungeonLandingFlower) < OPENING_DUNGEON_LANDING_RADIUS);
+}
 
 // MM's Lost Woods: the clearing's west edge, behind the spot where Link wakes, is the path he came by.
 #define LOST_WOODS_PATH_END_X -1000.0f
@@ -142,25 +148,20 @@ static s32 sLandingSpotArmed = false;
 void Hyrule_UpdateTerminaPassage(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (play->sceneId != SCENE_OPENINGDAN) {
-        sLandingSpotArmed = false;
-    }
     if (!gSaveContext.save.isFirstCycle || !Hyrule_IsDekuCurseLifted() || (play->transitionTrigger != TRANS_TRIGGER_OFF) ||
         (play->transitionMode != TRANS_MODE_OFF) || Play_InCsMode(play) || (player->stateFlags1 & PLAYER_STATE1_DEAD)) {
         return;
     }
     switch (play->sceneId) {
-        case SCENE_OPENINGDAN: {
-            f32 dist = Math_Vec3f_DistXZ(&player->actor.world.pos, &sOpeningDungeonLandingSpot);
-
-            if (dist > OPENING_DUNGEON_LANDING_ARM_RADIUS) {
-                sLandingSpotArmed = true;
-            } else if (sLandingSpotArmed && (dist < OPENING_DUNGEON_LANDING_RADIUS) &&
-                       (player->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
+        case SCENE_OPENINGDAN:
+            // Flying up from the gold flower (Player_Action_94), high above it within the shaft.
+            if ((player->stateFlags3 & PLAYER_STATE3_200) &&
+                (player->actor.world.pos.y > sOpeningDungeonLandingFlower.y + OPENING_DUNGEON_SHAFT_EXIT_HEIGHT) &&
+                (Math_Vec3f_DistXZ(&player->actor.world.pos, &sOpeningDungeonLandingFlower) <
+                 OPENING_DUNGEON_SHAFT_RADIUS)) {
                 Hyrule_TakeWayBackExit(play, ENTRANCE(LOST_WOODS, 1));
             }
             break;
-        }
         case SCENE_LOST_WOODS:
             if (player->actor.world.pos.x < LOST_WOODS_PATH_END_X) {
                 Hyrule_TakeWayBackExit(play, Hyrule_EntranceFromOot(ENTR_LOST_WOODS_FIRST_CLEARING_AHEAD_Oot));

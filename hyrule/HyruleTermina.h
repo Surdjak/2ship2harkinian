@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 struct PlayState;
+struct Actor;
 
 // The permanent Termina unlocked flag (DESIGN.md): an OoT event flag OoT never uses, which the cycle reset keeps
 // (sKeptFlagsOot). Setting it also closes the Happy Mask Shop for good.
@@ -36,6 +37,9 @@ void Hyrule_RecoverEpona(void);
 
 // The way back to Hyrule (docs/TERMINA.md step 6): open once Link has reached Clock Town and the Deku curse is lifted.
 s32 Hyrule_IsWayBackOpen(void);
+// The opening dungeon's landing flower, gold once the way back is open: Deku Link launched high from it rises back to
+// MM's Lost Woods.
+s32 Hyrule_IsWayBackLandingFlower(struct PlayState* play, struct Actor* actor);
 // From Player's scene exits: OoT's Lost Woods' first clearing (room 0), whose straight-ahead exit beside the Skull Kid's
 // clearing loops back to Kokiri Forest in OoT, leads child Link into MM's intro once Termina is unlocked. True when
 // it took the exit.

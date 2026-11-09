@@ -765,18 +765,22 @@ The way between OoT's opening and Termina (docs/TERMINA.md). Notes:
 - The way back and later trips (T5, T6; `Hyrule_UpdateTerminaPassage`, `Hyrule_SkipsIntroCutscene`): once Link has
   reached Clock Town, MM's Lost Woods, the opening dungeon and the Clock Tower entered from its corridor (spawn 0) start
   no entrance cutscene (`Cutscene_HandleEntranceTriggers`); MM keeps those scenes' intro flags through the cycle, so
-  the dungeon's shutter stays open. Once the Deku Mask is Link's, the dungeon's landing spot (the big flower, within
-  50 of (0, 0, 309)) takes him up to MM's Lost Woods' spawn 1 after he has walked 150 away from it, and the Lost
+  the dungeon's shutter stays open. Once the Deku Mask is Link's, the dungeon's landing flower (within 50 of
+  (0, 0, 310)) is a gold one (`Hyrule_IsWayBackLandingFlower`, in `ObjEtcetera_Init`), and Deku Link launched from it
+  with a full charge rises past 250 above it (a full charge peaks about 360; a short one does not get there) into MM's
+  Lost Woods' spawn 1, up the shaft he fell down, and the Lost
   Woods' clearing's west edge (x < -1000, behind where Link wakes) leads into OoT's first clearing through its
   straight-ahead opening (OoT's 0x1B1). The other way, the first clearing's exit leads to MM's Lost Woods without
   its ride, and its hollow log to the dungeon's landing spot (spawn 2), not spawn 0's dark ledge, from which only the
   curse's cutscene carries Link down. From the Clock Tower, the way back goes down through the stone doors (MM's
   `Bg_Ctower_Rot`), the twisting corridor into the opening dungeon's stumps room (spawn 1), across the stumps as Deku
-  Link with their Deku Flowers, as in MM's intro the other way, and through the shutter down to the landing spot. MM
-  opens the stone doors only for Link coming up from the corridor, and the stumps room's shutter (type 3) only from
-  the landing spot's side; once the way back is open (`Hyrule_IsWayBackOpen`: Clock Town reached, the Deku curse
-  lifted), the stone doors stay open from the inside and the shutter opens from both sides (with A, as MM's doors).
-  Checked under gdb: through the stone doors and the corridor into the stumps room, and back through the shutter.
+  Link with their Deku Flowers, as in MM's intro the other way, and through the shutter and the big wooden door
+  (`Bg_Open_Shutter`, where the Skull Kid curses Link) down to the landing flower. MM opens the stone doors only for
+  Link coming up from the corridor, and the stumps room's shutter (type 3) and the wooden door only from the landing
+  flower's side; once the way back is open (`Hyrule_IsWayBackOpen`: Clock Town reached, the Deku curse lifted), the
+  stone doors stay open from the inside and the shutter and the wooden door open from both sides (with A, as MM's
+  doors). Checked under gdb: through the stone doors and the corridor into the stumps room, back through the shutter,
+  through the wooden door from behind, and a full-charge launch from the gold flower into MM's Lost Woods (0xC410).
 - The moon in Hyrule (step 7): from day 1, Play_Init spawns `En_Test4` in OoT scenes as MM does in dungeons, so MM's
   days turn and the moon falls there too.
 - Checked under gdb: the wake-up spot's edge into OoT's first clearing; the landing spot up to MM's Lost Woods; OoT's

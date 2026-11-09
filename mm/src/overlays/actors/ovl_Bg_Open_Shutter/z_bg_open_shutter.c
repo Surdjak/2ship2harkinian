@@ -5,6 +5,7 @@
  */
 
 #include "z_bg_open_shutter.h"
+#include "HyruleTermina.h"
 #include "objects/object_open_obj/object_open_obj.h"
 #include "z64quake.h"
 #include "z64rumble.h"
@@ -119,7 +120,9 @@ void func_80ACAD88(BgOpenShutter* this, PlayState* play) {
         Player* player = GET_PLAYER(play);
 
         doorDirection = func_80ACABA8(this, play);
-        if (doorDirection > 0) {
+        // 3Ship [Hyrule] The way back to Hyrule (docs/TERMINA.md step 6) goes through this door from behind, which MM
+        // never opens from that side.
+        if ((doorDirection > 0) || ((doorDirection < 0) && Hyrule_IsWayBackOpen())) {
             player->doorType = PLAYER_DOORTYPE_SLIDING;
             player->doorDirection = doorDirection;
             player->doorActor = &this->slidingDoor.dyna.actor;

@@ -5,6 +5,7 @@
  */
 
 #include "z_obj_etcetera.h"
+#include "HyruleTermina.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -70,9 +71,16 @@ void ObjEtcetera_Init(Actor* thisx, PlayState* play) {
     s32 pad;
     ObjEtcetera* this = (ObjEtcetera*)thisx;
     s32 objectSlot;
-    s32 type = DEKU_FLOWER_TYPE(&this->dyna.actor);
+    s32 type;
     s32 floorBgId;
     Vec3f pos;
+
+    // 3Ship [Hyrule] The opening dungeon's landing flower turns gold once the way back is open, launching Deku Link
+    // back up the shaft he fell down (Hyrule_UpdateTerminaPassage).
+    if (Hyrule_IsWayBackLandingFlower(play, &this->dyna.actor)) {
+        this->dyna.actor.params = DEKU_FLOWER_PARAMS(DEKU_FLOWER_TYPE_GOLD) | (this->dyna.actor.params & 0x7F);
+    }
+    type = DEKU_FLOWER_TYPE(&this->dyna.actor);
 
     if ((type < DEKU_FLOWER_TYPE_PINK) || (type >= DEKU_FLOWER_TYPE_MAX)) {
         type = DEKU_FLOWER_TYPE_PINK;
