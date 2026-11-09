@@ -799,6 +799,10 @@ Fixes from the first play test:
 - Hyrule's big chests play MM's long chest opening (`CS_ID_GLOBAL_LONG_CHEST_OOT`, MM's unused global cutscene slot
   0x7A, with the entry MM's scenes give their own big chests: `CAM_SET_LONG_CHEST_OPENING`). MM's chests take it from
   their scene's actor cutscene list, which OoT's scenes do not have.
+- Closing one of Navi's forced messages (`Elf_Msg`, the Deku Tree's vines among them) crashed: those messages run
+  with no talk cutscene, as in OoT, and Player's `CutsceneManager_Stop(CS_ID_GLOBAL_TALK)` then read the running
+  cutscene's entry -1. MM reads it just before its scene's actor cutscene list; OoT's scenes have none. With nothing
+  running, `CutsceneManager_Stop` now returns `CS_ID_NONE` without reading an entry.
 - OoT scenes' chests (MM's `En_Box`) turn the other way round from MM's own, as OoT's do (OoT turns their direction,
   MM their model), and small ones take OoT's scale (0.005, MM's 0.0075).
 - Hyrule's save prompt is drawn (MM drew it only with 2Ship's pause save or game-over options on); its page title is

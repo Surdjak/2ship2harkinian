@@ -459,6 +459,12 @@ s16 CutsceneManager_Stop(s16 csId) {
         return csId;
     }
 
+    // 3Ship [Hyrule] Nothing is running, so there is nothing to stop. MM read entry -1 here, just before its scene's
+    // list; OoT's scenes have no list (Navi's messages close with no talk cutscene running, as in OoT).
+    if (sCutsceneMgr.csId <= CS_ID_NONE) {
+        return CS_ID_NONE;
+    }
+
     csEntry = CutsceneManager_GetCutsceneEntryImpl(sCutsceneMgr.csId);
     if ((sCutsceneMgr.length > 0) && (csEntry->scriptIndex == CS_SCRIPT_ID_NONE)) {
         return -2;
