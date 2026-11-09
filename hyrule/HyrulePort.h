@@ -54,13 +54,13 @@ extern u16 gNaviTimerOot;
 // Whether a game of Bombchu Bowling is on: the B button then throws its Bombchus (HyruleActor.c).
 s32 Hyrule_IsBombchuBowlingOot(struct PlayState* play);
 
-// OoT's one-point camera cutscenes (z_onepointdemo.c) are not ported (HyruleCamera.c): an actor that starts one keeps
-// the main camera, gets CAM_ID_NONE for the sub camera, and its attention cutscene is skipped.
+// OoT's one-point camera cutscenes (z_onepointdemo.c). The attention shots are ported (HyruleAttention.c); an actor that
+// starts any other one keeps the main camera and gets CAM_ID_NONE for the sub camera (HyruleCamera.c).
 s16 OnePointCutscene_Init(struct PlayState* play, s16 csId, s16 timer, struct Actor* actor, s16 parentCamId);
 s16 OnePointCutscene_EndCutscene(struct PlayState* play, s16 subCamId);
 s32 OnePointCutscene_Attention(struct PlayState* play, struct Actor* actor);
 s32 OnePointCutscene_CheckForCategory(struct PlayState* play, s32 actorCategory);
-// OoT's func_8005B198: the actor category of the running attention cutscene, or -1.
+// OoT's func_8005B198: the category of the actor the last attention shot turned to, or -1 before the first.
 s32 Hyrule_GetAttentionCategoryOot(void);
 
 // OoT's Audio_PlaySoundTransposed: a sound effect at pos, raised or lowered by semitones (HyruleAudio.c).

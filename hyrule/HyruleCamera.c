@@ -101,14 +101,3 @@ s16 OnePointCutscene_EndCutscene(PlayState* play, s16 subCamId) {
     return CAM_ID_NONE;
 }
 
-s32 OnePointCutscene_Attention(PlayState* play, Actor* actor) {
-    return CAM_ID_NONE;
-}
-
-s32 OnePointCutscene_CheckForCategory(PlayState* play, s32 actorCategory) {
-    return false;
-}
-
-s32 Hyrule_GetAttentionCategoryOot(void) {
-    return -1;
-}

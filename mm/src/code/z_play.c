@@ -1103,6 +1103,7 @@ void Play_UpdateMain(PlayState* this) {
         s32 i;
 
         Hyrule_UpdateCsCameraOot(this); // 3Ship [Hyrule]
+        Hyrule_UpdateAttentionCameraOot(this); // 3Ship [Hyrule] OoT's attention shots
         this->nextCamera = this->activeCamId;
         for (i = 0; i < NUM_CAMS; i++) {
             if ((i != this->nextCamera) && (this->cameraPtrs[i] != NULL)) {

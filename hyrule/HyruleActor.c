@@ -703,12 +703,6 @@ void Cutscene_StopManualOot(PlayState* play) {
     }
 }
 
-s32 OnePointCutscene_AttentionSetSfxOot(PlayState* play, Actor* actor, s32 sfxId) {
-    // OoT plays the sound as its attention camera reaches the actor; without that camera, it plays now.
-    Audio_PlaySfx(sfxId);
-    return CAM_ID_NONE;
-}
-
 void EffectSsFhgFlash_SpawnLightBallOot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale,
                                         u8 param) {
     // MM keeps OoT's effect, but only its shock spawner.

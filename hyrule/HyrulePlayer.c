@@ -888,12 +888,23 @@ static u8 Player_MapCsActionOot(u8 ootCsAction, u8* ootAction) {
 }
 
 void Player_SetCsActionWithHaltedActorsOot(PlayState* play, Actor* csActor, u8 ootCsAction) {
+    Player* player = GET_PLAYER(play);
+    u8 prevCsAction = player->csAction;
     u8 ootAction;
     u8 csAction = Player_MapCsActionOot(ootCsAction, &ootAction);
 
-    gPlayerCsActionOot = ootAction;
-    gPlayerCsActionInitOot = (ootAction != 0);
-    Player_SetCsActionWithHaltedActors(play, csActor, csAction);
+    // MM's Player_SetCsAction refuses a new action while its action 5 runs, which here is any OoT action MM has no equal
+    // for (gPlayerCsActionOot); OoT's refuses only while its own action 5 runs. So an attention shot's "stand still" (1)
+    // takes over from the look around (69) of the shot before it, as in OoT.
+    if ((prevCsAction == PLAYER_CSACTION_5) && (gPlayerCsActionOot != 5)) {
+        player->csAction = PLAYER_CSACTION_1;
+    }
+    if (Player_SetCsActionWithHaltedActors(play, csActor, csAction)) {
+        gPlayerCsActionOot = ootAction;
+        gPlayerCsActionInitOot = (ootAction != 0);
+    } else {
+        player->csAction = prevCsAction;
+    }
 }
 
 s32 Player_TryCsActionOot(PlayState* play, Actor* actor, u8 ootCsAction) {

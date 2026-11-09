@@ -6,6 +6,7 @@
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "HyruleCutscene.h"
+#include "HyruleCamera.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleScenes.h"
@@ -2289,6 +2290,7 @@ void Hyrule_UpdateOnePointCameraOot(PlayState* play) {
 
 void Hyrule_InitCutsceneOot(PlayState* play) {
     sOnePointCamIdOot = CAM_ID_NONE;
+    Hyrule_ResetAttentionCameraOot();
     memset(sEnvFlagsOot, 0, sizeof(sEnvFlagsOot));
     memset(&gCsCtxOot, 0, sizeof(gCsCtxOot));
     gCsCtxOot.state = CS_STATE_IDLE_Oot;
