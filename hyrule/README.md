@@ -728,8 +728,13 @@ The way between OoT's opening and Termina (docs/TERMINA.md). Notes:
   permanent one even with 2Ship's pause save on. A file whose last save was made in an OoT scene (`savedSceneId`)
   reloads where OoT's `Sram_OpenSave` puts Link: a dungeon's or boss's room at the dungeon's entrance, Ganon's tower
   and collapse at the tower, elsewhere Link's house as a child and the Temple of Time as an adult; the day and time
-  stay as saved. MM's own permanent saves (the Song of Time, the first entry to Clock Town, the game's end) forget an
-  OoT `savedSceneId`, so they reload in Termina as before.
+  stay as saved. MM's own permanent saves (the Song of Time, the first entry to Clock Town, a new day) forget an
+  OoT `savedSceneId`, so they reload in Termina as before. The pause save works in Termina too once Link has reached
+  Clock Town (before it, MM's intro areas would reload a cursed Link in Clock Town): it marks the file (an OoT event
+  flag OoT never uses, 0xCD, which MM's own saves clear), which then reloads by OoT's rule, a temple or its boss's room
+  at the temple's entrance (Stone Tower's inverted one for the inverted temple and Twinmold), elsewhere South Clock
+  Town, at the day and time of the save. Checked under gdb: saved in South Clock Town on day 2 at noon, reloaded there
+  then.
 - Until Link first reaches Clock Town, MM's day stays 0: `En_Test4`, which counts MM's days and brings the moon, is
   not spawned, and the three-day clock is hidden as OoT has none. MM's `isFirstCycle` ("finished intro sequence") is
   the permanent first-entry flag.

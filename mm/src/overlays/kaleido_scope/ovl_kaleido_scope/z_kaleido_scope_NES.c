@@ -3747,6 +3747,8 @@ void KaleidoScope_Update(PlayState* play) {
                                 gSaveContext.save.isOwlSave = true;
                                 SavingEnhancements_PersistSaveEntranceInfo();
                                 SavingEnhancements_AdvancePlaytime();
+                            } else {
+                                Hyrule_OnPermanentPauseSaveOot(play); // 3Ship [Hyrule] T4, in Hyrule and in Termina
                             }
                             Play_SaveCycleSceneFlags(play);
                             gSaveContext.save.saveInfo.playerData.savedSceneId = play->sceneId;

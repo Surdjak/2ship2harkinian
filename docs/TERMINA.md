@@ -57,6 +57,6 @@ Steps 1 to 5 make the game playable from OoT's opening into Termina; 6 and 7 clo
 | T1 | Navi at the passage | each world keeps its fairy: Navi is Link's fairy in every Hyrule scene, Tatl in every Termina scene; Navi takes her own cutscene cues in Hyrule (this replaces CUTSCENES.md N1's "Tatl takes Navi's cues") |
 | T2 | Who takes the first passage | child Link only, as MM's intro is child Link's; for adult Link the exit loops until the way back is open (step 6), then he crosses too |
 | T3 | Where a new save starts | always OoT's opening |
-| T4 | Saving in Hyrule once MM's three days run everywhere | OoT's pause save stays a permanent save all game, at the time of the cycle it was made |
+| T4 | Saving in Hyrule once MM's three days run everywhere | OoT's pause save stays a permanent save all game, at the time of the cycle it was made; from 2026-11-09 it works in Termina too once Link has reached Clock Town, reloading by OoT's rule (a temple at its entrance, elsewhere South Clock Town) |
 | T5 | The way back, since Link cannot climb out of the opening dungeon's fall | through the opening dungeon: its landing spot carries Link up to MM's Lost Woods |
 | T6 | Later trips from Hyrule into Termina | through MM's intro areas, walked without their cutscenes, at either age |

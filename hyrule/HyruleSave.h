@@ -17,11 +17,15 @@ void Hyrule_InitNewFileOot(void);
 // (Link's house, the Temple of Time or the dungeon's entrance), at the saved day and time. False for MM's saves.
 s32 Hyrule_OpenSaveOot(void);
 
-// Whether the pause menu's B opens the save prompt: always in Hyrule, as in OoT.
+// Whether the pause menu's B opens the save prompt: always in Hyrule, as in OoT, and in Termina once Link has reached
+// Clock Town.
 s32 Hyrule_CanPauseSaveOot(struct PlayState* play);
 
-// Whether this pause save is OoT's permanent save (in Hyrule) rather than 2Ship's owl-style pause save (T4).
+// Whether this pause save is OoT's permanent save rather than 2Ship's owl-style pause save (T4).
 s32 Hyrule_IsPermanentPauseSaveOot(struct PlayState* play);
+
+// Before a permanent pause save is written: marks one made in Termina, which reloads by OoT's rule (Hyrule_OpenSaveOot).
+void Hyrule_OnPermanentPauseSaveOot(struct PlayState* play);
 
 // For MM's own permanent saves (the Song of Time, the first entry to Clock Town...), which reload in Termina.
 void Hyrule_ForgetSavedSceneOot(void);

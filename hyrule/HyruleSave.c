@@ -8,6 +8,7 @@
 #include "HyruleInventory.h"
 #include "HyrulePort.h"
 #include "HyruleScenes.h"
+#include "HyruleFlags.h"
 
 // OoT's entrances.
 #define ENTR_LINKS_HOUSE_CHILD_SPAWN_Oot 0x0BB
@@ -42,6 +43,33 @@ static const u16 sDungeonEntrancesOot[] = {
     0x486, // SCENE_THIEVES_HIDEOUT
     0x467, // SCENE_INSIDE_GANONS_CASTLE
 };
+
+// A file whose last permanent save is a pause save made in Termina (docs/TERMINA.md T4): an OoT event flag OoT never
+// uses. MM's own permanent saves (the Song of Time, the first entry to Clock Town, a new day) clear it.
+#define EVENTCHKINF_TERMINA_SAVE_3SHIP 0xCD
+
+// The Termina entrance a pause save made in Termina reloads at, by OoT's rule: a temple (or its boss's room) reloads
+// at its entrance, anywhere else at South Clock Town, before the Clock Tower (Termina's Link's house).
+static u32 Hyrule_GetTerminaLoadEntrance(s16 sceneId) {
+    switch (sceneId) {
+        case SCENE_MITURIN:
+        case SCENE_MITURIN_BS:
+            return ENTRANCE(WOODFALL_TEMPLE, 0);
+        case SCENE_HAKUGIN:
+        case SCENE_HAKUGIN_BS:
+            return ENTRANCE(SNOWHEAD_TEMPLE, 0);
+        case SCENE_SEA:
+        case SCENE_SEA_BS:
+            return ENTRANCE(GREAT_BAY_TEMPLE, 0);
+        case SCENE_INISIE_N:
+            return ENTRANCE(STONE_TOWER_TEMPLE, 0);
+        case SCENE_INISIE_R:
+        case SCENE_INISIE_BS:
+            return ENTRANCE(STONE_TOWER_TEMPLE_INVERTED, 0);
+        default:
+            return ENTRANCE(SOUTH_CLOCK_TOWN, 0);
+    }
+}
 
 // The OoT entrance a file saved in an OoT scene reloads at (OoT's Sram_OpenSave).
 static u16 Hyrule_GetLoadEntranceOot(s32 ootSceneId) {
@@ -84,12 +112,17 @@ s32 Hyrule_OpenSaveOot(void) {
     s32 ootSceneId = Hyrule_GetOotSceneId(gSaveContext.save.saveInfo.playerData.savedSceneId);
     u32 entrance;
 
-    if (ootSceneId < 0) {
+    if (ootSceneId >= 0) {
+        entrance = Hyrule_EntranceFromOot(Hyrule_GetLoadEntranceOot(ootSceneId));
+        if (entrance == HYRULE_ENTRANCE_NONE) {
+            entrance = Hyrule_EntranceFromOot(ENTR_LINKS_HOUSE_CHILD_SPAWN_Oot);
+        }
+    } else if (GET_EVENTCHKINF_OOT(EVENTCHKINF_TERMINA_SAVE_3SHIP)) {
+        // Saved from the pause menu in Termina: the same rule, at the day and time of the save (T4).
+        entrance = Hyrule_GetTerminaLoadEntrance(gSaveContext.save.saveInfo.playerData.savedSceneId);
+    } else {
+        // MM's own saves reload as MM's do.
         return false;
-    }
-    entrance = Hyrule_EntranceFromOot(Hyrule_GetLoadEntranceOot(ootSceneId));
-    if (entrance == HYRULE_ENTRANCE_NONE) {
-        entrance = Hyrule_EntranceFromOot(ENTR_LINKS_HOUSE_CHILD_SPAWN_Oot);
     }
     gSaveContext.save.entrance = entrance;
     // The file's own cutscene index plays: OoT's opening (0xFFF1) on a new file, none on a saved one. MM's new file
@@ -103,15 +136,26 @@ s32 Hyrule_OpenSaveOot(void) {
 }
 
 s32 Hyrule_CanPauseSaveOot(PlayState* play) {
-    return Hyrule_GetOotSceneId(play->sceneId) >= 0;
+    // Everywhere in Hyrule, as in OoT, and in Termina once Link has reached Clock Town: MM's intro areas before it would
+    // reload a cursed Link, his Ocarina still with the Skull Kid, in Clock Town.
+    return (Hyrule_GetOotSceneId(play->sceneId) >= 0) || gSaveContext.save.isFirstCycle;
 }
 
 s32 Hyrule_IsPermanentPauseSaveOot(PlayState* play) {
-    return Hyrule_GetOotSceneId(play->sceneId) >= 0;
+    return Hyrule_CanPauseSaveOot(play);
+}
+
+void Hyrule_OnPermanentPauseSaveOot(PlayState* play) {
+    if (Hyrule_GetOotSceneId(play->sceneId) >= 0) {
+        CLEAR_EVENTCHKINF_OOT(EVENTCHKINF_TERMINA_SAVE_3SHIP);
+    } else {
+        SET_EVENTCHKINF_OOT(EVENTCHKINF_TERMINA_SAVE_3SHIP);
+    }
 }
 
 void Hyrule_ForgetSavedSceneOot(void) {
     if (Hyrule_GetOotSceneId(gSaveContext.save.saveInfo.playerData.savedSceneId) >= 0) {
         gSaveContext.save.saveInfo.playerData.savedSceneId = SCENE_SPOT00;
     }
+    CLEAR_EVENTCHKINF_OOT(EVENTCHKINF_TERMINA_SAVE_3SHIP);
 }
