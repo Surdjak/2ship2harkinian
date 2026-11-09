@@ -9,6 +9,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleScenes.h"
+#include "HyruleTitleCard.h"
 #include "HyruleOcarina.h"
 #include "assets/oot/scenes/dungeons/ganontika/ganontika_scene.h"
 #include "HyruleInventory.h"
@@ -394,8 +395,7 @@ static void func_80064824(PlayState* play, CutsceneContextOot* csCtx, CsCmdBaseO
             break;
         case 15:
             if (sp3F != 0) {
-                // OoT's place-name card is MM's scene title text.
-                Message_DisplaySceneTitleCard(play, play->loadedScene->titleTextId);
+                Hyrule_InitPlaceNameOot(play);
             }
             break;
         case 16:

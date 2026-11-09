@@ -1038,6 +1038,14 @@ void TitleCard_InitBossName(GameState* gameState, TitleCardContext* titleCtx, Te
 
 void TitleCard_InitPlaceName(GameState* gameState, TitleCardContext* titleCtx, TexturePtr texture, s32 x, s32 y,
                              s32 width, s32 height, s32 delay) {
+    // 3Ship [Hyrule] OoT's body: MM names its areas with text, OoT's scenes with these textures (HyruleTitleCard.c).
+    titleCtx->texture = texture;
+    titleCtx->x = x;
+    titleCtx->y = y;
+    titleCtx->width = width;
+    titleCtx->height = height;
+    titleCtx->durationTimer = 80;
+    titleCtx->delayTimer = delay;
 }
 
 void TitleCard_Update(GameState* gameState, TitleCardContext* titleCtx) {

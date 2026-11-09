@@ -1,0 +1,230 @@
+<Root>
+	<File Name="g_pn_01" Segment="128">
+		<Texture Name="gForestTempleTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gForestTempleTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_02" Segment="128">
+		<Texture Name="gShadowTempleTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gShadowTempleTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_03" Segment="128">
+		<Texture Name="gFireTempleTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gFireTempleTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_04" Segment="128">
+		<Texture Name="gWaterTempleTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gWaterTempleTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_05" Segment="128">
+		<Texture Name="gSpiritTempleTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gSpiritTempleTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_06" Segment="128">
+		<Texture Name="gDekuTreeTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gDekuTreeTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_07" Segment="128">
+		<Texture Name="gJabuJabuTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gJabuJabuTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_08" Segment="128">
+		<Texture Name="gDodongosCavernTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gDodongosCavernTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_09" Segment="128">
+		<Texture Name="gInsideGanonsCastleTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gInsideGanonsCastleTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_10" Segment="128">
+		<Texture Name="gIceCavernTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gIceCavernTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_11" Segment="128">
+		<Texture Name="gGERudoTrainingGroundTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gGERudoTrainingGroundTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_12" Segment="128">
+		<Texture Name="gCastleCourtyardTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gCastleCourtyardTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_13" Segment="128">
+		<Texture Name="gGreatFairysFountainTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gGreatFairysFountainTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_14" Segment="128">
+		<Texture Name="gChamberOfTheSagesTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gChamberOfTheSagesTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_15" Segment="128">
+		<Texture Name="gShootingGalleryTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gShootingGalleryTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_16" Segment="128">
+		<Texture Name="gTempleOfTimeTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gTempleOfTimeTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_17" Segment="128">
+		<Texture Name="gMarketTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gMarketTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_18" Segment="128">
+		<Texture Name="gBackAlleyTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gBackAlleyTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_19" Segment="128">
+		<Texture Name="gKokiriShopTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gKokiriShopTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_20" Segment="128">
+		<Texture Name="gGoronShopTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gGoronShopTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_21" Segment="128">
+		<Texture Name="gZoraShopTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gZoraShopTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_22" Segment="128">
+		<Texture Name="gHouseOfSkulltulaTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gHouseOfSkulltulaTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_23" Segment="128">
+		<Texture Name="gBazaarTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gBazaarTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_24" Segment="128">
+		<Texture Name="gPotionShopTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gPotionShopTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_25" Segment="128">
+		<Texture Name="gGravekeepersHutTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gGravekeepersHutTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_26" Segment="128">
+		<Texture Name="gLakesideLaboratoryTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gLakesideLaboratoryTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_27" Segment="128">
+		<Texture Name="gHyruleFieldTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gHyruleFieldTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_28" Segment="128">
+		<Texture Name="gKakarikoVillageTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gKakarikoVillageTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_29" Segment="128">
+		<Texture Name="gGraveyardTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gGraveyardTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_30" Segment="128">
+		<Texture Name="gZorasRiverTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gZorasRiverTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_31" Segment="128">
+		<Texture Name="gKokiriForestTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gKokiriForestTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_32" Segment="128">
+		<Texture Name="gLakeHyliaTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gLakeHyliaTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_33" Segment="128">
+		<Texture Name="gZorasDomainTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gZorasDomainTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_34" Segment="128">
+		<Texture Name="gZorasFountainTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gZorasFountainTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_35" Segment="128">
+		<Texture Name="gGERudoValleyTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gGERudoValleyTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_36" Segment="128">
+		<Texture Name="gLostWoodsTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gLostWoodsTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_37" Segment="128">
+		<Texture Name="gHauntedWastelandTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gHauntedWastelandTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_38" Segment="128">
+		<Texture Name="gHyruleCastleTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gHyruleCastleTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_39" Segment="128">
+		<Texture Name="gDeathMountainTrailTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gDeathMountainTrailTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_40" Segment="128">
+		<Texture Name="gDeathMountainCraterTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gDeathMountainCraterTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_41" Segment="128">
+		<Texture Name="gGoronCityTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gGoronCityTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_42" Segment="128">
+		<Texture Name="gLonLonRanchTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gLonLonRanchTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_43" Segment="128">
+		<Texture Name="gGanonsCastleTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gGanonsCastleTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_44" Segment="128">
+		<Texture Name="gRoyalFamilysTombTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gRoyalFamilysTombTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_45" Segment="128">
+		<Texture Name="gFairysFountainTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gFairysFountainTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_46" Segment="128">
+		<Texture Name="gFishingPondTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gFishingPondTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_47" Segment="128">
+		<Texture Name="gBombchuBowlingAlleyCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gBombchuBowlingAlleyCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_48" Segment="128">
+		<Texture Name="gStableTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gStableTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_49" Segment="128">
+		<Texture Name="gThievesHideoutTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gThievesHideoutTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_50" Segment="128">
+		<Texture Name="gHappyMaskShopTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gHappyMaskShopTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_51" Segment="128">
+		<Texture Name="gTreasureBoxShopTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gTreasureBoxShopTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_52" Segment="128">
+		<Texture Name="gSacredForestMeadowTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gSacredForestMeadowTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_53" Segment="128">
+		<Texture Name="gGERudosFortressTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gGERudosFortressTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_54" Segment="128">
+		<Texture Name="gBottomOfTheWellTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gBottomOfTheWellTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_55" Segment="128">
+		<Texture Name="gDesertColossusTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gDesertColossusTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_56" Segment="128">
+		<Texture Name="gBombchuShopTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gBombchuShopTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+	<File Name="g_pn_57" Segment="128">
+		<Texture Name="gQuestionMarkTitleCardJPNTex" Format="ia8" Width="144" Height="24" Offset="0x0" />
+		<Texture Name="gQuestionMarkTitleCardENGTex" Format="ia8" Width="144" Height="24" Offset="0xD80" />
+	</File>
+</Root>

@@ -200,6 +200,11 @@ become fades of the same color and speed.
 - **Skyboxes:** OoT's normal sky and cutscene map use MM's, and the prerendered rooms' panoramas (the market
   square's day, night and ruins among them) are drawn by `HyrulePanorama.c` (below). OoT's bazaar and overcast skies
   are not ported and show nothing (`Hyrule_SkyboxFromOot`).
+- **Place names:** MM names an area with its scene's title text, which OoT's scenes do not have. On an entrance
+  whose title card flag is set, `Cutscene_HandleEntranceTriggers` shows OoT's place-name card instead
+  (`HyruleTitleCard.c`, OoT's `TitleCard_InitPlaceName`, which MM left empty): OoT's `g_pn_*` textures, extracted
+  from `textures/place_title_cards.xml`, every time Link takes such an entrance. Dodongo's Cavern and the Bombchu
+  Shop wait for OoT's flags, and entrance cutscenes show the card with their own command (15).
 
 ### Prerendered rooms
 

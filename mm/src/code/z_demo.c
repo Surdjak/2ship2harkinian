@@ -1,6 +1,8 @@
 #include "prevent_bss_reordering.h"
 #include "HyruleTermina.h"
 #include "prevent_bss_reordering2.h"
+#include "HyruleScenes.h"
+#include "HyruleTitleCard.h"
 #include "PR/ultratypes.h"
 
 #include "z64quake.h"
@@ -1587,11 +1589,17 @@ void Cutscene_HandleEntranceTriggers(PlayState* play) {
 
     if ((gSaveContext.respawnFlag == 0) || (gSaveContext.respawnFlag == -2)) {
         scene = play->loadedScene;
-        if ((scene->titleTextId != 0) && GameInteractor_Should(VB_SHOW_TITLE_CARD, gSaveContext.showTitleCard)) {
+        // 3Ship [Hyrule] OoT's scenes show OoT's place-name card instead of a title text.
+        if (((scene->titleTextId != 0) || (Hyrule_GetOotSceneId(play->sceneId) >= 0)) &&
+            GameInteractor_Should(VB_SHOW_TITLE_CARD, gSaveContext.showTitleCard)) {
             if ((Entrance_GetTransitionFlags(((void)0, gSaveContext.save.entrance) +
                                              ((void)0, gSaveContext.sceneLayer)) &
                  0x4000) != 0) {
-                Message_DisplaySceneTitleCard(play, scene->titleTextId);
+                if (Hyrule_GetOotSceneId(play->sceneId) < 0) {
+                    Message_DisplaySceneTitleCard(play, scene->titleTextId);
+                } else if (Hyrule_ShowsPlaceNameOot(play)) {
+                    Hyrule_InitPlaceNameOot(play);
+                }
             }
         }
 
