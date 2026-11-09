@@ -20,9 +20,10 @@ void Hyrule_UpdateCsCameraOot(struct PlayState* play);
 // Stops a spline move (a camera setting requested by an actor, a scene change).
 void Hyrule_StopCsCameraOot(void);
 
-// OoT's attention shots (HyruleAttention.c), each frame from Play_Update before the cameras update: plays the active
-// one and, after its last frame, hands back to the camera it took over from.
-void Hyrule_UpdateAttentionCameraOot(struct PlayState* play);
+// OoT's one-point shots (HyruleOnePoint.c), each frame from Play_Update before the cameras update: plays the active one.
+void Hyrule_UpdateOnePointCameraShotOot(struct PlayState* play);
+// After the cameras update: a shot whose timer ran out hands back to the camera it took over from (OoT's Camera_Finish).
+void Hyrule_FinishOnePointCameraShotOot(struct PlayState* play);
 // Forgets the shots' queue, whose sub cameras a new scene clears.
 void Hyrule_ResetAttentionCameraOot(void);
 

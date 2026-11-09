@@ -190,6 +190,8 @@ s32 Hyrule_IsExchangeAcceptedOot(PlayerItemAction offer, PlayerItemAction shown)
 // OoT's Player_SetCsActionWithHaltedActors with OoT's cutscene action number, which MM numbers differently. Only the
 // actions ported actors use are mapped: OoT's 1 (idle), 7 (end), 8 (wait) and 95 (hands up, caught by a Gerudo).
 void Player_SetCsActionWithHaltedActorsOot(struct PlayState* play, struct Actor* csActor, u8 ootCsAction);
+// OoT's Player_SetCsAction with OoT's cutscene action number: the same mapping, without halting the other actors.
+void Player_SetCsActionOot(struct PlayState* play, struct Actor* csActor, u8 ootCsAction);
 // OoT's Player_TryCsAction (play->startPlayerCutscene): the same mapping, without halting the other actors; false
 // while Link is in a cutscene he cannot leave.
 s32 Player_TryCsActionOot(struct PlayState* play, struct Actor* actor, u8 ootCsAction);

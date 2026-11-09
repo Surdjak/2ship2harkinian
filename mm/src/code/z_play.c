@@ -1103,7 +1103,7 @@ void Play_UpdateMain(PlayState* this) {
         s32 i;
 
         Hyrule_UpdateCsCameraOot(this); // 3Ship [Hyrule]
-        Hyrule_UpdateAttentionCameraOot(this); // 3Ship [Hyrule] OoT's attention shots
+        Hyrule_UpdateOnePointCameraShotOot(this); // 3Ship [Hyrule] OoT's one-point shots
         this->nextCamera = this->activeCamId;
         for (i = 0; i < NUM_CAMS; i++) {
             if ((i != this->nextCamera) && (this->cameraPtrs[i] != NULL)) {
@@ -1670,6 +1670,8 @@ void Play_Main(GameState* thisx) {
         FrameInterpolation_StopRecord();
         *CONTROLLER1(&this->state) = input;
     }
+
+    Hyrule_FinishOnePointCameraShotOot(this); // 3Ship [Hyrule] OoT's Camera_Finish, at the end of Play_Draw
 
     CutsceneManager_Update();
     CutsceneManager_ClearWaiting();

@@ -167,7 +167,7 @@ u8 CollisionCheck_GetSwordDamageOot(u64 dmgFlags, PlayState* play);
 // OoT's func_80064520 and func_80064534: an actor's manual cutscene, in OoT's cutscene context (HyruleCutscene.c).
 void Cutscene_StartManualOot(PlayState* play);
 void Cutscene_StopManualOot(PlayState* play);
-// OoT's OnePointCutscene_AttentionSetSfx: an attention shot (HyruleAttention.c) that plays sfxId as it starts.
+// OoT's OnePointCutscene_AttentionSetSfx: an attention shot (HyruleOnePoint.c) that plays sfxId as it starts.
 s32 OnePointCutscene_AttentionSetSfxOot(PlayState* play, Actor* actor, s32 sfxId);
 // OoT's EffectSsFhgFlash_SpawnLightBall (Phantom Ganon's light balls); MM's effect has only the shock spawner.
 void EffectSsFhgFlash_SpawnLightBallOot(PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, s16 scale, u8 param);

@@ -54,8 +54,8 @@ extern u16 gNaviTimerOot;
 // Whether a game of Bombchu Bowling is on: the B button then throws its Bombchus (HyruleActor.c).
 s32 Hyrule_IsBombchuBowlingOot(struct PlayState* play);
 
-// OoT's one-point camera cutscenes (z_onepointdemo.c). The attention shots are ported (HyruleAttention.c); an actor that
-// starts any other one keeps the main camera and gets CAM_ID_NONE for the sub camera (HyruleCamera.c).
+// OoT's one-point camera cutscenes (z_onepointdemo.c), ported in HyruleOnePoint.c: a short camera shot on a sub camera,
+// whose id is returned (CAM_ID_NONE when no sub camera is free).
 s16 OnePointCutscene_Init(struct PlayState* play, s16 csId, s16 timer, struct Actor* actor, s16 parentCamId);
 s16 OnePointCutscene_EndCutscene(struct PlayState* play, s16 subCamId);
 s32 OnePointCutscene_Attention(struct PlayState* play, struct Actor* actor);

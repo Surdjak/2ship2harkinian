@@ -907,6 +907,24 @@ void Player_SetCsActionWithHaltedActorsOot(PlayState* play, Actor* csActor, u8 o
     }
 }
 
+void Player_SetCsActionOot(PlayState* play, Actor* csActor, u8 ootCsAction) {
+    Player* player = GET_PLAYER(play);
+    u8 prevCsAction = player->csAction;
+    u8 ootAction;
+    u8 csAction = Player_MapCsActionOot(ootCsAction, &ootAction);
+
+    // As Player_SetCsActionWithHaltedActorsOot: OoT refuses only while its own action 5 runs.
+    if ((prevCsAction == PLAYER_CSACTION_5) && (gPlayerCsActionOot != 5)) {
+        player->csAction = PLAYER_CSACTION_1;
+    }
+    if (Player_SetCsAction(play, csActor, csAction)) {
+        gPlayerCsActionOot = ootAction;
+        gPlayerCsActionInitOot = (ootAction != 0);
+    } else {
+        player->csAction = prevCsAction;
+    }
+}
+
 s32 Player_TryCsActionOot(PlayState* play, Actor* actor, u8 ootCsAction) {
     Player* player = GET_PLAYER(play);
     u8 ootAction;

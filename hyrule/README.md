@@ -457,7 +457,7 @@ child Link's front slashes bounce off the Wolfos' guard as in OoT.
 - OoT's `En_Part` is ported for the parts and flames enemies leave (`func_800358DC`, the Moblin's club flames); MM's
   own `En_Part` is a different actor.
 - The miniboss music for the gate's Wolfos uses MM's `Audio_PlayBgm_StorePrevBgm`.
-- OoT's camera glance at the opening gate (`OnePointCutscene_Attention`) was left out; it now plays (see the attention
+- OoT's camera glance at the opening gate (`OnePointCutscene_Attention`) was left out; it now plays (see the one-point
   shots under the first play test's fixes).
 
 Wave 14 opens OoT's grottos. MM's grottos are OoT's design: a hole stores where Link fell in, and what the grotto
@@ -490,8 +490,8 @@ frame; Death Mountain's cloud ring turns on SoH's frames until it leaves the cam
 - `En_River_Sound` uses MM's names for OoT's river audio, which MM kept: `Audio_PlaySfx_River`,
   `Audio_LowerMainBgmVolume`, and `func_801A09D4` for the Lost Woods' Saria's Song that grows near the right path.
 - The torches take MM's arrows (`En_Arrow`) and light them as MM's torches do; the Deku Stick flame is MM's
-  Player `unk_B28`. OoT's camera glances (`OnePointCutscene_Attention`) now play; the waterfall's
-  `OnePointCutscene_Init` is left out.
+  Player `unk_B28`. OoT's camera glances (`OnePointCutscene_Attention`) and the waterfall's shot
+  (`OnePointCutscene_Init`) now play.
 - MM's `LINK_AGE_IN_YEARS` reads MM's adult transformation, so ported code uses `LINK_AGE_IN_YEARS_OOT`
   (`HyrulePort.h`): the bridges and well water follow OoT's age.
 - The well beam and the cloud ring's eruption follow OoT's cutscene cues (`gCsCtxOot.npcActions`), which only
@@ -604,9 +604,8 @@ ruins' ReDeads and the Poe collector load. Notes:
 - OoT's small keys are kept by OoT's map index, which includes the Treasure Chest Shop (`Inventory_GetDungeonIndexOot`).
   OoT's doors queue MM's door cutscene when they offer themselves to Player, as MM's do (`func_80122F28`; the port
   tool adds it), and MM's Player opens OoT's chests through `EnBox_OpenOot`, since it writes MM's `EnBox` fields.
-- OoT's one-point camera cutscenes (z_onepointdemo.c) are not in MM's camera: actors that start one keep the main
-  camera (`OnePointCutscene_Init` returns `CAM_ID_NONE`, `HyruleCamera.c`). The attention shots are the exception
-  (`HyruleAttention.c`).
+- OoT's one-point camera cutscenes (z_onepointdemo.c) are not in MM's camera; they are ported in `HyruleOnePoint.c`
+  (see the first play test's fixes).
 - Text ids below 0x1000 (item and shop texts) are OoT's too: the port tool wraps them in text calls, `textId`
   assignments and text id arrays (to their closing brace).
 - Vanilla conditions apply: the Bombchu Shop and the bowling alley open after Dodongo's Cavern, the Happy Mask Shop
@@ -635,7 +634,7 @@ graveyard, the Desert Colossus. Twinrova's intro and Nabooru's Iron Knuckle figh
 - OoT's song chests (types 9 and 10, the ReDead grave's) stay OoT chests: MM's `En_Box` has no action for them.
 - OoT's dungeons are exported under `oot/scenes/nonmq/` (`Hyrule_GetScenePath`).
 - Biggoron's Sword day count (`inventoryOot.bgsDayCount`, save version 20) counts MM's days too.
-- Not done: OoT's one-point camera cutscenes other than the attention shots (boss deaths keep the main camera); boss camera
+- Not done: boss camera
   settings take MM's `DUNGEON0`; the fire circle effect (`EffectSsFCircle`) is not drawn.
 - Not checked yet: the boss fights themselves, Dark Link's fight, the temples' puzzles, the windmill's Song of
   Storms and Dampé's race.
@@ -801,18 +800,30 @@ Fixes from the first play test:
 - Hyrule's big chests play MM's long chest opening (`CS_ID_GLOBAL_LONG_CHEST_OOT`, MM's unused global cutscene slot
   0x7A, with the entry MM's scenes give their own big chests: `CAM_SET_LONG_CHEST_OPENING`). MM's chests take it from
   their scene's actor cutscene list, which OoT's scenes do not have.
-- OoT's attention shots (`OnePointCutscene_Attention`, its cutscene 5010) are ported (`HyruleAttention.c`): when a
-  room clears, a chest appears or a switch is pressed, the camera turns to it before handing back to Link. OoT's
-  actors wait for that turn (`Hyrule_GetAttentionCategoryOot`, OoT's `func_8005B198`) with a fallback; with the shots
-  stubbed, every barred door waited out its fallback, 200 frames (10 seconds) after the room cleared. Each shot is a
+- OoT's one-point camera cutscenes (z_onepointdemo.c) are ported (`HyruleOnePoint.c`): the short shots actors start
+  to show what they do, such as a door unbarring, platforms rising, a staircase falling or a boss's end. Each is a
   `CAM_SET_FREE0` sub camera queued as OoT queues them (their parent and child cameras, which MM's `Camera` no longer
-  has, are kept by camera id), playing OoT's `Camera_Demo5` keyframe choice and `Camera_Unique9` keyframes (the
-  actions those keyframes use), with OoT's large letterbox and the HUD hidden through MM's `Camera_UpdateInterface`,
-  which puts them back when the main camera resumes. Timed against SoH under gdb on the Deku Tree's first scrub room:
-  after the room clears, Link's shot (30 frames), the door's (36 frames, the door opening 12 frames into it), then
-  the main camera, as SoH does to within a few frames. MM's `Player_SetCsAction` refuses a new action while its action
-  5 runs, which here carries any OoT action MM has no equal for; `Player_SetCsActionWithHaltedActorsOot` now refuses
-  only OoT's own action 5, as OoT does, so Link stands still for the door's shot after looking around for his own.
+  has, are kept by camera id, with OoT's priorities), ended by its timer or `OnePointCutscene_EndCutscene`, and handed
+  back after `Play_Draw`, as OoT's `Camera_Finish` does. `OnePointCutscene_SetInfo` is generated from SoH's
+  (`HyruleOnePointInfo.inc`, with its keyframes in `HyruleOnePointData.inc`, by `tools/porting/gen_oot_onepoint.py`), and OoT's camera functions for the
+  settings it uses play the shots: `Camera_Unique9` (CS_C keyframes), `Camera_Demo5` (attention), `Camera_Unique6`
+  (FREE2, a held framing), `Camera_Demo9` (CS_3 splines), `Camera_Special0` (PIVOT_VERTICAL), `Camera_Demo6` (the
+  Forest Temple's Poe flames) and `Camera_Special4` (the Fire Temple's staircase); `Camera_Keep4` (cutscene 9806,
+  which no ported actor starts) is not ported. OoT's letterbox and HUD go through MM's `Camera_UpdateInterface`, which
+  puts them back when the main camera resumes. The crawlspace exit shots stay in Player (above).
+  - Attention shots (`OnePointCutscene_Attention`, cutscene 5010): OoT's actors wait for the camera's turn to them
+    (`Hyrule_GetAttentionCategoryOot`, OoT's `func_8005B198`) with a fallback; with the shots stubbed, every barred
+    door waited out its fallback, 200 frames (10 seconds) after a room cleared, and floor switches sank after their
+    100-frame cooldown. Timed against SoH under gdb in the Deku Tree's first scrub room: after the room clears, Link's
+    shot (30 frames), the door's (36 frames, the door opening 12 frames into it), then the main camera, within a few
+    frames of SoH's; the basement's floor switch flattens 3 frames after Link steps on it.
+  - Compared with SoH under gdb, started from gdb with Link as the target: the Deku Tree's rising platforms (3040,
+    keyframes), Dodongo's Cavern's staircase (3050, a spline handing over to the return shot 1020), a Forest Temple
+    framing (3150, FREE2) and the Poe flames (3190) start and end on SoH's frames with the same framing (within 2
+    units), and PIVOT_VERTICAL (3220) and the Fire Temple staircase (3310) on SoH's frames.
+  - MM's `Player_SetCsAction` refuses a new action while its action 5 runs, which here carries any OoT action MM has
+    no equal for; `Player_SetCsActionWithHaltedActorsOot` and the new `Player_SetCsActionOot` refuse only OoT's own
+    action 5, as OoT does, so Link stands still for a door's shot after looking around for his own.
 - Closing one of Navi's forced messages (`Elf_Msg`, the Deku Tree's vines among them) crashed: those messages run
   with no talk cutscene, as in OoT, and Player's `CutsceneManager_Stop(CS_ID_GLOBAL_TALK)` then read the running
   cutscene's entry -1. MM reads it just before its scene's actor cutscene list; OoT's scenes have none. With nothing
