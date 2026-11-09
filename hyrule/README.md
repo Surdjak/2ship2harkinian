@@ -834,6 +834,11 @@ Fixes from the first play test:
   appends them), so they update newest first, as in OoT. In the Deku Tree's first scrub room both barred doors ask
   for an attention shot in the same frame and the first one gets it: the camera turned to the far door instead of
   SoH's. Player's category keeps MM's order, since MM's `GET_PLAYER` reads its first actor.
+- Child Link with the Hylian Shield guards as in OoT (`Hyrule_IsChildWithHylianShield`, OoT's
+  `Player_IsChildWithHylianShield`): the shield stays on his back and R crouches him under it with OoT's
+  `gPlayerAnim_clink_normal_defense_ALL` (which MM kept), held, without shield attacks or rolls, lowered by playing it
+  back, and with no recoil from a blocked hit, as MM already does for Deku Link's guard. MM's guard had raised his empty
+  hand, since the shield is not in it.
 - Closing one of Navi's forced messages (`Elf_Msg`, the Deku Tree's vines among them) crashed: those messages run
   with no talk cutscene, as in OoT, and Player's `CutsceneManager_Stop(CS_ID_GLOBAL_TALK)` then read the running
   cutscene's entry -1. MM reads it just before its scene's actor cutscene list; OoT's scenes have none. With nothing

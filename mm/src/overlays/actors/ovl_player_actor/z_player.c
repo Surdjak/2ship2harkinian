@@ -4471,7 +4471,8 @@ s32 func_80830B88(PlayState* play, Player* this) {
                          ((((this->transformation == PLAYER_FORM_ZORA)) &&
                            !(this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN)) ||
                           ((this->transformation == PLAYER_FORM_HUMAN) &&
-                           (this->currentShield != PLAYER_SHIELD_NONE))) &&
+                           (this->currentShield != PLAYER_SHIELD_NONE) &&
+                           !Hyrule_IsChildWithHylianShield(this))) && // 3Ship [Hyrule] OoT's
                          Player_IsZTargeting(this))) {
                         PlayerAnimationHeader* anim = func_80830A58(play, this);
                         f32 endFrame = Animation_GetLastFrame(anim);
@@ -6474,7 +6475,8 @@ s32 func_80834600(Player* this, PlayState* play) {
         s32 sp64;
 
         Player_RequestRumble(play, this, 180, 20, 100, SQ(0));
-        if ((this->invincibilityTimer >= 0) && !Player_IsGoronOrDeku(this)) {
+        // 3Ship [Hyrule] Child Link crouched under the Hylian Shield takes a blocked hit without recoiling, as in OoT.
+        if ((this->invincibilityTimer >= 0) && !Player_IsGoronOrDeku(this) && !Hyrule_IsChildWithHylianShield(this)) {
             sp64 = (Player_Action_18 == this->actionFunc);
             if (!func_801242B4(this)) {
                 Player_SetAction(play, this, Player_Action_19, 0);
@@ -8888,7 +8890,8 @@ s32 Player_ActionHandler_6(Player* this, PlayState* play) {
 s32 Player_ActionHandler_11(Player* this, PlayState* play) {
     if (GameInteractor_Should(VB_SHIELD_FROM_BUTTON_HOLD, CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_R)) &&
         (this->unk_AA5 == PLAYER_UNKAA5_0) && (play->bButtonAmmoPlusOne == 0)) {
-        if (Player_IsGoronOrDeku(this) ||
+        // 3Ship [Hyrule] Child Link crouches under the Hylian Shield even while locked on, as in OoT.
+        if (Player_IsGoronOrDeku(this) || Hyrule_IsChildWithHylianShield(this) ||
             ((((this->transformation == PLAYER_FORM_ZORA) &&
                !(this->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN)) ||
               ((this->transformation == PLAYER_FORM_HUMAN) && (this->currentShield != PLAYER_SHIELD_NONE))) &&
@@ -8901,7 +8904,9 @@ s32 Player_ActionHandler_11(Player* this, PlayState* play) {
                     PlayerAnimationHeader* anim;
                     f32 endFrame;
 
-                    if (!Player_IsGoronOrDeku(this)) {
+                    // 3Ship [Hyrule] OoT's child Link with the Hylian Shield, which stays on his back, crouches under it
+                    // (OoT's gPlayerAnim_clink_normal_defense_ALL, which MM kept), as Deku Link crouches.
+                    if (!Player_IsGoronOrDeku(this) && !Hyrule_IsChildWithHylianShield(this)) {
                         Player_SetModelsForHoldingShield(this);
                         anim = D_8085BE84[PLAYER_ANIMGROUP_defense][this->modelAnimType];
                     } else {
@@ -8925,6 +8930,10 @@ s32 Player_ActionHandler_11(Player* this, PlayState* play) {
                     PlayerAnimation_Change(play, &this->skelAnime, anim, PLAYER_ANIM_ADJUSTED_SPEED,
                                            (anim == &gPlayerAnim_pn_gurd) ? 0.0f : endFrame, endFrame, ANIMMODE_ONCE,
                                            0.0f);
+                    if (Hyrule_IsChildWithHylianShield(this)) {
+                        // 3Ship [Hyrule] OoT's Player_StartAnimMovement(play, this, 4).
+                        Player_AnimReplace_Setup(play, this, ANIM_FLAG_4);
+                    }
                 }
                 func_80830AE8(this);
             }
@@ -11105,7 +11114,8 @@ s32 func_8083FCF0(PlayState* play, Player* this, f32 arg2, f32 arg3, f32 arg4) {
 
 // Crouch-stabbing
 s32 func_8083FD80(Player* this, PlayState* play) {
-    if (!Player_IsGoronOrDeku(this) && (Player_GetMeleeWeaponHeld(this) != PLAYER_MELEEWEAPON_NONE) &&
+    if (!Player_IsGoronOrDeku(this) && !Hyrule_IsChildWithHylianShield(this) && // 3Ship [Hyrule] OoT's
+        (Player_GetMeleeWeaponHeld(this) != PLAYER_MELEEWEAPON_NONE) &&
         (this->transformation != PLAYER_FORM_ZORA) && sPlayerUseHeldItem) {
         //! Calling this function sets the meleeWeaponQuads' damage properties correctly, patching "Power Crouch Stab".
         if (GameInteractor_Should(VB_PATCH_POWER_CROUCH_STAB, true)) {
@@ -12352,8 +12362,9 @@ void Player_UpdateInterface(PlayState* play, Player* this) {
                             : DO_ACTION_DIVE;
         } else {
             sp24 = Player_IsZTargeting(this);
+            // 3Ship [Hyrule] Child Link crouched under the Hylian Shield is held as Deku Link is, as in OoT.
             if ((sp24 && (this->transformation != PLAYER_FORM_DEKU)) || !(this->stateFlags1 & PLAYER_STATE1_400000) ||
-                !Player_IsGoronOrDeku(this)) {
+                !(Player_IsGoronOrDeku(this) || Hyrule_IsChildWithHylianShield(this))) {
                 if ((this->transformation != PLAYER_FORM_GORON) &&
                     !(this->stateFlags1 & (PLAYER_STATE1_4 | PLAYER_STATE1_4000)) &&
                     (controlStickDirection <= PLAYER_STICK_DIR_FORWARD) &&
@@ -16181,7 +16192,7 @@ void Player_Action_18(Player* this, PlayState* play) {
     }
 
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
-        if (!Player_IsGoronOrDeku(this)) {
+        if (!Player_IsGoronOrDeku(this) && !Hyrule_IsChildWithHylianShield(this)) { // 3Ship [Hyrule] OoT's
             Player_Anim_PlayLoop(play, this, D_8085BE84[PLAYER_ANIMGROUP_defense_wait][this->modelAnimType]);
         }
 
@@ -16189,7 +16200,7 @@ void Player_Action_18(Player* this, PlayState* play) {
         this->av1.actionVar1 = 0;
     }
 
-    if (!Player_IsGoronOrDeku(this)) {
+    if (!Player_IsGoronOrDeku(this) && !Hyrule_IsChildWithHylianShield(this)) { // 3Ship [Hyrule] OoT's
         this->stateFlags1 |= PLAYER_STATE1_400000;
         Player_UpdateUpperBody(this, play);
         this->stateFlags1 &= ~PLAYER_STATE1_400000;
@@ -16239,10 +16250,14 @@ void Player_Action_18(Player* this, PlayState* play) {
                 this->stateFlags1 &= ~PLAYER_STATE1_400000;
                 func_8082DC38(this);
 
-                if (Player_IsGoronOrDeku(this)) {
+                if (Player_IsGoronOrDeku(this) || Hyrule_IsChildWithHylianShield(this)) {
                     func_80836A5C(this, play);
                     PlayerAnimation_Change(play, &this->skelAnime, this->skelAnime.animation, PLAYER_ANIM_NORMAL_SPEED,
                                            Animation_GetLastFrame(this->skelAnime.animation), 0.0f, 2, 0.0f);
+                    if (Hyrule_IsChildWithHylianShield(this)) {
+                        // 3Ship [Hyrule] OoT's child Link stands up from under the Hylian Shield.
+                        Player_AnimReplace_Setup(play, this, ANIM_FLAG_4);
+                    }
                 } else {
                     if (this->itemAction <= PLAYER_IA_MINUS1) {
                         func_80123C58(this);
