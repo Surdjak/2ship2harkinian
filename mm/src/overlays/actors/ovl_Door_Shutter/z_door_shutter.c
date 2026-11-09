@@ -5,6 +5,7 @@
  */
 
 #include "z_door_shutter.h"
+#include "HyruleTermina.h"
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
@@ -155,6 +156,12 @@ s32 func_808A0900(DoorShutter* this, PlayState* play) {
 s32 DoorShutter_SetupDoor(DoorShutter* this, PlayState* play) {
     ShutterObjectInfo* sp24 = &D_808A2180[this->unk_163];
     s32 doorType = this->doorType;
+
+    // 3Ship [Hyrule] The way back to Hyrule (docs/TERMINA.md step 6) goes from the stumps' room down to the opening
+    // dungeon's landing spot, through the shutter MM only opens from the landing spot's side: it opens both ways.
+    if ((doorType == DOORSHUTTER_TYPE_3) && (play->sceneId == SCENE_OPENINGDAN) && Hyrule_IsWayBackOpen()) {
+        doorType = DOORSHUTTER_TYPE_0;
+    }
 
     if (doorType != DOORSHUTTER_TYPE_4) {
         if (func_808A0900(this, play)) {

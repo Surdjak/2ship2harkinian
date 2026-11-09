@@ -5,6 +5,7 @@
  */
 
 #include "z_bg_ctower_rot.h"
+#include "HyruleTermina.h"
 #include "objects/object_ctower_rot/object_ctower_rot.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
@@ -65,6 +66,13 @@ void BgCtowerRot_Init(Actor* thisx, PlayState* play) {
         this->dyna.actor.world.pos.z = this->dyna.actor.home.pos.z + (Math_CosS(this->dyna.actor.world.rot.y) * 80.0f);
         this->timer = 80.0f;
         this->actionFunc = BgCtowerRot_DoorIdle;
+    } else if (Hyrule_IsWayBackOpen()) {
+        // 3Ship [Hyrule] The way back to Hyrule (docs/TERMINA.md step 6) goes down to the corridor, through the stone
+        // doors MM only ever opens for Link coming up from it: from the inside, they stay open.
+        this->dyna.actor.world.pos.x = this->dyna.actor.home.pos.x + (Math_SinS(this->dyna.actor.world.rot.y) * 80.0f);
+        this->dyna.actor.world.pos.z = this->dyna.actor.home.pos.z + (Math_CosS(this->dyna.actor.world.rot.y) * 80.0f);
+        this->timer = 80.0f;
+        this->actionFunc = BgCtowerRot_DoorDoNothing;
     } else {
         this->actionFunc = BgCtowerRot_DoorDoNothing;
     }

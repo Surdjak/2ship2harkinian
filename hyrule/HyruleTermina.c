@@ -40,6 +40,10 @@ static s32 Hyrule_IsDekuCurseLifted(void) {
     return INV_CONTENT(ITEM_MASK_DEKU) == ITEM_MASK_DEKU;
 }
 
+s32 Hyrule_IsWayBackOpen(void) {
+    return gSaveContext.save.isFirstCycle && Hyrule_IsDekuCurseLifted();
+}
+
 // MM's intro: the Skull Kid takes Epona and the Ocarina of Time, which Link gets back in the Clock Tower.
 static void Hyrule_StealForMmIntro(void) {
     s32 form;

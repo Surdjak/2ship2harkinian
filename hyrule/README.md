@@ -765,7 +765,13 @@ The way between OoT's opening and Termina (docs/TERMINA.md). Notes:
   Woods' clearing's west edge (x < -1000, behind where Link wakes) leads into OoT's first clearing through its
   straight-ahead opening (OoT's 0x1B1). The other way, the first clearing's exit leads to MM's Lost Woods without
   its ride, and its hollow log to the dungeon's landing spot (spawn 2), not spawn 0's dark ledge, from which only the
-  curse's cutscene carries Link down. The Clock Tower's back door into the corridor is MM's own.
+  curse's cutscene carries Link down. From the Clock Tower, the way back goes down through the stone doors (MM's
+  `Bg_Ctower_Rot`), the twisting corridor into the opening dungeon's stumps room (spawn 1), across the stumps as Deku
+  Link with their Deku Flowers, as in MM's intro the other way, and through the shutter down to the landing spot. MM
+  opens the stone doors only for Link coming up from the corridor, and the stumps room's shutter (type 3) only from
+  the landing spot's side; once the way back is open (`Hyrule_IsWayBackOpen`: Clock Town reached, the Deku curse
+  lifted), the stone doors stay open from the inside and the shutter opens from both sides (with A, as MM's doors).
+  Checked under gdb: through the stone doors and the corridor into the stumps room, and back through the shutter.
 - The moon in Hyrule (step 7): from day 1, Play_Init spawns `En_Test4` in OoT scenes as MM does in dungeons, so MM's
   days turn and the moon falls there too.
 - Checked under gdb: the wake-up spot's edge into OoT's first clearing; the landing spot up to MM's Lost Woods; OoT's
