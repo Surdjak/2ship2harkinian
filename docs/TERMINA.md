@@ -42,10 +42,11 @@ into the game, and the few points DESIGN.md leaves open.
    either world (DESIGN.md, EPONA.md point 4).
 6. **The way back.** Once the Deku curse is lifted (the Song of Healing), Link walks back from the Clock Tower
    interior's back door through the opening dungeon's corridor to its landing spot (the big flower he fell onto),
-   now a gold Deku Flower whose launch carries him back up the shaft to MM's Lost Woods, and out by the clearing's far
-   side, where he woke up, into OoT's Lost Woods' first clearing (T5). From there the same exit leads into Termina the
+   now a gold Deku Flower whose launch carries him back up the shaft to MM's Lost Woods, in front of the hollow tree,
+   and across the stumps to the clearing where he woke up, where a blue warp takes him into OoT's Lost Woods' first
+   clearing (T5). From there the same exit leads into Termina the
    same way, walked without the intro's cutscenes, at either age (T6). Until the curse is lifted, the flower stays
-   pink and that exit stays shut.
+   pink, the warp is absent and that exit stays shut.
 7. **The cycle.** From then on the Song of Time resets both worlds (already done, DESIGN.md "Cycle reset"), and the
    moon falls in Hyrule as in Termina.
 

@@ -768,9 +768,12 @@ The way between OoT's opening and Termina (docs/TERMINA.md). Notes:
   the dungeon's shutter stays open. Once the Deku Mask is Link's, the dungeon's landing flower (within 50 of
   (0, 0, 310)) is a gold one (`Hyrule_IsWayBackLandingFlower`, in `ObjEtcetera_Init`), and Deku Link launched from it
   with a full charge rises past 250 above it (a full charge peaks about 360; a short one does not get there) into MM's
-  Lost Woods' spawn 1, up the shaft he fell down, and the Lost
-  Woods' clearing's west edge (x < -1000, behind where Link wakes) leads into OoT's first clearing through its
-  straight-ahead opening (OoT's 0x1B1). The other way, the first clearing's exit leads to MM's Lost Woods without
+  Lost Woods' spawn 1, up the shaft he fell down. He comes out in front of the hollow tree he followed the Skull Kid
+  into, facing back across the stumps (`Hyrule_GetTerminaPassageSpawn` and `Hyrule_GetTerminaPassageSpawnRoom`: (2380,
+  160, -40) in room 1, short of the ramp's exit floor from x 2445; spawn 1 itself stands in the clearing, room 0). At
+  the clearing's west bank, behind where Link wakes, a blue warp (`Door_Warp1` type 0 with params 0x7E00 at (-1000, 0,
+  200), spawned by `Hyrule_SpawnTerminaPassageActors` with `object_warp1` loaded for the scene's stay, as `En_Horse`
+  does for Epona) leads into OoT's first clearing through its straight-ahead opening (OoT's 0x1B1). The other way, the first clearing's exit leads to MM's Lost Woods without
   its ride, and its hollow log to the dungeon's landing spot (spawn 2), not spawn 0's dark ledge, from which only the
   curse's cutscene carries Link down. From the Clock Tower, the way back goes down through the stone doors (MM's
   `Bg_Ctower_Rot`), the twisting corridor into the opening dungeon's stumps room (spawn 1), across the stumps as Deku
@@ -780,7 +783,9 @@ The way between OoT's opening and Termina (docs/TERMINA.md). Notes:
   flower's side; once the way back is open (`Hyrule_IsWayBackOpen`: Clock Town reached, the Deku curse lifted), the
   stone doors stay open from the inside and the shutter and the wooden door open from both sides (with A, as MM's
   doors). Checked under gdb: through the stone doors and the corridor into the stumps room, back through the shutter,
-  through the wooden door from behind, and a full-charge launch from the gold flower into MM's Lost Woods (0xC410).
+  through the wooden door from behind, a full-charge launch from the gold flower into MM's Lost Woods (0xC410), the
+  arrival at the hollow tree (screenshot), the walk from there into the clearing with the warp kept, and the warp
+  into OoT's Lost Woods (0xEA30, screenshots).
 - The moon in Hyrule (step 7): from day 1, Play_Init spawns `En_Test4` in OoT scenes as MM does in dungeons, so MM's
   days turn and the moon falls there too.
 - Checked under gdb: the wake-up spot's edge into OoT's first clearing; the landing spot up to MM's Lost Woods; OoT's

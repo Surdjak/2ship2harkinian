@@ -11,6 +11,7 @@ extern "C" {
 
 struct PlayState;
 struct Actor;
+struct ActorEntry;
 
 // The permanent Termina unlocked flag (DESIGN.md): an OoT event flag OoT never uses, which the cycle reset keeps
 // (sKeptFlagsOot). Setting it also closes the Happy Mask Shop for good.
@@ -40,6 +41,16 @@ s32 Hyrule_IsWayBackOpen(void);
 // The opening dungeon's landing flower, gold once the way back is open: Deku Link launched high from it rises back to
 // MM's Lost Woods.
 s32 Hyrule_IsWayBackLandingFlower(struct PlayState* play, struct Actor* actor);
+// From Play_Init, Link's spawn entry: the way back comes out of the opening dungeon in front of MM's Lost Woods' hollow
+// tree, not where its spawn 1 stands.
+struct ActorEntry* Hyrule_GetTerminaPassageSpawn(struct PlayState* play, struct ActorEntry* entry);
+// From Room_AllocateAndLoad, the room of that spawn.
+s32 Hyrule_GetTerminaPassageSpawnRoom(struct PlayState* play, s32 room);
+// From Play_Init: once the way back is open, a blue warp in MM's Lost Woods' clearing leads to OoT's Lost Woods.
+void Hyrule_SpawnTerminaPassageActors(struct PlayState* play);
+// From Door_Warp1, when Link has warped: whether it is that warp, and its exit.
+s32 Hyrule_IsWayBackWarp(struct PlayState* play, struct Actor* actor);
+void Hyrule_TakeWayBackWarp(struct PlayState* play);
 // From Player's scene exits: OoT's Lost Woods' first clearing (room 0), whose straight-ahead exit beside the Skull Kid's
 // clearing loops back to Kokiri Forest in OoT, leads child Link into MM's intro once Termina is unlocked. True when
 // it took the exit.
@@ -49,8 +60,7 @@ s32 Hyrule_TakeTerminaPassage(struct PlayState* play, s32 exitIndex);
 // dungeon ("Before Clock Town") and the Clock Tower entered from its corridor are walked without their cutscenes.
 s32 Hyrule_SkipsIntroCutscene(struct PlayState* play);
 
-// Each frame: the way back's two exits, from the opening dungeon's landing spot up to MM's Lost Woods, and from the
-// end of Epona's path in MM's Lost Woods into OoT's Lost Woods.
+// Each frame: the way back's launch from the opening dungeon's gold landing flower up to MM's Lost Woods.
 void Hyrule_UpdateTerminaPassage(struct PlayState* play);
 
 #ifdef __cplusplus

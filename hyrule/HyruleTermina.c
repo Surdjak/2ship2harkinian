@@ -139,11 +139,67 @@ s32 Hyrule_IsWayBackLandingFlower(PlayState* play, Actor* actor) {
            (Math_Vec3f_DistXZ(&actor->world.pos, &sOpeningDungeonLandingFlower) < OPENING_DUNGEON_LANDING_RADIUS);
 }
 
-// MM's Lost Woods: the clearing's west edge, behind the spot where Link wakes, is the path he came by.
-#define LOST_WOODS_PATH_END_X -1000.0f
+// MM's Lost Woods' spawn 1, where the way back up from the opening dungeon comes out: in front of the hollow tree's
+// opening Link followed the Skull Kid into, on the ramp up to it short of its exit floor (from x 2445), facing back
+// across the stumps (west).
+static ActorEntry sLostWoodsTreeOpeningSpawn;
+static Vec3s sLostWoodsTreeOpeningPos = { 2380, 160, -40 };
+#define LOST_WOODS_TREE_OPENING_SPAWN_DEG 270
+// The stumps and the hollow tree, past the passage (x 800) from the clearing (room 0).
+#define LOST_WOODS_TREE_OPENING_ROOM 1
+
+static s32 Hyrule_ArrivesAtLostWoodsTreeOpening(PlayState* play) {
+    return (play->sceneId == SCENE_LOST_WOODS) && (play->curSpawn == 1) && Hyrule_IsWayBackOpen();
+}
+
+ActorEntry* Hyrule_GetTerminaPassageSpawn(PlayState* play, ActorEntry* entry) {
+    if ((entry == NULL) || !Hyrule_ArrivesAtLostWoodsTreeOpening(play)) {
+        return entry;
+    }
+    sLostWoodsTreeOpeningSpawn = *entry;
+    sLostWoodsTreeOpeningSpawn.pos = sLostWoodsTreeOpeningPos;
+    // Scene entries keep degrees above their 7 low bits (Actor_SpawnEntry).
+    sLostWoodsTreeOpeningSpawn.rot.y = (s16)((LOST_WOODS_TREE_OPENING_SPAWN_DEG << 7) | (entry->rot.y & 0x7F));
+    return &sLostWoodsTreeOpeningSpawn;
+}
+
+s32 Hyrule_GetTerminaPassageSpawnRoom(PlayState* play, s32 room) {
+    return Hyrule_ArrivesAtLostWoodsTreeOpening(play) ? LOST_WOODS_TREE_OPENING_ROOM : room;
+}
+
+// MM's Lost Woods: the way back's blue warp (Door_Warp1's plain one), at the foot of the clearing's west bank behind the
+// spot where Link wakes, the way he came. Its exit index byte marks it.
+static Vec3f sLostWoodsWarpPos = { -1000.0f, 0.0f, 200.0f };
+#define LOST_WOODS_WARP_PARAMS 0x7E00
 
 // OoT's ENTR_LOST_WOODS_3: OoT's Lost Woods' first clearing, arriving through its straight-ahead opening.
 #define ENTR_LOST_WOODS_FIRST_CLEARING_AHEAD_Oot 0x1B1
+
+void Hyrule_SpawnTerminaPassageActors(PlayState* play) {
+    Actor* warp;
+
+    if ((play->sceneId != SCENE_LOST_WOODS) || !Hyrule_IsWayBackOpen()) {
+        return;
+    }
+    // The scene has no object for it; loaded for the scene's stay, as En_Horse does for Epona in OoT's scenes.
+    if (Object_GetSlot(&play->objectCtx, OBJECT_WARP1) <= OBJECT_SLOT_NONE) {
+        Object_SpawnPersistent(&play->objectCtx, OBJECT_WARP1);
+    }
+    warp = Actor_Spawn(&play->actorCtx, play, ACTOR_DOOR_WARP1, sLostWoodsWarpPos.x, sLostWoodsWarpPos.y,
+                       sLostWoodsWarpPos.z, 0, 0, 0, LOST_WOODS_WARP_PARAMS);
+    if (warp != NULL) {
+        // In the clearing (room 0) but kept when Link arrives in the stumps' room (1) and walks over.
+        warp->room = -1;
+    }
+}
+
+s32 Hyrule_IsWayBackWarp(PlayState* play, Actor* actor) {
+    return (play->sceneId == SCENE_LOST_WOODS) && ((actor->params & 0xFFFF) == LOST_WOODS_WARP_PARAMS);
+}
+
+void Hyrule_TakeWayBackWarp(PlayState* play) {
+    Hyrule_TakeWayBackExit(play, Hyrule_EntranceFromOot(ENTR_LOST_WOODS_FIRST_CLEARING_AHEAD_Oot));
+}
 
 void Hyrule_UpdateTerminaPassage(PlayState* play) {
     Player* player = GET_PLAYER(play);
@@ -152,22 +208,10 @@ void Hyrule_UpdateTerminaPassage(PlayState* play) {
         (play->transitionMode != TRANS_MODE_OFF) || Play_InCsMode(play) || (player->stateFlags1 & PLAYER_STATE1_DEAD)) {
         return;
     }
-    switch (play->sceneId) {
-        case SCENE_OPENINGDAN:
-            // Flying up from the gold flower (Player_Action_94), high above it within the shaft.
-            if ((player->stateFlags3 & PLAYER_STATE3_200) &&
-                (player->actor.world.pos.y > sOpeningDungeonLandingFlower.y + OPENING_DUNGEON_SHAFT_EXIT_HEIGHT) &&
-                (Math_Vec3f_DistXZ(&player->actor.world.pos, &sOpeningDungeonLandingFlower) <
-                 OPENING_DUNGEON_SHAFT_RADIUS)) {
-                Hyrule_TakeWayBackExit(play, ENTRANCE(LOST_WOODS, 1));
-            }
-            break;
-        case SCENE_LOST_WOODS:
-            if (player->actor.world.pos.x < LOST_WOODS_PATH_END_X) {
-                Hyrule_TakeWayBackExit(play, Hyrule_EntranceFromOot(ENTR_LOST_WOODS_FIRST_CLEARING_AHEAD_Oot));
-            }
-            break;
-        default:
-            break;
+    // The opening dungeon: flying up from the gold flower (Player_Action_94), high above it within the shaft.
+    if ((play->sceneId == SCENE_OPENINGDAN) && (player->stateFlags3 & PLAYER_STATE3_200) &&
+        (player->actor.world.pos.y > sOpeningDungeonLandingFlower.y + OPENING_DUNGEON_SHAFT_EXIT_HEIGHT) &&
+        (Math_Vec3f_DistXZ(&player->actor.world.pos, &sOpeningDungeonLandingFlower) < OPENING_DUNGEON_SHAFT_RADIUS)) {
+        Hyrule_TakeWayBackExit(play, ENTRANCE(LOST_WOODS, 1));
     }
 }

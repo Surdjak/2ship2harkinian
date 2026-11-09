@@ -6,6 +6,7 @@
 
 #include "prevent_bss_reordering.h"
 #include "z_door_warp1.h"
+#include "HyruleTermina.h"
 #include "objects/object_warp1/object_warp1.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
@@ -497,7 +498,10 @@ void func_808B98A8(DoorWarp1* this, PlayState* play) {
     if (D_808BC000 < this->unk_1D0) {
         if ((gSaveContext.nextCutsceneIndex == 0xFFEF) && (D_808BC000 < this->unk_1D0) &&
             (gSaveContext.nextCutsceneIndex == 0xFFEF)) {
-            if (DOORWARP1_GET_FF00_1(&this->dyna.actor) != 0xFF) {
+            // 3Ship [Hyrule] The way back's blue warp leads out of Termina (docs/TERMINA.md step 6).
+            if (Hyrule_IsWayBackWarp(play, &this->dyna.actor)) {
+                Hyrule_TakeWayBackWarp(play);
+            } else if (DOORWARP1_GET_FF00_1(&this->dyna.actor) != 0xFF) {
                 play->nextEntrance = play->setupExitList[DOORWARP1_GET_FF00_3(&this->dyna.actor)];
                 Scene_SetExitFade(play);
                 play->transitionTrigger = TRANS_TRIGGER_START;

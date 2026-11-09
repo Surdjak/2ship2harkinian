@@ -1,5 +1,6 @@
 #include "global.h"
 #include "HyrulePrerender.h"
+#include "HyruleTermina.h"
 #include "2s2h/BenPort.h"
 #include "PR/gs2dex.h"
 #include "debug.h"
@@ -573,6 +574,8 @@ size_t Room_SetupFirstRoom(PlayState* play, RoomContext* roomCtx) {
         frontRoom = gSaveContext.respawn[respawnMode].roomIndex;
     } else {
         frontRoom = play->setupEntranceList[play->curSpawn].room;
+        // 3Ship [Hyrule] The way back's arrival in MM's Lost Woods (docs/TERMINA.md step 6).
+        frontRoom = Hyrule_GetTerminaPassageSpawnRoom(play, frontRoom);
     }
 
     // Load into a room for the first time.

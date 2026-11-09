@@ -2505,6 +2505,8 @@ void Play_Init(GameState* thisx) {
     //! @bug: Incorrect ALIGN16s
     ZeldaArena_Init((void*)((zAlloc + 8) & ~0xF), (zAllocSize - ((zAlloc + 8) & ~0xF)) + zAlloc);
 
+    // 3Ship [Hyrule] The way back's arrival in MM's Lost Woods (docs/TERMINA.md step 6).
+    this->linkActorEntry = Hyrule_GetTerminaPassageSpawn(this, this->linkActorEntry);
     Actor_InitContext(this, &this->actorCtx, this->linkActorEntry);
 
     // Busyloop until the room loads
@@ -2517,6 +2519,9 @@ void Play_Init(GameState* thisx) {
          (Hyrule_GetOotSceneId(this->sceneId) >= 0))) {
         Actor_Spawn(&this->actorCtx, this, ACTOR_EN_TEST4, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0);
     }
+
+    // 3Ship [Hyrule] The way back's blue warp in MM's Lost Woods (docs/TERMINA.md step 6).
+    Hyrule_SpawnTerminaPassageActors(this);
 
     player = GET_PLAYER(this);
 
