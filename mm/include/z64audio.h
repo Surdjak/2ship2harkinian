@@ -645,7 +645,7 @@ typedef struct {
     /* 0x4454 */ u8* audioHeap;
     /* 0x4458 */ size_t audioHeapSize;
     /* 0x445C */ Note* notes;
-    /* 0x4460 */ SequencePlayer seqPlayers[6]; // 3Ship [Hyrule] SEQ_PLAYER_MAX, with SEQ_PLAYER_SFX_OOT
+    /* 0x4460 */ SequencePlayer seqPlayers[SEQ_PLAYER_MAX];
     /* 0x4B40 */ SequenceLayer sequenceLayers[80];
     /* 0x7840 */ SequenceChannel sequenceChannelNone;
     /* 0x7924 */ s32 sampleStateOffset; // Start of the list of sample states for this update. Resets after each audio frame.
@@ -654,7 +654,7 @@ typedef struct {
     /* 0x7978 */ u8 threadCmdWritePos;
     /* 0x7979 */ u8 threadCmdReadPos;
     /* 0x797A */ u8 threadCmdQueueFinished;
-    /* 0x797C */ u16 threadCmdChannelMask[5]; // bit-packed for 16 channels. When processing an audio thread channel command on all channels, only process channels with their bit set.
+    /* 0x797C */ u16 threadCmdChannelMask[SEQ_PLAYER_MAX]; // bit-packed for 16 channels
     /* 0x7988 */ OSMesgQueue* audioResetQueueP;
     /* 0x798C */ OSMesgQueue* taskStartQueueP;
     /* 0x7990 */ OSMesgQueue* threadCmdProcQueueP;
@@ -666,8 +666,8 @@ typedef struct {
     /* 0x79E4 */ OSMesg threadCmdProcMsgBuf[4];
     /* 0x79F4 */ AudioCmd threadCmdBuf[0x100]; // Audio commands used to transfer audio requests from the graph thread to the audio thread
     /* 0x81F4 */ UNK_TYPE1 unk_81F4[4];
-    u16 seqToPlay[5];
-    u8 seqReplaced[5];
+    u16 seqToPlay[SEQ_PLAYER_MAX];
+    u8 seqReplaced[SEQ_PLAYER_MAX];
 } AudioContext; // size = 0x81F8
 
 typedef struct {

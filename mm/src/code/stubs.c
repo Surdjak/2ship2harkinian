@@ -36,7 +36,7 @@ u16 gFramebuffer0[SCREEN_HEIGHT][SCREEN_WIDTH];
 u16 gFramebufferHiRes0[HIRES_BUFFER_WIDTH][HIRES_BUFFER_HEIGHT];
 u16 gFramebufferHiRes1[HIRES_BUFFER_WIDTH][HIRES_BUFFER_HEIGHT];
 
-ActiveSequence gActiveSeqs[5];
+ActiveSequence gActiveSeqs[SEQ_PLAYER_MAX];
 AudioContext gAudioCtx;
 s32 D_801FD120;
 
@@ -54,7 +54,7 @@ u64 aspMainTextStart[100];
 u64 aspMainDataStart[100];
 u64 aspMainDataEnd[100];
 
-u8 sNumSeqRequests[5];
+u8 sNumSeqRequests[SEQ_PLAYER_MAX];
 u32 sAudioSeqCmds[0x100];
 
 u8 sResetAudioHeapTimer;
@@ -62,7 +62,7 @@ u16 sResetAudioHeapFadeReverbVolume;
 u16 sResetAudioHeapFadeReverbVolumeStep;
 
 u8 D_801D6200[0x400];
-SeqRequest sSeqRequests[5][5];
+SeqRequest sSeqRequests[SEQ_PLAYER_MAX][5];
 
 u8 D_80025D00[100];
 
