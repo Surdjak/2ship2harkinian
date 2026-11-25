@@ -499,7 +499,7 @@ static void EnEiyer_Land(EnEiyer* this, PlayState* play) {
     if (this->timer == -1) {
         if (this->actor.bgCheckFlags & 8 || this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
             this->timer = 10;
-            SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 30, NA_SE_EN_DAIOCTA_SINK);
+            SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 30, NA_SE_EN_OCTAROCK_SINK);
 
             if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
                 EffectSsGSplash_Spawn(play, &this->actor.world.pos, NULL, NULL, 1, 700);

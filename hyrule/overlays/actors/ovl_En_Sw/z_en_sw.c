@@ -5,9 +5,6 @@
 #include "assets/oot/objects/object_st/object_st.h"
 #include "HyruleSfx.h"
 
-// OoT's EffectSsDeadDb colours for the death puffs.
-static Color_RGBA8 sDeadDbPrim = { 255, 255, 255, 255 };
-static Color_RGBA8 sDeadDbEnv = { 255, 0, 0, 255 };
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -638,7 +635,7 @@ static void func_80B0D878(EnSw* this, PlayState* play) {
         pos.y += 10.0f + ((Rand_ZeroOne() - 0.5f) * 6.0f);
         pos.x += (Rand_ZeroOne() - 0.5f) * 32.0f;
         pos.z += (Rand_ZeroOne() - 0.5f) * 32.0f;
-        EffectSsDeadDb_Spawn(play, &pos, &velAndAccel, &velAndAccel, &sDeadDbPrim, &sDeadDbEnv, 42, 0, 9);
+        EffectSsDeadDb_Spawn_Oot(play, &pos, &velAndAccel, &velAndAccel, 42, 0, 255, 255, 255, 255, 255, 0, 0, 1, 9, true);
     }
 }
 
@@ -676,7 +673,7 @@ static void func_80B0DC7C(EnSw* this, PlayState* play) {
         pos.y = ((Rand_ZeroOne() - 0.5f) * 6.0f) + (this->actor.world.pos.y + 10.0f);
         pos.x = ((Rand_ZeroOne() - 0.5f) * 32.0f) + this->actor.world.pos.x;
         pos.z = ((Rand_ZeroOne() - 0.5f) * 32.0f) + this->actor.world.pos.z;
-        EffectSsDeadDb_Spawn(play, &pos, &velAndAccel, &velAndAccel, &sDeadDbPrim, &sDeadDbEnv, 42, 0, 9);
+        EffectSsDeadDb_Spawn_Oot(play, &pos, &velAndAccel, &velAndAccel, 42, 0, 255, 255, 255, 255, 255, 0, 0, 1, 9, true);
         this->actor.shape.rot.x += 0x1000;
         this->actor.shape.rot.z += 0x1000;
     } else {

@@ -315,7 +315,7 @@ static void EnWeiyer_TurnAround(EnWeiyer* this, PlayState* play) {
         if (this->actor.world.pos.y < this->actor.home.pos.y) {
             if (this->actor.shape.rot.x > 0) {
                 EffectSsGSplash_Spawn(play, &this->actor.world.pos, NULL, NULL, 1, 400);
-                Actor_PlaySfx(&this->actor, NA_SE_EN_DAIOCTA_SINK);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_OCTAROCK_SINK);
             }
 
             EnWeiyer_SetupInactive(this);
@@ -553,7 +553,7 @@ static void EnWeiyer_OutOfWater(EnWeiyer* this, PlayState* play) {
             EnWeiyer_SetupTurnAround(this);
         } else if ((this->actor.bgCheckFlags & 0x20) && (this->actor.shape.rot.x > 0)) {
             EffectSsGSplash_Spawn(play, &this->actor.world.pos, NULL, NULL, 1, 400);
-            Actor_PlaySfx(&this->actor, NA_SE_EN_DAIOCTA_SINK);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_OCTAROCK_SINK);
             EnWeiyer_SetupInactive(this);
         } else {
             Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 8, 0x100, 0x80);

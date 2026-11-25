@@ -11,9 +11,10 @@
 
 ActorCutscene sGlobalCutsceneList[] = {
     // CS_ID_GLOBAL_78: 3Ship [Hyrule] CS_ID_GLOBAL_ITEM_GET_OOT, Player's item get shot as MM's scenes list it (as
-    // Clock Town's), for Hyrule's scenes, which list none (unused in MM)
+    // Clock Town's), for Hyrule's scenes, which list none (unused in MM); without MM's letterbox, as OoT's turn-around
+    // camera has none
     { 600, -1, CS_CAM_ID_GLOBAL_ITEM_GET, CS_SCRIPT_ID_NONE, CS_ID_NONE, CS_END_SFX_NONE, 255, CS_HUD_VISIBILITY_NONE,
-      CS_END_CAM_0, 27 },
+      CS_END_CAM_0, 0 },
     // CS_ID_GLOBAL_79
     { -100, -1, CS_CAM_ID_NONE, CS_SCRIPT_ID_NONE, CS_ID_NONE, CS_END_SFX_NONE_ALT, 255, CS_HUD_VISIBILITY_ALL_ALT, 255,
       255 },

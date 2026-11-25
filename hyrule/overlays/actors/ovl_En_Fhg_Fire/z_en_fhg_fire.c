@@ -613,7 +613,7 @@ static void EnFhgFire_EnergyBall(EnFhgFire* this, PlayState* play) {
                 this->work[FHGFIRE_KILL_TIMER] = 30;
                 this->actor.draw = NULL;
                 if (killMode == BALL_FIZZLE) {
-                    Actor_PlaySfx(&this->actor, NA_SE_EN_DAIOCTA_DEAD2);
+                    Actor_PlaySfx(&this->actor, NA_SE_EN_FANTOM_THUNDER_GND);
                 }
                 return;
             } else {

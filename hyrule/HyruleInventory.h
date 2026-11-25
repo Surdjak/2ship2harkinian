@@ -168,6 +168,8 @@ void Hyrule_SyncEquipmentOwnership(void);
 // Medigoron's Giant's Knife (GI_SWORD_KNIFE_Oot), which OoT gives as ITEM_SWORD_BGS with Biggoron's Sword and tells
 // apart by its get-item id: owned whole, with OoT's 8 hits (swordHealth).
 void Hyrule_GiveGiantsKnife(void);
+// The fanfare (or the box item sound) for receiving an OoT item, as OoT plays it (HyruleGetItem.c).
+void Hyrule_PlayItemFanfareOot(s32 itemId);
 
 // The Great Fairy's Sword is equipment rather than an item (docs/INVENTORY.md): Item_Give records it as owned,
 // and it is worn from the equipment page.

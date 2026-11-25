@@ -203,7 +203,8 @@ static void EnDntDemo_Judge(EnDntDemo* this, PlayState* play) {
                                     this->subCamera = SUB_CAM_ID_DONE;
                                     OnePointCutscene_Init(play, 2350, -99, &this->scrubs[3]->actor, CAM_ID_MAIN);
                                 }
-                                AudioSeq_QueueSeqCmd(SEQ_PLAYER_BGM_MAIN << 24 | NA_BGM_ENEMY | 0x800);
+                                // PORT: without OoT's seqArgs (0x800), which 2Ship's 16-bit sequence ids overlap
+                                AudioSeq_QueueSeqCmd(SEQ_PLAYER_BGM_MAIN << 24 | NA_BGM_ENEMY);
                                 break;
                             case DNT_ACTION_DANCE:
                                 AudioSeq_QueueSeqCmd(SEQ_PLAYER_BGM_MAIN << 24 | NA_BGM_SHOP);

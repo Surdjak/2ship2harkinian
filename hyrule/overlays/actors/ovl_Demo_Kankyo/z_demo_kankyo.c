@@ -261,7 +261,7 @@ static void DemoKankyo_Init(Actor* thisx, PlayState* play) {
             this->sparkleCounter = 0;
             this->actor.scale.x = this->actor.scale.y = this->actor.scale.z = 1.0f;
             if (this->actor.params == DEMOKANKYO_WARP_OUT) {
-                Audio_PlaySfx(NA_SE_EV_LINK_WARP_IN);
+                Audio_PlaySfx(NA_SE_EV_SARIA_MELODY);
             }
             break;
         case DEMOKANKYO_SPARKLES:

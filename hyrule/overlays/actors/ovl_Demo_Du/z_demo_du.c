@@ -343,7 +343,7 @@ static void DemoDu_CsPlaySfx_LinkEscapeFromGorons(PlayState* play) {
     if (gCsCtxOot.frames == 1400) {
         Player* player = GET_PLAYER(play);
 
-        Audio_PlaySfx_AtPos(&player->actor.projectedPos, NA_SE_VO_NAVY_ENEMY);
+        Audio_PlaySfx_AtPos(&player->actor.projectedPos, NA_SE_VO_LI_FALL_L_KID);
     }
 }
 

@@ -331,7 +331,7 @@ static void EnOkuta_Hide(EnOkuta* this, PlayState* play) {
         Actor_SetScale(&this->actor, (6.0f - this->skelAnime.curFrame) * 0.5f * 0.01f);
     }
     if (Animation_OnFrame(&this->skelAnime, 2.0f)) {
-        Actor_PlaySfx(&this->actor, NA_SE_EN_DAIOCTA_SINK);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_OCTAROCK_SINK);
     }
     if (Animation_OnFrame(&this->skelAnime, 4.0f)) {
         EnOkuta_SpawnSplash(this, play);

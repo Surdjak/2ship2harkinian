@@ -3619,7 +3619,8 @@ static void Fishing_UpdateFish(Actor* thisx, PlayState* play2) {
                     this->fishLimbRotPhaseStep = 1.7f;
                     this->fishLimbRotPhaseMag = 7000.0f;
                     sLineHooked = 1;
-                    AudioSeq_QueueSeqCmd(SEQ_PLAYER_BGM_MAIN << 24 | NA_BGM_ENEMY | 0x800);
+                    // PORT: without OoT's seqArgs (0x800), which 2Ship's 16-bit sequence ids overlap
+                    AudioSeq_QueueSeqCmd(SEQ_PLAYER_BGM_MAIN << 24 | NA_BGM_ENEMY);
                     sFishingMusicDelay = 0;
 
                     if (this->isLoach == 1) {

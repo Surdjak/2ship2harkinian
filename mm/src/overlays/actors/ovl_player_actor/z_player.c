@@ -14751,7 +14751,10 @@ s32 func_808482E0(PlayState* play, Player* this) {
             Item_Give(play, giEntry->itemId);
         }
 
-        if ((this->getItemId >= GI_MASK_DEKU) && (this->getItemId <= GI_MASK_KAFEIS_MASK)) {
+        if (this->getItemId > GI_OOT_BASE) {
+            // 3Ship [Hyrule] OoT's items play OoT's fanfares.
+            Hyrule_PlayItemFanfareOot(giEntry->itemId);
+        } else if ((this->getItemId >= GI_MASK_DEKU) && (this->getItemId <= GI_MASK_KAFEIS_MASK)) {
             Audio_PlayFanfare(NA_BGM_GET_NEW_MASK);
         } else if (((this->getItemId >= GI_RUPEE_GREEN) && (this->getItemId <= GI_RUPEE_10)) ||
                    (this->getItemId == GI_RECOVERY_HEART)) {

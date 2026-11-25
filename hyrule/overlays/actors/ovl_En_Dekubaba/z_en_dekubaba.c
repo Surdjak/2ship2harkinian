@@ -332,7 +332,7 @@ static void EnDekubaba_SetupGrow(EnDekubaba* this) {
 
     this->collider.base.colMaterial = COL_MATERIAL_HIT6;
     this->collider.base.acFlags &= ~AC_HARD;
-    Actor_PlaySfx(&this->actor, NA_SE_EN_DEKU_WAKEUP);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_DUMMY482);
     this->actionFunc = EnDekubaba_Grow;
 }
 

@@ -897,7 +897,9 @@ static void Camera_Unique9Oot(PlayState* play, Camera* camera, OnePointCamOot* a
         case 13:
             // Step at towards its target and turn the eye around it by eyeTargetInit.y degrees.
             camera->at.x = Camera_LERPCeilFOot(anim->atTarget.x, camera->at.x, anim->curKeyFrame->lerpStepScale, 1.0f);
-            camera->at.y += camera->unk_0F0.y * anim->curKeyFrame->lerpStepScale;
+            // OoT's playerPosDelta.y: Link's rise since the last frame (anim->playerPos, set at the end of each frame
+            // he does not hold his place), which MM's camera only tracks for its focal actor.
+            camera->at.y += (playerPosRot.pos.y - anim->playerPos.y) * anim->curKeyFrame->lerpStepScale;
             camera->at.z = Camera_LERPCeilFOot(anim->atTarget.z, camera->at.z, anim->curKeyFrame->lerpStepScale, 1.0f);
             scratchGeo = OLib_Vec3fDiffToVecGeo(at, eyeNext);
             scratchGeo.yaw += DEGF_TO_BINANG_OOT(anim->curKeyFrame->eyeTargetInit.y);

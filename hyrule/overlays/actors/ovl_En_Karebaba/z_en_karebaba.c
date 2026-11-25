@@ -150,7 +150,7 @@ static void EnKarebaba_SetupIdle(EnKarebaba* this) {
 static void EnKarebaba_SetupAwaken(EnKarebaba* this) {
     Animation_Change(&this->skelAnime, &gDekuBabaFastChompAnim, 4.0f, 0.0f,
                      Animation_GetLastFrame(&gDekuBabaFastChompAnim), ANIMMODE_LOOP, -3.0f);
-    Actor_PlaySfx(&this->actor, NA_SE_EN_DEKU_WAKEUP);
+    Actor_PlaySfx(&this->actor, NA_SE_EN_DUMMY482);
     this->actionFunc = EnKarebaba_Awaken;
 }
 

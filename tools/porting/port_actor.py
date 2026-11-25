@@ -736,19 +736,7 @@ PROFILE = re.compile(
     r"(?:\s*(?:\(ActorResetFunc\))?(\w+),?)?\s*\};")
 
 
-def sfx_renames(soh_root):
-    """OoT sound effects MM has under another name, by id (MM renamed many: OoT's NA_SE_EN_DEKU_JR_MOUTH is
-    MM's NA_SE_EN_MIZUBABA1_MOUTH). Names MM has are kept, as they are MM's sound of the same name."""
-    define = re.compile(r"#define (NA_SE_\w+) (0x[0-9A-Fa-f]+)")
-    mm = dict(define.findall(open(os.path.join(HERE, "..", "..", "mm", "include", "sfx.h")).read()))
-    by_id = {}
-    for name, value in mm.items():
-        by_id.setdefault(int(value, 16), name)
-    oot = define.findall(open(os.path.join(soh_root, "include", "sfx.h")).read())
-    return {name: by_id[int(value, 16)] for name, value in oot if name not in mm and int(value, 16) in by_id}
-
-
-SFX_RENAMES = {}
+# OoT's sound names are kept: HyruleSfx.h, which ported actors include, defines them all in OoT's sfx banks.
 
 
 def oot_entrances(soh_root):
@@ -1023,7 +1011,6 @@ def convert(text, header):
     text = re.sub(r"\n[ \t]*LOG_(?:NUM|STRING|HEX|ADDRESS|FLOAT)\((?:\"(?:[^\"\\]|\\.)*\"|[^;\"])*?\);", "", text)
     for pattern, repl in RENAMES:
         text = re.sub(pattern, repl, text, flags=re.M)
-    text = re.sub(r"\bNA_SE_\w+\b", lambda m: SFX_RENAMES.get(m.group(0), m.group(0)), text)
     # OoT's music plays as OoT's sequence in MM's table (SEQ_OOT).
     text = re.sub(r"\bAudio_QueueSeqCmd\((SEQ_PLAYER_\w+) << 24 \| NA_BGM_STOP\);",
                   r"SEQCMD_STOP_SEQUENCE(\1, 0);", text)
@@ -1083,7 +1070,6 @@ def main():
     parser.add_argument("soh_actor_dir", help="SoH's soh/src/overlays/actors/ovl_<Name> directory")
     args = parser.parse_args()
     src = os.path.normpath(args.soh_actor_dir)
-    SFX_RENAMES.update(sfx_renames(os.path.join(src, "..", "..", "..", "..")))
     ENTRANCES.update(oot_entrances(os.path.join(src, "..", "..", "..", "..")))
     SEQUENCES.update(oot_sequences(os.path.join(src, "..", "..", "..", "..")))
     PORTING.update(a.strip() for a in os.environ.get("PORTING", "").split(",") if a.strip())

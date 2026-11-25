@@ -227,7 +227,7 @@ static void EnRiverSound_Draw(Actor* thisx, PlayState* play) {
         NA_SE_EV_FOUNTAIN - SFX_FLAG,
         NA_SE_EV_CROWD - SFX_FLAG,
         0,
-        NA_SE_EV_LINK_WARP_IN - SFX_FLAG,
+        NA_SE_EV_SARIA_MELODY - SFX_FLAG,
         0,
         NA_SE_EV_SAND_STORM - SFX_FLAG,
         NA_SE_EV_WATER_BUBBLE - SFX_FLAG,
