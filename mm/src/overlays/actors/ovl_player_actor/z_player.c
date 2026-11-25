@@ -11866,6 +11866,11 @@ void Player_Init(Actor* thisx, PlayState* play) {
     s32 var_a1;
     PlayerStartMode startMode;
 
+    // 3Ship [Hyrule] An OoT action an actor gave Link ends with his scene (OoT keeps it in csAction, which Player_Init
+    // clears): the blue warp's left Link standing in Kokiri Forest instead of floating down.
+    gPlayerCsActionOot = 0;
+    gPlayerCsActionInitOot = false;
+
     play->playerInit = Player_InitCommon;
     play->playerUpdate = Player_UpdateCommon;
     play->unk_18770 = func_8085B170;
@@ -13506,7 +13511,11 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
                                        PLAYER_STATE1_200000 | PLAYER_STATE1_4000000))) {
                 if (Player_Action_CsAction != this->actionFunc) {
                     this->unk_AA5 = PLAYER_UNKAA5_4;
-                    if (this->csAction == PLAYER_CSACTION_5) {
+                    // 3Ship [Hyrule] OoT starts a script's action only from an action that can be interrupted
+                    // (Player_StartCsAction): Link floats down from a blue warp before an OoT script takes him, as
+                    // in Kokiri Forest after Gohma.
+                    if ((this->csAction == PLAYER_CSACTION_5) &&
+                        !((this->actionFunc == Player_Action_BlueWarpArrive) && Player_HasCueOot())) {
                         Player_StartCsAction(play, this);
                         func_8082DAD4(this);
                     }
@@ -19586,6 +19595,8 @@ void Player_Action_StartWarpSongArrive(Player* this, PlayState* play) {
     Actor_Spawn(&play->actorCtx, play, ACTOR_DEMO_KANKYO_Oot, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0x10);
 }
 
+static void func_808529D0Oot(PlayState* play, Player* this, CsCmdActorCueOot* cue); // HyrulePlayerCsOot.inc
+
 void Player_Action_BlueWarpArrive(Player* this, PlayState* play) {
     if (sPlayerYDistToFloor < 150.0f) {
         if (PlayerAnimation_Update(play, &this->skelAnime)) {
@@ -19611,6 +19622,13 @@ void Player_Action_BlueWarpArrive(Player* this, PlayState* play) {
             Player_Cutscene_SetPosAndYawToStart(this, play->csCtx.playerCue);
             this->actor.world.pos.y = savedYPos;
         }
+    }
+    // 3Ship [Hyrule] And at an OoT script's cue for Link, as OoT's Player_Action_8084F710.
+    if ((gCsCtxOot.state != CS_STATE_IDLE_Oot) && (gCsCtxOot.linkAction != NULL)) {
+        f32 savedYPos = this->actor.world.pos.y;
+
+        func_808529D0Oot(play, this, gCsCtxOot.linkAction);
+        this->actor.world.pos.y = savedYPos;
     }
 }
 
@@ -22464,6 +22482,8 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
         Player_ActorCsActionOot(play, this);
         return;
     }
+    // A cue for Link hands him to the script for good, as OoT's Player_Update replacing his action with the script's.
+    gPlayerCsActionOot = 0;
     if (gCsCtxOot.state != CS_STATE_IDLE_Oot) {
         func_80852C50Oot(play, this, NULL);
         return;

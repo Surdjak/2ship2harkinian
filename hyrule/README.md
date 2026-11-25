@@ -653,6 +653,14 @@ gives its spiritual stone and plays OoT's sequel: the Great Deku Tree's last wor
 Death Mountain Trail, Ruto at Zora's Fountain. Ganon's Castle's and Ganondorf's intros play to the fight; his defeat
 plays Zelda's warning and starts the escape. Notes:
 
+- The blue warp's ride: OoT's warp action (10) walks Link to its center and hands him to MM's `demo_warp` rise.
+  The OoT action an actor gave Link (`gPlayerCsActionOot`) ends with the scene (`Player_Init`) and when a script cues
+  him, as OoT's single `csAction` does. On arrival, MM's blue warp start mode floats him down, and an OoT script waits
+  for it as in OoT, where only an interruptible action starts a script's (`Player_StartCsAction`); meanwhile he keeps
+  the script cue's x and z (OoT's `Player_Action_8084F710`). Checked against SoH: after Gohma, Link floats down into
+  Kokiri Forest from 800 above and lands where the Great Deku Tree's last words begin; on a later warp he steps out of
+  spawn 11.
+
 - The fishing pond is OoT's `Fishing`, with the Player fields and HUD flag that MM's leftover `En_Fishing` uses for
   the same jobs (`unk_B08`/`unk_B0C`, `leftHandMf`, `fishingHUDControl`); its records are `HIGH_SCORE_OOT(HS_FISHING_Oot)`
   with SoH's `HS_FISH_*` bits (z64save.h).
