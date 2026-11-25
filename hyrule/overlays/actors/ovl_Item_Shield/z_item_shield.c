@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_link_child/object_link_child.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 
@@ -192,8 +193,8 @@ static void func_80B86F68(ItemShield* this, PlayState* play) {
     this->actor.world.pos.z = shield->zw;
     this->unk_19C &= ~2;
 
-    this->actor.shape.rot.y = Math_Atan2S(-shield->zz, -shield->xz);
-    this->actor.shape.rot.x = Math_Atan2S(-shield->yz, sqrtf(shield->zz * shield->zz + shield->xz * shield->xz));
+    this->actor.shape.rot.y = Math_Atan2S_XY(-shield->zz, -shield->xz);
+    this->actor.shape.rot.x = Math_Atan2S_XY(-shield->yz, sqrtf(shield->zz * shield->zz + shield->xz * shield->xz));
 
     if (ABS(this->actor.shape.rot.x) > 0x4000) {
         this->unk_19C |= 1;

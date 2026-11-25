@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "z64horse.h" // gHorsePlayedEponasSong, set when Epona's Song is played (OoT's DREG(53))
 #include "assets/oot/objects/object_cow/object_cow.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 

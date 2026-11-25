@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "../ovl_Boss_Ganon/z_boss_ganon.h"
+#include "HyruleSfx.h"
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 

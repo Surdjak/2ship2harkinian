@@ -8,6 +8,7 @@
 #include "assets/oot/objects/object_tw/object_tw.h"
 #include "../ovl_Door_Warp1/z_door_warp1.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #include <string.h>
 

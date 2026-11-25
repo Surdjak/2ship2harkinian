@@ -11,6 +11,7 @@
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "assets/oot/objects/object_mori_objects/object_mori_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

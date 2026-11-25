@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Dh/z_en_dh.h"
 #include "assets/oot/objects/object_dh/object_dh.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -390,7 +391,7 @@ static void EnDha_UpdateHealth(EnDha* this, PlayState* play) {
             if (Actor_ApplyDamage(&this->actor) == 0) {
                 EnDha_SetupDeath(this);
                 this->actor.colChkInfo.health = 8;
-                Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xE0);
+                Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xE0);
             } else {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_FROG_RUNAWAY);
                 this->unk_1C0 = 9;

@@ -39,6 +39,7 @@
 #include "assets/oot/objects/object_bob/object_bob.h"
 #include "assets/oot/objects/object_bba/object_bba.h"
 #include "assets/oot/objects/object_ane/object_ane.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

@@ -7,6 +7,7 @@
  */
 
 #include "z_en_wonder_item.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 
@@ -88,12 +89,11 @@ static void EnWonderItem_DropCollectible(EnWonderItem* this, PlayState* play, s3
                 Item_DropCollectible(play, &this->actor.world.pos, dropTable[this->itemDrop] | 0x8000);
             }
         } else {
-            // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
             randomDrop = this->itemDrop - WONDERITEM_DROP_RANDOM;
             if (!autoCollect) {
-                Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos, randomDrop);
+                Item_DropCollectibleRandomOot(play, NULL, &this->actor.world.pos, randomDrop);
             } else {
-                Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos, randomDrop | 0x8000);
+                Item_DropCollectibleRandomOot(play, NULL, &this->actor.world.pos, randomDrop | 0x8000);
             }
         }
     }

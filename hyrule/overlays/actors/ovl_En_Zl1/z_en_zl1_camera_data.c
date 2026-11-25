@@ -3,6 +3,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "HyruleCutsceneCommands.h"
+#include "HyruleSfx.h"
 
 static CutsceneCameraAngleOot D_80B4D5C0[] = {
     { { -440.0f, 117.0f, 0.0f }, { -490.0f, 120.0f, 0.0f }, 0, 45 },

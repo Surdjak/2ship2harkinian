@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_poh/object_poh.h"
 #include "assets/oot/objects/object_po_composer/object_po_composer.h"
+#include "HyruleSfx.h"
 
 #define FLAGS \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_IGNORE_QUAKE)

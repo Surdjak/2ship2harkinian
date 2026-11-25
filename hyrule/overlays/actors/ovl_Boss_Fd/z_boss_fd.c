@@ -15,6 +15,7 @@
 #include "../ovl_Boss_Fd2/z_boss_fd2.h"
 #include "../ovl_Door_Warp1/z_door_warp1.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+#include "HyruleSfx.h"
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 

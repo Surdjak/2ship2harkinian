@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Diving_Game/z_en_diving_game.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

@@ -11,6 +11,7 @@
 #include "HyruleScenes.h"
 #include "2s2h/BenPort.h"
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
@@ -342,7 +343,7 @@ static void func_80A89A6C(EnJsjutan* this, PlayState* play) {
 
         dyVtx = phi_s0_2[j].n.ob[1] - carpetVtx->n.ob[1];
 
-        rotX = Math_Atan2F(dzVtx, dyVtx);
+        rotX = Math_Atan2F_XY(dzVtx, dyVtx);
 
         if (i >= 132) { // Last row.
             j = i - 12;
@@ -352,7 +353,7 @@ static void func_80A89A6C(EnJsjutan* this, PlayState* play) {
             dxVtx = phi_s0_2[j].n.ob[0] - carpetVtx->n.ob[0];
         }
 
-        rotZ = Math_Atan2F(dxVtx, dyVtx);
+        rotZ = Math_Atan2F_XY(dxVtx, dyVtx);
 
         Matrix_RotateXFNew(rotX);
         Matrix_RotateZF(rotZ, MTXMODE_APPLY);

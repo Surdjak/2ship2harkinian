@@ -6,6 +6,7 @@
 #include "z64quake.h"
 #include "../ovl_En_Fire_Rock/z_en_fire_rock.h"
 #include "assets/oot/objects/object_efc_star_field/object_efc_star_field.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

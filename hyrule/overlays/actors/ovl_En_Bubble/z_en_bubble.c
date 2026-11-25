@@ -3,6 +3,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_bubble/object_bubble.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_ATTENTION_ENABLED
 
@@ -149,7 +150,7 @@ static s32 EnBubble_Explosion(EnBubble* this, PlayState* play) {
         EffectSsDtBubble_SpawnCustomColor(play, &effectPos, &effectVel, &effectAccel, &sEffectPrimColor,
                                           &sEffectEnvColor, Rand_S16Offset(100, 50), 0x19, 0);
     }
-    Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos, 0x50);
+    Item_DropCollectibleRandomOot(play, NULL, &this->actor.world.pos, 0x50);
     this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     return Rand_S16Offset(90, 60);
 }

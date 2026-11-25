@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "HyruleCutscene.h"
+#include "HyruleSfx.h"
 
 #include "../ovl_Door_Warp1/z_door_warp1.h"
 #include "assets/oot/objects/object_zl2/object_zl2.h"

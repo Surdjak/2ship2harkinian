@@ -11,6 +11,7 @@
 #include "HyruleScenes.h"
 #include "assets/oot/objects/object_mamenoki/object_mamenoki.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_IGNORE_LEGACY_POINT_LIGHTS
 

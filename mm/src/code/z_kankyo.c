@@ -29,6 +29,7 @@ typedef struct {
 #include "HyrulePort.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "objects/gameplay_field_keep/gameplay_field_keep.h"
+#include "HyruleSceneDraw.h"
 
 u8 D_801F4E30;
 u8 sInitSkyboxConfig;
@@ -1060,6 +1061,12 @@ void Environment_UpdateSkybox(u8 skyboxId, EnvironmentContext* envCtx, SkyboxCon
         envCtx->skyboxConfig = SKYBOX_CONFIG_0;
     }
 
+    // 3Ship [Hyrule] OoT's cutscene map sky blends its two skies by the time of day.
+    if (skyboxId == SKYBOX_CUTSCENE_MAP) {
+        envCtx->skyboxBlend = Hyrule_GetCutsceneMapSkyboxBlend();
+        return;
+    }
+
     if ((skyboxId == SKYBOX_NORMAL_SKY) || ((skyboxId == SKYBOX_3) && (D_801F4E74 < 1.0f))) {
         if (envCtx->skyboxDisabled) {
             return;
@@ -1238,6 +1245,9 @@ void Environment_WipeRumbleRequests(void) {
 void Environment_UpdateSkyboxRotY(PlayState* play) {
     if (!IS_PAUSED(&play->pauseCtx) && ((play->skyboxId == SKYBOX_NORMAL_SKY) || (play->skyboxId == SKYBOX_3))) {
         play->skyboxCtx.rot.y -= R_TIME_SPEED * 1.0e-4f;
+    } else if (!IS_PAUSED(&play->pauseCtx) && (play->skyboxId == SKYBOX_CUTSCENE_MAP)) {
+        // 3Ship [Hyrule] OoT's cutscene map sky turns as in OoT's Environment_Update.
+        play->skyboxCtx.rot.y -= 0.005f;
     }
 }
 

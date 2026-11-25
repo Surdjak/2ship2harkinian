@@ -11,6 +11,7 @@
 #include "HyruleCutscene.h"
 #include "assets/oot/objects/object_nb/object_nb.h"
 #include "../ovl_Door_Warp1/z_door_warp1.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

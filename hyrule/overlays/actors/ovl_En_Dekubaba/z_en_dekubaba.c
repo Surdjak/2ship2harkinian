@@ -5,6 +5,7 @@
 #include "assets/oot/objects/object_dekubaba/object_dekubaba.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
@@ -1002,8 +1003,7 @@ static void EnDekubaba_ShrinkDie(EnDekubaba* this, PlayState* play) {
                 Item_DropCollectible(play, &this->actor.world.pos, ITEM00_DEKU_NUTS_1);
             }
         } else {
-            // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x30);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x30);
         }
         Actor_Kill(&this->actor);
     }

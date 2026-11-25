@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_shopnuts/object_shopnuts.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 

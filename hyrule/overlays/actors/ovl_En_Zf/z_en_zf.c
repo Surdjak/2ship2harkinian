@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_zf/object_zf.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -2016,7 +2017,7 @@ static void EnZf_UpdateDamage(EnZf* this, PlayState* play) {
                         dropParams = 0xE0;
                     }
 
-                    Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, dropParams);
+                    Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, dropParams);
                     Enemy_StartFinishingBlow(play, &this->actor);
                 } else {
                     if ((D_80B4A1B4 != -1) && ((this->actor.colChkInfo.health + this->actor.colChkInfo.damage) >= 4) &&

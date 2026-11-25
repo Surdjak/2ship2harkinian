@@ -320,6 +320,8 @@ s32 Hyrule_IsCutsceneOotPlaying(void);
 
 // OoT's one-point camera as Link leaves a crawlspace (its 9601 and 9602), started by Player and updated each frame.
 void Hyrule_StartCrawlspaceExitCameraOot(struct PlayState* play, s32 backwards);
+// The crawl speed setting (z_player.c), from SoH: 1 to 5 times.
+s32 Player_GetCrawlSpeedOot(void);
 void Hyrule_UpdateOnePointCameraOot(struct PlayState* play);
 // Called each frame from Play_Update in place of MM's cutscene update while an OoT script plays or waits to start.
 void Hyrule_UpdateCutsceneOot(struct PlayState* play);

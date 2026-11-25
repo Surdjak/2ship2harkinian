@@ -11,6 +11,7 @@
 #include "overlays/effects/ovl_Effect_Ss_Kakera/z_eff_ss_kakera.h"
 #include "assets/oot/objects/object_spot11_obj/object_spot11_obj.h"
 #include "assets/oot/objects/gameplay_field_keep/gameplay_field_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

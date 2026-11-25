@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_haka/object_haka.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

@@ -3,6 +3,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "z_boss_mo.h"
+#include "HyruleSfx.h"
 
 static ColliderJntSphElementInit sJntSphElementsInit[19] = {
     {

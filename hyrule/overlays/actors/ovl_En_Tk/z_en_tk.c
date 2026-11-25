@@ -11,6 +11,7 @@
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/object_tk/object_tk.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 

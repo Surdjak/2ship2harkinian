@@ -645,7 +645,7 @@ typedef struct {
     /* 0x4454 */ u8* audioHeap;
     /* 0x4458 */ size_t audioHeapSize;
     /* 0x445C */ Note* notes;
-    /* 0x4460 */ SequencePlayer seqPlayers[5];
+    /* 0x4460 */ SequencePlayer seqPlayers[6]; // 3Ship [Hyrule] SEQ_PLAYER_MAX, with SEQ_PLAYER_SFX_OOT
     /* 0x4B40 */ SequenceLayer sequenceLayers[80];
     /* 0x7840 */ SequenceChannel sequenceChannelNone;
     /* 0x7924 */ s32 sampleStateOffset; // Start of the list of sample states for this update. Resets after each audio frame.

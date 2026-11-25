@@ -11,6 +11,7 @@
 #include "HyruleCutscene.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
@@ -551,16 +552,16 @@ static void func_80A03018(EnElf* this, PlayState* play) {
 
     switch (this->unk_2A8) {
         case 0:
-            targetYaw = Math_Atan2S(-(this->actor.world.pos.z - unk_28C->z), -(this->actor.world.pos.x - unk_28C->x));
+            targetYaw = Math_Atan2S_XY(-(this->actor.world.pos.z - unk_28C->z), -(this->actor.world.pos.x - unk_28C->x));
             break;
 
         case 3:
-            targetYaw = Math_Atan2S(-(this->actor.world.pos.z - player->actor.world.pos.z),
+            targetYaw = Math_Atan2S_XY(-(this->actor.world.pos.z - player->actor.world.pos.z),
                                     -(this->actor.world.pos.x - player->actor.world.pos.x));
             break;
 
         case 2:
-            targetYaw = Math_Atan2S(this->actor.world.pos.z - player->actor.world.pos.z,
+            targetYaw = Math_Atan2S_XY(this->actor.world.pos.z - player->actor.world.pos.z,
                                     this->actor.world.pos.x - player->actor.world.pos.x);
             break;
 
@@ -689,7 +690,7 @@ static void func_80A0353C(EnElf* this, PlayState* play) {
         Actor_Kill(&this->actor);
     }
 
-    this->unk_2BC = Math_Atan2S(this->actor.velocity.z, this->actor.velocity.x);
+    this->unk_2BC = Math_Atan2S_XY(this->actor.velocity.z, this->actor.velocity.x);
 }
 
 static void func_80A03604(EnElf* this, PlayState* play) {
@@ -733,7 +734,7 @@ static void func_80A03610(EnElf* this, PlayState* play) {
         return;
     }
 
-    this->unk_2BC = Math_Atan2S(this->actor.velocity.z, this->actor.velocity.x);
+    this->unk_2BC = Math_Atan2S_XY(this->actor.velocity.z, this->actor.velocity.x);
     EnElf_SpawnSparkles(this, play, 32);
     Actor_PlaySfx(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
 }
@@ -768,7 +769,7 @@ static void func_80A03814(EnElf* this, PlayState* play) {
     this->unk_28C.z = Math_SinS(this->unk_2AC) * -this->unk_2B8;
     this->unk_2AC += this->unk_2B0;
     func_80A02E30(this, &player->bodyPartsPos[0]);
-    this->unk_2BC = Math_Atan2S(this->actor.velocity.z, this->actor.velocity.x);
+    this->unk_2BC = Math_Atan2S_XY(this->actor.velocity.z, this->actor.velocity.x);
     EnElf_SpawnSparkles(this, play, 32);
     Actor_PlaySfx(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
 }
@@ -793,7 +794,7 @@ static void func_80A03990(EnElf* this, PlayState* play) {
 
     func_80A02E30(this, &player->bodyPartsPos[0]);
     Actor_SetScale(&this->actor, (1.0f - (SQ(this->unk_2B4) * SQ(1.0f / 9.0f))) * 0.008f);
-    this->unk_2BC = Math_Atan2S(this->actor.velocity.z, this->actor.velocity.x);
+    this->unk_2BC = Math_Atan2S_XY(this->actor.velocity.z, this->actor.velocity.x);
     EnElf_SpawnSparkles(this, play, 32);
     Actor_PlaySfx(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
 }
@@ -835,7 +836,7 @@ static void EnElf_UpdateLights(EnElf* this, PlayState* play) {
     Lights_PointGlowSetInfo(&this->lightInfoGlow, this->actor.world.pos.x, this->actor.world.pos.y,
                             this->actor.world.pos.z, 255, 255, 255, glowLightRadius);
 
-    this->unk_2BC = Math_Atan2S(this->actor.velocity.z, this->actor.velocity.x);
+    this->unk_2BC = Math_Atan2S_XY(this->actor.velocity.z, this->actor.velocity.x);
 
     Actor_SetScale(&this->actor, this->actor.scale.x);
 }

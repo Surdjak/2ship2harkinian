@@ -10,6 +10,7 @@
 #include "HyruleCutscene.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_ingate/object_ingate.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

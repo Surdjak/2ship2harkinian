@@ -8,6 +8,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleActor.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOOKSHOT_PULLS_ACTOR)
 

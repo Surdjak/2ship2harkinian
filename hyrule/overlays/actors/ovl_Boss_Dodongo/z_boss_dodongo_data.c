@@ -2,6 +2,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleActor.h"
+#include "HyruleSfx.h"
 
 static u8 D_808C7000[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1,

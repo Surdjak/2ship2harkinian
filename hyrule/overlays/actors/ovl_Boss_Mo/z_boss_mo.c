@@ -13,6 +13,7 @@
 #include "assets/oot/objects/object_mo/object_mo.h"
 #include "../ovl_Door_Warp1/z_door_warp1.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+#include "HyruleSfx.h"
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
@@ -3071,7 +3072,7 @@ static void BossMo_Unknown(void) {
         NA_SE_PL_WALK_LADDER,
         NA_SE_PL_WALK_GLASS,
         NA_SE_PL_WALK_WALL,
-        NA_SE_PL_LAND_HEAVYBOOTS, // PORT: MM lacks OoT's walking sound
+        NA_SE_PL_WALK_HEAVYBOOTS,
         NA_SE_PL_WALK_ICE,
         NA_SE_PL_JUMP_GROUND,
         NA_SE_PL_JUMP_GROUND,

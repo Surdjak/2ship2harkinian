@@ -12,6 +12,7 @@
 #include "../ovl_En_Wall_Tubo/z_en_wall_tubo.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 #include "assets/oot/objects/object_bowl/object_bowl.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

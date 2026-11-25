@@ -12,6 +12,7 @@
 #include "HyrulePort.h"
 #include "HyruleOcarina.h"
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h" // BOMB_TYPE_EXPLOSION
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 

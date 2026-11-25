@@ -11,6 +11,7 @@
 #include "assets/oot/objects/object_os_anime/object_os_anime.h"
 #include "assets/oot/objects/object_boj/object_boj.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 

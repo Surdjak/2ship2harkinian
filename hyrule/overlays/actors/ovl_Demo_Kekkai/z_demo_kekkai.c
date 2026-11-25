@@ -12,6 +12,7 @@
 #include "2s2h/BenPort.h"
 #include "assets/oot/objects/object_demo_kekkai/object_demo_kekkai.h"
 #include "assets/oot/scenes/dungeons/ganontika/ganontika_scene.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

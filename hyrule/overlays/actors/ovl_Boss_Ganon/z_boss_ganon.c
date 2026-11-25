@@ -15,6 +15,7 @@
 #include "assets/oot/objects/object_ganon_anime1/object_ganon_anime1.h"
 #include "assets/oot/objects/object_ganon_anime2/object_ganon_anime2.h"
 #include "assets/oot/scenes/dungeons/ganon_boss/ganon_boss_scene.h"
+#include "HyruleSfx.h"
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
@@ -193,8 +194,8 @@ static void BossGanonEff_SpawnLightRay(PlayState* play, Vec3f* pos, Vec3f* veloc
             eff->unk_2E = (s16)Rand_ZeroFloat(100.0f) + 0xC8;
             eff->unk_30 = arg6;
             eff->timer = (s16)Rand_ZeroFloat(10.0f);
-            eff->unk_48 = Math_Atan2F(eff->velocity.z, eff->velocity.x);
-            eff->unk_44 = -Math_Atan2F(sqrtf(SQXZ(eff->velocity)), eff->velocity.y);
+            eff->unk_48 = Math_Atan2F_XY(eff->velocity.z, eff->velocity.x);
+            eff->unk_44 = -Math_Atan2F_XY(sqrtf(SQXZ(eff->velocity)), eff->velocity.y);
             eff->epoch++;
             break;
         }
@@ -450,8 +451,8 @@ static void BossGanon_Init(Actor* thisx, PlayState* play2) {
             yDistFromPlayer = (player->actor.world.pos.y + 30.0f) - thisx->world.pos.y;
             zDistFromPlayer = player->actor.world.pos.z - thisx->world.pos.z;
 
-            thisx->world.rot.y = Math_Atan2S(zDistFromPlayer, xDistFromPlayer);
-            thisx->world.rot.x = Math_Atan2S(sqrtf(SQ(xDistFromPlayer) + SQ(zDistFromPlayer)), yDistFromPlayer);
+            thisx->world.rot.y = Math_Atan2S_XY(zDistFromPlayer, xDistFromPlayer);
+            thisx->world.rot.x = Math_Atan2S_XY(sqrtf(SQ(xDistFromPlayer) + SQ(zDistFromPlayer)), yDistFromPlayer);
 
             if (Rand_ZeroOne() < 0) {
                 thisx->world.rot.y += (s16)Rand_CenteredFloat(5000.0f);
@@ -4015,9 +4016,9 @@ static void BossGanon_LightBall_Update(Actor* thisx, PlayState* play2) {
                         Rumble_Request(this->actor.xyzDistToPlayerSq, 0xFF, 0x14, 0x96);
                     } else {
                         spBA = 1;
-                        this->actor.world.rot.y = Math_Atan2S(zDistFromGanondorf, xDistFromGanondorf);
+                        this->actor.world.rot.y = Math_Atan2S_XY(zDistFromGanondorf, xDistFromGanondorf);
                         this->actor.world.rot.x =
-                            Math_Atan2S(sqrtf(SQ(xDistFromGanondorf) + SQ(zDistFromGanondorf)), yDistFromGanondorf);
+                            Math_Atan2S_XY(sqrtf(SQ(xDistFromGanondorf) + SQ(zDistFromGanondorf)), yDistFromGanondorf);
                         this->unk_1A4++;
                         this->timers[1] = 2;
                         AudioSfx_PlaySfx(NA_SE_IT_SWORD_REFLECT_MG, &player->actor.projectedPos, 4,
@@ -4083,8 +4084,8 @@ static void BossGanon_LightBall_Update(Actor* thisx, PlayState* play2) {
             case 2:
                 if (this->timers[0] == 1) {
                     spBA = 1;
-                    this->actor.world.rot.y = Math_Atan2S(zDistFromLink, xDistFromLink);
-                    this->actor.world.rot.x = Math_Atan2S(sqrtf(SQ(xDistFromLink) + SQ(zDistFromLink)), yDistFromLink);
+                    this->actor.world.rot.y = Math_Atan2S_XY(zDistFromLink, xDistFromLink);
+                    this->actor.world.rot.x = Math_Atan2S_XY(sqrtf(SQ(xDistFromLink) + SQ(zDistFromLink)), yDistFromLink);
                     this->timers[1] = 2;
                     Actor_PlaySfx(&this->actor, NA_SE_IT_SWORD_REFLECT_MG);
                     Actor_PlaySfx(&this->actor, NA_SE_EN_LAST3_ROD_WIND_OLD);

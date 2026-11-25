@@ -5,6 +5,7 @@
 #include "HyrulePlayer.h"
 #include "assets/oot/objects/object_okuta/object_okuta.h"
 #include "assets/oot/objects/gameplay_field_keep/gameplay_field_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
@@ -436,8 +437,7 @@ static void EnOkuta_Die(EnOkuta* this, PlayState* play) {
     } else {
         if (Math_StepToF(&this->actor.scale.x, 0.0f, 0.0005f)) {
             SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 30, NA_SE_EN_COMMON_WATER_MID);
-            // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x70);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x70);
             for (i = 0; i < 20; i++) {
                 velocity.x = (Rand_ZeroOne() - 0.5f) * 7.0f;
                 velocity.y = Rand_ZeroOne() * 7.0f;

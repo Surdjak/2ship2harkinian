@@ -12,6 +12,7 @@
 #include "assets/oot/objects/object_os_anime/object_os_anime.h"
 #include "assets/oot/objects/object_km1/object_km1.h"
 #include "assets/oot/objects/object_kw1/object_kw1.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 

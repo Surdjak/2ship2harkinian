@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_sb/object_sb.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
@@ -450,7 +451,7 @@ static void EnSb_Update(Actor* thisx, PlayState* play) {
         }
         if (BodyBreak_SpawnParts(&this->actor, &this->bodyBreak, play, this->actor.params)) {
             if (!this->hitByWindArrow) {
-                Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x80);
+                Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x80);
             } else {
                 Item_DropCollectible(play, &this->actor.world.pos, 8);
             }

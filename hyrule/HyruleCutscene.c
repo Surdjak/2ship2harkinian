@@ -16,6 +16,7 @@
 #include "HyruleInventory.h"
 #include "BenPort.h"
 #include <string.h>
+#include "HyruleSfx.h"
 
 CutsceneContextOot gCsCtxOot;
 s8 gLinkAgeOnLoadOot = -1;
@@ -2270,6 +2271,8 @@ void Hyrule_UpdateOnePointCameraOot(PlayState* play) {
     // Play_Draw update the active camera a second time each frame: the shot's spline (Camera_Demo9) and its timer run
     // twice as fast until Link is out (SoH: the rise takes 26 frames, the whole shot 66).
     steps = Hyrule_IsOverCrawlspaceOot(play) ? 2 : 1;
+    // SoH's crawl speed divides the shot's timer by it.
+    steps *= Player_GetCrawlSpeedOot();
     while (steps-- > 0) {
         if (!Hyrule_IsCutsceneOotPlaying()) {
             CsCamera_Update(play);

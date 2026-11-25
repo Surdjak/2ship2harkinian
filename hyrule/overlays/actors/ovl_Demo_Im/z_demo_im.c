@@ -13,6 +13,7 @@
 #include "HyruleCutscene.h"
 #include "assets/oot/scenes/indoors/nakaniwa/nakaniwa_scene.h"
 #include "assets/oot/objects/object_im/object_im.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 

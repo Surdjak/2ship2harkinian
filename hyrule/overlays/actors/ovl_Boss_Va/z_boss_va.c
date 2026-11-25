@@ -8,6 +8,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleActor.h"
+#include "HyruleSfx.h"
 
 #include <string.h>
 

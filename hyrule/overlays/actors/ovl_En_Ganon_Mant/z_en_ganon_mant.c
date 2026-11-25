@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "2s2h/BenPort.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
@@ -226,8 +227,8 @@ static void EnGanonMant_UpdateStrand(PlayState* play, EnGanonMant* this, Vec3f* 
             z = ((pos->z + vel->z) - (pos - 1)->z) + (backSwayOffset.z + sideSwayOffset.z);
 
             // Calculate rotations in the direction of the position difference
-            yaw = Math_Atan2F(z, x);
-            x = -Math_Atan2F(sqrtf(SQ(x) + SQ(z)), y);
+            yaw = Math_Atan2F_XY(z, x);
+            x = -Math_Atan2F_XY(sqrtf(SQ(x) + SQ(z)), y);
             (rot - 1)->x = x;
 
             // Calculate real position difference of correct length in the correct direction
@@ -251,7 +252,7 @@ static void EnGanonMant_UpdateStrand(PlayState* play, EnGanonMant* this, Vec3f* 
             xDiff = pos->x - this->actor.world.pos.x;
             zDiff = pos->z - this->actor.world.pos.z;
             if (sqrtf(SQ(xDiff) + SQ(zDiff)) < (sDistMultipliers[i] * this->minDist)) {
-                yaw = Math_Atan2F(zDiff, xDiff);
+                yaw = Math_Atan2F_XY(zDiff, xDiff);
                 delta.z = this->minDist * sDistMultipliers[i];
                 Matrix_RotateYF(yaw, MTXMODE_NEW);
                 Matrix_MultVec3f(&delta, &posStep);
@@ -291,7 +292,7 @@ static void EnGanonMant_UpdateStrand(PlayState* play, EnGanonMant* this, Vec3f* 
             // update angle
             xDiff = pos->x - nextPos->x;
             zDiff = pos->z - nextPos->z;
-            (rot - 1)->y = Math_Atan2F(zDiff, xDiff);
+            (rot - 1)->y = Math_Atan2F_XY(zDiff, xDiff);
         }
     }
     rot[11].y = rot[10].y;
@@ -442,8 +443,8 @@ static void EnGanonMant_Draw(Actor* thisx, PlayState* play) {
         midpoint.z = rightPos->z + zDiff * 0.5f;
 
         // Calculte base orientation for chosen endpoints
-        yaw = Math_Atan2F(zDiff, xDiff);
-        pitch = -Math_Atan2F(sqrtf(SQ(xDiff) + SQ(zDiff)), yDiff);
+        yaw = Math_Atan2F_XY(zDiff, xDiff);
+        pitch = -Math_Atan2F_XY(sqrtf(SQ(xDiff) + SQ(zDiff)), yDiff);
         diffHalfDist = sqrtf(SQ(xDiff) + SQ(yDiff) + SQ(zDiff)) * 0.5f;
 
         Matrix_RotateYF(yaw, MTXMODE_NEW);

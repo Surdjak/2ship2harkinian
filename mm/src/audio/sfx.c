@@ -33,14 +33,22 @@ SfxBankEntry sSfxEnemyBank[20];
 SfxBankEntry sSfxSystemBank[8];
 SfxBankEntry sSfxOcarinaBank[3];
 SfxBankEntry sSfxVoiceBank[5];
+// 3Ship [Hyrule] OoT's banks (SFX_BANK_OOT_OFFSET on), as large as MM's.
+SfxBankEntry sSfxPlayerBankOot[9];
+SfxBankEntry sSfxItemBankOot[12];
+SfxBankEntry sSfxEnvironmentBankOot[32];
+SfxBankEntry sSfxEnemyBankOot[20];
+SfxBankEntry sSfxSystemBankOot[8];
+SfxBankEntry sSfxOcarinaBankOot[3];
+SfxBankEntry sSfxVoiceBankOot[5];
 SfxRequest sSfxRequests[0x100];
-u8 sSfxBankListEnd[7];
-u8 sSfxBankFreeListStart[7];
-u8 sSfxBankUnused[7];
-ActiveSfx gActiveSfx[7][3];
+u8 sSfxBankListEnd[SFX_BANK_COUNT];
+u8 sSfxBankFreeListStart[SFX_BANK_COUNT];
+u8 sSfxBankUnused[SFX_BANK_COUNT];
+ActiveSfx gActiveSfx[SFX_BANK_COUNT][3];
 u8 sCurSfxPlayerChannelIndex;
-u8 gSfxBankMuted[7];
-SfxBankLerp sSfxBankLerp[7];
+u8 gSfxBankMuted[SFX_BANK_COUNT];
+SfxBankLerp sSfxBankLerp[SFX_BANK_COUNT];
 
 // sSfxRequests ring buffer endpoints. read index <= write index, wrapping around mod 256.
 u8 sSfxRequestWriteIndex = 0;
@@ -57,18 +65,32 @@ u8 sSfxRequestReadIndex = 0;
  * 5 : Ocarina Bank         size 3
  * 6 : Voice Bank           size 5
  */
-SfxBankEntry* gSfxBanks[7] = {
-    sSfxPlayerBank, sSfxItemBank, sSfxEnvironmentBank, sSfxEnemyBank, sSfxSystemBank, sSfxOcarinaBank, sSfxVoiceBank,
+SfxBankEntry* gSfxBanks[SFX_BANK_COUNT] = {
+    sSfxPlayerBank,    sSfxItemBank,           sSfxEnvironmentBank, sSfxEnemyBank,
+    sSfxSystemBank,    sSfxOcarinaBank,        sSfxVoiceBank,
+    // 3Ship [Hyrule]
+    sSfxPlayerBankOot, sSfxItemBankOot,        sSfxEnvironmentBankOot, sSfxEnemyBankOot,
+    sSfxSystemBankOot, sSfxOcarinaBankOot,     sSfxVoiceBankOot,
 };
 
 u8 sSfxBankSizes[ARRAY_COUNT(gSfxBanks)] = {
     ARRAY_COUNT(sSfxPlayerBank), ARRAY_COUNT(sSfxItemBank),   ARRAY_COUNT(sSfxEnvironmentBank),
     ARRAY_COUNT(sSfxEnemyBank),  ARRAY_COUNT(sSfxSystemBank), ARRAY_COUNT(sSfxOcarinaBank),
     ARRAY_COUNT(sSfxVoiceBank),
+    // 3Ship [Hyrule]
+    ARRAY_COUNT(sSfxPlayerBankOot), ARRAY_COUNT(sSfxItemBankOot),   ARRAY_COUNT(sSfxEnvironmentBankOot),
+    ARRAY_COUNT(sSfxEnemyBankOot),  ARRAY_COUNT(sSfxSystemBankOot), ARRAY_COUNT(sSfxOcarinaBankOot),
+    ARRAY_COUNT(sSfxVoiceBankOot),
 };
 
 u8 gSfxChannelLayout = 0;
-u16 sSfxChannelLowVolumeFlag = 0;
+// 3Ship [Hyrule] u32, with OoT's sfx channels from bit 16 (AudioSfx_GetBgmVolumeFlagIndex).
+u32 sSfxChannelLowVolumeFlag = 0;
+
+// 3Ship [Hyrule] The bit of sSfxChannelLowVolumeFlag for a bank's sfx channel.
+static u8 AudioSfx_GetBgmVolumeFlagIndex(u8 bankId, u8 channelIndex) {
+    return channelIndex + (SFX_BANK_IS_OOT(bankId) ? SEQ_NUM_CHANNELS : 0);
+}
 
 // The center of the screen in projected coordinates.
 // Gives the impression that the sfx has no specific location
@@ -85,12 +107,14 @@ s8 gSfxDefaultReverb = 0;
 void AudioSfx_MuteBanks(u16 muteMask) {
     u8 bankId;
 
-    for (bankId = 0; bankId < ARRAY_COUNT(gSfxBanks); bankId++) {
+    // 3Ship [Hyrule] OoT's banks follow MM's of the same kind.
+    for (bankId = 0; bankId < SFX_BANK_OOT_OFFSET; bankId++) {
         if (muteMask & 1) {
             gSfxBankMuted[bankId] = true;
         } else {
             gSfxBankMuted[bankId] = false;
         }
+        gSfxBankMuted[bankId + SFX_BANK_OOT_OFFSET] = gSfxBankMuted[bankId];
         muteMask = muteMask >> 1;
     }
 }
@@ -101,7 +125,7 @@ void AudioSfx_MuteBanks(u16 muteMask) {
  * Only a single channel needs to request this to lower the volume.
  */
 void AudioSfx_LowerBgmVolume(u8 channelIndex) {
-    sSfxChannelLowVolumeFlag |= (1 << channelIndex);
+    sSfxChannelLowVolumeFlag |= (1u << channelIndex);
 
     AudioSeq_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, VOL_SCALE_INDEX_SFX, 0x40, 0xF);
     AudioSeq_SetVolumeScale(SEQ_PLAYER_BGM_SUB, VOL_SCALE_INDEX_SFX, 0x40, 0xF);
@@ -112,7 +136,7 @@ void AudioSfx_LowerBgmVolume(u8 channelIndex) {
  * If all flags are cleared, then both bgm players return to full volume
  */
 void AudioSfx_RestoreBgmVolume(u8 channelIndex) {
-    sSfxChannelLowVolumeFlag &= ((1 << channelIndex) ^ 0xFFFF);
+    sSfxChannelLowVolumeFlag &= ~(1u << channelIndex);
 
     if (sSfxChannelLowVolumeFlag == 0) {
         AudioSeq_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, VOL_SCALE_INDEX_SFX, 0x7F, 0xF);
@@ -296,7 +320,8 @@ void AudioSfx_ProcessRequest(void) {
                     // Restore bgm if the sfx about to be replaced has the right flag
                     if ((gSfxBanks[bankId][index].sfxParams & SFX_FLAG_LOWER_VOLUME_BGM) &&
                         (gSfxBanks[bankId][index].state != SFX_STATE_QUEUED)) {
-                        AudioSfx_RestoreBgmVolume(gSfxBanks[bankId][index].channelIndex);
+                        AudioSfx_RestoreBgmVolume(
+                            AudioSfx_GetBgmVolumeFlagIndex(bankId, gSfxBanks[bankId][index].channelIndex));
                     }
 
                     gSfxBanks[bankId][index].token = req->token;
@@ -363,7 +388,7 @@ void AudioSfx_RemoveBankEntry(u8 bankId, u8 entryIndex) {
     u8 i;
 
     if (entry->sfxParams & SFX_FLAG_LOWER_VOLUME_BGM) {
-        AudioSfx_RestoreBgmVolume(entry->channelIndex);
+        AudioSfx_RestoreBgmVolume(AudioSfx_GetBgmVolumeFlagIndex(bankId, entry->channelIndex));
     }
 
     if (entryIndex == sSfxBankListEnd[bankId]) {
@@ -424,7 +449,7 @@ void AudioSfx_ChooseActiveSfx(u8 bankId) {
         } else if (!(gSfxBanks[bankId][entryIndex].sfxId & SFX_FLAG_MASK) &&
                    (gSfxBanks[bankId][entryIndex].state == SFX_STATE_PLAYING_ONE_FRAME)) {
             // ioPort 0, force stop sfx in seq 0
-            AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, gSfxBanks[bankId][entryIndex].channelIndex, 0, 0);
+            AUDIOCMD_CHANNEL_SET_IO(SFX_BANK_SEQ_PLAYER(bankId), gSfxBanks[bankId][entryIndex].channelIndex, 0, 0);
             AudioSfx_RemoveBankEntry(bankId, entryIndex);
         }
 
@@ -472,7 +497,7 @@ void AudioSfx_ChooseActiveSfx(u8 bankId) {
                 // If too far away and also playing, stop playing
                 if (entry->state == SFX_STATE_PLAYING) {
                     // ioPort 0, force stop sfx in seq 0
-                    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, entry->channelIndex, 0, 0);
+                    AUDIOCMD_CHANNEL_SET_IO(SFX_BANK_SEQ_PLAYER(bankId), entry->channelIndex, 0, 0);
                     if (entry->sfxId & SFX_FLAG_MASK) {
                         AudioSfx_RemoveBankEntry(bankId, entryIndex);
                         entryIndex = k;
@@ -611,13 +636,13 @@ void AudioSfx_PlayActiveSfx(u8 bankId) {
         // If entry is not empty
         if (entryIndex != 0xFF) {
             entry = &gSfxBanks[bankId][entryIndex];
-            channel = gAudioCtx.seqPlayers[SEQ_PLAYER_SFX].channels[sCurSfxPlayerChannelIndex];
+            channel = gAudioCtx.seqPlayers[SFX_BANK_SEQ_PLAYER(bankId)].channels[sCurSfxPlayerChannelIndex];
 
             if (entry->state == SFX_STATE_READY) {
                 // Initialize a sfx (new sfx request)
                 entry->channelIndex = sCurSfxPlayerChannelIndex;
                 if (entry->sfxParams & SFX_FLAG_LOWER_VOLUME_BGM) {
-                    AudioSfx_LowerBgmVolume(sCurSfxPlayerChannelIndex);
+                    AudioSfx_LowerBgmVolume(AudioSfx_GetBgmVolumeFlagIndex(bankId, sCurSfxPlayerChannelIndex));
                 }
 
                 // Add noise that will offset the frequency of the sfx
@@ -645,28 +670,36 @@ void AudioSfx_PlayActiveSfx(u8 bankId) {
                 AudioSfx_SetProperties(bankId, entryIndex, sCurSfxPlayerChannelIndex);
 
                 // ioPort 0, enable the sfx to play in `NA_BGM_GENERAL_SFX`
-                AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, sCurSfxPlayerChannelIndex, 0, 1);
+                AUDIOCMD_CHANNEL_SET_IO(SFX_BANK_SEQ_PLAYER(bankId), sCurSfxPlayerChannelIndex, 0, 1);
 
                 // ioPort 4, write the lower bits sfx index for `NA_BGM_GENERAL_SFX` to find the right code to execute
-                AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, sCurSfxPlayerChannelIndex, 4, entry->sfxId & 0xFF);
+                AUDIOCMD_CHANNEL_SET_IO(SFX_BANK_SEQ_PLAYER(bankId), sCurSfxPlayerChannelIndex, 4, entry->sfxId & 0xFF);
 
-                // If the sfx bank has more than 255 entries (greater than a u8 can store),
-                // then store the Id in upper and lower bits
-                if (gIsLargeSfxBank[bankId]) {
-                    // Store upper bits
-                    ioPort5Data = ((u8)((entry->sfxId & 0x300) >> 7) + (u8)((entry->sfxId & 0xFF) >> 7));
+                // 3Ship [Hyrule] OoT's sfx sequence takes the index's bit 8 in ioPort 5 for its large bank only.
+                if (SFX_BANK_IS_OOT(bankId)) {
+                    if (gIsLargeSfxBankOot[SFX_BANK_TYPE(bankId)]) {
+                        AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX_OOT, sCurSfxPlayerChannelIndex, 5,
+                                                (entry->sfxId & 0x100) >> 8);
+                    }
                 } else {
-                    ioPort5Data = 0;
-                }
+                    // If the sfx bank has more than 255 entries (greater than a u8 can store),
+                    // then store the Id in upper and lower bits
+                    if (gIsLargeSfxBank[bankId]) {
+                        // Store upper bits
+                        ioPort5Data = ((u8)((entry->sfxId & 0x300) >> 7) + (u8)((entry->sfxId & 0xFF) >> 7));
+                    } else {
+                        ioPort5Data = 0;
+                    }
 
-                if ((entry->sfxParams & SFX_FLAG_8) && (entry->freshness == 0x80)) {
-                    ioPort5Data += 0x80;
-                }
+                    if ((entry->sfxParams & SFX_FLAG_8) && (entry->freshness == 0x80)) {
+                        ioPort5Data += 0x80;
+                    }
 
-                if (D_801D6608[bankId]) {
-                    // ioPort 5, write the upper bits sfx index and a flag for `NA_BGM_GENERAL_SFX`,
-                    // for banks with > 0xFF entries
-                    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, sCurSfxPlayerChannelIndex, 5, ioPort5Data);
+                    if (D_801D6608[bankId]) {
+                        // ioPort 5, write the upper bits sfx index and a flag for `NA_BGM_GENERAL_SFX`,
+                        // for banks with > 0xFF entries
+                        AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, sCurSfxPlayerChannelIndex, 5, ioPort5Data);
+                    }
                 }
 
                 // Update playing state
@@ -708,7 +741,7 @@ void AudioSfx_StopByBank(u8 bankId) {
     while (entryIndex != 0xFF) {
         entry = &gSfxBanks[bankId][entryIndex];
         if (entry->state >= SFX_STATE_PLAYING_REFRESH) {
-            AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, entry->channelIndex, 0, 0);
+            AUDIOCMD_CHANNEL_SET_IO(SFX_BANK_SEQ_PLAYER(bankId), entry->channelIndex, 0, 0);
         }
 
         if (entry->state != SFX_STATE_EMPTY) {
@@ -730,7 +763,7 @@ void AudioSfx_StopByPosAndBankImpl(u8 bankId, Vec3f* pos) {
         entry = &gSfxBanks[bankId][entryIndex];
         if (entry->posX == &pos->x) {
             if (entry->state >= SFX_STATE_PLAYING_REFRESH) {
-                AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, entry->channelIndex, 0, 0);
+                AUDIOCMD_CHANNEL_SET_IO(SFX_BANK_SEQ_PLAYER(bankId), entry->channelIndex, 0, 0);
             }
 
             if (entry->state != SFX_STATE_EMPTY) {
@@ -775,7 +808,7 @@ void AudioSfx_StopByPosAndId(Vec3f* pos, u16 sfxId) {
         entry = &gSfxBanks[SFX_BANK(sfxId)][entryIndex];
         if ((entry->posX == &pos->x) && (entry->sfxId == sfxId)) {
             if (entry->state >= SFX_STATE_PLAYING_REFRESH) {
-                AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, entry->channelIndex, 0, 0);
+                AUDIOCMD_CHANNEL_SET_IO(SFX_BANK_SEQ_PLAYER(SFX_BANK(sfxId)), entry->channelIndex, 0, 0);
             }
 
             if (entry->state != SFX_STATE_EMPTY) {
@@ -806,7 +839,7 @@ void AudioSfx_StopByTokenAndId(u8 token, u16 sfxId) {
         entry = &gSfxBanks[SFX_BANK(sfxId)][entryIndex];
         if ((entry->token == token) && (entry->sfxId == sfxId)) {
             if (entry->state >= SFX_STATE_PLAYING_REFRESH) {
-                AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, entry->channelIndex, 0, 0);
+                AUDIOCMD_CHANNEL_SET_IO(SFX_BANK_SEQ_PLAYER(SFX_BANK(sfxId)), entry->channelIndex, 0, 0);
             }
 
             if (entry->state != SFX_STATE_EMPTY) {
@@ -836,7 +869,7 @@ void AudioSfx_StopById(u32 sfxId) {
         entry = &gSfxBanks[SFX_BANK(sfxId)][entryIndex];
         if (entry->sfxId == sfxId) {
             if (entry->state >= SFX_STATE_PLAYING_REFRESH) {
-                AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, entry->channelIndex, 0, 0);
+                AUDIOCMD_CHANNEL_SET_IO(SFX_BANK_SEQ_PLAYER(SFX_BANK(sfxId)), entry->channelIndex, 0, 0);
             }
             if (entry->state != SFX_STATE_EMPTY) {
                 AudioSfx_RemoveBankEntry(SFX_BANK(sfxId), entryIndex);
@@ -889,10 +922,12 @@ void AudioSfx_StepBankLerp(u8 bankId) {
 void AudioSfx_ProcessActiveSfx(void) {
     u8 bankId;
 
-    if (gAudioCtx.seqPlayers[SEQ_PLAYER_SFX].enabled) {
-        sCurSfxPlayerChannelIndex = 0;
-
-        for (bankId = 0; bankId < ARRAY_COUNT(gSfxBanks); bankId++) {
+    // 3Ship [Hyrule] OoT's banks, after MM's, on OoT's sfx sequence's channels from 0.
+    for (bankId = 0; bankId < ARRAY_COUNT(gSfxBanks); bankId++) {
+        if ((bankId == 0) || (bankId == SFX_BANK_OOT_OFFSET)) {
+            sCurSfxPlayerChannelIndex = 0;
+        }
+        if (gAudioCtx.seqPlayers[SFX_BANK_SEQ_PLAYER(bankId)].enabled) {
             AudioSfx_ChooseActiveSfx(bankId);
             AudioSfx_PlayActiveSfx(bankId);
             AudioSfx_StepBankLerp(bankId);

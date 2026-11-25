@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Honotrap/z_en_honotrap.h"
 #include "assets/oot/objects/object_tk/object_tk.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                  \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \

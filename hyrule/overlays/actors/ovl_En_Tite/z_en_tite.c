@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Encount1/z_en_encount1.h"
 #include "assets/oot/objects/object_tite/object_tite.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -761,11 +762,9 @@ static void EnTite_DeathCry(EnTite* this, PlayState* play) {
 static void EnTite_FallApart(EnTite* this, PlayState* play) {
     if (BodyBreak_SpawnParts(&this->actor, &this->bodyBreak, play, this->actor.params + 0xB)) {
         if (this->actor.params == TEKTITE_BLUE) {
-            // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xE0);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xE0);
         } else {
-            // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x40);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x40);
         }
         Actor_Kill(&this->actor);
     }

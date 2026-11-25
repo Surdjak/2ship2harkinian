@@ -11,6 +11,7 @@
 #include "HyruleCutscene.h"
 #include "assets/oot/objects/object_gjyo_objects/object_gjyo_objects.h"
 #include "assets/oot/scenes/dungeons/ganon_tou/ganon_tou_scene.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

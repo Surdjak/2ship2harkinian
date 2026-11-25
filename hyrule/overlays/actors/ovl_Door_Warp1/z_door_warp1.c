@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "HyruleScenes.h"
 #include "assets/oot/objects/object_warp1/object_warp1.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

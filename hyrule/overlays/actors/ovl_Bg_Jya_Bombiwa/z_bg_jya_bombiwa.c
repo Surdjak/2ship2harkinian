@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "overlays/effects/ovl_Effect_Ss_Kakera/z_eff_ss_kakera.h"
 #include "assets/oot/objects/object_jya_obj/object_jya_obj.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

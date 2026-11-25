@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Encount2/z_en_encount2.h"
 #include "assets/oot/objects/object_efc_star_field/object_efc_star_field.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

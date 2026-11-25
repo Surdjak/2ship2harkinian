@@ -11,6 +11,7 @@
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "HyruleInventory.h"
+#include "HyruleSfx.h"
 
 #include "assets/oot/objects/object_gnd/object_gnd.h"
 #include "assets/oot/objects/object_goma/object_goma.h"

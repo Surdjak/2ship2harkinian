@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_bl/object_bl.h"
+#include "HyruleSfx.h"
 
 #define FLAGS \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_CAN_ATTACH_TO_ARROW)
@@ -484,7 +485,7 @@ static void EnBili_Die(EnBili* this, PlayState* play) {
             return;
         }
         this->actor.draw = NULL;
-        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x50);
+        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x50);
     }
 
     if (this->timer != 0) {

@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

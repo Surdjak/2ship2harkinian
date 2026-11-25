@@ -11,6 +11,7 @@
 #include "assets/oot/objects/object_spot08_obj/object_spot08_obj.h"
 #include "overlays/effects/ovl_Effect_Ss_Kakera/z_eff_ss_kakera.h"
 #include "assets/oot/objects/gameplay_field_keep/gameplay_field_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_IGNORE_LEGACY_POINT_LIGHTS
 

@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "HyruleScenes.h"
 #include "assets/oot/objects/object_geldb/object_geldb.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 

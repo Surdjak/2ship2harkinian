@@ -15,6 +15,7 @@
 #include "assets/oot/objects/object_mori_hineri2/object_mori_hineri2.h"
 #include "assets/oot/objects/object_mori_hineri2a/object_mori_hineri2a.h"
 #include "assets/oot/objects/object_mori_tex/object_mori_tex.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

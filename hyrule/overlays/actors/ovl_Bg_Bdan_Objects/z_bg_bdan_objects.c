@@ -11,6 +11,7 @@
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "assets/oot/objects/object_bdan_objects/object_bdan_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 
@@ -314,7 +315,7 @@ static void BgBdanObjects_OctoPlatform_BattleInProgress(BgBdanObjects* this, Pla
         this->actionFunc = BgBdanObjects_SinkToFloorHeight;
     } else {
         this->dyna.actor.shape.rot.y += this->dyna.actor.world.rot.y;
-        Audio_PlaySfx_AtPosWithFreq(&this->dyna.actor.projectedPos, 0x2063, ABS(this->dyna.actor.world.rot.y) / 512.0f);
+        Audio_PlaySfx_AtPosWithFreq(&this->dyna.actor.projectedPos, SFX_OOT(0x2063), ABS(this->dyna.actor.world.rot.y) / 512.0f);
     }
 }
 

@@ -12,6 +12,7 @@
 #include "assets/oot/scenes/dungeons/ddan/ddan_scene.h"
 #include "assets/oot/objects/object_bwall/object_bwall.h"
 #include "assets/oot/objects/object_kingdodongo/object_kingdodongo.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

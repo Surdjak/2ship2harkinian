@@ -11,6 +11,7 @@
 extern "C" {
 #endif
 
+struct PlayState;
 struct Player;
 
 // Player.currentShield is the equipped value, so OoT's shields follow MM's two.
@@ -34,6 +35,10 @@ s32 Hyrule_IsChildWithHylianShield(struct Player* player);
 s32 Hyrule_HoldsSlingshot(struct Player* player);
 // Child Link's right hand holding the Slingshot, as a near/far pair.
 Gfx** Hyrule_GetHandHoldingSlingshotDLs(void);
+// OoT's Fairy Ocarina in Link's hand, which MM's Player has no model for (its instrument hand holds the Ocarina of
+// Time).
+s32 Hyrule_HoldsFairyOcarina(struct PlayState* play, struct Player* player);
+Gfx** Hyrule_GetHandHoldingFairyOcarinaDLs(void);
 // His right arm holding the Slingshot out, in first person.
 Gfx* Hyrule_GetSlingshotFirstPersonDL(void);
 // The Slingshot's string, and where it sits in the right hand.

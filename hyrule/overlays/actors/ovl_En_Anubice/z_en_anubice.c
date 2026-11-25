@@ -11,6 +11,7 @@
 #include "assets/oot/objects/object_anubice/object_anubice.h"
 #include "../ovl_En_Anubice_Tag/z_en_anubice_tag.h"
 #include "../ovl_Bg_Hidan_Curtain/z_bg_hidan_curtain.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -342,7 +343,7 @@ static void EnAnubice_Die(EnAnubice* this, PlayState* play) {
     if ((this->animLastFrame <= curFrame) && (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
         Math_ApproachF(&this->actor.shape.yOffset, -4230.0f, 0.5f, 300.0f);
         if (this->actor.shape.yOffset < -2000.0f) {
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xC0);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xC0);
             Actor_Kill(&this->actor);
         }
     }

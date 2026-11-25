@@ -5,6 +5,7 @@
 #include "../ovl_En_Syateki_Man/z_en_syateki_man.h"
 #include "../ovl_En_Ex_Ruppy/z_en_ex_ruppy.h"
 #include "../ovl_En_G_Switch/z_en_g_switch.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

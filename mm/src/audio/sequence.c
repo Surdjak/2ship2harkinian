@@ -40,7 +40,7 @@ void AudioSeq_StartSequence(u8 seqPlayerIndex, u16 seqId, u16 seqArgs, u16 fadeI
     u16 skipTicks;
     s32 pad;
 
-    if (!sStartSeqDisabled || (seqPlayerIndex == SEQ_PLAYER_SFX)) {
+    if (!sStartSeqDisabled || (seqPlayerIndex == SEQ_PLAYER_SFX) || (seqPlayerIndex == SEQ_PLAYER_SFX_OOT)) {
         seqArgs &= 0x7F;
         if (seqArgs == 0x7F) {
             // `fadeInDuration` interpreted as seconds, 60 is refresh rate and does not account for PAL
@@ -578,6 +578,7 @@ void AudioSeq_UpdateActiveSequences(void) {
                 case SEQ_PLAYER_SFX + 1:
                 case SEQ_PLAYER_BGM_SUB + 1:
                 case SEQ_PLAYER_AMBIENCE + 1:
+                case SEQ_PLAYER_SFX_OOT + 1: // 3Ship [Hyrule]
                     // The fonts have been loaded successfully.
                     gActiveSeqs[seqPlayerIndex].isWaitingForFonts = false;
                     // Queue the same command that was stored previously, but without the 0x8000
@@ -859,12 +860,14 @@ u8 AudioSeq_UpdateAudioHeapReset(void) {
             if (func_80193C5C() == 1) {
                 gAudioHeapResetState = AUDIO_HEAP_RESET_STATE_NONE;
                 AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX, 0, gSfxChannelLayout);
+            AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX_OOT, 0, gSfxChannelLayout); // 3Ship [Hyrule]
                 Audio_ResetForAudioHeapStep2();
             }
         } else if (gAudioHeapResetState == AUDIO_HEAP_RESET_STATE_RESETTING_ALT) {
             while (func_80193C5C() != 1) {}
             gAudioHeapResetState = AUDIO_HEAP_RESET_STATE_NONE;
             AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX, 0, gSfxChannelLayout);
+            AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX_OOT, 0, gSfxChannelLayout); // 3Ship [Hyrule]
             Audio_ResetForAudioHeapStep2();
         }
     }
@@ -911,6 +914,7 @@ u8 AudioSeq_ResetReverb(void) {
 
             sResetAudioHeapSeqCmd = 0;
             AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX, 0, gSfxChannelLayout);
+            AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX_OOT, 0, gSfxChannelLayout); // 3Ship [Hyrule]
             Audio_ResetForAudioHeapStep3();
         }
     }
@@ -970,6 +974,11 @@ void AudioSeq_SetPortVolumeScale(u8 seqPlayerIndex, f32 volume) {
 
     gAudioCtx.seqPlayers[seqPlayerIndex].portVolumeScale = volume;
     gAudioCtx.seqPlayers[seqPlayerIndex].recalculateVolume = true;
+    // 3Ship [Hyrule] OoT's sfx follow the sfx volume.
+    if (seqPlayerIndex == SEQ_PLAYER_SFX) {
+        gAudioCtx.seqPlayers[SEQ_PLAYER_SFX_OOT].portVolumeScale = volume;
+        gAudioCtx.seqPlayers[SEQ_PLAYER_SFX_OOT].recalculateVolume = true;
+    }
 }
 
 float AudioSeq_GetPortVolumeScale(u8 seqPlayerIndex) {

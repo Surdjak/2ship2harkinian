@@ -628,11 +628,19 @@ void Play_UpdateTransition(PlayState* this) {
         case TRANS_MODE_SETUP:
             if (this->transitionTrigger != TRANS_TRIGGER_END) {
                 s16 sceneLayer = 0;
+                u16 nextCutsceneIndex = gSaveContext.nextCutsceneIndex;
 
                 Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
 
-                if (gSaveContext.nextCutsceneIndex >= 0xFFF0) {
-                    sceneLayer = (gSaveContext.nextCutsceneIndex & 0xF) + 1;
+                // 3Ship [Hyrule] OoT's cutscene terminators set the cutscene index itself (HyruleCutscene.c), which OoT
+                // reads here, so that the layer's entrance keeps the music playing.
+                if ((nextCutsceneIndex == 0xFFEF) &&
+                    (Hyrule_GetOotSceneId(Entrance_GetSceneIdAbsolute(this->nextEntrance)) >= 0)) {
+                    nextCutsceneIndex = gSaveContext.save.cutsceneIndex;
+                }
+
+                if (nextCutsceneIndex >= 0xFFF0) {
+                    sceneLayer = (nextCutsceneIndex & 0xF) + 1;
                     // 3Ship [Hyrule] OoT's cutscene layers start at 4.
                     sceneLayer = Hyrule_GetSceneLayer(this->nextEntrance, sceneLayer);
                 }
@@ -1391,7 +1399,9 @@ void Play_DrawMain(PlayState* this) {
             if (!this->soaringCsOrSoTCsPlaying) {
                 if (1) {
                     if (((u32)this->skyboxId != SKYBOX_NONE) && !this->envCtx.skyboxDisabled) {
-                        if ((this->skyboxId == SKYBOX_NORMAL_SKY) || (this->skyboxId == SKYBOX_3)) {
+                        // 3Ship [Hyrule] OoT's cutscene map sky blends its two skies too, as in OoT's Play_Draw.
+                        if ((this->skyboxId == SKYBOX_NORMAL_SKY) || (this->skyboxId == SKYBOX_3) ||
+                            (this->skyboxId == SKYBOX_CUTSCENE_MAP)) {
                             Environment_UpdateSkybox(this->skyboxId, &this->envCtx, &this->skyboxCtx);
                             Skybox_Draw(&this->skyboxCtx, gfxCtx, this->skyboxId, this->envCtx.skyboxBlend,
                                         this->view.eye.x, this->view.eye.y, this->view.eye.z);
@@ -2234,6 +2244,12 @@ void Play_AssignPlayerCsIdsFromScene(PlayState* this, s32 spawnCsId) {
                 break;
             }
         }
+    }
+
+    // 3Ship [Hyrule] Hyrule's scenes list no cutscenes for Player: his item get shot is a global one there (OoT's
+    // Player_SetTurnAroundCamera for each item).
+    if ((Hyrule_GetOotSceneId(this->sceneId) >= 0) && (this->playerCsIds[PLAYER_CS_ID_ITEM_GET] == CS_ID_NONE)) {
+        this->playerCsIds[PLAYER_CS_ID_ITEM_GET] = CS_ID_GLOBAL_ITEM_GET_OOT;
     }
 }
 

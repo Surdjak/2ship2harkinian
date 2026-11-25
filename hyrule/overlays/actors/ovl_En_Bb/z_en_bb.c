@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/object_Bb/object_Bb.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -494,7 +495,7 @@ static void EnBb_Death(EnBb* this, PlayState* play) {
         if (!BodyBreak_SpawnParts(&this->actor, &this->bodyBreak, play, enpartType)) {
             return;
         }
-        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xD0);
+        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xD0);
     } else {
         if (this->flamePrimAlpha) {
             if (this->flamePrimAlpha <= 20) {

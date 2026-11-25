@@ -11,6 +11,7 @@
 #include "HyrulePlayer.h"
 #include "2s2h/BenPort.h"
 #include "assets/oot/objects/object_torch2/object_torch2.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -655,7 +656,7 @@ static void EnTorch2_Update(Actor* thisx, PlayState* play2) {
             sDeathFlag++;
             sActionState = ENTORCH2_DEATH;
             Enemy_StartFinishingBlow(play, &this->actor);
-            Item_DropCollectibleRandom(play, &this->actor, &thisx->world.pos, 0xC0);
+            Item_DropCollectibleRandomOot(play, &this->actor, &thisx->world.pos, 0xC0);
             this->stateFlags3 &= ~PLAYER_STATE3_4;
         } else {
             Audio_PlayBgm_StorePrevBgm(NA_BGM_MINI_BOSS);

@@ -11,6 +11,7 @@
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/object_po_sisters/object_po_sisters.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -393,7 +394,7 @@ static void func_80AD99D4(EnPoSisters* this, PlayState* play) {
 static void func_80AD9A54(EnPoSisters* this, PlayState* play) {
     this->unk_19A = 0;
     this->actor.world.pos.y = this->unk_234[0].y;
-    Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x80);
+    Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x80);
     this->actionFunc = func_80ADB17C;
 }
 

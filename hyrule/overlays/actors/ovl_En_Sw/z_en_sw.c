@@ -3,6 +3,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_st/object_st.h"
+#include "HyruleSfx.h"
 
 // OoT's EffectSsDeadDb colours for the death puffs.
 static Color_RGBA8 sDeadDbPrim = { 255, 255, 255, 255 };
@@ -360,7 +361,7 @@ static s32 func_80B0C9F0(EnSw* this, PlayState* play) {
             }
 
 
-            Actor_PlaySfx(&this->actor, NA_SE_EN_DODO_M_DEAD /* PORT: for OoT's NA_SE_EN_STALWALL_DEAD */);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_STALWALL_DEAD);
             return true;
         }
     }
@@ -525,7 +526,7 @@ static void func_80B0D3AC(EnSw* this, PlayState* play) {
     }
 
     if (func_80B0C0CC(this, play, 1) == 1) {
-        Actor_PlaySfx(&this->actor, NA_SE_EN_DODO_M_DOWN); // PORT: for OoT's NA_SE_EN_DODO_M_GND
+        Actor_PlaySfx(&this->actor, NA_SE_EN_DODO_M_GND);
         func_80B0D14C(this, play, 8);
         this->actor.scale.x = 0.02f;
         Actor_SetScale(&this->actor, 0.02f);
@@ -662,7 +663,7 @@ static void func_80B0DB00(EnSw* this, PlayState* play) {
             this->actor.velocity.y = ((this->unk_38A--) * 8.0f) * 0.5f;
         }
 
-        Actor_PlaySfx(&this->actor, NA_SE_EN_DODO_M_DOWN); // PORT: for OoT's NA_SE_EN_DODO_M_GND
+        Actor_PlaySfx(&this->actor, NA_SE_EN_DODO_M_GND);
         Actor_SpawnFloorDustRing(play, &this->actor, &this->actor.world.pos, 16.0f, 12, 2.0f, 120, 10, false);
     }
 }
@@ -679,7 +680,7 @@ static void func_80B0DC7C(EnSw* this, PlayState* play) {
         this->actor.shape.rot.x += 0x1000;
         this->actor.shape.rot.z += 0x1000;
     } else {
-        Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos, 0x30);
+        Item_DropCollectibleRandomOot(play, NULL, &this->actor.world.pos, 0x30);
         Actor_Kill(&this->actor);
     }
 }

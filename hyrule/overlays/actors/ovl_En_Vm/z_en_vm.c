@@ -11,6 +11,7 @@
 #include "assets/oot/objects/object_vm/object_vm.h"
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -385,7 +386,7 @@ static void EnVm_Die(EnVm* this, PlayState* play) {
             bomb->timer = 0;
         }
 
-        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xA0);
+        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xA0);
         Actor_Kill(&this->actor);
     }
 }

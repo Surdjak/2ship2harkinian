@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "assets/oot/objects/object_dodojr/object_dodojr.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
@@ -595,7 +596,7 @@ static void EnDodojr_DeathSequence(EnDodojr* this, PlayState* play) {
 
 static void EnDodojr_DropItem(EnDodojr* this, PlayState* play) {
     if (DECR(this->timer3) == 0) {
-        Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos, 0x40);
+        Item_DropCollectibleRandomOot(play, NULL, &this->actor.world.pos, 0x40);
         Actor_Kill(&this->actor);
     }
 }

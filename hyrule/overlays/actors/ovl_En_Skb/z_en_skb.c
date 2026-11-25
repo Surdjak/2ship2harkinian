@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Encount1/z_en_encount1.h"
 #include "assets/oot/objects/object_skb/object_skb.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -420,8 +421,7 @@ static void func_80AFD7B4(EnSkb* this, PlayState* play) {
 static void func_80AFD880(EnSkb* this, PlayState* play) {
     if (BodyBreak_SpawnParts(&this->actor, &this->bodyBreak, play, 1)) {
         if (this->actor.scale.x == 0.01f) {
-            // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x10);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x10);
         } else if (this->actor.scale.x <= 0.015f) {
             Item_DropCollectible(play, &this->actor.world.pos, ITEM00_RUPEE_BLUE);
         } else {

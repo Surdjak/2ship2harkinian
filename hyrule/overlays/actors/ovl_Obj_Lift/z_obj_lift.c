@@ -11,6 +11,7 @@
 #include "z64quake.h"
 #include "assets/oot/objects/object_d_lift/object_d_lift.h"
 #include "overlays/effects/ovl_Effect_Ss_Kakera/z_eff_ss_kakera.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

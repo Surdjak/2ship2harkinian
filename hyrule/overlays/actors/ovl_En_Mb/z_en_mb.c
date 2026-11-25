@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "z64rumble.h"
 #include "assets/oot/objects/object_mb/object_mb.h"
+#include "HyruleSfx.h"
 
 /*
  * This actor can have three behaviors:
@@ -1107,8 +1108,7 @@ static void EnMb_ClubDead(EnMb* this, PlayState* play) {
                                      9, true);
             }
         } else {
-            // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-            Item_DropCollectibleRandom(play, &this->actor, &effPos, 0xC0);
+            Item_DropCollectibleRandomOot(play, &this->actor, &effPos, 0xC0);
             Actor_Kill(&this->actor);
         }
     } else if ((s32)this->skelAnime.curFrame == 15 || (s32)this->skelAnime.curFrame == 22) {
@@ -1331,8 +1331,7 @@ static void EnMb_SpearDead(EnMb* this, PlayState* play) {
                                      true);
             }
         } else {
-            // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xE0);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xE0);
             Actor_Kill(&this->actor);
         }
     }

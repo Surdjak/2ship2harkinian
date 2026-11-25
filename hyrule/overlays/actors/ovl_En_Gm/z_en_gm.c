@@ -11,6 +11,7 @@
 #include "assets/oot/objects/object_oF1d_map/object_oF1d_map.h"
 #include "assets/oot/objects/object_gm/object_gm.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 

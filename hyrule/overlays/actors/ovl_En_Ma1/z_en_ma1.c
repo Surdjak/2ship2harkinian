@@ -11,6 +11,7 @@
 #include "HyruleScenes.h"
 #include "HyruleOcarina.h"
 #include "assets/oot/objects/object_ma1/object_ma1.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                  \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \

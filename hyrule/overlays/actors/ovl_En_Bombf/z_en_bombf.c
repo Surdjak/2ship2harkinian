@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "z64rumble.h"
 #include "assets/oot/objects/object_bombf/object_bombf.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 

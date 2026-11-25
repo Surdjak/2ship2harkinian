@@ -15,6 +15,7 @@
 #include "assets/oot/scenes/overworld/spot06/spot06_scene.h"
 #include "assets/oot/scenes/overworld/spot16/spot16_scene.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -265,8 +266,7 @@ static s32 EnOwl_CheckInitTalk(EnOwl* this, PlayState* play, u16 textId, f32 tar
                 this->actionFlags &= ~0x40;
             }
         }
-        // PORT: OoT's one-point camera on the owl while he talks (8700) is not in MM; the camera stays Link's.
-        this->cameraIdx = CAM_ID_MAIN;
+        this->cameraIdx = OnePointCutscene_Init(play, 8700, timer, &this->actor, CAM_ID_MAIN);
         return true;
     } else {
         this->actor.textId = textId;

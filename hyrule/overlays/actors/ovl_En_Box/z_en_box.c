@@ -6,6 +6,7 @@
 #include "2s2h/BenPort.h"
 #include "assets/oot/objects/object_box/object_box.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

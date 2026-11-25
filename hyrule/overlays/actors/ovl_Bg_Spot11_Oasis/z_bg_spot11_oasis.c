@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Elf/z_en_elf.h"
 #include "assets/oot/objects/object_spot11_obj/object_spot11_obj.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

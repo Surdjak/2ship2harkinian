@@ -11,6 +11,7 @@
 #include "z64horse.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/object_horse_normal/object_horse_normal.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

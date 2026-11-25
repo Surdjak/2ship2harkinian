@@ -13,6 +13,7 @@
 #include "assets/oot/objects/object_demo_kekkai/object_demo_kekkai.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/object_spot02_objects/object_spot02_objects.h"
+#include "HyruleSfx.h"
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include <assert.h>

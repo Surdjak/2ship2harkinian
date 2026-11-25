@@ -12,6 +12,7 @@
 #include "HyruleCutscene.h"
 #include "assets/oot/scenes/dungeons/jyasinboss/jyasinboss_scene.h"
 #include "assets/oot/objects/object_ik/object_ik.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 
@@ -666,7 +667,7 @@ static void func_80A75A38(EnIk* this, PlayState* play) {
                 EffectSsDeadDb_Spawn_Oot(play, &pos, &sp7C, &sp7C, 100, 0, 255, 255, 255, 255, 0, 0, 255, 1, 9, true);
             }
             if (this->animationTimer == 0) {
-                Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xB0);
+                Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xB0);
                 // Don't set flag when Enemy Rando or CrowdControl are on.
                 // Instead Iron Knuckles rely on the "clear room" flag.
                 if (this->switchFlags != 0xFF && !0 &&

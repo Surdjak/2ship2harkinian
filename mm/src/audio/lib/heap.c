@@ -973,8 +973,8 @@ void AudioHeap_Init(void) {
     gAudioCtx.numNotes = spec->numNotes;
     gAudioCtx.audioBufferParameters.numSequencePlayers = spec->numSequencePlayers;
 
-    if (gAudioCtx.audioBufferParameters.numSequencePlayers > 5) {
-        gAudioCtx.audioBufferParameters.numSequencePlayers = 5;
+    if (gAudioCtx.audioBufferParameters.numSequencePlayers > SEQ_PLAYER_MAX) {
+        gAudioCtx.audioBufferParameters.numSequencePlayers = SEQ_PLAYER_MAX;
     }
 
     gAudioCtx.numAbiCmdsMax = 8;

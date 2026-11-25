@@ -8,6 +8,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleActor.h"
+#include "HyruleSfx.h"
 bool func_800B7200(Player* player); // MM's name for OoT's func_8002DEEC (z_actor.c), which no header declares
 
 

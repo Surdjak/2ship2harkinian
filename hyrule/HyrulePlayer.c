@@ -118,6 +118,22 @@ Gfx** Hyrule_GetHandHoldingSlingshotDLs(void) {
     return sHandHoldingSlingshotDLs;
 }
 
+static Gfx* sHandHoldingFairyOcarinaDLs[] = {
+    (Gfx*)gLinkChildRightHandHoldingFairyOcarinaNearDL,
+    (Gfx*)gLinkChildRightHandHoldingFairyOcarinaFarDL,
+};
+
+s32 Hyrule_HoldsFairyOcarina(PlayState* play, Player* player) {
+    // OoT's func_8084B498: the Fairy Ocarina, or in Hyrule without the Ocarina of Time, the one Saria gives.
+    return (player->transformation == PLAYER_FORM_HUMAN) &&
+           ((INV_CONTENT(ITEM_OCARINA_OF_TIME) == ITEM_OCARINA_FAIRY) ||
+            ((INV_CONTENT(ITEM_OCARINA_OF_TIME) != ITEM_OCARINA_OF_TIME) && (Hyrule_GetOotSceneId(play->sceneId) >= 0)));
+}
+
+Gfx** Hyrule_GetHandHoldingFairyOcarinaDLs(void) {
+    return sHandHoldingFairyOcarinaDLs;
+}
+
 Gfx* Hyrule_GetSlingshotFirstPersonDL(void) {
     return (Gfx*)gLinkChildRightArmStretchedSlingshotDL;
 }

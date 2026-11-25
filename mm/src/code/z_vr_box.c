@@ -1,6 +1,7 @@
 #include "z64skybox.h"
 #include "global.h"
 #include "BenPort.h"
+#include "HyruleSceneDraw.h"
 #include "assets/misc/skyboxes/d2_cloud_static.h"
 #include "assets/misc/skyboxes/d2_fine_static.h"
 #include "assets/misc/skyboxes/d2_fine_pal_static.h"
@@ -319,6 +320,11 @@ void Skybox_Setup(GameState* gameState, SkyboxContext* skyboxCtx, s16 skyboxId) 
             }
             skyboxCtx->palette = gEmptyTexture;
             // #endregion
+            break;
+
+        case SKYBOX_CUTSCENE_MAP:
+            // 3Ship [Hyrule] OoT's cutscene map sky, unused in MM.
+            Hyrule_SetupCutsceneMapSkybox(skyboxCtx);
             break;
 
         default:

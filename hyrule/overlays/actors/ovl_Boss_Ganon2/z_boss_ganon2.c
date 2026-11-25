@@ -14,6 +14,7 @@
 #include "assets/oot/objects/object_ganon_anime3/object_ganon_anime3.h"
 #include "assets/oot/objects/object_geff/object_geff.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #include <string.h>
 
@@ -1033,7 +1034,7 @@ static void func_808FFAC8(BossGanon2* this, PlayState* play, u8 arg2) {
 
     Math_ApproachS(&this->unk_31A, phi_a1, 5, 0x7D0);
 
-    temp_v1 = Math_Atan2S(this->actor.xzDistToPlayer, 150.0f) - 0xBB8;
+    temp_v1 = Math_Atan2S_XY(this->actor.xzDistToPlayer, 150.0f) - 0xBB8;
     temp_v1 = CLAMP_MAX(temp_v1, 0x1B58);
     temp_v1 = CLAMP_MIN(temp_v1, -0x1B58);
 
@@ -1688,7 +1689,7 @@ static void func_8090120C(BossGanon2* this, PlayState* play) {
             this->unk_339 = 23;
             temp_f14 = this->unk_1B8.x - player->actor.world.pos.x;
             temp_f12 = this->unk_1B8.z - player->actor.world.pos.z;
-            temp_a0_2 = Math_Atan2S(temp_f12, temp_f14) - player->actor.shape.rot.y;
+            temp_a0_2 = Math_Atan2S_XY(temp_f12, temp_f14) - player->actor.shape.rot.y;
             if ((ABS(temp_a0_2) < 0x2000) && (sqrtf(SQ(temp_f14) + SQ(temp_f12)) < 70.0f) &&
                 (player->meleeWeaponState != 0) && (player->heldItemAction == PLAYER_IA_SWORD_GILDED)) {
                 Cutscene_StartManualOot(play);
@@ -1929,7 +1930,7 @@ static void func_80902348(BossGanon2* this, PlayState* play) {
             }
 
             player->bodyIsBurning = true;
-            func_800B8D50(play, &this->actor, 10.0f, Math_Atan2S(temp_f12, temp_f2), 0.0f, 0x10);
+            func_800B8D50(play, &this->actor, 10.0f, Math_Atan2S_XY(temp_f12, temp_f2), 0.0f, 0x10);
             sZelda->unk_3C8 = 8;
         }
     }
@@ -2288,8 +2289,8 @@ static void func_809034E4(Vec3f* arg0, Vec3f* arg1) {
     temp_f20.y = D_809105D8[1].y - sp2D0.y;
     temp_f20.z = D_809105D8[1].z - sp2D0.z;
 
-    sp2CA = Math_Atan2S(temp_f20.z, temp_f20.x);
-    sp2C8 = Math_Atan2S(sqrtf(SQXZ(temp_f20)), temp_f20.y);
+    sp2CA = Math_Atan2S_XY(temp_f20.z, temp_f20.x);
+    sp2C8 = Math_Atan2S_XY(sqrtf(SQXZ(temp_f20)), temp_f20.y);
 
     temp_f2.x = D_809105D8[2].x - D_809105D8[1].x;
     temp_f2.y = D_809105D8[2].y - D_809105D8[1].y;
@@ -2315,8 +2316,8 @@ static void func_809034E4(Vec3f* arg0, Vec3f* arg1) {
         temp_f20.y = D_809105D8[phi_s2].y - sp2D0.y;
         temp_f20.z = D_809105D8[phi_s2].z - sp2D0.z;
 
-        temp_s1 = Math_Atan2S(temp_f20.z, temp_f20.x);
-        temp_a1 = Math_Atan2S(sqrtf(SQXZ(temp_f20)), temp_f20.y);
+        temp_s1 = Math_Atan2S_XY(temp_f20.z, temp_f20.x);
+        temp_a1 = Math_Atan2S_XY(sqrtf(SQXZ(temp_f20)), temp_f20.y);
 
         Math_ApproachS(&sp2C8, temp_a1, 1, 0x1000);
         Math_ApproachS(&sp2CA, temp_s1, 1, 0x1000);
@@ -2364,8 +2365,8 @@ static void func_809034E4(Vec3f* arg0, Vec3f* arg1) {
     temp_f20.y = D_80910608[1].y - sp2D0.y;
     temp_f20.z = D_80910608[1].z - sp2D0.z;
 
-    sp2CA = Math_Atan2S(temp_f20.z, temp_f20.x);
-    sp2C8 = Math_Atan2S(sqrtf(SQXZ(temp_f20)), temp_f20.y);
+    sp2CA = Math_Atan2S_XY(temp_f20.z, temp_f20.x);
+    sp2C8 = Math_Atan2S_XY(sqrtf(SQXZ(temp_f20)), temp_f20.y);
 
     temp_f2.x = D_80910608[2].x - D_80910608[1].x;
     temp_f2.y = D_80910608[2].y - D_80910608[1].y;
@@ -2391,8 +2392,8 @@ static void func_809034E4(Vec3f* arg0, Vec3f* arg1) {
         temp_f20.y = D_80910608[phi_s2].y - sp2D0.y;
         temp_f20.z = D_80910608[phi_s2].z - sp2D0.z;
 
-        temp_s1 = Math_Atan2S(temp_f20.z, temp_f20.x);
-        temp_a1 = Math_Atan2S(sqrtf(SQXZ(temp_f20)), temp_f20.y);
+        temp_s1 = Math_Atan2S_XY(temp_f20.z, temp_f20.x);
+        temp_a1 = Math_Atan2S_XY(sqrtf(SQXZ(temp_f20)), temp_f20.y);
 
         Math_ApproachS(&sp2C8, temp_a1, 1, 0x1000);
         Math_ApproachS(&sp2CA, temp_s1, 1, 0x1000);

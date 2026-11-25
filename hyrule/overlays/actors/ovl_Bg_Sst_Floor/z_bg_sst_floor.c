@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "2s2h/BenPort.h"
 #include "assets/oot/objects/object_sst/object_sst.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

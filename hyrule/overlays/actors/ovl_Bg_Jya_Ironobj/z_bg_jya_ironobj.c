@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_jya_iron/object_jya_iron.h"
 #include "../ovl_En_Ik/z_en_ik.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

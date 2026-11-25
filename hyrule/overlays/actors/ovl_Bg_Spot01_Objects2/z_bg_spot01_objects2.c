@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_spot01_matoya/object_spot01_matoya.h"
 #include "assets/oot/objects/object_spot01_matoyab/object_spot01_matoyab.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

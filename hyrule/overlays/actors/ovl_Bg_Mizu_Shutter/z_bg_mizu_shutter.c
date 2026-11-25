@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "z64rumble.h"
 #include "assets/oot/objects/object_mizu_objects/object_mizu_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

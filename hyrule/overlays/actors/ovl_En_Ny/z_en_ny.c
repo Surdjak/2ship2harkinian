@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_ny/object_ny.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
@@ -438,7 +439,7 @@ static void EnNy_SetupDie(EnNy* this, PlayState* play) {
         }
         this->timer = 0;
         if (this->unk_1D0 == 0) {
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xA0);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xA0);
         } else {
             Item_DropCollectible(play, &this->actor.world.pos, 8);
         }

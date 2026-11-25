@@ -6,6 +6,7 @@
 #include "assets/oot/objects/object_du/object_du.h"
 #include "../ovl_Demo_Effect/z_demo_effect.h"
 #include "../ovl_Door_Warp1/z_door_warp1.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Encount1/z_en_encount1.h"
 #include "assets/oot/objects/object_wf/object_wf.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -1206,8 +1207,7 @@ static void EnWf_Die(EnWf* this, PlayState* play) {
     }
 
     if (SkelAnime_Update(&this->skelAnime)) {
-        // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xD0);
+        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xD0);
 
         if (this->switchFlag != 0xFF) {
             Flags_SetSwitch(play, this->switchFlag);

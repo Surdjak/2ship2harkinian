@@ -11,6 +11,7 @@
 #include "z64rumble.h"
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "assets/oot/objects/object_ddan_objects/object_ddan_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

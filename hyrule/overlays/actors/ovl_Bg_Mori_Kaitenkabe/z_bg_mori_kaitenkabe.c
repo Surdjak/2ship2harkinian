@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_mori_objects/object_mori_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

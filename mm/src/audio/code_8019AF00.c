@@ -1,5 +1,6 @@
 #include "global.h"
 #include "z64voice.h"
+#include "HyruleIds.h"
 
 #include "GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/Audio/AudioEditor.h"
@@ -114,6 +115,8 @@ f32 sSfxVolumeTarget;
 f32 sSfxVolumeRate;
 u16 sRequestedSceneSeqId;
 SfxChannelState sSfxChannelState[SEQ_NUM_CHANNELS];
+// 3Ship [Hyrule] The last properties sent to OoT's sfx sequence's channels (AudioSfx_SetPropertiesOot).
+SfxChannelState sSfxChannelStateOot[SEQ_NUM_CHANNELS];
 
 // Sequence bss
 u8 sRomaniSingingTimer;
@@ -190,17 +193,22 @@ u8 gIsLargeSfxBank[] = {
 u8 D_801D6608[] = {
     true, true, true, true, true, false, true,
 };
-u8 gChannelsPerBank[4][7] = {
-    { 3, 2, 3, 3, 2, 1, 2 },
-    { 3, 2, 2, 2, 2, 2, 2 },
-    { 3, 2, 2, 2, 2, 2, 2 },
-    { 4, 1, 0, 0, 2, 2, 2 },
+// 3Ship [Hyrule] OoT's (gIsLargeSoundBank): its sfx sequence takes bit 8 of the enemy bank's indices in ioPort 5.
+u8 gIsLargeSfxBankOot[] = {
+    false, false, false, true, false, false, false,
 };
-u8 gUsedChannelsPerBank[4][7] = {
-    { 3, 2, 3, 2, 2, 1, 1 },
-    { 3, 1, 1, 1, 2, 1, 1 },
-    { 3, 1, 1, 1, 2, 1, 1 },
-    { 2, 1, 0, 0, 1, 1, 1 },
+// 3Ship [Hyrule] OoT's banks (from SFX_BANK_OOT_OFFSET) have OoT's layouts, the same as MM's.
+u8 gChannelsPerBank[4][SFX_BANK_COUNT] = {
+    { 3, 2, 3, 3, 2, 1, 2, 3, 2, 3, 3, 2, 1, 2 },
+    { 3, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2 },
+    { 3, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2 },
+    { 4, 1, 0, 0, 2, 2, 2, 4, 1, 0, 0, 2, 2, 2 },
+};
+u8 gUsedChannelsPerBank[4][SFX_BANK_COUNT] = {
+    { 3, 2, 3, 2, 2, 1, 1, 3, 2, 3, 2, 2, 1, 1 },
+    { 3, 1, 1, 1, 2, 1, 1, 3, 1, 1, 1, 2, 1, 1 },
+    { 3, 1, 1, 1, 2, 1, 1, 3, 1, 1, 1, 2, 1, 1 },
+    { 2, 1, 0, 0, 1, 1, 1, 2, 1, 0, 0, 1, 1, 1 },
 };
 f32 sGiantsMaskFreq = 0.89167805f; // Around 2 semitones down in pitch
 s8 sGiantsMaskReverbAdd = 0x40;
@@ -3993,7 +4001,7 @@ s8 AudioSfx_ComputeReverb(u8 bankId, u8 entryIndex, u8 channelIndex) {
         reverb += scriptAdd;
     }
 
-    if ((bankId != BANK_OCARINA) || (SFX_INDEX(entry->sfxId) >= 2)) {
+    if ((SFX_BANK_TYPE(bankId) != BANK_OCARINA) || (SFX_INDEX(entry->sfxId) >= 2)) {
         reverb += sAudioEnvReverb + (sAudioCodeReverb & 0x3F) + sSpecReverb;
     }
 
@@ -4045,7 +4053,7 @@ f32 AudioSfx_ComputeFreqScale(u8 bankId, u8 entryIndex) {
         freq = 1.0f - ((gAudioCtx.audioRandom & 0xF) / 192.0f);
     }
 
-    switch (bankId) {
+    switch (SFX_BANK_TYPE(bankId)) {
         case BANK_VOICE:
             if (((entry->sfxId & 0xFF) < 0x40) && (sAudioBaseFilter2 != 0)) {
                 applyRandScaling = true;
@@ -4186,6 +4194,46 @@ s8 AudioSfx_ComputeCombFilter(f32 posY, u16 sfxParams) {
     return combFilterGain | 1;
 }
 
+/**
+ * 3Ship [Hyrule] Sends a sfx's properties to a channel of OoT's sfx sequence, which unlike MM's does not read them
+ * from the channel's SfxChannelState: as OoT's Audio_SetSfxProperties does (stereo bits, set in OoT's surround
+ * modes, are left out, as in MM).
+ */
+static void AudioSfx_SetPropertiesOot(u8 channelIndex, f32 volume, s8 reverb, f32 freqScale, u8 filter,
+                                      s8 combFilterGain, s8 panSigned) {
+    SfxChannelState* state = &sSfxChannelStateOot[channelIndex];
+    s8 volumeS8 = -1;
+
+    if (state->volume != volume) {
+        volumeS8 = (u8)(volume * 127.0f);
+        state->volume = volume;
+    }
+    // ioPort 2, sets volume
+    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX_OOT, channelIndex, 2, volumeS8);
+    if (state->reverb != reverb) {
+        AUDIOCMD_CHANNEL_SET_REVERB_VOLUME(SEQ_PLAYER_SFX_OOT, channelIndex, reverb);
+        state->reverb = reverb;
+    }
+    if (state->freqScale != freqScale) {
+        AUDIOCMD_CHANNEL_SET_FREQ_SCALE(SEQ_PLAYER_SFX_OOT, channelIndex, freqScale);
+        state->freqScale = freqScale;
+    }
+    if (state->filter != filter) {
+        // ioPort 3, sets filter
+        AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX_OOT, channelIndex, 3, filter);
+        state->filter = filter;
+    }
+    if (state->combFilterGain != (u8)combFilterGain) {
+        AUDIOCMD_CHANNEL_SET_COMB_FILTER_SIZE(SEQ_PLAYER_SFX_OOT, channelIndex, 0x10);
+        AUDIOCMD_CHANNEL_SET_COMB_FILTER_GAIN(SEQ_PLAYER_SFX_OOT, channelIndex, ((u16)combFilterGain << 8) + 0xFF);
+        state->combFilterGain = combFilterGain;
+    }
+    if (state->panSigned != panSigned) {
+        AUDIOCMD_CHANNEL_SET_PAN(SEQ_PLAYER_SFX_OOT, channelIndex, panSigned);
+        state->panSigned = panSigned;
+    }
+}
+
 void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
     static s8 sZVolumes[] = {
         0,  2,  4,   6,   8,   10,  12,  14,  16,  18,  20,  22,  24,  25,  26,  27,  28,  29,  30, 31, 32, 33,
@@ -4209,7 +4257,7 @@ void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
     SfxBankEntry* entry = &gSfxBanks[bankId][entryIndex];
     s32 pad2;
 
-    switch (bankId) {
+    switch (SFX_BANK_TYPE(bankId)) {
         case BANK_PLAYER:
         case BANK_ITEM:
         case BANK_ENV:
@@ -4244,8 +4292,9 @@ void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
             }
 
             if (sAudioBaseFilter != 0) {
-                if ((bankId == BANK_PLAYER) || (bankId == BANK_ITEM) ||
-                    ((bankId == BANK_VOICE) && (((entry->sfxId & 0xFF) < 0x40) || ((entry->sfxId & 0xFF) >= 0x80)))) {
+                if ((SFX_BANK_TYPE(bankId) == BANK_PLAYER) || (SFX_BANK_TYPE(bankId) == BANK_ITEM) ||
+                    ((SFX_BANK_TYPE(bankId) == BANK_VOICE) &&
+                     (((entry->sfxId & 0xFF) < 0x40) || ((entry->sfxId & 0xFF) >= 0x80)))) {
                     baseFilter = sAudioBaseFilter;
                     if (sAudioExtraFilter) {
                         reverb >>= 2;
@@ -4267,6 +4316,12 @@ void AudioSfx_SetProperties(u8 bankId, u8 entryIndex, u8 channelIndex) {
 
         case BANK_SYSTEM:
             break;
+    }
+
+    // 3Ship [Hyrule] OoT's sfx sequence takes them as OoT's code sends them.
+    if (SFX_BANK_IS_OOT(bankId)) {
+        AudioSfx_SetPropertiesOot(channelIndex, volume, reverb, freqScale, filter, combFilterGain, panSigned);
+        return;
     }
 
     if (sSfxChannelState[channelIndex].volume != volume) {
@@ -4330,6 +4385,19 @@ void AudioSfx_ResetSfxChannelState(void) {
     }
 
     sSfxChannelState[SFX_CHANNEL_OCARINA].combFilterGain = 0;
+    // 3Ship [Hyrule]
+    for (i = 0; i < ARRAY_COUNT(sSfxChannelStateOot); i++) {
+        state = &sSfxChannelStateOot[i];
+        state->volume = 1.0f;
+        state->freqScale = 1.0f;
+        state->reverb = 0;
+        state->panSigned = 0x40;
+        state->stereoBits = 0;
+        state->filter = 0xFF;
+        state->combFilterGain = 0xFF;
+        state->zVolume = 0xFF;
+    }
+    sSfxChannelStateOot[SFX_CHANNEL_OCARINA].combFilterGain = 0;
     sPrevSeqMode = SEQ_MODE_DEFAULT;
     sAudioCodeReverb = 0;
 }
@@ -4943,7 +5011,8 @@ void AudioSfx_SetChannelIO(Vec3f* pos, u16 sfxId, u8 ioData) {
     u8 entryIndex;
     u8 i;
 
-    for (i = 0; i < bankId; i++) {
+    // 3Ship [Hyrule] OoT's banks number their sfx sequence's channels from 0.
+    for (i = SFX_BANK_IS_OOT(bankId) ? SFX_BANK_OOT_OFFSET : 0; i < bankId; i++) {
         channelIndex += gChannelsPerBank[gSfxChannelLayout][i];
     }
 
@@ -4952,7 +5021,7 @@ void AudioSfx_SetChannelIO(Vec3f* pos, u16 sfxId, u8 ioData) {
 
         if (entryIndex != 0xFF) {
             if ((sfxId == gSfxBanks[bankId][entryIndex].sfxId) && (&pos->x == gSfxBanks[bankId][entryIndex].posX)) {
-                AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, channelIndex, 6, ioData);
+                AUDIOCMD_CHANNEL_SET_IO(SFX_BANK_SEQ_PLAYER(bankId), channelIndex, 6, ioData);
             }
         }
         channelIndex++;
@@ -4975,12 +5044,13 @@ void Audio_PlaySfx_AtPosWithAllChannelsIO(Vec3f* pos, u16 sfxId, u8 ioData) {
     u8 i;
     u8 bankId = SFX_BANK_SHIFT(sfxId);
 
-    for (i = 0; i < bankId; i++) {
+    // 3Ship [Hyrule] OoT's banks number their sfx sequence's channels from 0.
+    for (i = SFX_BANK_IS_OOT(bankId) ? SFX_BANK_OOT_OFFSET : 0; i < bankId; i++) {
         channelIndex += gChannelsPerBank[gSfxChannelLayout][i];
     }
 
     for (i = 0; i < gChannelsPerBank[gSfxChannelLayout][bankId]; i++) {
-        AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, channelIndex++, 6, ioData);
+        AUDIOCMD_CHANNEL_SET_IO(SFX_BANK_SEQ_PLAYER(bankId), channelIndex++, 6, ioData);
     }
 
     AudioSfx_PlaySfx(sfxId, pos, 4, &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
@@ -6400,6 +6470,7 @@ void Audio_MuteAllSeqExceptSystemAndOcarina(u16 duration) {
 
         if (!skip) {
             SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_SFX, channelIndex, (u8)(duration >> 1), 0);
+            SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_SFX_OOT, channelIndex, (u8)(duration >> 1), 0); // 3Ship [Hyrule]
         }
     }
 }
@@ -6434,6 +6505,7 @@ void Audio_DisableAllSeq(void) {
     AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(SEQ_PLAYER_SFX, 0);
     AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(SEQ_PLAYER_BGM_SUB, 0);
     AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(SEQ_PLAYER_AMBIENCE, 0);
+    AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(SEQ_PLAYER_SFX_OOT, 0); // 3Ship [Hyrule]
     AudioThread_ScheduleProcessCmds();
 }
 
@@ -6467,6 +6539,7 @@ void Audio_SetSfxVolumeExceptSystemAndOcarinaBanks(u8 volume) {
 
                 default:
                     SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_SFX, channelIndex, 10, volume);
+                    SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_SFX_OOT, channelIndex, 10, volume); // 3Ship [Hyrule]
                     break;
             }
         }
@@ -6479,6 +6552,7 @@ void Audio_SetSfxReverbIndexExceptOcarinaBank(u8 reverbIndex) {
     for (channelIndex = 0; channelIndex < SEQ_NUM_CHANNELS; channelIndex++) {
         if (channelIndex != SFX_CHANNEL_OCARINA) {
             AUDIOCMD_CHANNEL_SET_REVERB_INDEX(SEQ_PLAYER_SFX, channelIndex, reverbIndex);
+            AUDIOCMD_CHANNEL_SET_REVERB_INDEX(SEQ_PLAYER_SFX_OOT, channelIndex, reverbIndex); // 3Ship [Hyrule]
         }
     }
 }
@@ -6702,6 +6776,8 @@ void AudioSfx_Init(u16 fadeTimer) {
 
     AudioThread_ScheduleProcessCmds();
     AudioSeq_StartSequence(SEQ_PLAYER_SFX, NA_BGM_GENERAL_SFX, 0x70, fadeTimer);
+    // 3Ship [Hyrule] OoT's sfx sequence, for OoT's sfx banks.
+    AudioSeq_StartSequence(SEQ_PLAYER_SFX_OOT, SEQ_OOT_BASE + NA_BGM_GENERAL_SFX, 0x70, fadeTimer);
 
     for (channelIndex = 0; channelIndex < ARRAY_COUNT(sSfxChannelState); channelIndex++) {
         AUDIOCMD_CHANNEL_SET_SFX_STATE(SEQ_PLAYER_SFX, channelIndex, &sSfxChannelState[channelIndex]);

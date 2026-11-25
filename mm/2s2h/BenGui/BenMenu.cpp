@@ -1102,6 +1102,14 @@ void BenMenu::AddEnhancements() {
                      .Min(1)
                      .Max(5)
                      .DefaultValue(1));
+    // 3Ship [Hyrule] SoH's crawl speed, for OoT's crawlspaces.
+    AddWidget(path, "Crawl speed", WIDGET_CVAR_SLIDER_INT)
+        .CVar("gEnhancements.Player.CrawlSpeed")
+        .Options(IntSliderOptions()
+                     .Tooltip("Increases the speed at which Link crawls through Hyrule's crawlspaces.")
+                     .Min(1)
+                     .Max(5)
+                     .DefaultValue(1));
     AddWidget(path, "Faster Push/Pull", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Player.FasterPushAndPull")
         .Options(CheckboxOptions().Tooltip("Speeds up the time it takes to push/pull various objects."));

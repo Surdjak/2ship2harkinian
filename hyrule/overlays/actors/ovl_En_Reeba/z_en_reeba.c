@@ -11,6 +11,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Encount1/z_en_encount1.h"
 #include "assets/oot/objects/object_reeba/object_reeba.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -476,11 +477,9 @@ static void EnReeba_Die(EnReeba* this, PlayState* play) {
             EffectSsDeadDb_Spawn_Oot(play, &pos, &velocity, &accel, 120, 0, 255, 255, 255, 255, 255, 0, 0, 1, 9, true);
 
             if (!this->isBig) {
-                // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-                Item_DropCollectibleRandom(play, &this->actor, &pos, 0xE0);
+                Item_DropCollectibleRandomOot(play, &this->actor, &pos, 0xE0);
             } else {
-                // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-                Item_DropCollectibleRandom(play, &this->actor, &pos, 0xC0);
+                Item_DropCollectibleRandomOot(play, &this->actor, &pos, 0xC0);
             }
 
             if (this->actor.parent != NULL) {

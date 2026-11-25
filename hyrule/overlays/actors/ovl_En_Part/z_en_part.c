@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_tite/object_tite.h"
 #include "assets/oot/objects/object_ik/object_ik.h"
+#include "HyruleSfx.h"
 
 #include <string.h> // strcmp
 

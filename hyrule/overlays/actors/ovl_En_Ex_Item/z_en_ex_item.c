@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Bom_Bowl_Pit/z_en_bom_bowl_pit.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

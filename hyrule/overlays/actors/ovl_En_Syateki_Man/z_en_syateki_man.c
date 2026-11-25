@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Syateki_Itm/z_en_syateki_itm.h"
 #include "assets/oot/objects/object_ossan/object_ossan.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                  \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \

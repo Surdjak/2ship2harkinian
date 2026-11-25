@@ -11,6 +11,7 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "assets/oot/objects/object_niw/object_niw.h"
 #include "../ovl_En_Attack_Niw/z_en_attack_niw.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_THROW_ONLY)
 

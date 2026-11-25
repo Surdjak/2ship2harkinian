@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_spot01_objects/object_spot01_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_DRAW_CULLING_DISABLED
 

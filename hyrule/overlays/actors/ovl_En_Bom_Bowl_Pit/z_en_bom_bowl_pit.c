@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Bom_Chu/z_en_bom_chu.h"
 #include "../ovl_En_Ex_Item/z_en_ex_item.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

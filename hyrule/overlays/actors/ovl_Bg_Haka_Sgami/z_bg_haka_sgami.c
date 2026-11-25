@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_haka_objects/object_haka_objects.h"
 #include "assets/oot/objects/object_ice_objects/object_ice_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 

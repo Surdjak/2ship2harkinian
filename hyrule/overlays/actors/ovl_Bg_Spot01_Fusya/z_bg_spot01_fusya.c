@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_spot01_objects/object_spot01_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 
@@ -69,7 +70,7 @@ static void func_808AAA50(BgSpot01Fusya* this, PlayState* play) {
     }
     thisx->shape.rot.z += this->unk_154;
     temp = ((this->unk_154 - 100.0f) / 1700.0f) + 1.0f;
-    Audio_PlaySfx_AtPosWithFreq(&thisx->projectedPos, 0x2085, temp);
+    Audio_PlaySfx_AtPosWithFreq(&thisx->projectedPos, SFX_OOT(0x2085), temp);
     Math_ApproachF(&this->unk_154, this->unk_158, this->unk_15C, 100.0f);
 }
 

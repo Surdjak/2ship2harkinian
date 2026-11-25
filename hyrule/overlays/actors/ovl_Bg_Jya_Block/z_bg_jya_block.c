@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/gameplay_dangeon_keep/gameplay_dangeon_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

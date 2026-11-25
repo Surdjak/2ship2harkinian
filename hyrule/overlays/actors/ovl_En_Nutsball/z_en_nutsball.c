@@ -15,6 +15,7 @@
 #include "assets/oot/objects/object_shopnuts/object_shopnuts.h"
 #include "assets/oot/objects/object_dns/object_dns.h"
 #include "assets/oot/objects/object_dnk/object_dnk.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

@@ -7550,6 +7550,12 @@ void func_808373A4(PlayState* play, Player* this) {
     Player_PlaySfx(this, NA_SE_PL_DEKUNUTS_ATTACK);
 }
 
+// 3Ship [Hyrule] Human Link jumps off ledges as OoT's child Link in Hyrule's scenes, whose gaps are OoT's: MM's
+// ledge jumps start at least 5 upward and carry roll speed through the air.
+static s32 Player_JumpsAsInOot(PlayState* play, Player* this) {
+    return (this->transformation == PLAYER_FORM_HUMAN) && (Hyrule_GetOotSceneId(play->sceneId) >= 0);
+}
+
 s32 func_808373F8(PlayState* play, Player* this, u16 sfxId) {
     PlayerAnimationHeader* anim;
     f32 speed;
@@ -7562,7 +7568,7 @@ s32 func_808373F8(PlayState* play, Player* this, u16 sfxId) {
 
         if ((this->transformation == PLAYER_FORM_DEKU) && (speed < 8.0f)) {
             speed = 8.0f;
-        } else if (speed < 5.0f) {
+        } else if ((speed < 5.0f) && !Player_JumpsAsInOot(play, this)) {
             speed = 5.0f;
         }
     }
@@ -10340,6 +10346,11 @@ static AnimSfxEntry sLeaveCrawlspaceAnimSfxOot[] = {
     ANIMSFX(ANIMSFX_TYPE_GENERAL, 84, NA_SE_PL_CRAWL, STOP),
 };
 
+// 2S2H [Enhancement] SoH's crawl speed, for OoT's crawlspaces (1 to 5 times).
+s32 Player_GetCrawlSpeedOot(void) {
+    return CLAMP(CVarGetInteger("gEnhancements.Player.CrawlSpeed", 1), 1, 5);
+}
+
 // OoT's Player_Action_8084C81C: Link climbs out of the crawlspace, then stands.
 void Player_Action_LeaveCrawlspaceOot(Player* this, PlayState* play) {
     if (PlayerAnimation_Update(play, &this->skelAnime)) {
@@ -10363,12 +10374,17 @@ static s32 Player_TryLeavingCrawlspaceOot(Player* this, PlayState* play) {
         }
         if (ABS_ALT(yawToWall) > 0x4000) {
             Player_SetAction(play, this, Player_Action_LeaveCrawlspaceOot, 0);
+            // SoH's crawl speed also speeds up the climb out.
+            f32 animSpeed = (Player_GetCrawlSpeedOot() + 1) / 2.0f;
+
             if (this->speedXZ > 0.0f) {
                 this->actor.shape.rot.y = this->actor.wallYaw + 0x8000;
-                Player_Anim_PlayOnce(play, this, &gPlayerAnim_link_child_tunnel_end);
+                PlayerAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_child_tunnel_end, animSpeed, 0.0f,
+                                       Animation_GetLastFrame(&gPlayerAnim_link_child_tunnel_end), ANIMMODE_ONCE,
+                                       0.0f);
             } else {
                 this->actor.shape.rot.y = this->actor.wallYaw;
-                PlayerAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_child_tunnel_start, -1.0f,
+                PlayerAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_child_tunnel_start, -animSpeed,
                                        Animation_GetLastFrame(&gPlayerAnim_link_child_tunnel_start), 0.0f, ANIMMODE_ONCE,
                                        0.0f);
             }
@@ -10391,7 +10407,7 @@ void Player_Action_CrawlOot(Player* this, PlayState* play) {
                 return;
             }
             if (!Player_TryLeavingCrawlspaceOot(this, play)) {
-                this->speedXZ = sPlayerControlInput->rel.stick_y * 0.03f;
+                this->speedXZ = sPlayerControlInput->rel.stick_y * 0.03f * Player_GetCrawlSpeedOot();
             }
         }
         return;
@@ -10458,7 +10474,9 @@ static s32 Player_TryEnteringCrawlspaceOot(Player* this, PlayState* play, u32 in
             this->actor.world.pos.z = zMin + (distToInteractWall * wallPolyNormZ);
             func_8082DAD4(this);
             this->actor.prevPos = this->actor.world.pos;
-            Player_Anim_PlayOnce(play, this, &gPlayerAnim_link_child_tunnel_start);
+            PlayerAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_child_tunnel_start,
+                                   (Player_GetCrawlSpeedOot() + 1) / 2.0f, 0.0f,
+                                   Animation_GetLastFrame(&gPlayerAnim_link_child_tunnel_start), ANIMMODE_ONCE, 0.0f);
             Player_AnimReplace_Setup(play, this, 0x9D);
             return true;
         }
@@ -16499,6 +16517,10 @@ void Player_Action_25(Player* this, PlayState* play) {
                 Math_StepToF(&this->unk_B10[1], 0.0f, this->unk_B10[0]);
             }
         } else {
+            // 3Ship [Hyrule] OoT's func_8083DFE0 keeps Link's speed in the air within his running speed.
+            if (Player_JumpsAsInOot(play, this) && (this->meleeWeaponState == PLAYER_MELEE_WEAPON_STATE_0)) {
+                this->speedXZ = CLAMP(this->speedXZ, -(R_RUN_SPEED_LIMIT / 100.0f), R_RUN_SPEED_LIMIT / 100.0f);
+            }
             if (GameInteractor_Should(VB_APPLY_AIR_CONTROL, true, &speedTarget)) {
                 func_8083CBC4(this, speedTarget, yawTarget, 1.0f, 0.05f, 0.1f, 0xC8);
             }
@@ -22436,13 +22458,14 @@ void Player_CsAction_48(PlayState* play, Player* this, CsCmdActorCue* cue) {
     s32 csAction;
 
     // 3Ship [Hyrule] Link follows an OoT script's cues with OoT's actions (OoT's func_80852C50), or runs the OoT
-    // action an actor gave him (OoT's Player_Action_CsAction).
-    if (gCsCtxOot.state != CS_STATE_IDLE_Oot) {
-        func_80852C50Oot(play, this, NULL);
+    // action an actor gave him (OoT's Player_Action_CsAction), also during a script that has no cue for him (a
+    // boss's manual cutscene: Link turning around as Gohma's door shuts).
+    if ((gPlayerCsActionOot != 0) && !Player_HasCueOot()) {
+        Player_ActorCsActionOot(play, this);
         return;
     }
-    if (gPlayerCsActionOot != 0) {
-        Player_ActorCsActionOot(play, this);
+    if (gCsCtxOot.state != CS_STATE_IDLE_Oot) {
+        func_80852C50Oot(play, this, NULL);
         return;
     }
 

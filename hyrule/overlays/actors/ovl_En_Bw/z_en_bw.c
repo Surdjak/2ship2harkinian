@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/object_bw/object_bw.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -673,7 +674,7 @@ static void func_809D0424(EnBw* this, PlayState* play) {
             } else {
                 this->unk_230 = 1;
             }
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x90);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x90);
             func_809D00F4(this);
         }
     }
@@ -716,7 +717,7 @@ static void func_809D0584(EnBw* this, PlayState* play) {
                     } else {
                         this->unk_230 = 1;
                     }
-                    Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x90);
+                    Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x90);
                     func_809D00F4(this);
                 }
             } else if ((this->unk_220 != 1) && (this->unk_220 != 6)) {

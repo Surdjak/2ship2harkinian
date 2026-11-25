@@ -6,6 +6,7 @@
 #include "assets/oot/objects/gameplay_field_keep/gameplay_field_keep.h"
 #include "assets/oot/objects/object_fr/object_fr.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                  \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \

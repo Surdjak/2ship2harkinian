@@ -146,7 +146,8 @@ typedef enum SequencePlayerId {
     /*    2 */ SEQ_PLAYER_SFX,
     /*    3 */ SEQ_PLAYER_BGM_SUB,
     /*    4 */ SEQ_PLAYER_AMBIENCE,
-    /*    5 */ SEQ_PLAYER_MAX,
+    /*    5 */ SEQ_PLAYER_SFX_OOT, // 3Ship [Hyrule] OoT's sfx sequence, for OoT's sfx banks (sfx.c)
+    /*    6 */ SEQ_PLAYER_MAX,
     /* 0xFF */ SEQ_PLAYER_INVALID = 0xFF
 } SequencePlayerId;
 

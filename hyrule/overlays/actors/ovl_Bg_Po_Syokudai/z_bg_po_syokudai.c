@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/object_syokudai/object_syokudai.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

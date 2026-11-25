@@ -10,6 +10,7 @@
 #include "HyruleCutscene.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_efc_doughnut/object_efc_doughnut.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

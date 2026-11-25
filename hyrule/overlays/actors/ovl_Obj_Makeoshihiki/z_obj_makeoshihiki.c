@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "../ovl_Obj_Oshihiki/z_obj_oshihiki.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_DRAW_CULLING_DISABLED
 

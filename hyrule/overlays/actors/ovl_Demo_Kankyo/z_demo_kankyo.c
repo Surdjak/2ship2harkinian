@@ -11,6 +11,7 @@
 #include "assets/oot/objects/object_toki_objects/object_toki_objects.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

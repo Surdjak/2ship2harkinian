@@ -2846,6 +2846,10 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
                 if ((sPlayerRightHandType == PLAYER_MODELTYPE_RH_BOW) && Hyrule_HoldsSlingshot(player)) {
                     // 3Ship [Hyrule] OoT's Slingshot shares the Bow's models, but not its hand.
                     rightHandDLists = Hyrule_GetHandHoldingSlingshotDLs();
+                } else if ((sPlayerRightHandType == PLAYER_MODELTYPE_RH_INSTRUMENT) &&
+                           Hyrule_HoldsFairyOcarina(play, player)) {
+                    // 3Ship [Hyrule]
+                    rightHandDLists = Hyrule_GetHandHoldingFairyOcarinaDLs();
                 } else if (sPlayerRightHandType == PLAYER_MODELTYPE_RH_SHIELD) {
                     if (player->transformation == PLAYER_FORM_HUMAN) {
                         // 3Ship [Hyrule] OoT's shields are not in MM's table.

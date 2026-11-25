@@ -199,14 +199,18 @@ become fades of the same color and speed.
   (`Hyrule_GetSceneLayerException`): adult Kokiri Forest's layer 3 only after the Forest Temple, and child
   Hyrule Field's layer 1 with the three spiritual stones. The exit fade and the transition setup use the layer
   before the exceptions, as OoT does, and a missing adult night layer falls back to adult day.
-- **Skyboxes:** OoT's normal sky and cutscene map use MM's, and the prerendered rooms' panoramas (the market
+- **Skyboxes:** OoT's normal sky uses MM's. OoT's cutscene map sky (the goddesses' in the Great Deku Tree's story),
+  which MM never used, is OoT's `vr_holy0` and `vr_holy1` (`textures/skyboxes.xml`), their palettes joined into
+  one (`Hyrule_SetupCutsceneMapSkybox`), blended by the time as OoT's skybox config 3 and turning as in OoT. The
+  prerendered rooms' panoramas (the market
   square's day, night and ruins among them) are drawn by `HyrulePanorama.c` (below). OoT's bazaar and overcast skies
   are not ported and show nothing (`Hyrule_SkyboxFromOot`).
 - **Place names:** MM names an area with its scene's title text, which OoT's scenes do not have. On an entrance
   whose title card flag is set, `Cutscene_HandleEntranceTriggers` shows OoT's place-name card instead
   (`HyruleTitleCard.c`, OoT's `TitleCard_InitPlaceName`, which MM left empty): OoT's `g_pn_*` textures, extracted
   from `textures/place_title_cards.xml`, every time Link takes such an entrance. Dodongo's Cavern and the Bombchu
-  Shop wait for OoT's flags, and entrance cutscenes show the card with their own command (15).
+  Shop wait for OoT's flags, and entrance cutscenes show the card with their own command (15). As in OoT's
+  `Player_Init`, a cutscene layer shows none (the Great Deku Tree's story moving between scenes).
 
 ### Prerendered rooms
 
@@ -247,7 +251,6 @@ Not yet:
 
 - **Actors:** only some waves are ported, so other OoT actors in room lists do not appear.
 - **Scenes:** only the ones above; exits into others lead back to the spawn Link came in at.
-- **OoT sound effects:** the OoT-only sound effects are not played yet (see Audio).
 - **Scene effects:** OoT's scene draw configs (z_scene_table.c) run for OoT scenes through MM's
   `SCENE_DRAW_CFG_HYRULE_OOT` (`HyruleSceneDraw.c`), but only some of the scenes loaded so far (Kokiri Forest,
   the Lost Woods, the grottos, the fairy fountain, calm water, Hyrule Castle, the Temple of Time with the
@@ -356,8 +359,9 @@ to review; the rest is done by hand.
 
 Known differences:
 
-- Grass drops come from MM's drop table of the same index, since OoT's tables and Deku seeds are not
-  ported. Regrowing grass gives a recovery heart half the time and nothing instead of seeds.
+- OoT's actors drop from OoT's tables (`Item_DropCollectibleRandomOot`, `hyrule/HyruleDropTables.inc` from SoH),
+  whose rows differ from MM's; the flexible drop and the spawning are MM's. Regrowing grass gives Deku seeds or a
+  recovery heart, as in OoT.
 - Bugs from grass and rocks wait for `En_Insect`.
 - Cut signs (`En_Kanban`) are repaired by Zelda's Lullaby; the pieces go when Link walks away, as in OoT. The cut direction comes from MM's melee animations, with Zora
   attacks cutting like sword swings and Goron punches like the hammer.
@@ -413,7 +417,7 @@ and rolls on, as in OoT.
 Wave 9's Gold Skulltula on the Know-it-All Brothers' house matches SoH on all 2631 frames (the debug
 boot is at night). Held level with it, human Link kills it with sword slashes through its converted
 OoT damage table. Its token (`En_Si`) is not ported yet, and OoT's Gold Skulltula flags are not in the
-save, so it returns. OoT sound effects MM lacks use the nearest MM ones, marked `PORT:`.
+save, so it returns. OoT actors play OoT's own sound effects (see Audio).
 
 Wave 10's pots, and the Kokiri, collectibles, message spots and item spots in the houses and the shop,
 match SoH booted at each entrance (`HARNESS_ENTRANCE`) on every frame of the run, about 340 each. Held
@@ -822,6 +826,10 @@ Fixes from the first play test:
 - Hyrule's big chests play MM's long chest opening (`CS_ID_GLOBAL_LONG_CHEST_OOT`, MM's unused global cutscene slot
   0x7A, with the entry MM's scenes give their own big chests: `CAM_SET_LONG_CHEST_OPENING`). MM's chests take it from
   their scene's actor cutscene list, which OoT's scenes do not have.
+- Player's item get shot (MM's `CAM_SET_ITEM0`, for every item as OoT's `Player_SetTurnAroundCamera`) is
+  `CS_ID_GLOBAL_ITEM_GET_OOT` in Hyrule's scenes (slot 0x78, with Clock Town's entry): `Play_AssignPlayerCsIdsFromScene`
+  finds none in their lists. A large chest's light (`Demo_Tre_Lgt`) waits on MM's chest object, which OoT's rooms
+  load in place of OoT's.
 - OoT's one-point camera cutscenes (z_onepointdemo.c) are ported (`HyruleOnePoint.c`): the short shots actors start
   to show what they do, such as a door unbarring, platforms rising, a staircase falling or a boss's end. Each is a
   `CAM_SET_FREE0` sub camera queued as OoT queues them (their parent and child cameras, which MM's `Camera` no longer
@@ -971,6 +979,24 @@ OoT's code for that mode (`Audio_SetSequenceMode`). The seq player adds `SEQ_OOT
 that instruction and of "start sequence" (0xC4) when the running sequence is OoT's, and `AudioLoad_SlowLoadSeq`
 now checks the sequence map instead of the table count the port never sets (as SoH does). Checked: standing
 still plays the idle segments and running the field segments; at night the field plays its ambience.
+
+### Sound effects
+
+OoT code plays OoT's sound effects, from OoT's sfx sequence (OoT's sequence 0, `SEQ_OOT_BASE`) on a sixth sequence
+player, `SEQ_PLAYER_SFX_OOT`, started next to MM's in `AudioSfx_Init`. OoT's seven banks follow MM's in the sfx
+engine (`sfx.c`): an OoT sfx id is OoT's id plus `SFX_BANK_OOT_OFFSET` (7) banks (`SFX_OOT`), so bank 7 is OoT's
+player bank and bank 13 its voice bank. They have their own entries, OoT's params (`hyrule/HyruleSfxParams.inc`,
+OoT's force-reset bit moved to MM's flags) and OoT's channel layout, the same as MM's, on OoT's sequence's channels
+from 0. OoT's sequence reads ioPort 5 for the upper index bit of its large (enemy) bank only, and takes the volume,
+pan, frequency, reverb, filter and comb filter as OoT's code sends them (`AudioSfx_SetPropertiesOot`), not from MM's
+`SfxChannelState`. Muting, the BGM lowering, the sfx volume slider and the reverb and volume helpers apply to both.
+
+The ported actors (`hyrule/overlays`, where `port_actor.py` adds the include) and the OoT ports `HyruleActor.c`,
+`HyruleCutscene.c`, `HyruleMagic.c` and `HyruleOnePoint.c` include `HyruleSfx.h` after MM's names. It redefines each name as OoT's sound of that name, or for a name OoT lacks (the port
+tool names OoT's sounds by MM's name for the same id), OoT's sound of its id, and adds OoT's names MM lacks. Link's
+voice (`NA_SE_VO_LI_*`) stays MM's, since MM's Player speaks in both worlds, and so do MM's names for ids OoT does not
+have. Both files are generated by `tools/porting/gen_oot_sfx.py` from SoH. Player's animation sounds in OoT's
+cutscene actions (`HyrulePlayerCsOot.inc`) stay MM's: MM's Player adds its floor offsets to them.
 
 ## Event flags
 

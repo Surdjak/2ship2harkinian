@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_ei/object_ei.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
@@ -481,7 +482,7 @@ static void EnWeiyer_Dead(EnWeiyer* this, PlayState* play) {
     this->actor.world.pos.y -= 2.0f;
 
     if (this->actor.shape.shadowAlpha == 0) {
-        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xE0);
+        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xE0);
         Actor_Kill(&this->actor);
     }
 }

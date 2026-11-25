@@ -11,6 +11,7 @@
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/gameplay_field_keep/gameplay_field_keep.h"
 #include "assets/oot/objects/object_kusa/object_kusa.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_THROW_ONLY)
 
@@ -130,12 +131,12 @@ static void EnKusa_DropCollectible(EnKusa* this, PlayState* play) {
             if (dropParams >= 0xD) {
                 dropParams = 0;
             }
-            // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-            Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos, dropParams << 4);
+            Item_DropCollectibleRandomOot(play, NULL, &this->actor.world.pos, dropParams << 4);
             break;
         case ENKUSA_TYPE_1:
-            // PORT: MM has no Deku seeds, so the half of drops that would be seeds give nothing.
-            if (Rand_ZeroOne() >= 0.5f) {
+            if (Rand_ZeroOne() < 0.5f) {
+                Item_DropCollectible(play, &this->actor.world.pos, ITEM00_DEKU_SEEDS_Oot);
+            } else {
                 Item_DropCollectible(play, &this->actor.world.pos, ITEM00_RECOVERY_HEART);
             }
             break;

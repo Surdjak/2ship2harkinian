@@ -18,6 +18,7 @@
 #include "HyrulePlayer.h"
 #include "HyrulePort.h"
 #include "overlays/actors/ovl_En_Sw/z_en_sw.h" // OoT's, in hyrule/
+#include "HyruleSfx.h"
 
 // MM's z_camera.c, not in its headers.
 void Camera_UpdateInterface(s32 interfaceFlags);

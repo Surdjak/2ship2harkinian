@@ -3,10 +3,15 @@
 
 #include "global.h"
 #include "HyruleSceneDraw.h"
+#include "BenPort.h"
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleScenes.h"
 #include "z64quake.h"
+#include "assets/oot/textures/skyboxes/vr_holy0_static.h"
+#include "assets/oot/textures/skyboxes/vr_holy0_pal_static.h"
+#include "assets/oot/textures/skyboxes/vr_holy1_static.h"
+#include "assets/oot/textures/skyboxes/vr_holy1_pal_static.h"
 #include "assets/oot/scenes/dungeons/Bmori1/Bmori1_scene.h"
 #include "assets/oot/scenes/dungeons/MIZUsin/MIZUsin_scene.h"
 #include "assets/oot/scenes/dungeons/ddan/ddan_scene.h"
@@ -1771,4 +1776,59 @@ void Hyrule_SceneDrawOot(PlayState* play) {
             Scene_DrawConfigDefault(play);
             break;
     }
+}
+
+static const char* sHoly0SkyboxTextures[] = {
+    gHoly0Skybox1Tex, gHoly0Skybox2Tex, gHoly0Skybox3Tex, gHoly0Skybox4Tex, gHoly0Skybox5Tex, gHoly0Skybox6Tex,
+};
+static const char* sHoly1SkyboxTextures[] = {
+    gHoly1Skybox1Tex, gHoly1Skybox2Tex, gHoly1Skybox3Tex, gHoly1Skybox4Tex, gHoly1Skybox5Tex, gHoly1Skybox6Tex,
+};
+// Holy0's 128 colours, then holy1's, as OoT loads them (LoadSkyboxPalette 0 and 1).
+static u16 sHolySkyboxPalette[256];
+
+void Hyrule_SetupCutsceneMapSkybox(SkyboxContext* skyboxCtx) {
+    s32 i;
+
+    for (i = 0; i < ARRAY_COUNT(sHoly0SkyboxTextures); i++) {
+        skyboxCtx->staticSegments[0][i] = (void*)sHoly0SkyboxTextures[i];
+        skyboxCtx->staticSegments[1][i] = (void*)sHoly1SkyboxTextures[i];
+    }
+    memcpy(&sHolySkyboxPalette[0], ResourceMgr_LoadTexOrDListByName(gHoly0SkyboxTLUT), 128 * sizeof(u16));
+    memcpy(&sHolySkyboxPalette[128], ResourceMgr_LoadTexOrDListByName(gHoly1SkyboxTLUT), 128 * sizeof(u16));
+    skyboxCtx->palette = sHolySkyboxPalette;
+    // OoT draws it untinted: MM's skybox combiner tints by these (prim over env), which MM's environment sets only
+    // for its own skies.
+    skyboxCtx->prim.r = skyboxCtx->prim.g = skyboxCtx->prim.b = 255;
+    skyboxCtx->env.r = skyboxCtx->env.g = skyboxCtx->env.b = 0;
+}
+
+typedef struct {
+    u16 startTime;
+    u16 endTime;
+    u8 blend;
+} HolySkyboxTime;
+
+// OoT's D_8011FC1C[3], for SKYBOX_CUTSCENE_MAP: the windows in which holy0 blends into holy1.
+static HolySkyboxTime sHolySkyboxTimes[] = {
+    { 0x0000, 0x3556, false }, { 0x3556, 0x4000, true }, { 0x4000, 0x4AAB, false },
+    { 0x4AAB, 0x5556, true },  { 0x5556, 0xAAAB, false }, { 0xAAAB, 0xB556, true },
+    { 0xB556, 0xC001, false }, { 0xC001, 0xCAAC, true },  { 0xCAAC, 0xFFFF, false },
+};
+
+u8 Hyrule_GetCutsceneMapSkyboxBlend(void) {
+    s32 i;
+
+    for (i = 0; i < ARRAY_COUNT(sHolySkyboxTimes); i++) {
+        if ((gSaveContext.skyboxTime >= sHolySkyboxTimes[i].startTime) &&
+            ((gSaveContext.skyboxTime < sHolySkyboxTimes[i].endTime) || (sHolySkyboxTimes[i].endTime == 0xFFFF))) {
+            if (sHolySkyboxTimes[i].blend) {
+                return Environment_LerpWeight(sHolySkyboxTimes[i].endTime, sHolySkyboxTimes[i].startTime,
+                                              ((void)0, gSaveContext.skyboxTime)) *
+                       255;
+            }
+            return 0;
+        }
+    }
+    return 0;
 }

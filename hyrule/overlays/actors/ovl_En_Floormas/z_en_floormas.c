@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_wallmaster/object_wallmaster.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
 
@@ -439,7 +440,7 @@ static void EnFloormas_Die(EnFloormas* this, PlayState* play) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_KUSAMUSHI_HIDE);
     } else {
         // Die
-        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x90);
+        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x90);
         EnFloormas_SetupSmShrink(this, play);
     }
 }

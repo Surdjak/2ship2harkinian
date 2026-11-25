@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "HyruleInventory.h"
 #include "assets/oot/objects/object_door_gerudo/object_door_gerudo.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

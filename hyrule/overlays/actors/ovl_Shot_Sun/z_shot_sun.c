@@ -12,6 +12,7 @@
 #include "HyruleCutscene.h"
 #include "../ovl_En_Elf/z_en_elf.h"
 #include "assets/oot/scenes/overworld/spot06/spot06_scene.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 

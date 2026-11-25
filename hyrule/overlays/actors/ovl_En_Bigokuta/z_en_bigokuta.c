@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "z64rumble.h"
 #include "assets/oot/objects/object_bigokuta/object_bigokuta.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -649,7 +650,7 @@ static void func_809BE26C(EnBigokuta* this, PlayState* play) {
             Camera_ChangeSetting(play->cameraPtrs[CAM_ID_MAIN], CAM_SET_DUNGEON0);
             Camera_SetStateFlag(play->cameraPtrs[CAM_ID_MAIN], 4);
             SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 50, NA_SE_EN_COMMON_WATER_MID);
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xB0);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xB0);
             Actor_Kill(&this->actor);
         }
     }

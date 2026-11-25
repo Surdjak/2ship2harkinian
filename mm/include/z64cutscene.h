@@ -639,6 +639,7 @@ typedef enum {
     /*   -1 */ CS_ID_NONE = -1,
     // CsId's 0 - 119 are sceneLayer-specific and index `ActorCutscene`
     /* 0x78 */ CS_ID_GLOBAL_78 = 120,
+#define CS_ID_GLOBAL_ITEM_GET_OOT CS_ID_GLOBAL_78 // 3Ship [Hyrule] Player's item get shot in Hyrule (z_eventmgr.c)
     /* 0x79 */ CS_ID_GLOBAL_79,
     /* 0x7A */ CS_ID_GLOBAL_7A,
 #define CS_ID_GLOBAL_LONG_CHEST_OOT CS_ID_GLOBAL_7A // 3Ship [Hyrule] Hyrule's big chests (z_eventmgr.c)

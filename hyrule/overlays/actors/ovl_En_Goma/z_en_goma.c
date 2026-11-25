@@ -6,6 +6,7 @@
 #include "assets/oot/objects/object_gol/object_gol.h"
 #include "../ovl_Boss_Goma/z_boss_goma.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -427,7 +428,7 @@ static void EnGoma_Dead(EnGoma* this, PlayState* play) {
         }
         Audio_PlaySfx_AtPos(&this->actor.projectedPos, NA_SE_EN_EXTINCT);
         Actor_Kill(&this->actor);
-        Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos, 0x30);
+        Item_DropCollectibleRandomOot(play, NULL, &this->actor.world.pos, 0x30);
     }
     this->visualState = 2;
 }

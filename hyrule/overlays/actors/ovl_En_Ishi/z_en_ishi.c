@@ -11,6 +11,7 @@
 #include "z64rumble.h"
 #include "overlays/effects/ovl_Effect_Ss_Kakera/z_eff_ss_kakera.h"
 #include "assets/oot/objects/gameplay_field_keep/gameplay_field_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_THROW_ONLY
 
@@ -256,8 +257,7 @@ static void EnIshi_DropCollectible(EnIshi* this, PlayState* play) {
             dropParams = 0;
         }
 
-        // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-        Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos, dropParams << 4);
+        Item_DropCollectibleRandomOot(play, NULL, &this->actor.world.pos, dropParams << 4);
     }
 }
 

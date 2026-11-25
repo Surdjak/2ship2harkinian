@@ -8,6 +8,7 @@
 #include "HyruleRestrictions.h"
 #include "HyrulePort.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+#include "HyruleSfx.h"
 
 static const s16 sSpellCosts[HYRULE_SPELL_MAX] = { 12, 24, 12 }; // OoT's sMagicSpellCosts[3-5]
 

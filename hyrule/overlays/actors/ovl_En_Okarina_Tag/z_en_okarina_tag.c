@@ -12,6 +12,7 @@
 #include "HyruleCutscene.h"
 #include "assets/oot/scenes/misc/hakaana_ouke/hakaana_ouke_scene.h"
 #include "assets/oot/scenes/overworld/spot02/spot02_scene.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 

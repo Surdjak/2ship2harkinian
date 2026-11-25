@@ -11,6 +11,7 @@
 #include "assets/oot/objects/object_dekubaba/object_dekubaba.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 

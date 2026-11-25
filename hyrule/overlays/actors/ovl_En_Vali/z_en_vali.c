@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_vali/object_vali.h"
 #include <stdlib.h>
+#include "HyruleSfx.h"
 
 #define FLAGS \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_IGNORE_QUAKE)
@@ -251,7 +252,7 @@ static void EnVali_SetupDivideAndDie(EnVali* this, PlayState* play) {
         }
     }
 
-    Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x50);
+    Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x50);
     this->timer = Rand_S16Offset(10, 10);
     this->bodyCollider.base.acFlags &= ~AC_ON;
     SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 40, NA_SE_EN_BARI_SPLIT);

@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "HyruleInventory.h"
 #include "assets/oot/objects/object_ts/object_ts.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                  \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \

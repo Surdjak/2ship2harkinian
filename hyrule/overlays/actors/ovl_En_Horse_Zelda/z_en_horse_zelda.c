@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "z64horse.h"
 #include "assets/oot/objects/object_horse_zelda/object_horse_zelda.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

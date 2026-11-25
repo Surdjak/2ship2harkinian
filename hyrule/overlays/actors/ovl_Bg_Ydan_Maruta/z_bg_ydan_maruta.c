@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_ydan_objects/object_ydan_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

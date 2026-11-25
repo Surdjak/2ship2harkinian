@@ -5,6 +5,7 @@
 #include "../ovl_En_Box/z_en_box.h"
 #include "assets/oot/objects/object_box/object_box.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 
@@ -34,7 +35,7 @@ ActorProfile Demo_Tre_Lgt_Oot_Profile = {
     /**/ ACTOR_DEMO_TRE_LGT_Oot,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
-    /**/ OBJECT_BOX_Oot,
+    /**/ OBJECT_BOX, // PORT: OoT's rooms load MM's chest object (OotToMm::ObjectId), as for En_Box
     /**/ sizeof(DemoTreLgt),
     /**/ DemoTreLgt_Init,
     /**/ DemoTreLgt_Destroy,

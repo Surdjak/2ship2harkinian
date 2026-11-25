@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_st/object_st.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -991,8 +992,7 @@ static void EnSt_Die(EnSt* this, PlayState* play) {
     if (DECR(this->finishDeathTimer) != 0) {
         EnSt_SpawnDeadEffect(this, play);
     } else {
-        // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-        Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos, 0xE0);
+        Item_DropCollectibleRandomOot(play, NULL, &this->actor.world.pos, 0xE0);
         Actor_Kill(&this->actor);
     }
 }

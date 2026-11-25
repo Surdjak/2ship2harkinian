@@ -3,6 +3,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_dh/object_dh.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -488,7 +489,7 @@ static void EnDh_CollisionCheck(EnDh* this, PlayState* play) {
             lastHealth = this->actor.colChkInfo.health;
             if (Actor_ApplyDamage(&this->actor) == 0) {
                 EnDh_SetupDeath(this);
-                Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x90);
+                Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x90);
             } else {
                 if (((lastHealth >= 15) && (this->actor.colChkInfo.health < 15)) ||
                     ((lastHealth >= 9) && (this->actor.colChkInfo.health < 9)) ||

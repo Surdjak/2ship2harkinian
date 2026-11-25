@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_firefly/object_firefly.h"
 #include "../ovl_Obj_Syokudai/z_obj_syokudai.h"
+#include "HyruleSfx.h"
 
 #define FLAGS \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_CAN_ATTACH_TO_ARROW)
@@ -448,7 +449,7 @@ static void EnFirefly_Die(EnFirefly* this, PlayState* play) {
     Math_StepToF(&this->actor.scale.x, 0.0f, 0.00034f);
     this->actor.scale.y = this->actor.scale.z = this->actor.scale.x;
     if (this->timer == 0) {
-        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xE0);
+        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xE0);
         Actor_Kill(&this->actor);
     }
 }

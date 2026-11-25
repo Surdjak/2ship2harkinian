@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_am/object_am.h"
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -881,7 +882,7 @@ static void EnAm_Update(Actor* thisx, PlayState* play) {
                 }
 
                 Actor_PlaySfx(&this->dyna.actor, NA_SE_EN_EYEGOLE_DEAD);
-                Item_DropCollectibleRandom(play, &this->dyna.actor, &this->dyna.actor.world.pos, 0xA0);
+                Item_DropCollectibleRandomOot(play, &this->dyna.actor, &this->dyna.actor.world.pos, 0xA0);
 
                 for (i = 9; i >= 0; i--) {
                     dustPos.x = (sinf(dustPosScale) * 7.0f) + this->dyna.actor.world.pos.x;

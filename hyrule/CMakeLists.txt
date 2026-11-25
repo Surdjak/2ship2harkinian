@@ -70,7 +70,11 @@ add_dependencies(2ship StageOotExtractor)
 target_compile_definitions(2ship PRIVATE ENABLE_OOT_EXTRACTOR)
 get_target_property(STORM_INCLUDES storm INTERFACE_INCLUDE_DIRECTORIES)
 target_include_directories(2ship PRIVATE "${STORM_INCLUDES}")
-target_link_libraries(2ship PRIVATE storm)
+# libultraship links storm itself when it has MPQ support (whole-archive outside Windows and iOS, which a second plain
+# link would conflict with).
+if(NOT INCLUDE_MPQ_SUPPORT)
+    target_link_libraries(2ship PRIVATE storm)
+endif()
 
 set(OOT_INSTALL_DIR .)
 if(APPLE)

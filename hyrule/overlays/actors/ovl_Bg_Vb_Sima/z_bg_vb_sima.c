@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_fd/object_fd.h"
 #include "../ovl_Boss_Fd/z_boss_fd.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

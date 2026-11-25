@@ -11,6 +11,7 @@
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "assets/oot/objects/object_heavy_object/object_heavy_object.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 
@@ -444,7 +445,7 @@ static void BgHeavyBlock_Fly(BgHeavyBlock* this, PlayState* play) {
                 this->actionFunc = BgHeavyBlock_Land;
         }
     }
-    this->dyna.actor.shape.rot.x = Math_Atan2S(this->dyna.actor.velocity.y, this->dyna.actor.speed);
+    this->dyna.actor.shape.rot.x = Math_Atan2S_XY(this->dyna.actor.velocity.y, this->dyna.actor.speed);
 }
 
 static void BgHeavyBlock_DoNothing(BgHeavyBlock* this, PlayState* play) {

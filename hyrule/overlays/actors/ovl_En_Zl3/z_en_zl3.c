@@ -8,6 +8,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleActor.h"
+#include "HyruleSfx.h"
 
 #include "../ovl_En_Encount2/z_en_encount2.h"
 #include "../ovl_Door_Warp1/z_door_warp1.h"

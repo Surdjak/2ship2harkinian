@@ -11,6 +11,7 @@
 #include "HyruleOcarina.h"
 #include "HyruleCutscene.h"
 #include "assets/oot/scenes/overworld/spot00/spot00_scene.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

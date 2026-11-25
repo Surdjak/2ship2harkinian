@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "z64rumble.h"
+#include "HyruleSfx.h"
 
 #include "../ovl_En_Kanban/z_en_kanban.h"
 #include "assets/oot/objects/object_fish/object_fish.h"
@@ -1555,9 +1556,9 @@ static void Fishing_UpdateLine(PlayState* play, Vec3f* basePos, Vec3f* pos, Vec3
         dy = spD8 - (pos + i - 1)->y;
         dz = (pos + i)->z - (pos + i - 1)->z;
 
-        ry = Math_Atan2F(dz, dx);
+        ry = Math_Atan2F_XY(dz, dx);
         dist = sqrtf(SQ(dx) + SQ(dz));
-        rx = -Math_Atan2F(dist, dy);
+        rx = -Math_Atan2F_XY(dist, dy);
 
         (rot + i - 1)->y = ry;
         (rot + i - 1)->x = rx;
@@ -1591,9 +1592,9 @@ static void Fishing_UpdateLinePos(Vec3f* pos) {
         dy = (pos + i)->y - (pos + i + 1)->y;
         dz = (pos + i)->z - (pos + i + 1)->z;
 
-        ry = Math_Atan2F(dz, dx);
+        ry = Math_Atan2F_XY(dz, dx);
         dist = sqrtf(SQ(dx) + SQ(dz));
-        rx = -Math_Atan2F(dist, dy);
+        rx = -Math_Atan2F_XY(dist, dy);
 
         Matrix_RotateYF(ry, MTXMODE_NEW);
         Matrix_RotateXFApply(rx);
@@ -1633,9 +1634,9 @@ static void Fishing_DrawLureHook(PlayState* play, Vec3f* pos, Vec3f* refPos, u8 
     dy = refPos->y - pos->y + offsetY;
     dz = refPos->z - pos->z;
 
-    ry = Math_Atan2F(dz, dx);
+    ry = Math_Atan2F_XY(dz, dx);
     dist = sqrtf(SQ(dx) + SQ(dz));
-    rx = -Math_Atan2F(dist, dy);
+    rx = -Math_Atan2F_XY(dist, dy);
 
     Matrix_RotateYF(ry, MTXMODE_NEW);
     Matrix_RotateXFApply(rx);
@@ -1752,9 +1753,9 @@ static void Fishing_UpdateSinkingLure(PlayState* play) {
         dy = (pos + i)->y - (pos + i - 1)->y + offsetY;
         dz = (pos + i)->z - (pos + i - 1)->z + offsetZ;
 
-        ry = Math_Atan2F(dz, dx);
+        ry = Math_Atan2F_XY(dz, dx);
         dist = sqrtf(SQ(dx) + SQ(dz));
-        rx = -Math_Atan2F(dist, dy);
+        rx = -Math_Atan2F_XY(dist, dy);
 
         Matrix_RotateYF(ry, MTXMODE_NEW);
         Matrix_RotateXFApply(rx);
@@ -2299,7 +2300,7 @@ static void Fishing_UpdateLure(Fishing* this, PlayState* play) {
                 sLureRot.y = sReelLineRot[LINE_SEG_COUNT - 2].y;
             } else {
                 sLureRot.x = 0.0f;
-                sLureRot.y = Math_Atan2F(spD0, spD8) + M_PI;
+                sLureRot.y = Math_Atan2F_XY(spD0, spD8) + M_PI;
             }
 
             lengthCasted = sqrtf(SQ(spD8) + SQ(spD4) + SQ(spD0));
@@ -2475,7 +2476,7 @@ static void Fishing_UpdateLure(Fishing* this, PlayState* play) {
 
                         sp90.x = player->actor.world.pos.x - sLurePos.x;
                         sp90.z = player->actor.world.pos.z - sLurePos.z;
-                        sp90.y = Math_Atan2F(sp90.z, sp90.x);
+                        sp90.y = Math_Atan2F_XY(sp90.z, sp90.x);
 
                         sLureWiggleRotYTarget = (wiggle * sLureWiggleSign) + sp90.y;
                         sLureWiggleSign *= -1.0f;
@@ -3033,10 +3034,10 @@ static void Fishing_UpdateFish(Actor* thisx, PlayState* play2) {
     distY = this->fishTargetPos.y - this->actor.world.pos.y;
     distZ = this->fishTargetPos.z - this->actor.world.pos.z;
 
-    rotYTarget = Math_Atan2S(distZ, distX);
+    rotYTarget = Math_Atan2S_XY(distZ, distX);
     distToTarget = sqrtf(SQ(distX) + SQ(distZ));
 
-    rotXTarget = Math_Atan2S(distToTarget, distY);
+    rotXTarget = Math_Atan2S_XY(distToTarget, distY);
     distToTarget = sqrtf(SQ(distX) + SQ(distZ) + SQ(distY));
 
     if ((this->bumpTimer != 0) && (this->fishState != 2) && (this->fishState != 3) && (this->fishState != 4)) {
@@ -4323,7 +4324,7 @@ static void Fishing_HandleReedContact(FishingProp* prop, Vec3f* entityPos) {
     f32 distXZ = sqrtf(SQ(dx) + SQ(dz));
 
     if (distXZ <= 20.0f) {
-        prop->rotY = Math_Atan2F(dz, dx);
+        prop->rotY = Math_Atan2F_XY(dz, dx);
 
         Math_ApproachF(&prop->rotX, (20.0f - distXZ) * 0.03f, 0.2f, 0.2f);
     }
@@ -4335,7 +4336,7 @@ static void Fishing_HandleLilyPadContact(FishingProp* prop, Vec3f* entityPos, u8
     f32 distXZ = sqrtf(SQ(dx) + SQ(dz));
 
     if (distXZ <= 40.0f) {
-        Math_ApproachS(&prop->lilyPadAngle, Math_Atan2S(dz, dx), 10, 0x300);
+        Math_ApproachS(&prop->lilyPadAngle, Math_Atan2S_XY(dz, dx), 10, 0x300);
     }
 
     if (fishTimer && (distXZ <= 60.0f)) {
@@ -4634,9 +4635,9 @@ static void Fishing_UpdateGroupFishes(PlayState* play) {
             dx = fish->homePos.x - fish->pos.x;
             dy = fish->homePos.y - fish->pos.y;
             dz = fish->homePos.z - fish->pos.z;
-            spD4 = Math_Atan2S(dz, dx);
+            spD4 = Math_Atan2S_XY(dz, dx);
             dist = sqrtf(SQ(dx) + SQ(dz));
-            spD6 = Math_Atan2S(dist, dy);
+            spD6 = Math_Atan2S_XY(dist, dy);
 
             if ((dist < 10.0f) || (((fish->timer % 32) == 0) && (Rand_ZeroOne() > 0.5f))) {
                 fish->homePos.y = basePos[groupIndex].y + Rand_CenteredFloat(10.0f);
@@ -5343,7 +5344,7 @@ static void Fishing_UpdateOwner(Actor* thisx, PlayState* play2) {
             lureDist.x = sLurePos.x - player->actor.world.pos.x;
             lureDist.z = sLurePos.z - player->actor.world.pos.z;
             lureDistXZ = sqrtf(SQ(lureDist.x) + SQ(lureDist.z));
-            Matrix_RotateYF(Math_Atan2F(lureDist.z, lureDist.x), MTXMODE_NEW);
+            Matrix_RotateYF(Math_Atan2F_XY(lureDist.z, lureDist.x), MTXMODE_NEW);
 
             multiVecSrc.x = 0.0f;
             multiVecSrc.y = 0.0f;

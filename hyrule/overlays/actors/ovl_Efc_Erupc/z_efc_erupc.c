@@ -5,6 +5,7 @@
 #include "HyruleCutscene.h"
 #include "assets/oot/objects/object_efc_erupc/object_efc_erupc.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

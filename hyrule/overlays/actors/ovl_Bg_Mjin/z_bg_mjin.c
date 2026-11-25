@@ -16,6 +16,7 @@
 #include "assets/oot/objects/object_mjin_flame/object_mjin_flame.h"
 #include "assets/oot/objects/object_mjin_flash/object_mjin_flash.h"
 #include "assets/oot/objects/object_mjin_oka/object_mjin_oka.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

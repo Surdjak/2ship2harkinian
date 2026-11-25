@@ -10,6 +10,7 @@
 #include "overlays/actors/ovl_Arms_Hook/z_arms_hook.h"
 #include "overlays/actors/ovl_En_Part/z_en_part.h" // OoT's, in hyrule/
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+#include "HyruleSfx.h"
 
 s32 Hyrule_IsBombchuBowlingOot(PlayState* play) {
     // OoT's bowling alley sets switch 0x38 for the length of a game.
@@ -560,8 +561,8 @@ void Math_Vec3fDiffToRotOot(Vec3f* from, Vec3f* to, Vec3s* rot, s32 upIsPositive
     f32 dz = to->z - from->z;
     f32 dy = upIsPositive ? (to->y - from->y) : (from->y - to->y);
 
-    rot->y = Math_Atan2S(dz, dx);
-    rot->x = Math_Atan2S(sqrtf(SQ(dx) + SQ(dz)), dy);
+    rot->y = Math_Atan2S_XY(dz, dx);
+    rot->x = Math_Atan2S_XY(sqrtf(SQ(dx) + SQ(dz)), dy);
 }
 
 Actor* Actor_GetCollidedExplosiveOot(PlayState* play, Collider* collider) {

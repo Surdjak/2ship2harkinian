@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "../ovl_Obj_Oshihiki/z_obj_oshihiki.h"
 #include "assets/oot/objects/object_lightswitch/object_lightswitch.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

@@ -7,6 +7,7 @@
  */
 
 #include "z_obj_mure2.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

@@ -1236,6 +1236,11 @@ static void func_80852C50Oot(PlayState* play, Player* this, CsCmdActorCueOot* cu
     sp24 = sCueToCsActionMapOot[this->cueId];
     func_80852B4COot(play, this, linkCsAction, &D_80854E50Oot[ABS(sp24)]);
 
+    // 3Ship [Hyrule] Asleep in bed (cues 28 and 29) with his eyes closed, as SoH's FixEyesOpenWhileSleeping does
+    // (OoT's animations leave them open). MM's closed eyes are index 2 (OoT's sleeping ones were 7).
+    if ((linkCsAction->action == 28) || (linkCsAction->action == 29)) {
+        GET_APPEARANCE_FROM_JOINT_TABLE(this->skelAnime.jointTable) = PLAYER_EYES_CLOSED + 1;
+    }
 }
 
 static s32 Player_HasCueOot(void) {

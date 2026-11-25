@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/object_po_field/object_po_field.h"
+#include "HyruleSfx.h"
 
 #include <string.h>
 

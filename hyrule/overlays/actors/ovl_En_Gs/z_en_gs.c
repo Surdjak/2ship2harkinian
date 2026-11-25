@@ -12,6 +12,7 @@
 #include "HyrulePlayer.h"
 #include "assets/oot/objects/object_gs/object_gs.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 

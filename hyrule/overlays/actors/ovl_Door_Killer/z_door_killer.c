@@ -13,6 +13,7 @@
 #include "assets/oot/objects/object_mizu_objects/object_mizu_objects.h"
 #include "assets/oot/objects/object_haka_door/object_haka_door.h"
 #include "assets/oot/objects/object_door_killer/object_door_killer.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

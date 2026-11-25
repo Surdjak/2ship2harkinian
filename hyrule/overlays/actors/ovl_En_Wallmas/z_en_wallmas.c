@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_wallmaster/object_wallmaster.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -256,7 +257,7 @@ static void EnWallmas_SetupDie(EnWallmas* this, PlayState* play) {
     EffectSsDeadDb_Spawn_Oot(play, &this->actor.world.pos, &zeroVec, &zeroVec, 250, -10, 255, 255, 255, 255, 0, 0, 255, 1,
                          9, true);
 
-    Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xC0);
+    Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xC0);
     this->actionFunc = EnWallmas_Die;
 }
 
@@ -435,7 +436,7 @@ static void EnWallmas_Cooldown(EnWallmas* this, PlayState* play) {
 static void EnWallmas_Die(EnWallmas* this, PlayState* play) {
     if (Math_StepToF(&this->actor.scale.x, 0.0f, 0.0015) != 0) {
         Actor_SetScale(&this->actor, 0.01f);
-        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xC0);
+        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0xC0);
         Actor_Kill(&this->actor);
     }
     if (this->actor.params == WMT_SHADOWTAG) {

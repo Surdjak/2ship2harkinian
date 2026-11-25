@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "HyrulePlayer.h"
 #include "assets/oot/objects/object_crow/object_crow.h"
+#include "HyruleSfx.h"
 
 #define FLAGS \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_CAN_ATTACH_TO_ARROW)
@@ -359,8 +360,7 @@ static void EnCrow_Die(EnCrow* this, PlayState* play) {
     if (Math_StepToF(&this->actor.scale.x, 0.0f, step)) {
         if (this->actor.params == 0) {
             sDeathCount++;
-            // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0);
         } else {
             Item_DropCollectible(play, &this->actor.world.pos, ITEM00_RUPEE_RED);
         }

@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_wood02/object_wood02.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 
@@ -342,8 +343,7 @@ static void EnWood02_Update(Actor* thisx, PlayState* play2) {
             if ((true)) {
                 if ((this->unk_14C >= 0) && (this->unk_14C < 0x64)) {
                     if ((true)) {
-                        // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-                        Item_DropCollectibleRandom(play, &this->actor, &dropsSpawnPt, this->unk_14C << 4);
+                        Item_DropCollectibleRandomOot(play, &this->actor, &dropsSpawnPt, this->unk_14C << 4);
                     }
                 } else if (this->actor.home.rot.z != 0) {
                     this->actor.home.rot.z &= 0x1FFF;
@@ -388,8 +388,7 @@ static void EnWood02_Update(Actor* thisx, PlayState* play2) {
                  (player->rideActor->speed != 0.0f))) {
                 if ((true)) {
                     if ((this->unk_14C >= 0) && (this->unk_14C < 0x64)) {
-                        // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-                        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos,
+                        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos,
                                                    ((this->unk_14C << 4) | 0x8000));
                     }
                     this->unk_14C = -0x15;

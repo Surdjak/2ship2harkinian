@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_spot00_break/object_spot00_break.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

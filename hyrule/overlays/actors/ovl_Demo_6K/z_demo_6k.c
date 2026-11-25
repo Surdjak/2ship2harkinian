@@ -16,6 +16,7 @@
 #include "../ovl_Eff_Dust/z_eff_dust.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

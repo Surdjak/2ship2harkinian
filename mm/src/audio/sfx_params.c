@@ -35,7 +35,13 @@ SfxParams sVoiceBankParams[] = {
 
 #undef DEFINE_SFX
 
-SfxParams* gSfxParams[7] = {
-    sPlayerBankParams, sItemBankParams,    sEnvBankParams,   sEnemyBankParams,
-    sSystemBankParams, sOcarinaBankParams, sVoiceBankParams,
+// 3Ship [Hyrule] OoT's sfx params, for OoT's banks.
+#include "HyruleSfxParams.inc"
+
+SfxParams* gSfxParams[SFX_BANK_COUNT] = {
+    sPlayerBankParams,    sItemBankParams,       sEnvBankParams,      sEnemyBankParams,
+    sSystemBankParams,    sOcarinaBankParams,    sVoiceBankParams,
+    // 3Ship [Hyrule]
+    sPlayerBankParamsOot, sItemBankParamsOot,    sEnvBankParamsOot,   sEnemyBankParamsOot,
+    sSystemBankParamsOot, sOcarinaBankParamsOot, sVoiceBankParamsOot,
 };

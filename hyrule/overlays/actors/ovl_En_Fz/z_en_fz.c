@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_fz/object_fz.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -559,7 +560,7 @@ static void EnFz_SetupDespawn(EnFz* this, PlayState* play) {
     this->actor.velocity.y = 0.0f;
     this->actor.speed = 0.0f;
     Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_PROP);
-    Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x60);
+    Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x60);
     this->actionFunc = EnFz_Despawn;
 }
 

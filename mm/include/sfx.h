@@ -2372,6 +2372,17 @@ typedef enum SfxBankType {
     /* 6 */ BANK_VOICE
 } SfxBankType;
 
+// 3Ship [Hyrule] OoT's sfx banks follow MM's, each at its MM bank + SFX_BANK_OOT_OFFSET, and are played by OoT's
+// sfx sequence on SEQ_PLAYER_SFX_OOT. OoT code names their sfx through HyruleSfx.h, included after MM's names.
+// See hyrule/README.md (Audio).
+#define SFX_BANK_OOT_OFFSET 7
+#define SFX_BANK_COUNT (2 * SFX_BANK_OOT_OFFSET)
+#define SFX_OOT(sfxId) ((sfxId) + (SFX_BANK_OOT_OFFSET << 12))
+#define SFX_BANK_IS_OOT(bankId) ((bankId) >= SFX_BANK_OOT_OFFSET)
+// The kind of bank (BANK_PLAYER...), the same in both games.
+#define SFX_BANK_TYPE(bankId) ((bankId) % SFX_BANK_OOT_OFFSET)
+#define SFX_BANK_SEQ_PLAYER(bankId) (SFX_BANK_IS_OOT(bankId) ? SEQ_PLAYER_SFX_OOT : SEQ_PLAYER_SFX)
+
 typedef enum SfxState {
     /* 0 */ SFX_STATE_EMPTY,
     /* 1 */ SFX_STATE_QUEUED,
@@ -2544,15 +2555,16 @@ void Audio_SetSfxTimerLerpInterval(s8 timerLerpRange1, s8 timerLerpRange2);
 void Audio_SetSfxVolumeTransition(f32* volume, f32 volumeTarget, u16 duration);
 void Audio_SetSfxReverbIndexExceptOcarinaBank(u8 reverbIndex);
 
-extern ActiveSfx gActiveSfx[7][3];
+extern ActiveSfx gActiveSfx[SFX_BANK_COUNT][3];
 
 extern u8 gIsLargeSfxBank[7];
 extern u8 D_801D6608[7];
-extern u8 gChannelsPerBank[4][7];
-extern u8 gUsedChannelsPerBank[4][7];
+extern u8 gIsLargeSfxBankOot[7];
+extern u8 gChannelsPerBank[4][SFX_BANK_COUNT];
+extern u8 gUsedChannelsPerBank[4][SFX_BANK_COUNT];
 extern f32 gSfxVolume;
-extern SfxParams* gSfxParams[7];
-extern SfxBankEntry* gSfxBanks[7];
+extern SfxParams* gSfxParams[SFX_BANK_COUNT];
+extern SfxBankEntry* gSfxBanks[SFX_BANK_COUNT];
 extern u8 gSfxChannelLayout;
 extern Vec3f gSfxDefaultPos;
 extern f32 gSfxDefaultFreqAndVolScale;

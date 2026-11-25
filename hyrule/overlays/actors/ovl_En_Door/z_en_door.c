@@ -14,6 +14,7 @@
 #include "assets/oot/objects/object_hidan_objects/object_hidan_objects.h"
 #include "assets/oot/objects/object_mizu_objects/object_mizu_objects.h"
 #include "assets/oot/objects/object_haka_door/object_haka_door.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

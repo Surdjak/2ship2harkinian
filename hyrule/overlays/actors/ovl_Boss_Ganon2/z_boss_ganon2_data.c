@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "../ovl_En_Zl3/z_en_zl3.h"
 #include "assets/oot/objects/object_ganon2/object_ganon2.h"
+#include "HyruleSfx.h"
 
 static Vec3f D_80906D60 = { 0.0f, 0.0f, 0.0f };
 

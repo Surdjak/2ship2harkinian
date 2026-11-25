@@ -14,6 +14,7 @@
 #include "../ovl_Boss_Ganondrof/z_boss_ganondrof.h"
 #include "../ovl_En_Fhg_Fire/z_en_fhg_fire.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

@@ -11,6 +11,7 @@
 #include "HyruleCutscene.h"
 #include "assets/oot/objects/object_jj/object_jj.h"
 #include "../ovl_Eff_Dust/z_eff_dust.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

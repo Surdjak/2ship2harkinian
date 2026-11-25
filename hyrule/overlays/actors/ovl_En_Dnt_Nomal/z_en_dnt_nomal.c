@@ -14,6 +14,7 @@
 #include "../ovl_En_Ex_Item/z_en_ex_item.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 #include "assets/oot/objects/object_hintnuts/object_hintnuts.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_demo_kekkai/object_demo_kekkai.h"
 #include "global.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

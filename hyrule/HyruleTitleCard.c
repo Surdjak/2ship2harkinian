@@ -150,8 +150,11 @@ void Hyrule_InitPlaceNameOot(PlayState* play) {
 }
 
 s32 Hyrule_ShowsPlaceNameOot(PlayState* play) {
-    // OoT's Player_Init: Dodongo's Cavern is named only once Link has been in it, and the Bombchu Shop only once it
-    // has opened.
+    // OoT's Player_Init: no place name in a cutscene layer.
+    if (gSaveContext.sceneLayer >= SCENE_LAYER_CUTSCENE_FIRST_OOT) {
+        return false;
+    }
+    // Dodongo's Cavern is named only once Link has been in it, and the Bombchu Shop only once it has opened.
     if ((play->sceneId == SCENE_DODONGOS_CAVERN_Oot) && !GET_EVENTCHKINF_OOT(EVENTCHKINF_ENTERED_DODONGOS_CAVERN_Oot)) {
         return false;
     }

@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_spot06_objects/object_spot06_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_HOOKSHOT_PULLS_ACTOR
 

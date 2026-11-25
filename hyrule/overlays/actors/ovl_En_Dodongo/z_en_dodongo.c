@@ -5,6 +5,7 @@
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "../ovl_En_Bombf/z_en_bombf.h"
 #include "assets/oot/objects/object_dodongo/object_dodongo.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -698,7 +699,7 @@ static void EnDodongo_Death(EnDodongo* this, PlayState* play) {
     if (this->timer != 0) {
         this->timer--;
         if (this->timer == 0) {
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x40);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x40);
             Actor_Kill(&this->actor);
         }
     }

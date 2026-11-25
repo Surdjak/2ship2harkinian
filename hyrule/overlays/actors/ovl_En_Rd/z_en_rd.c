@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "z64rumble.h"
 #include "assets/oot/objects/object_rd/object_rd.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -729,7 +730,7 @@ static void EnRd_Stunned(EnRd* this, PlayState* play) {
         if (this->actor.colChkInfo.health == 0) {
             EnRd_UpdateMourningTarget(play, &this->actor, 1);
             EnRd_SetupDead(this);
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x90);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x90);
         } else {
             EnRd_SetupDamaged(this);
         }
@@ -800,7 +801,7 @@ static void EnRd_UpdateDamage(EnRd* this, PlayState* play) {
                 if (this->actor.colChkInfo.health == 0) {
                     EnRd_UpdateMourningTarget(play, &this->actor, 1);
                     EnRd_SetupDead(this);
-                    Item_DropCollectibleRandom(play, 0, &this->actor.world.pos, 0x90);
+                    Item_DropCollectibleRandomOot(play, 0, &this->actor.world.pos, 0x90);
                 } else {
                     EnRd_SetupDamaged(this);
                 }

@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_gi_hearts/object_gi_hearts.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

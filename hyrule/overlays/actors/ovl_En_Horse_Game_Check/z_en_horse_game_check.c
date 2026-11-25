@@ -11,6 +11,7 @@
 #include "HyruleScenes.h"
 #include "z64horse.h"
 #include "overlays/actors/ovl_En_Horse/z_en_horse.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

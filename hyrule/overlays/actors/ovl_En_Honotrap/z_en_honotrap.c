@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/oot/objects/gameplay_dangeon_keep/gameplay_dangeon_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 
@@ -384,7 +385,7 @@ static void EnHonotrap_FlameMove(EnHonotrap* this, PlayState* play) {
         tempVel = this->actor.velocity;
         Math3D_Vec3fReflect(&tempVel, &shieldNorm, &this->actor.velocity);
         this->actor.speed = this->speedMod * 0.5f;
-        this->actor.world.rot.y = Math_Atan2S(this->actor.velocity.z, this->actor.velocity.x);
+        this->actor.world.rot.y = Math_Atan2S_XY(this->actor.velocity.z, this->actor.velocity.x);
         EnHonotrap_SetupFlameVanish(this);
     } else if (this->collider.tris.base.atFlags & AT_HIT) {
         this->actor.velocity.y = this->actor.speed = 0.0f;

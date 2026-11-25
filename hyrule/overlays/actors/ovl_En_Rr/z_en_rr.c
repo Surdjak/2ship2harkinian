@@ -11,6 +11,7 @@
 #include "z64rumble.h"
 #include "assets/oot/objects/object_rr/object_rr.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -697,7 +698,7 @@ static void EnRr_Death(EnRr* this, PlayState* play) {
                 break;
             case RR_DROP_RANDOM_RUPEE:
             default:
-                Item_DropCollectibleRandom(play, &this->actor, &dropPos, 12 << 4);
+                Item_DropCollectibleRandomOot(play, &this->actor, &dropPos, 12 << 4);
                 break;
         }
         Actor_Kill(&this->actor);

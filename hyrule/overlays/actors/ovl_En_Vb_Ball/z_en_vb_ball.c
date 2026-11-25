@@ -11,6 +11,7 @@
 #include "assets/oot/objects/object_fd/object_fd.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "../ovl_Boss_Fd/z_boss_fd.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

@@ -5,6 +5,7 @@
 #include "HyruleOcarina.h"
 #include "../ovl_En_Skjneedle/z_en_skjneedle.h"
 #include "assets/oot/objects/object_skj/object_skj.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \

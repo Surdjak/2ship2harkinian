@@ -5,6 +5,7 @@
 #include "../ovl_En_Syateki_Niw/z_en_syateki_niw.h"
 #include "../ovl_En_Ex_Item/z_en_ex_item.h"
 #include "assets/oot/objects/object_bg/object_bg.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                  \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \

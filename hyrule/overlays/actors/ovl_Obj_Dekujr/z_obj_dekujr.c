@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "HyruleCutscene.h"
 #include "assets/oot/objects/object_dekujr/object_dekujr.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 

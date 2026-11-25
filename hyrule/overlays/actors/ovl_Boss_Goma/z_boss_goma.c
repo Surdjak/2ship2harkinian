@@ -8,6 +8,7 @@
 #include "../ovl_En_Goma/z_en_goma.h"
 #include "../ovl_Door_Shutter/z_door_shutter.h"
 #include "../ovl_Door_Warp1/z_door_warp1.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \

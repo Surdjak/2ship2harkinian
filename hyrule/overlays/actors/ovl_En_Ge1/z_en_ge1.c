@@ -11,6 +11,7 @@
 #include "HyruleScenes.h"
 #include "z64horse.h"
 #include "assets/oot/objects/object_ge1/object_ge1.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 

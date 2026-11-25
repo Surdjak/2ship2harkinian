@@ -12,6 +12,7 @@
 #include "assets/oot/objects/object_spot00_objects/object_spot00_objects.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

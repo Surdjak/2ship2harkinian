@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/gameplay_field_keep/gameplay_field_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

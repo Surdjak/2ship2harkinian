@@ -12,6 +12,7 @@
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "assets/oot/objects/gameplay_keep/gameplay_keep.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -267,7 +268,7 @@ static void EnFw_Run(EnFw* this, PlayState* play) {
             }
             flareDancer = this->actor.parent;
             flareDancer->params |= 0x4000;
-            Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos, 0xA0);
+            Item_DropCollectibleRandomOot(play, NULL, &this->actor.world.pos, 0xA0);
             Actor_Kill(&this->actor);
             return;
         }

@@ -11,6 +11,7 @@
 #include "HyruleScenes.h"
 #include "assets/oot/objects/object_ps/object_ps.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 

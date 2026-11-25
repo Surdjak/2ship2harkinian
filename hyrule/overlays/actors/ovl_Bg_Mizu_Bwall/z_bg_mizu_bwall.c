@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "../ovl_Bg_Mizu_Water/z_bg_mizu_water.h"
 #include "assets/oot/objects/object_mizu_objects/object_mizu_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

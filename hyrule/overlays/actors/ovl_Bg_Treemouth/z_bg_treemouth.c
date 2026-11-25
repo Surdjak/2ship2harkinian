@@ -11,6 +11,7 @@
 #include "HyruleCutscene.h"
 #include "assets/oot/objects/object_spot04_objects/object_spot04_objects.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

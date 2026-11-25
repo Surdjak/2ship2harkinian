@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "HyruleScenes.h"
 #include "assets/oot/objects/object_sd/object_sd.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

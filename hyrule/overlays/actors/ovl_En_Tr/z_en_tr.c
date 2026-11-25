@@ -11,6 +11,7 @@
 #include "HyruleCutscene.h"
 #include "assets/oot/objects/object_tr/object_tr.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 
@@ -186,7 +187,7 @@ static void EnTr_FlyKidnapCutscene(EnTr* this, PlayState* play) {
         if (gCsCtxOot.npcActions[this->actionIndex] != NULL) {
             if (gCsCtxOot.npcActions[this->actionIndex]->action == 8) {
                 func_80B24038(this, play, this->actionIndex);
-                this->actor.world.rot.y = Math_Atan2S(this->actor.velocity.z, this->actor.velocity.x);
+                this->actor.world.rot.y = Math_Atan2S_XY(this->actor.velocity.z, this->actor.velocity.x);
                 Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.world.rot.y, 10, 0x400, 0x100);
                 this->actor.world.rot.y = this->actor.shape.rot.y;
             } else {

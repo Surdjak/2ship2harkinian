@@ -8,6 +8,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleActor.h"
+#include "HyruleSfx.h"
 
 #include "overlays/actors/ovl_En_Dnt_Jiji/z_en_dnt_jiji.h"
 #include "overlays/actors/ovl_En_Dnt_Nomal/z_en_dnt_nomal.h"

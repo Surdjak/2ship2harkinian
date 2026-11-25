@@ -5,6 +5,7 @@
 #include "assets/oot/objects/object_peehat/object_peehat.h"
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h" // MM's bomb, whose rot.z and timer match OoT's
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -288,10 +289,9 @@ static void EnPeehat_HitWhenGrounded(EnPeehat* this, PlayState* play) {
         Vec3f itemDropPos = this->actor.world.pos;
 
         itemDropPos.y += 70.0f;
-        // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-        Item_DropCollectibleRandom(play, &this->actor, &itemDropPos, 0x40);
-        Item_DropCollectibleRandom(play, &this->actor, &itemDropPos, 0x40);
-        Item_DropCollectibleRandom(play, &this->actor, &itemDropPos, 0x40);
+        Item_DropCollectibleRandomOot(play, &this->actor, &itemDropPos, 0x40);
+        Item_DropCollectibleRandomOot(play, &this->actor, &itemDropPos, 0x40);
+        Item_DropCollectibleRandomOot(play, &this->actor, &itemDropPos, 0x40);
         this->unk_2D4 = 240;
     } else {
         s32 i;
@@ -592,8 +592,7 @@ static void EnPeehat_Larva_StateSeekPlayer(EnPeehat* this, PlayState* play) {
             if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
                 EffectSsDeadSound_SpawnStationary(play, &this->actor.projectedPos, NA_SE_EN_PIHAT_SM_DEAD, 1, 1, 40);
             }
-            // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x20);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x20);
             Actor_Kill(&this->actor);
         }
     }
@@ -875,10 +874,9 @@ static void EnPeehat_StateExplode(EnPeehat* this, PlayState* play) {
     }
     this->animTimer--;
     if (this->animTimer == 0) {
-        // PORT: OoT's drop tables are not ported, so this draws from MM's table with the same index.
-        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x40);
-        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x40);
-        Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x40);
+        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x40);
+        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x40);
+        Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x40);
         Actor_Kill(&this->actor);
     }
 }

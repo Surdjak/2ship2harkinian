@@ -15,6 +15,7 @@
 #include "assets/oot/objects/object_efc_tw/object_efc_tw.h"
 #include "assets/oot/objects/object_gi_jewel/object_gi_jewel.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
@@ -1466,7 +1467,7 @@ static void DemoEffect_MoveJewelActivateDoorOfTime(DemoEffect* this, PlayState* 
     }
 
     if (startPos.x != endPos.x || startPos.y != endPos.y || startPos.z != endPos.z) {
-        this->jewelCsRotation.x = Math_Atan2F(endPos.z - startPos.z, -(endPos.x - startPos.x)) * (0x8000 / M_PI);
+        this->jewelCsRotation.x = Math_Atan2F_XY(endPos.z - startPos.z, -(endPos.x - startPos.x)) * (0x8000 / M_PI);
         this->jewelCsRotation.y = Math_Vec3f_Yaw(&startPos, &endPos);
     }
 

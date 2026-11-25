@@ -15,6 +15,7 @@
 #include "assets/oot/scenes/overworld/spot17/spot17_scene.h"
 #include "assets/oot/scenes/indoors/tokinoma/tokinoma_scene.h"
 #include "assets/oot/scenes/dungeons/ice_doukutu/ice_doukutu_scene.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

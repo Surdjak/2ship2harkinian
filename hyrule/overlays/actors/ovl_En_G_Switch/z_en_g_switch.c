@@ -15,6 +15,7 @@
 #include "assets/oot/objects/object_tsubo/object_tsubo.h"
 #include "assets/oot/objects/object_gi_rupy/object_gi_rupy.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 

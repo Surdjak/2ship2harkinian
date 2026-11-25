@@ -8,6 +8,7 @@
 #include "HyruleFlags.h"
 #include "HyrulePort.h"
 #include "HyruleActor.h"
+#include "HyruleSfx.h"
 // MM's arrows, whose header brings MM's gameplay_keep (gEffFire1DL is the same flame).
 #include "overlays/actors/ovl_En_Arrow/z_en_arrow.h"
 #include "assets/oot/objects/object_syokudai/object_syokudai.h"

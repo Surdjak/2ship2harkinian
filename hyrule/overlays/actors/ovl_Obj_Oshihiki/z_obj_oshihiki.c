@@ -11,6 +11,7 @@
 #include "HyrulePlayer.h"
 #include "../ovl_Obj_Switch/z_obj_switch.h"
 #include "assets/oot/objects/gameplay_dangeon_keep/gameplay_dangeon_keep.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

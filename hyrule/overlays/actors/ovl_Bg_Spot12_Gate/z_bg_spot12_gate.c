@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "z64quake.h"
 #include "assets/oot/objects/object_spot12_obj/object_spot12_obj.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

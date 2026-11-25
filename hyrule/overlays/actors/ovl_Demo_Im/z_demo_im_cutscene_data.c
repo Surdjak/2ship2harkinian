@@ -3,6 +3,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "HyruleCutsceneCommands.h"
+#include "HyruleSfx.h"
 
 // clang-format off
 static CutsceneData D_8098786C[] = {

@@ -11,6 +11,7 @@
 #include "assets/oot/objects/object_dns/object_dns.h"
 #include "../ovl_En_Dnt_Demo/z_en_dnt_demo.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 

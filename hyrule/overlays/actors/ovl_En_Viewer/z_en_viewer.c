@@ -20,6 +20,7 @@
 #include "assets/oot/objects/object_opening_demo1/object_opening_demo1.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

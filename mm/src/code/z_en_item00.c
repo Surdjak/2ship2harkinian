@@ -750,11 +750,23 @@ void EnItem00_Draw(Actor* thisx, PlayState* play) {
                     if (this->unk152 == -1) {
                         s8 objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_GI_HEART);
 
-                        if (Object_IsLoaded(&play->objectCtx, objectSlot)) {
+                        // 3Ship [Hyrule] OoT's rooms load OoT's heart object for their placed hearts: drawn with
+                        // OoT's model (-3).
+                        if (objectSlot <= OBJECT_SLOT_NONE) {
+                            objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_GI_HEART_Oot);
+                            if (Object_IsLoaded(&play->objectCtx, objectSlot)) {
+                                this->actor.objectSlot = objectSlot;
+                                Actor_SetObjectDependency(play, &this->actor);
+                                this->unk152 = -3;
+                            }
+                        } else if (Object_IsLoaded(&play->objectCtx, objectSlot)) {
                             this->actor.objectSlot = objectSlot;
                             Actor_SetObjectDependency(play, &this->actor);
                             this->unk152 = -2;
                         }
+                    } else if (this->unk152 == -3) {
+                        Matrix_Scale(16.0f, 16.0f, 16.0f, MTXMODE_APPLY);
+                        GetItem_Draw(play, GID_HEART_Oot);
                     } else {
                         Matrix_Scale(16.0f, 16.0f, 16.0f, MTXMODE_APPLY);
                         GetItem_Draw(play, GID_RECOVERY_HEART);
@@ -1357,6 +1369,94 @@ u8 sDropTableAmounts[DROP_TABLE_SIZE * DROP_TABLE_NUMBER] = {
     0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
 };
 
+// 3Ship [Hyrule] The rest of Item_DropCollectibleRandom once the drop is chosen, shared with
+// Item_DropCollectibleRandomOot.
+static void Item_DropCollectibleRandomChosen(PlayState* play, Vec3f* spawnPos, s16 param8000, s16 params, u8 dropId,
+                                             s32 dropQuantity) {
+    EnItem00* spawnedActor;
+
+    if (dropId == ITEM00_FLEXIBLE) {
+        if (gSaveContext.save.saveInfo.playerData.health <= 0x10) {
+            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, spawnPos->x, spawnPos->y + 40.0f, spawnPos->z, 0, 0, 0,
+                        FAIRY_PARAMS(FAIRY_TYPE_2, false, 0));
+            SoundSource_PlaySfxAtFixedWorldPos(play, spawnPos, 40, NA_SE_EV_BUTTERFRY_TO_FAIRY);
+            return;
+        }
+
+        if (gSaveContext.save.saveInfo.playerData.health <= 0x30) {
+            params = 0x10;
+            dropId = ITEM00_RECOVERY_HEART;
+            dropQuantity = 3;
+        } else if (gSaveContext.save.saveInfo.playerData.health <= 0x50) {
+            params = 0x10;
+            dropId = ITEM00_RECOVERY_HEART;
+            dropQuantity = 1;
+        } else if ((gSaveContext.save.saveInfo.playerData.magicLevel != 0) &&
+                   (gSaveContext.save.saveInfo.playerData.magic == 0)) {
+            params = 0xD0;
+            dropId = ITEM00_MAGIC_JAR_BIG;
+            dropQuantity = 1;
+        } else if ((gSaveContext.save.saveInfo.playerData.magicLevel != 0) &&
+                   ((gSaveContext.save.saveInfo.playerData.magicLevel >> 1) >=
+                    gSaveContext.save.saveInfo.playerData.magic)) {
+            params = 0xD0;
+            dropId = ITEM00_MAGIC_JAR_BIG;
+            dropQuantity = 1;
+        } else if (AMMO(ITEM_BOW) < 6) {
+            params = 0xA0;
+            dropId = ITEM00_ARROWS_30;
+            dropQuantity = 1;
+        } else if ((INV_CONTENT_SLOT_OOT(SLOT_OOT_SLINGSHOT) != ITEM_NONE) &&
+                   (AMMO_SLOT_OOT(SLOT_OOT_SLINGSHOT) < 6)) {
+            // 3Ship [Hyrule] OoT's Deku Seeds, as OoT drops them for child Link.
+            params = 0xA0;
+            dropId = ITEM00_DEKU_SEEDS_Oot;
+            dropQuantity = 1;
+        } else if (AMMO(ITEM_BOMB) < 6) {
+            params = 0xB0;
+            dropId = ITEM00_BOMBS_A;
+            dropQuantity = 1;
+        } else if (gSaveContext.save.saveInfo.playerData.rupees < 11) {
+            params = 0xA0;
+            dropId = ITEM00_RUPEE_RED;
+            dropQuantity = 1;
+        } else {
+            return;
+        }
+    }
+
+    if (dropId != (u8)ITEM00_NO_DROP) {
+        while (dropQuantity > 0) {
+            if (param8000 == 0) {
+                dropId = func_800A7650(dropId);
+                if (dropId != (u8)ITEM00_NO_DROP) {
+                    spawnedActor = (EnItem00*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ITEM00, spawnPos->x,
+                                                          spawnPos->y, spawnPos->z, 0, 0, 0, dropId);
+                    if ((spawnedActor != 0) && (dropId != (u8)ITEM00_NO_DROP)) {
+                        spawnedActor->actor.velocity.y = 8.0f;
+                        spawnedActor->actor.speed = 2.0f;
+                        spawnedActor->actor.gravity = -0.9f;
+                        spawnedActor->actor.world.rot.y = Rand_ZeroOne() * 40000.0f;
+                        Actor_SetScale(&spawnedActor->actor, 0.0f);
+                        spawnedActor->actionFunc = func_800A6780;
+                        spawnedActor->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
+                        if ((spawnedActor->actor.params != ITEM00_SMALL_KEY) &&
+                            (spawnedActor->actor.params != ITEM00_HEART_PIECE) &&
+                            (spawnedActor->actor.params != ITEM00_HEART_CONTAINER)) {
+                            spawnedActor->actor.room = -1;
+                        }
+                        spawnedActor->unk152 = 220;
+                    }
+                }
+            } else {
+                Item_DropCollectible(play, spawnPos, params | 0x8000);
+            }
+
+            dropQuantity--;
+        }
+    }
+}
+
 void Item_DropCollectibleRandom(PlayState* play, Actor* fromActor, Vec3f* spawnPos, s16 params) {
 
     EnItem00* spawnedActor;
@@ -1415,87 +1515,65 @@ void Item_DropCollectibleRandom(PlayState* play, Actor* fromActor, Vec3f* spawnP
             }
         }
 
-        if (dropId == ITEM00_FLEXIBLE) {
-            if (gSaveContext.save.saveInfo.playerData.health <= 0x10) {
-                Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, spawnPos->x, spawnPos->y + 40.0f, spawnPos->z, 0, 0, 0,
-                            FAIRY_PARAMS(FAIRY_TYPE_2, false, 0));
-                SoundSource_PlaySfxAtFixedWorldPos(play, spawnPos, 40, NA_SE_EV_BUTTERFRY_TO_FAIRY);
-                return;
-            }
+        Item_DropCollectibleRandomChosen(play, spawnPos, param8000, params, dropId, dropQuantity);
+    }
+}
 
-            if (gSaveContext.save.saveInfo.playerData.health <= 0x30) {
-                params = 0x10;
-                dropId = ITEM00_RECOVERY_HEART;
-                dropQuantity = 3;
-            } else if (gSaveContext.save.saveInfo.playerData.health <= 0x50) {
-                params = 0x10;
-                dropId = ITEM00_RECOVERY_HEART;
-                dropQuantity = 1;
-            } else if ((gSaveContext.save.saveInfo.playerData.magicLevel != 0) &&
-                       (gSaveContext.save.saveInfo.playerData.magic == 0)) {
-                params = 0xD0;
-                dropId = ITEM00_MAGIC_JAR_BIG;
-                dropQuantity = 1;
-            } else if ((gSaveContext.save.saveInfo.playerData.magicLevel != 0) &&
-                       ((gSaveContext.save.saveInfo.playerData.magicLevel >> 1) >=
-                        gSaveContext.save.saveInfo.playerData.magic)) {
-                params = 0xD0;
-                dropId = ITEM00_MAGIC_JAR_BIG;
-                dropQuantity = 1;
-            } else if (AMMO(ITEM_BOW) < 6) {
-                params = 0xA0;
-                dropId = ITEM00_ARROWS_30;
-                dropQuantity = 1;
-            } else if ((INV_CONTENT_SLOT_OOT(SLOT_OOT_SLINGSHOT) != ITEM_NONE) &&
-                       (AMMO_SLOT_OOT(SLOT_OOT_SLINGSHOT) < 6)) {
-                // 3Ship [Hyrule] OoT's Deku Seeds, as OoT drops them for child Link.
-                params = 0xA0;
-                dropId = ITEM00_DEKU_SEEDS_Oot;
-                dropQuantity = 1;
-            } else if (AMMO(ITEM_BOMB) < 6) {
-                params = 0xB0;
-                dropId = ITEM00_BOMBS_A;
-                dropQuantity = 1;
-            } else if (gSaveContext.save.saveInfo.playerData.rupees < 11) {
-                params = 0xA0;
-                dropId = ITEM00_RUPEE_RED;
-                dropQuantity = 1;
-            } else {
-                return;
-            }
-        }
+// 3Ship [Hyrule] OoT's actors' drops, from OoT's tables (HyruleDropTables.inc) and OoT's dropFlag overrides; the
+// flexible drop and the spawning are MM's.
+#include "HyruleDropTables.inc"
 
-        if (dropId != (u8)ITEM00_NO_DROP) {
-            while (dropQuantity > 0) {
-                if (param8000 == 0) {
-                    dropId = func_800A7650(dropId);
-                    if (dropId != (u8)ITEM00_NO_DROP) {
-                        spawnedActor = (EnItem00*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ITEM00, spawnPos->x,
-                                                              spawnPos->y, spawnPos->z, 0, 0, 0, dropId);
-                        if ((spawnedActor != 0) && (dropId != (u8)ITEM00_NO_DROP)) {
-                            spawnedActor->actor.velocity.y = 8.0f;
-                            spawnedActor->actor.speed = 2.0f;
-                            spawnedActor->actor.gravity = -0.9f;
-                            spawnedActor->actor.world.rot.y = Rand_ZeroOne() * 40000.0f;
-                            Actor_SetScale(&spawnedActor->actor, 0.0f);
-                            spawnedActor->actionFunc = func_800A6780;
-                            spawnedActor->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
-                            if ((spawnedActor->actor.params != ITEM00_SMALL_KEY) &&
-                                (spawnedActor->actor.params != ITEM00_HEART_PIECE) &&
-                                (spawnedActor->actor.params != ITEM00_HEART_CONTAINER)) {
-                                spawnedActor->actor.room = -1;
-                            }
-                            spawnedActor->unk152 = 220;
-                        }
-                    }
-                } else {
-                    Item_DropCollectible(play, spawnPos, params | 0x8000);
-                }
+void Item_DropCollectibleRandomOot(PlayState* play, Actor* fromActor, Vec3f* spawnPos, s16 params) {
+    s16 dropTableIndex = Rand_ZeroOne() * 16.0f;
+    s16 param8000 = params & 0x8000;
+    u8 dropId;
+    s32 dropQuantity;
 
-                dropQuantity--;
-            }
+    params &= 0x7FFF;
+
+    if ((fromActor != NULL) && (fromActor->dropFlag != DROPFLAG_NONE)) {
+        if (fromActor->dropFlag & 0x01) {
+            params = 1 * 0x10;
+            dropTableIndex = 11;
+        } else if (fromActor->dropFlag & 0x02) {
+            params = 1 * 0x10;
+            dropTableIndex = 6;
+        } else if (fromActor->dropFlag & 0x04) {
+            params = 6 * 0x10;
+            dropTableIndex = 9;
+        } else if (fromActor->dropFlag & 0x08) {
+            params = 3 * 0x10;
+            dropTableIndex = 11;
+        } else if (fromActor->dropFlag & 0x10) {
+            params = 6 * 0x10;
+            dropTableIndex = 12;
+        } else if (fromActor->dropFlag & 0x20) {
+            params = 0 * 0x10;
+            dropTableIndex = 0;
+        } else if (fromActor->dropFlag & 0x40) {
+            params = 0 * 0x10;
+            dropTableIndex = 1;
         }
     }
+    if ((params + dropTableIndex) >= ARRAY_COUNT(sItemDropIdsOot)) {
+        return;
+    }
+    if ((fromActor != NULL) && (fromActor->dropFlag & 0x20)) {
+        dropId = ITEM00_RUPEE_PURPLE;
+    } else if (sItemDropIdsOot[params + dropTableIndex] == 0xFF) {
+        dropId = ITEM00_NO_DROP;
+    } else {
+        dropId = Item00_FromOot(sItemDropIdsOot[params + dropTableIndex]);
+        // OoT's seeds and arrows drop whichever Link can use.
+        if ((dropId == ITEM00_DEKU_SEEDS_Oot) || (dropId == ITEM00_ARROWS_10)) {
+            dropId = Item00_ArrowsOrSeeds(dropId);
+        }
+    }
+    dropQuantity = sDropQuantitiesOot[params + dropTableIndex];
+    if (!GameInteractor_Should(VB_DROP_COLLECTIBLE, true, *spawnPos, dropId)) {
+        return;
+    }
+    Item_DropCollectibleRandomChosen(play, spawnPos, param8000, params, dropId, dropQuantity);
 }
 
 s32 D_801AE194[32] = {

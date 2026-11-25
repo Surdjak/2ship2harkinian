@@ -143,6 +143,10 @@ RENAMES = [
     (r"\bfunc_8002EB44\(", "Hilite_DrawXlu("),
     (r"\bfunc_8002843C\(", "EffectSsDust_SpawnDrawFlag2Oot("),
     (r"\bfunc_80035844\(", "Math_Vec3fDiffToRotOot("),
+    (r"\bItem_DropCollectibleRandom\(", "Item_DropCollectibleRandomOot("),
+    # OoT's atan2 helpers take (x, y), MM's (y, x); MM's _XY ones take OoT's order.
+    (r"\bMath_Atan2S\(", "Math_Atan2S_XY("),
+    (r"\bMath_Atan2F\(", "Math_Atan2F_XY("),
     (r"\bActor_GetCollidedExplosive\(", "Actor_GetCollidedExplosiveOot("),
     (r"\bActor_SetTextWithPrefix\(", "Actor_SetTextWithPrefixOot("),
     (r"\bEffectSsDeadDd_Spawn\(", "EffectSsDeadDd_SpawnOot("),
@@ -1054,7 +1058,7 @@ def convert(text, header):
         text = PROFILE.sub(profile, text)
         text = re.sub(r"^(void|s32|u16|s16|f32|u8|u32|s8|\w+\*) (\w+_\w+\()", r"static \1 \2", text, flags=re.M)
         # After the actor's own header, which comes first.
-        extra = '#include "HyruleFlags.h"\n#include "HyrulePort.h"\n#include "HyruleActor.h"\n'
+        extra = '#include "HyruleFlags.h"\n#include "HyrulePort.h"\n#include "HyruleActor.h"\n#include "HyruleSfx.h"\n'
         extra += '#include "z64quake.h"\n' if "Quake_" in text else ""
         extra += '#include "z64rumble.h"\n' if "Rumble_" in text else ""
         extra += '#include "HyrulePlayer.h"\n' if re.search(r"\bPLAYER_SHIELD_\w+_Oot\b|Player_GetStrengthOot", text) else ""

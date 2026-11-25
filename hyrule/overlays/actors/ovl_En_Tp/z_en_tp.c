@@ -9,6 +9,7 @@
 #include "HyrulePort.h"
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_tp/object_tp.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 
@@ -319,7 +320,7 @@ static void EnTp_Die(EnTp* this, PlayState* play) {
             effectPos.y = ((Rand_ZeroOne() - 0.5f) * 5.0f) + this->actor.world.pos.y;
             EffectSsDeadDb_Spawn_Oot(play, &effectPos, &effectVelAccel, &effectVelAccel, 100, 0, 255, 255, 255, 255, 0, 0,
                                  255, 1, 9, 1);
-            Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0x50);
+            Item_DropCollectibleRandomOot(play, &this->actor, &this->actor.world.pos, 0x50);
         } else {
             for (i = 0; i < 1; i++) {
                 now =

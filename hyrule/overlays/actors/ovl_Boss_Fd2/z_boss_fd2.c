@@ -12,6 +12,7 @@
 #include "../ovl_Boss_Fd/z_boss_fd.h"
 #include "../ovl_Door_Warp1/z_door_warp1.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -419,8 +420,8 @@ static void BossFd2_BreatheFire(BossFd2* this, PlayState* play) {
         toLink.x = player->actor.world.pos.x - this->headPos.x;
         toLink.y = player->actor.world.pos.y - this->headPos.y;
         toLink.z = player->actor.world.pos.z - this->headPos.z;
-        angleY = Math_Atan2S(toLink.z, toLink.x);
-        angleX = -Math_Atan2S(sqrtf(SQ(toLink.x) + SQ(toLink.z)), toLink.y);
+        angleY = Math_Atan2S_XY(toLink.z, toLink.x);
+        angleX = -Math_Atan2S_XY(sqrtf(SQ(toLink.x) + SQ(toLink.z)), toLink.y);
         angleY -= this->actor.shape.rot.y;
         if (angleY > 0x1F40) {
             angleY = 0x1F40;
@@ -1092,8 +1093,8 @@ static void BossFd2_UpdateMane(BossFd2* this, PlayState* play, Vec3f* head, Vec3
         temp_vec.y = phi_f0 - (pos + i - 1)->y;
 
         temp_vec.z = (pos + i)->z + (pull + i)->z - (pos + i - 1)->z;
-        temp_angleY = Math_Atan2F(temp_vec.z, temp_vec.x);
-        temp_angleX = -Math_Atan2F(sqrtf(SQ(temp_vec.x) + SQ(temp_vec.z)), temp_vec.y);
+        temp_angleY = Math_Atan2F_XY(temp_vec.z, temp_vec.x);
+        temp_angleX = -Math_Atan2F_XY(sqrtf(SQ(temp_vec.x) + SQ(temp_vec.z)), temp_vec.y);
         (rot + i - 1)->y = temp_angleY;
         (rot + i - 1)->x = temp_angleX;
         spBC.x = 0.0f;

@@ -15,6 +15,7 @@
 #include "assets/oot/scenes/indoors/yousei_izumi_yoko/yousei_izumi_yoko_scene.h"
 #include "assets/oot/scenes/indoors/daiyousei_izumi/daiyousei_izumi_scene.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 

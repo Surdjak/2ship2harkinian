@@ -1,4 +1,5 @@
 #include "z_en_ossan.h"
+#include "HyruleSfx.h"
 
 // PORT: OoT's OBJECT_ID_MAX, "no object" in sShopkeeperObjectIds.
 #define OBJECT_ID_NONE_Oot -1

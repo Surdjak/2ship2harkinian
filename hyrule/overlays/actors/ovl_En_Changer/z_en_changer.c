@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "../ovl_Item_Etcetera/z_item_etcetera.h"
 #include "../ovl_En_Ex_Item/z_en_ex_item.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

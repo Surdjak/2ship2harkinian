@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "HyruleIds.h"
 
 f32 sNESFontWidths[160] = {
     8.0f,  8.0f,  6.0f,  9.0f,  9.0f,  14.0f, 12.0f, 3.0f,  7.0f,  7.0f,  7.0f,  9.0f,  4.0f,  6.0f,  4.0f,  9.0f,
@@ -18,6 +19,11 @@ f32 sNESFontWidths[160] = {
     4.0f,  4.0f,  4.0f,  4.0f,  8.0f,  9.0f,  9.0f,  9.0f,  9.0f,  8.0f,  8.0f,  8.0f,  8.0f,  8.0f,  11.0f, 6.0f,
     14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f,
 };
+
+// 3Ship [Hyrule] OoT's texts name OoT's sound effects, played from OoT's banks.
+static u16 Message_GetTextSfxId(MessageContext* msgCtx, u16 sfxId) {
+    return ((msgCtx->currentTextId >= TEXT_OOT_BASE) && (sfxId != NA_SE_NONE)) ? SFX_OOT(sfxId) : sfxId;
+}
 
 void Message_FindMessageNES(PlayState* play, u16 textId) {
     MessageContext* msgCtx = &play->msgCtx;
@@ -679,7 +685,7 @@ void Message_DrawTextNES(PlayState* play, Gfx** gfxP, u16 textDrawPos) {
                     (msgCtx->msgMode == MSGMODE_TEXT_DISPLAYING)) {
                     stateTimerHi = msgCtx->decodedBuffer.schar[i + 1] << 8;
                     stateTimerHi += (uint8_t)msgCtx->decodedBuffer.schar[i + 2];
-                    Audio_PlaySfx(stateTimerHi);
+                    Audio_PlaySfx(Message_GetTextSfxId(msgCtx, stateTimerHi));
                 }
                 if ((i + 1) == msgCtx->textDrawPos ||
                     ((i + 2) == msgCtx->textDrawPos && CVarGetInteger("gEnhancements.Fixes.ControlCharacters", 0))) {
@@ -1985,7 +1991,7 @@ void Message_DecodeNES(PlayState* play) {
                 (msgCtx->textBoxType == TEXTBOX_TYPE_B) || (msgCtx->unk11F0C == 3)) {
                 sfxHi = msgCtx->decodedBuffer.schar[decodedBufPos - 1] << 8;
                 sfxHi += (uint8_t)msgCtx->decodedBuffer.schar[decodedBufPos];
-                Audio_PlaySfx(sfxHi);
+                Audio_PlaySfx(Message_GetTextSfxId(msgCtx, sfxHi));
             }
         } else if (curChar == MESSAGE_DELAY) {
             msgCtx->decodedBuffer.schar[++decodedBufPos] = font->msgBuf.schar[++msgCtx->msgBufPos];

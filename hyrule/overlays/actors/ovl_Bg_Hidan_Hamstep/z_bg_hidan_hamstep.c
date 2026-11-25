@@ -11,6 +11,7 @@
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "assets/oot/objects/object_hidan_objects/object_hidan_objects.h"
+#include "HyruleSfx.h"
 
 #define FLAGS 0
 

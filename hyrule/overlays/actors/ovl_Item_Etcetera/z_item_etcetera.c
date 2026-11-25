@@ -10,6 +10,7 @@
 #include "HyruleCutscene.h"
 #include "HyruleActor.h"
 #include <assert.h>
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

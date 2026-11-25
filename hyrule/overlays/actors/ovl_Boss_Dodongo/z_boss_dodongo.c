@@ -9,6 +9,7 @@
 #include "../ovl_Door_Warp1/z_door_warp1.h"
 #include "assets/oot/scenes/dungeons/ddan_boss/ddan_boss_room_1.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "HyruleSfx.h"
 
 #include <stdlib.h> // malloc
 #include <string.h> // memcpy

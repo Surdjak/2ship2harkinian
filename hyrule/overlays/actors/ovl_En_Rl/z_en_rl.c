@@ -10,6 +10,7 @@
 #include "HyruleActor.h"
 #include "HyruleCutscene.h"
 #include "assets/oot/objects/object_rl/object_rl.h"
+#include "HyruleSfx.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 

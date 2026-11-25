@@ -4,6 +4,7 @@
 #include "HyruleActor.h"
 #include "assets/oot/objects/object_shopnuts/object_shopnuts.h"
 #include "../ovl_En_Dns/z_en_dns.h"
+#include "HyruleSfx.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
