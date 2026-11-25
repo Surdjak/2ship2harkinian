@@ -2,6 +2,7 @@
 #define EXTRACT_H
 
 #include <atomic>
+#include <filesystem>
 #include <stdint.h>
 #include <string>
 #include <memory>
@@ -32,7 +33,7 @@ class Extractor {
     std::string mSearchPath;
     size_t mCurRomSize = 0;
 
-    bool GetRomPathFromBox();
+    bool GetRomPathFromBox(const char* title);
 
     uint32_t GetRomVerCrc() const;
     size_t GetCurRomSize() const;
@@ -66,6 +67,11 @@ class Extractor {
     bool CallZapd(std::string installPath, std::string exportdir, std::atomic<size_t>* extractCount,
                   std::atomic<size_t>* totalExtract);
     const char* GetZapdStr();
-    std::string Mkdtemp();
+    std::filesystem::path Mkdtemp(const std::filesystem::path& parent = std::filesystem::temp_directory_path());
+#ifdef ENABLE_OOT_EXTRACTOR
+    bool SelectOotRom(std::string& path);
+    void ExtractOot(const std::filesystem::path& installPath, const std::filesystem::path& dataPath,
+                    std::atomic<size_t>& extractCount, std::atomic<size_t>& totalExtract);
+#endif
 };
 #endif

@@ -1265,6 +1265,7 @@ static void func_80A779DC(EnIk* this, PlayState* play) {
                     func_80A77474(this, play);
                     break;
                 default:
+                    break;
             }
 
             this->npcAction = action;

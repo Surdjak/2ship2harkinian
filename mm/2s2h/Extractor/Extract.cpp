@@ -48,6 +48,18 @@
 #include <unordered_map>
 #include <random>
 #include <string>
+#include <thread>
+
+#ifdef ENABLE_OOT_EXTRACTOR
+extern "C" {
+#include <libtomcrypt/src/headers/tomcrypt.h>
+}
+#ifndef _WIN32
+#include <cerrno>
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
+#endif
 
 extern "C" uint32_t CRC32C(unsigned char* data, size_t dataSize);
 
@@ -244,7 +256,7 @@ void Extractor::GetRoms(std::vector<std::string>& roms) {
 #endif
 }
 
-bool Extractor::GetRomPathFromBox() {
+bool Extractor::GetRomPathFromBox(const char* title) {
 #ifdef _WIN32
     OPENFILENAMEA box = { 0 };
     char nameBuffer[512];
@@ -253,7 +265,7 @@ bool Extractor::GetRomPathFromBox() {
     box.lStructSize = sizeof(box);
     box.lpstrFile = nameBuffer;
     box.nMaxFile = sizeof(nameBuffer) / sizeof(nameBuffer[0]);
-    box.lpstrTitle = "Open Rom";
+    box.lpstrTitle = title;
     box.Flags =
         OFN_NOCHANGEDIR | OFN_ENABLESIZING | OFN_FILEMUSTEXIST | OFN_LONGNAMES | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
     box.lpstrFilter = "N64 Roms\0*.z64;*.v64;*.n64\0\0";
@@ -283,7 +295,7 @@ bool Extractor::GetRomPathFromBox() {
     }
     mCurrentRomPath = nameBuffer;
 #else
-    auto selection = pfd::open_file("Select a file", mSearchPath, { "N64 Roms", "*.z64 *.n64 *.v64" }).result();
+    auto selection = pfd::open_file(title, mSearchPath, { "N64 Roms", "*.z64 *.n64 *.v64" }).result();
 
     if (selection.empty()) {
         return false;
@@ -291,7 +303,6 @@ bool Extractor::GetRomPathFromBox() {
 
     mCurrentRomPath = selection[0];
 #endif
-    mCurRomSize = GetCurRomSize();
     return true;
 }
 
@@ -359,19 +370,25 @@ bool Extractor::ValidateRom(bool skipCrcTextBox) {
 }
 
 bool Extractor::ManuallySearchForRom() {
-    std::ifstream inFile;
-
-    if (!GetRomPathFromBox()) {
+    if (!GetRomPathFromBox("Select a Majora's Mask ROM")) {
         return false;
     }
 
-    inFile.open(mCurrentRomPath, std::ios::in | std::ios::binary);
-
-    if (!inFile.is_open()) {
-        return false; // TODO Handle error
+    std::error_code error;
+    mCurRomSize = std::filesystem::file_size(mCurrentRomPath, error);
+    if (error) {
+        ShowErrorBox("Unreadable ROM", "Could not determine the size of the selected Majora's Mask ROM.");
+        return false;
     }
-
-    inFile.read((char*)mRomData.get(), mCurRomSize);
+    if (mCurRomSize > MB64) {
+        ShowSizeErrorBox();
+        return false;
+    }
+    std::ifstream inFile(mCurrentRomPath, std::ios::binary);
+    if (!inFile.read(reinterpret_cast<char*>(mRomData.get()), mCurRomSize)) {
+        ShowErrorBox("Unreadable ROM", "Could not read the Majora's Mask ROM.");
+        return false;
+    }
     inFile.close();
     BitConverter::RomToBigEndian(mRomData.get(), mCurRomSize);
 
@@ -546,25 +563,157 @@ const char* Extractor::GetZapdVerStr() const {
     }
 }
 
-std::string Extractor::Mkdtemp() {
-    std::string temp_dir = std::filesystem::temp_directory_path().string();
-
-    // create 6 random alphanumeric characters
+std::filesystem::path Extractor::Mkdtemp(const std::filesystem::path& parent) {
     static const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, sizeof(charset) - 1);
+    std::uniform_int_distribution<> dist(0, sizeof(charset) - 2);
 
-    char randchr[7];
-    for (int i = 0; i < 6; i++) {
-        randchr[i] = charset[dist(gen)];
+    for (;;) {
+        std::string name = "extractor-";
+        for (int i = 0; i < 12; i++) {
+            name += charset[dist(gen)];
+        }
+        auto path = parent / name;
+        if (std::filesystem::create_directory(path)) {
+            return path;
+        }
     }
-    randchr[6] = '\0';
-
-    std::string tmppath = temp_dir + "/extractor-" + randchr;
-    std::filesystem::create_directory(tmppath);
-    return tmppath;
 }
+
+#ifdef ENABLE_OOT_EXTRACTOR
+bool Extractor::SelectOotRom(std::string& path) {
+    if (!GetRomPathFromBox("Select an Ocarina of Time N64 NTSC 1.1 ROM")) {
+        return false;
+    }
+    path = mCurrentRomPath;
+    return true;
+}
+
+void Extractor::ExtractOot(const std::filesystem::path& installPath, const std::filesystem::path& dataPath,
+                           std::atomic<size_t>& extractCount, std::atomic<size_t>& totalExtract) {
+    // Validate and extract the same bytes, even if the source file changes after selection.
+    constexpr size_t ootRomSize = 32 * MB_BASE;
+    std::error_code fileError;
+    if (std::filesystem::file_size(mCurrentRomPath, fileError) != ootRomSize || fileError) {
+        throw std::runtime_error("Choose a 32 MB Ocarina of Time N64 NTSC 1.1 ROM (.z64).");
+    }
+    std::ifstream rom(mCurrentRomPath, std::ios::binary);
+    constexpr std::array<unsigned char, 20> expectedHash = {
+        0xd3, 0xec, 0xb2, 0x53, 0x77, 0x6c, 0xd8, 0x47, 0xa5, 0xaa,
+        0x63, 0xd8, 0x59, 0xd8, 0xc8, 0x9a, 0x2f, 0x37, 0xb3, 0x64,
+    };
+    std::array<unsigned char, 20> actualHash;
+    hash_state sha1;
+    if (!rom.read(reinterpret_cast<char*>(mRomData.get()), ootRomSize) ||
+        rom.peek() != std::char_traits<char>::eof() || rom.bad() ||
+        sha1_init(&sha1) != CRYPT_OK || sha1_process(&sha1, mRomData.get(), ootRomSize) != CRYPT_OK ||
+        sha1_done(&sha1, actualHash.data()) != CRYPT_OK || actualHash != expectedHash) {
+        throw std::runtime_error("Choose an Ocarina of Time N64 NTSC 1.1 ROM in big-endian (.z64) format.");
+    }
+
+#ifdef _WIN32
+    auto executable = installPath / "zapd-oot.exe";
+#else
+    auto executable = installPath / "zapd-oot";
+#endif
+    auto assets = installPath / "oot-assets";
+    if (!std::filesystem::is_regular_file(executable) || !std::filesystem::is_directory(assets)) {
+        throw std::runtime_error("The Ocarina of Time extractor or its assets are missing. Rebuild or reinstall 2Ship.");
+    }
+
+    std::filesystem::create_directories(dataPath);
+    // Stage on the destination filesystem so publishing the finished archive is a single rename.
+    const std::filesystem::path workDir = Mkdtemp(dataPath);
+    try {
+#ifdef _WIN32
+        std::filesystem::copy(assets, workDir / "assets", std::filesystem::copy_options::recursive);
+#else
+        std::filesystem::create_directory_symlink(assets, workDir / "assets");
+#endif
+        std::ofstream snapshot(workDir / "rom.z64", std::ios::binary);
+        snapshot.write(reinterpret_cast<const char*>(mRomData.get()), ootRomSize);
+        snapshot.close();
+        if (!snapshot) {
+            throw std::runtime_error("Could not write the temporary Ocarina of Time ROM.");
+        }
+
+        const std::string version = std::to_string(gBuildVersionMajor) + "." + std::to_string(gBuildVersionMinor) +
+                                    "." + std::to_string(gBuildVersionPatch);
+        const char* args[] = { "zapd-oot", "--report-progress", "ed", "-i", "assets/xml/N64_NTSC_11", "-b", "rom.z64", "-fl",
+                               "assets/filelists", "-gsf", "0", "-rconf", "assets/Config_N64_NTSC_11.xml",
+                               "-se", "OTR", "--otrfile", "oot.o2r", "--pathRoot", "oot", "--convertToMm",
+                               "-o", "placeholder", "-osf", "placeholder", "--portVer", version.c_str(), nullptr };
+        const auto progressPath = workDir / "progress.txt";
+        auto readProgress = [&]() {
+            size_t count, total;
+            std::ifstream progress(progressPath);
+            if ((progress >> count >> total) && progress.get() == '\n' && count <= total && total > 0) {
+                totalExtract = total;
+                extractCount = count;
+            }
+        };
+#ifdef _WIN32
+        // ponytail: The arguments are fixed and space-free. Quote arguments individually if this ever accepts paths.
+        std::wstring command;
+        for (const char** arg = args; *arg; ++arg) {
+            command.append(*arg, *arg + std::char_traits<char>::length(*arg));
+            command += L' ';
+        }
+        STARTUPINFOW startup = {};
+        startup.cb = sizeof(startup);
+        PROCESS_INFORMATION child = {};
+        if (!CreateProcessW(executable.c_str(), command.data(), nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr,
+                            workDir.c_str(), &startup, &child)) {
+            throw std::runtime_error("Could not start the Ocarina of Time extractor.");
+        }
+        CloseHandle(child.hThread);
+        DWORD exitCode = 1;
+        DWORD waitResult;
+        while ((waitResult = WaitForSingleObject(child.hProcess, 100)) == WAIT_TIMEOUT) {
+            readProgress();
+        }
+        const bool success = waitResult == WAIT_OBJECT_0 &&
+                             GetExitCodeProcess(child.hProcess, &exitCode) && exitCode == 0;
+        CloseHandle(child.hProcess);
+#else
+        const char* exePath = executable.c_str();
+        const char* workingPath = workDir.c_str();
+        const pid_t child = fork();
+        if (child == 0) {
+            if (chdir(workingPath) == 0) {
+                execv(exePath, const_cast<char* const*>(args));
+            }
+            _exit(1);
+        }
+        int status = 0;
+        pid_t waited = -1;
+        if (child > 0) {
+            for (;;) {
+                waited = waitpid(child, &status, WNOHANG);
+                if (waited != 0 && !(waited == -1 && errno == EINTR)) {
+                    break;
+                }
+                readProgress();
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+        }
+        const bool success = waited == child && child > 0 && WIFEXITED(status) && WEXITSTATUS(status) == 0;
+#endif
+        const auto archive = workDir / "oot.o2r";
+        if (!success || !std::filesystem::is_regular_file(archive) || std::filesystem::file_size(archive) == 0) {
+            throw std::runtime_error("Could not extract the Ocarina of Time archive.");
+        }
+        std::filesystem::rename(archive, dataPath / "oot.o2r");
+    } catch (...) {
+        std::error_code ignored;
+        std::filesystem::remove_all(workDir, ignored);
+        throw;
+    }
+    std::error_code ignored;
+    std::filesystem::remove_all(workDir, ignored);
+}
+#endif
 
 extern "C" int zapd_report(int argc, char** argv, std::atomic<size_t>* extractCount, std::atomic<size_t>* totalExtract);
 static void MessageboxWorker();
@@ -583,7 +732,7 @@ bool Extractor::CallZapd(std::string installPath, std::string exportdir, std::at
     installPath = std::filesystem::absolute(installPath).string();
     exportdir = std::filesystem::absolute(exportdir).string();
     // Work this out in the temporary folder
-    std::string tempdir = Mkdtemp();
+    std::string tempdir = Mkdtemp().string();
     std::string curdir = std::filesystem::current_path().string();
 #ifdef _WIN32
     std::filesystem::copy(installPath + "/assets", tempdir + "/assets",
@@ -621,9 +770,17 @@ bool Extractor::CallZapd(std::string installPath, std::string exportdir, std::at
     argv[20] = "-osf";
     argv[21] = "placeholder";
 
-    zapd_report(argc, (char**)argv.data(), extractCount, totalExtract);
-
-    std::filesystem::copy(otrFile, exportdir + "/" + otrFile, std::filesystem::copy_options::overwrite_existing);
+    try {
+        if (zapd_report(argc, (char**)argv.data(), extractCount, totalExtract) != 0) {
+            throw std::runtime_error("Could not extract the Majora's Mask archive.");
+        }
+        std::filesystem::copy(otrFile, exportdir + "/" + otrFile, std::filesystem::copy_options::overwrite_existing);
+    } catch (...) {
+        std::filesystem::current_path(curdir);
+        std::error_code ignored;
+        std::filesystem::remove_all(tempdir, ignored);
+        throw;
+    }
 
     // Go back to where this game was executed from
     std::filesystem::current_path(curdir);

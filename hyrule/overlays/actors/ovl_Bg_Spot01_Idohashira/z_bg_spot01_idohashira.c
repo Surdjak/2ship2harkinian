@@ -256,6 +256,7 @@ static void func_808AB444(BgSpot01Idohashira* this, PlayState* play) {
                     Actor_Kill(&this->dyna.actor);
                     break;
                 default:
+                    break;
             }
             this->npcAction = action;
         }

@@ -630,6 +630,7 @@ static void func_809861C4(DemoIm* this, PlayState* play) {
                     this->action = 12;
                     break;
                 default:
+                    break;
             }
             this->cueId = action;
         }
@@ -669,6 +670,7 @@ static void func_809862E0(DemoIm* this, PlayState* play) {
                     func_80986148(this);
                     break;
                 default:
+                    break;
             }
             this->cueId = action;
         }
@@ -795,6 +797,7 @@ static void func_8098680C(DemoIm* this, PlayState* play) {
                     Actor_Kill(&this->actor);
                     break;
                 default:
+                    break;
             }
             this->cueId = action;
         }
@@ -1064,6 +1067,7 @@ static void func_809871E8(DemoIm* this, PlayState* play) {
                     func_80987174(this);
                     break;
                 default:
+                    break;
             }
             this->cueId = action;
         }

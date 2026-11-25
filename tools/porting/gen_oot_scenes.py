@@ -354,8 +354,10 @@ def gen_entrance_table(groups, ids):
                 lines.append(f"    /* 0x{index:03X} */ {{ {target}_Oot, {target_spawn}, 0x{flags:04X} }},")
             lines.append("};")
             lines.append("")
+        if not names:
+            continue
         table = f"s{camel(scene)}OotEntranceTable"
-        tables[scene] = (table, len(names))
+        tables[scene] = table
         lines.append(f"static EntranceTableEntry* {table}[] = {{")
         lines.extend(f"    {n}," for n in names)
         lines.append("};")
@@ -367,7 +369,9 @@ def gen_entrance_table(groups, ids):
         while expected < entr_id:
             entries.append(f"    /* 0x{expected:02X} */ SCENE_ENTRANCE_NONE(),")
             expected += 1
-        entries.append(f"    /* 0x{entr_id:02X} */ SCENE_ENTRANCE({tables[scene][0]}, \"{scene}\"),")
+        # Empty arrays are a compiler extension. Keep the scene name and a zero entrance count.
+        entry = f'SCENE_ENTRANCE({tables[scene]}, "{scene}")' if scene in tables else f'{{ 0, NULL, "{scene}" }}'
+        entries.append(f"    /* 0x{entr_id:02X} */ {entry},")
         expected += 1
     lines.append(" \\\n".join(entries))
     return "\n".join(lines) + "\n"

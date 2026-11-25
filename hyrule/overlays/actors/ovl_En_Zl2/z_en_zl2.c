@@ -971,6 +971,7 @@ static void func_80B50A04(EnZl2* this, PlayState* play) {
                     func_80B50644(this, play);
                     break;
                 default:
+                    break;
             }
             this->cueId = newAction;
         }
@@ -1360,6 +1361,7 @@ static void func_80B51948(EnZl2* this, PlayState* play) {
                     func_80B513A8(this, play);
                     break;
                 default:
+                    break;
             }
             this->cueId = newAction;
         }

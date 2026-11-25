@@ -1095,12 +1095,6 @@ static EntranceTableEntry* sMarketEntranceDayOotEntranceTable[] = {
     sMarketEntranceDayOotEntrance2,
 };
 
-static EntranceTableEntry* sMarketEntranceNightOotEntranceTable[] = {
-};
-
-static EntranceTableEntry* sMarketEntranceRuinsOotEntranceTable[] = {
-};
-
 static EntranceTableEntry sBackAlleyDayOotEntrance0[] = {
     /* 0x0AD */ { SCENE_BACK_ALLEY_DAY_Oot, 0, 0xC183 },
     /* 0x0AE */ { SCENE_BACK_ALLEY_NIGHT_Oot, 0, 0xC102 },
@@ -1142,9 +1136,6 @@ static EntranceTableEntry* sBackAlleyDayOotEntranceTable[] = {
     sBackAlleyDayOotEntrance2,
     sBackAlleyDayOotEntrance3,
     sBackAlleyDayOotEntrance4,
-};
-
-static EntranceTableEntry* sBackAlleyNightOotEntranceTable[] = {
 };
 
 static EntranceTableEntry sMarketDayOotEntrance0[] = {
@@ -1239,12 +1230,6 @@ static EntranceTableEntry* sMarketDayOotEntranceTable[] = {
     sMarketDayOotEntrance10,
 };
 
-static EntranceTableEntry* sMarketNightOotEntranceTable[] = {
-};
-
-static EntranceTableEntry* sMarketRuinsOotEntranceTable[] = {
-};
-
 static EntranceTableEntry sTempleOfTimeExteriorDayOotEntrance0[] = {
     /* 0x171 */ { SCENE_TEMPLE_OF_TIME_EXTERIOR_DAY_Oot, 0, 0x4183 },
     /* 0x172 */ { SCENE_TEMPLE_OF_TIME_EXTERIOR_NIGHT_Oot, 0, 0x4102 },
@@ -1262,12 +1247,6 @@ static EntranceTableEntry sTempleOfTimeExteriorDayOotEntrance1[] = {
 static EntranceTableEntry* sTempleOfTimeExteriorDayOotEntranceTable[] = {
     sTempleOfTimeExteriorDayOotEntrance0,
     sTempleOfTimeExteriorDayOotEntrance1,
-};
-
-static EntranceTableEntry* sTempleOfTimeExteriorNightOotEntranceTable[] = {
-};
-
-static EntranceTableEntry* sTempleOfTimeExteriorRuinsOotEntranceTable[] = {
 };
 
 static EntranceTableEntry sTempleOfTimeOotEntrance0[] = {
@@ -1412,9 +1391,6 @@ static EntranceTableEntry* sCastleCourtyardGuardsDayOotEntranceTable[] = {
     sCastleCourtyardGuardsDayOotEntrance1,
 };
 
-static EntranceTableEntry* sCastleCourtyardGuardsNightOotEntranceTable[] = {
-};
-
 static EntranceTableEntry sCastleCourtyardZeldaOotEntrance0[] = {
     /* 0x400 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 0, 0x4183 },
     /* 0x401 */ { SCENE_CASTLE_COURTYARD_ZELDA_Oot, 0, 0x4102 },
@@ -1435,9 +1411,6 @@ static EntranceTableEntry sCastleCourtyardZeldaOotEntrance1[] = {
 static EntranceTableEntry* sCastleCourtyardZeldaOotEntranceTable[] = {
     sCastleCourtyardZeldaOotEntrance0,
     sCastleCourtyardZeldaOotEntrance1,
-};
-
-static EntranceTableEntry* sOutsideGanonsCastleOotEntranceTable[] = {
 };
 
 static EntranceTableEntry sChamberOfTheSagesOotEntrance0[] = {
@@ -3230,22 +3203,22 @@ static EntranceTableEntry* sGanonBossOotEntranceTable[] = {
     /* 0x7F */ SCENE_ENTRANCE_NONE(), \
     /* 0x80 */ SCENE_ENTRANCE(sDeathMountainTrailOotEntranceTable, "SCENE_DEATH_MOUNTAIN_TRAIL"), \
     /* 0x81 */ SCENE_ENTRANCE(sMarketEntranceDayOotEntranceTable, "SCENE_MARKET_ENTRANCE_DAY"), \
-    /* 0x82 */ SCENE_ENTRANCE(sMarketEntranceNightOotEntranceTable, "SCENE_MARKET_ENTRANCE_NIGHT"), \
-    /* 0x83 */ SCENE_ENTRANCE(sMarketEntranceRuinsOotEntranceTable, "SCENE_MARKET_ENTRANCE_RUINS"), \
+    /* 0x82 */ { 0, NULL, "SCENE_MARKET_ENTRANCE_NIGHT" }, \
+    /* 0x83 */ { 0, NULL, "SCENE_MARKET_ENTRANCE_RUINS" }, \
     /* 0x84 */ SCENE_ENTRANCE(sBackAlleyDayOotEntranceTable, "SCENE_BACK_ALLEY_DAY"), \
-    /* 0x85 */ SCENE_ENTRANCE(sBackAlleyNightOotEntranceTable, "SCENE_BACK_ALLEY_NIGHT"), \
+    /* 0x85 */ { 0, NULL, "SCENE_BACK_ALLEY_NIGHT" }, \
     /* 0x86 */ SCENE_ENTRANCE(sMarketDayOotEntranceTable, "SCENE_MARKET_DAY"), \
-    /* 0x87 */ SCENE_ENTRANCE(sMarketNightOotEntranceTable, "SCENE_MARKET_NIGHT"), \
-    /* 0x88 */ SCENE_ENTRANCE(sMarketRuinsOotEntranceTable, "SCENE_MARKET_RUINS"), \
+    /* 0x87 */ { 0, NULL, "SCENE_MARKET_NIGHT" }, \
+    /* 0x88 */ { 0, NULL, "SCENE_MARKET_RUINS" }, \
     /* 0x89 */ SCENE_ENTRANCE(sTempleOfTimeExteriorDayOotEntranceTable, "SCENE_TEMPLE_OF_TIME_EXTERIOR_DAY"), \
-    /* 0x8A */ SCENE_ENTRANCE(sTempleOfTimeExteriorNightOotEntranceTable, "SCENE_TEMPLE_OF_TIME_EXTERIOR_NIGHT"), \
-    /* 0x8B */ SCENE_ENTRANCE(sTempleOfTimeExteriorRuinsOotEntranceTable, "SCENE_TEMPLE_OF_TIME_EXTERIOR_RUINS"), \
+    /* 0x8A */ { 0, NULL, "SCENE_TEMPLE_OF_TIME_EXTERIOR_NIGHT" }, \
+    /* 0x8B */ { 0, NULL, "SCENE_TEMPLE_OF_TIME_EXTERIOR_RUINS" }, \
     /* 0x8C */ SCENE_ENTRANCE(sTempleOfTimeOotEntranceTable, "SCENE_TEMPLE_OF_TIME"), \
     /* 0x8D */ SCENE_ENTRANCE(sHyruleCastleOotEntranceTable, "SCENE_HYRULE_CASTLE"), \
     /* 0x8E */ SCENE_ENTRANCE(sCastleCourtyardGuardsDayOotEntranceTable, "SCENE_CASTLE_COURTYARD_GUARDS_DAY"), \
-    /* 0x8F */ SCENE_ENTRANCE(sCastleCourtyardGuardsNightOotEntranceTable, "SCENE_CASTLE_COURTYARD_GUARDS_NIGHT"), \
+    /* 0x8F */ { 0, NULL, "SCENE_CASTLE_COURTYARD_GUARDS_NIGHT" }, \
     /* 0x90 */ SCENE_ENTRANCE(sCastleCourtyardZeldaOotEntranceTable, "SCENE_CASTLE_COURTYARD_ZELDA"), \
-    /* 0x91 */ SCENE_ENTRANCE(sOutsideGanonsCastleOotEntranceTable, "SCENE_OUTSIDE_GANONS_CASTLE"), \
+    /* 0x91 */ { 0, NULL, "SCENE_OUTSIDE_GANONS_CASTLE" }, \
     /* 0x92 */ SCENE_ENTRANCE(sChamberOfTheSagesOotEntranceTable, "SCENE_CHAMBER_OF_THE_SAGES"), \
     /* 0x93 */ SCENE_ENTRANCE(sCutsceneMapOotEntranceTable, "SCENE_CUTSCENE_MAP"), \
     /* 0x94 */ SCENE_ENTRANCE(sTreasureBoxShopOotEntranceTable, "SCENE_TREASURE_BOX_SHOP"), \

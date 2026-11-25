@@ -104,6 +104,7 @@ static void BgBdanObjects_SetContactRu1(BgBdanObjects* this, s32 arg1) {
             SET_INFTABLE_OOT(INFTABLE_146_Oot);
             break;
         default:
+            break;
     }
 }
 

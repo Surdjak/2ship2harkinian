@@ -941,6 +941,7 @@ static void func_80B55444(EnZl3* this, PlayState* play) {
                 case 8:
                     this->unk_328 = 1;
                 default:
+                    break;
             }
             this->unk_2F0 = temp_v0;
         }
@@ -1353,6 +1354,7 @@ static void func_80B564A8(EnZl3* this, PlayState* play) {
                     Actor_Kill(&this->actor);
                     break;
                 default:
+                    break;
             }
             this->unk_2F0 = temp_v0;
         }

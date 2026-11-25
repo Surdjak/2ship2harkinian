@@ -567,6 +567,7 @@ static void func_8098F654(DemoSa* this, PlayState* play) {
                     func_8098F5D0(this);
                     break;
                 default:
+                    break;
             }
             this->cueId = action;
         }
@@ -714,6 +715,7 @@ static void func_8098FB68(DemoSa* this, PlayState* play) {
                     func_8098FAE0(this);
                     break;
                 default:
+                    break;
             }
             this->cueId = action;
         }

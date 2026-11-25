@@ -205,20 +205,18 @@ typedef enum ExtractSteps {
     ES_EXTRACT_ARGS,
     ES_EXTRACT,
     ES_VERIFY,
+#ifdef ENABLE_OOT_EXTRACTOR
+    ES_OOT,
+#endif
 } ExtractSteps;
 
 typedef enum PromptSteps {
     PS_FILE_CHECK,
-    PS_LOCAL,
     PS_FIRST,
-    PS_DUPE,
-    PS_WAIT,
-    PS_NONE,
 } PromptSteps;
 
 typedef enum WindowsSteps {
     WS_TEMP,
-    WS_PERMS,
     WS_ONEDRIVE,
     WS_DONE,
 } WindowsSteps;
@@ -226,16 +224,6 @@ typedef enum WindowsSteps {
 bool IsSubpath(const std::filesystem::path& path, const std::filesystem::path& base) {
     auto rel = std::filesystem::relative(path, base);
     return !rel.empty() && rel.native()[0] != '.';
-}
-
-bool PathTestCleanup(FILE* tfile) {
-    try {
-        if (std::filesystem::exists("./text.txt"))
-            std::filesystem::remove("./text.txt");
-        if (std::filesystem::exists("./test/"))
-            std::filesystem::remove("./test/");
-    } catch (std::filesystem::filesystem_error const& ex) { return false; }
-    return true;
 }
 
 static bool RemoveArchiveAcrossAppDirs(const std::string& fileName) {
@@ -290,12 +278,14 @@ void OTRGlobals::RunExtract(int argc, char* argv[]) {
     }
     Extractor extract;
     PromptSteps promptStep = PS_FILE_CHECK;
-    bool romsFromSearch = false;
     std::atomic<size_t> extractCount = 0, totalExtract = 0;
 
     std::string installPath = std::filesystem::absolute(Ship::Context::GetAppBundlePath()).string();
     std::string dataPath = std::filesystem::absolute(Ship::Context::GetAppDirectoryPath(appShortName)).string();
     std::string file;
+#ifdef ENABLE_OOT_EXTRACTOR
+    bool selectOotRom = false;
+#endif
 
 #if defined(__SWITCH__)
     BenGui::RegisterPopup("Outdated ROM Archives",
@@ -312,7 +302,8 @@ void OTRGlobals::RunExtract(int argc, char* argv[]) {
     OSFatal();
 #endif
 
-    if (!std::filesystem::exists(installPath + "/assets")) {
+    if ((shouldRegen || !std::filesystem::exists(Ship::Context::LocateFileAcrossAppDirs("mm.o2r", appShortName))) &&
+        !std::filesystem::exists(installPath + "/assets")) {
         BenGui::RegisterPopup("Extractor assets not found",
                               "No O2R files found. Missing 'assets/' folder needed to generate OTR file.\nPlease "
                               "re-extract them from the download or.\n\nExiting...",
@@ -392,38 +383,9 @@ void OTRGlobals::RunExtract(int argc, char* argv[]) {
                                                   "2S2H is running in a temp folder.\nExtract the .zip and run again.",
                                                   "OK", "", [&]() { exit(0); });
                         } else {
-                            windowsStep = WS_PERMS;
-                        }
-#endif
-                        continue;
-                    }
-                    case WS_PERMS: {
-                        FILE* tfile = fopen("./text.txt", "w");
-                        std::filesystem::path tfolder = std::filesystem::path("./test/");
-                        bool error = false;
-                        try {
-                            create_directories(tfolder);
-                        } catch (std::filesystem::filesystem_error const& ex) { error = true; }
-                        if (tfile == NULL || error) {
-                            BenGui::RegisterPopup("2S2H Permissions Error",
-                                                  "2S2H does not have proper file permissions.\nPlease move it to a "
-                                                  "folder that does and run again.",
-                                                  "OK", "", [&]() {
-                                                      fclose(tfile);
-                                                      PathTestCleanup(tfile);
-                                                      exit(0);
-                                                  });
-                        } else {
-                            fclose(tfile);
-                            if (!PathTestCleanup(tfile)) {
-                                BenGui::RegisterPopup(
-                                    "2S2H Permissions Error",
-                                    "2S2H does not have proper file permissions.\nPlease move it to a "
-                                    "folder that does and run again.",
-                                    "OK", "", [&]() { exit(0); });
-                            }
                             windowsStep = WS_ONEDRIVE;
                         }
+#endif
                         continue;
                     }
                     case WS_ONEDRIVE: {
@@ -455,12 +417,6 @@ void OTRGlobals::RunExtract(int argc, char* argv[]) {
                     }
                     continue;
                 }
-                if (romsFromSearch &&
-                    std::filesystem::exists(Ship::Context::LocateFileAcrossAppDirs("mm.o2r", appShortName))) {
-                    SPDLOG_INFO("mm.o2r generated, skipping {} other ROM(s) found in the app folder", args.size());
-                    args.clear();
-                    continue;
-                }
                 file = args.at(0);
                 args.erase(args.begin());
                 extract = Extractor();
@@ -485,30 +441,11 @@ void OTRGlobals::RunExtract(int argc, char* argv[]) {
                     case PS_FILE_CHECK: {
                         if (!std::filesystem::exists(Ship::Context::LocateFileAcrossAppDirs("mm.o2r", appShortName))) {
                             BenGui::RegisterPopup(
-                                "No O2R Files", "No O2R files found. Generate one now?", "Yes", "No",
-                                [&]() { promptStep = PS_LOCAL; }, [&]() { exit(0); });
+                                "Majora's Mask ROM Required",
+                                "Choose a supported Majora's Mask ROM to generate mm.o2r.", "Continue", "Exit",
+                                [&]() { promptStep = PS_FIRST; }, [&]() { exit(0); });
                         } else {
                             extractStep = ES_VERIFY;
-                        }
-                        continue;
-                    }
-                    case PS_LOCAL: {
-                        extract = Extractor();
-                        extract.SetSearchPath(installPath);
-                        extract.GetRoms(args);
-                        if (installPath != dataPath) {
-                            extract.SetSearchPath(dataPath);
-                            extract.GetRoms(args);
-                        }
-                        romsFromSearch = !args.empty();
-                        if (!args.empty()) {
-                            promptStep = PS_WAIT;
-                            BenGui::RegisterPopup(
-                                "ROMs found", "ROMs found in application directory. Would you like to process them?",
-                                "Yes", "No", [&]() { extractStep = ES_EXTRACT_ARGS; },
-                                [&]() { promptStep = PS_FIRST; });
-                        } else {
-                            promptStep = PS_FIRST;
                         }
                         continue;
                     }
@@ -517,10 +454,11 @@ void OTRGlobals::RunExtract(int argc, char* argv[]) {
                             promptStep = PS_FILE_CHECK;
                             continue;
                         }
+                        file = "Majora's Mask ROM";
+                        extractStep = ES_VERIFY;
                         extractionTask = threadPool->submit_task([&]() -> void {
                             extract.CallZapd(installPath, Ship::Context::GetAppDirectoryPath(appShortName),
                                              &extractCount, &totalExtract);
-                            extractStep = ES_VERIFY;
                             extractCount = 0;
                             totalExtract = 0;
                         });
@@ -533,13 +471,39 @@ void OTRGlobals::RunExtract(int argc, char* argv[]) {
             }
             case ES_VERIFY: {
                 if (!std::filesystem::exists(Ship::Context::LocateFileAcrossAppDirs("mm.o2r", appShortName))) {
-                    BenGui::RegisterPopup("No ROM Archives",
-                                          "No ROM O2R files detected. Please generate a ROM O2R and relaunch.", "OK",
-                                          "", [&]() { exit(0); });
+                    BenGui::RegisterPopup("No Majora's Mask Archive",
+                                          "Please generate mm.o2r and relaunch.", "Exit", "", []() { exit(1); });
+                    continue;
                 }
+#ifdef ENABLE_OOT_EXTRACTOR
+                extractStep = ES_OOT;
+#else
                 extractDone = true;
+#endif
                 continue;
             }
+#ifdef ENABLE_OOT_EXTRACTOR
+            case ES_OOT: {
+                if (std::filesystem::is_regular_file(Ship::Context::LocateFileAcrossAppDirs("oot.o2r", appShortName))) {
+                    extractDone = true;
+                    continue;
+                }
+                if (!selectOotRom) {
+                    BenGui::RegisterPopup("Ocarina of Time ROM Required",
+                                          "Choose an Ocarina of Time N64 NTSC 1.1 ROM (.z64) to generate oot.o2r.",
+                                          "Choose ROM", "Exit", [&]() { selectOotRom = true; }, []() { exit(0); });
+                    continue;
+                }
+                selectOotRom = false;
+                if (extract.SelectOotRom(file)) {
+                    extractCount = totalExtract = 0;
+                    extractionTask = threadPool->submit_task([&]() {
+                        extract.ExtractOot(installPath, dataPath, extractCount, totalExtract);
+                    });
+                }
+                continue;
+            }
+#endif
             default:
                 break;
         }
@@ -568,7 +532,18 @@ void OTRGlobals::RunExtract(int argc, char* argv[]) {
                 try {
                     extractionTask->get();
                 } catch (const std::exception& e) {
-                    BenGui::RegisterPopup("Extraction Crashed", e.what(), "Close", "", []() { exit(1); });
+#ifdef ENABLE_OOT_EXTRACTOR
+                    if (extractStep == ES_OOT) {
+                        BenGui::RegisterPopup("Ocarina of Time Extraction Failed", e.what());
+                    } else
+#endif
+                    {
+                        BenGui::RegisterPopup("Extraction Failed", e.what(), "Close", "", []() { exit(1); });
+                    }
+                }
+                if (ImGui::BeginPopupModal("ROM Extraction")) {
+                    ImGui::CloseCurrentPopup();
+                    ImGui::EndPopup();
                 }
                 extractionTask.reset();
             } else {
@@ -585,12 +560,14 @@ void OTRGlobals::RunExtract(int argc, char* argv[]) {
                                            ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize |
                                                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
                                                ImGuiWindowFlags_NoSavedSettings)) {
-                    float progress = (totalExtract > 0.0f ? (float)extractCount / (float)totalExtract : 0) * 100.0f;
                     auto filename = std::filesystem::path(file).filename().string();
-                    ImGui::Text("Extracting %s...%s", filename.c_str(),
-                                roundf(progress) == 100.0f ? " Done. Finishing up." : "");
-                    std::string overlay = extractCount > 0 ? fmt::format("{:.0f}%", progress) : "Starting Up";
-                    ImGui::ProgressBar(progress / 100.0f, ImVec2(600.0f, 50.0f), overlay.c_str());
+                    const auto total = totalExtract.load();
+                    const auto count = extractCount.load();
+                    const float progress = total ? static_cast<float>(count) / total : 0.0f;
+                    ImGui::Text("Extracting %s...", filename.c_str());
+                    const char* message = total == 0 ? "Starting up" :
+                                          count >= total - 1 ? "Finishing up" : nullptr;
+                    ImGui::ProgressBar(progress, ImVec2(600.0f, 50.0f), message);
                     ImGui::EndPopup();
                 }
                 ImGui::PopStyleColor(3);

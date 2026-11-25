@@ -232,6 +232,7 @@ static void func_809839D0(DemoIk* this, PlayState* play) {
                 case 6:
                     break;
                 default:
+                    break;
             }
             this->csAction = nextCsAction;
         }
@@ -379,6 +380,7 @@ static void func_80984048(DemoIk* this, PlayState* play) {
                     Actor_Kill(&this->actor);
                     break;
                 default:
+                    break;
             }
             this->csAction = nextCsAction;
         }

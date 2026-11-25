@@ -19,7 +19,9 @@ Re-run the CMake configure step after adding or removing files, because sources 
   load, `gameplay_keep`, `gameplay_field_keep`, `link_animetion`, the audio and the overlays of ported
   actors.
 
-Only the N64 NTSC 1.1 ROM is supported so far. To extract:
+On desktop, the game prompts for missing ROMs at launch. Select Majora's Mask first, then a big-endian
+Ocarina of Time N64 NTSC 1.1 ROM (`.z64`). If you already have `oot.o2r`, you can put it next to the
+game executable. To extract it ahead of time:
 
 ```bash
 cmake -S . -B build-cmake -DOOT_ROM_PATH=/path/to/oot-ntsc-1.1.z64

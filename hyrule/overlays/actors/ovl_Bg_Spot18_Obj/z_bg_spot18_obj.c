@@ -111,6 +111,7 @@ static s32 func_808B8910(BgSpot18Obj* this, PlayState* play) {
         case 2:
             break;
         default:
+            break;
     }
     return 0;
 }
