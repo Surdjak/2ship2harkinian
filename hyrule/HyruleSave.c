@@ -48,10 +48,14 @@ static const u16 sDungeonEntrancesOot[] = {
 // uses. MM's own permanent saves (the Song of Time, the first entry to Clock Town, a new day) clear it.
 #define EVENTCHKINF_TERMINA_SAVE_3SHIP 0xCD
 
-// The Termina entrance a pause save made in Termina reloads at, by OoT's rule: a temple (or its boss's room) reloads
-// at its entrance, anywhere else at South Clock Town, before the Clock Tower (Termina's Link's house).
+// The entrance a pause save made in Termina reloads at, by OoT's rule: a temple (or its boss's room) reloads at its
+// entrance, MM's Lost Woods, the passage back to Hyrule, where a save in Hyrule would (Link's house or the Temple of
+// Time), anywhere else at South Clock Town, before the Clock Tower (Termina's Link's house).
 static u32 Hyrule_GetTerminaLoadEntrance(s16 sceneId) {
     switch (sceneId) {
+        case SCENE_LOST_WOODS:
+            return Hyrule_EntranceFromOot(LINK_IS_ADULT_OOT ? ENTR_TEMPLE_OF_TIME_WARP_PAD_Oot
+                                                            : ENTR_LINKS_HOUSE_CHILD_SPAWN_Oot);
         case SCENE_MITURIN:
         case SCENE_MITURIN_BS:
             return ENTRANCE(WOODFALL_TEMPLE, 0);

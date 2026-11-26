@@ -3733,7 +3733,14 @@ void KaleidoScope_Update(PlayState* play) {
 
                 case PAUSE_SAVEPROMPT_STATE_1:
                     if (CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_CUP)) {
-                        if (pauseCtx->promptChoice != PAUSE_PROMPT_YES) {
+                        if ((pauseCtx->promptChoice != PAUSE_PROMPT_YES) && Hyrule_IsPermanentPauseSaveOot(play)) {
+                            // 3Ship [Hyrule] OoT's "No" closes the menu without saving, as START does.
+                            Interface_SetAButtonDoAction(play, DO_ACTION_NONE);
+                            pauseCtx->savePromptState = PAUSE_SAVEPROMPT_STATE_3;
+                            sPauseMenuVerticalOffset = -6240.0f;
+                            D_8082B90C = pauseCtx->roll;
+                            Audio_PlaySfx_PauseMenuOpenOrClose(SFX_PAUSE_MENU_CLOSE);
+                        } else if (pauseCtx->promptChoice != PAUSE_PROMPT_YES) {
                             Interface_SetAButtonDoAction(play, DO_ACTION_NONE);
                             pauseCtx->savePromptState = PAUSE_SAVEPROMPT_STATE_RETURN_TO_MENU;
                         } else {
@@ -3779,7 +3786,9 @@ void KaleidoScope_Update(PlayState* play) {
                             }
                             sDelayTimer = 90;
                         }
-                    } else if (CHECK_BTN_ALL(input->press.button, BTN_START)) {
+                    } else if (CHECK_BTN_ALL(input->press.button, BTN_START) ||
+                               // 3Ship [Hyrule] OoT's B closes the menu without saving, as START does.
+                               (CHECK_BTN_ALL(input->press.button, BTN_B) && Hyrule_IsPermanentPauseSaveOot(play))) {
                         Interface_SetAButtonDoAction(play, DO_ACTION_NONE);
                         pauseCtx->savePromptState = PAUSE_SAVEPROMPT_STATE_3;
                         sPauseMenuVerticalOffset = -6240.0f;

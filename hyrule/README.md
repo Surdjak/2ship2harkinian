@@ -752,9 +752,11 @@ The way between OoT's opening and Termina (docs/TERMINA.md). Notes:
   OoT `savedSceneId`, so they reload in Termina as before. The pause save works in Termina too once Link has reached
   Clock Town (before it, MM's intro areas would reload a cursed Link in Clock Town): it marks the file (an OoT event
   flag OoT never uses, 0xCD, which MM's own saves clear), which then reloads by OoT's rule, a temple or its boss's room
-  at the temple's entrance (Stone Tower's inverted one for the inverted temple and Twinmold), elsewhere South Clock
-  Town, at the day and time of the save. Checked under gdb: saved in South Clock Town on day 2 at noon, reloaded there
-  then.
+  at the temple's entrance (Stone Tower's inverted one for the inverted temple and Twinmold), MM's Lost Woods (the
+  passage back to Hyrule) where a save in Hyrule would (Link's house as a child, the Temple of Time as an adult),
+  elsewhere South Clock Town, at the day and time of the save. Checked under gdb: saved in South Clock Town on day 2
+  at noon, reloaded there then. As in OoT, B or "No" at the save prompt closes the menu without saving (MM's went
+  back to the pages).
 - Until Link first reaches Clock Town, MM's day stays 0: `En_Test4`, which counts MM's days and brings the moon, is
   not spawned, and the three-day clock is hidden as OoT has none. MM's `isFirstCycle` ("finished intro sequence") is
   the permanent first-entry flag.
