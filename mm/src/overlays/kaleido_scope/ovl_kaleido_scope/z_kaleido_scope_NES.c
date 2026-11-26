@@ -3781,6 +3781,8 @@ void KaleidoScope_Update(PlayState* play) {
                                         sramCtx, gFlashSaveStartPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER],
                                         gFlashSpecialSaveNumPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER]);
                                     Sram_StartWriteToFlashDefault(sramCtx);
+                                    // 3Ship [Hyrule] The file's older owl save (the autosave's) would load instead.
+                                    Hyrule_DeleteOwlSaveOot(play);
                                 }
                                 pauseCtx->savePromptState = PAUSE_SAVEPROMPT_STATE_4;
                             }

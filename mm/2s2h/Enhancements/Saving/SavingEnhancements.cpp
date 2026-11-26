@@ -7,6 +7,8 @@
 extern "C" {
 #include <variables.h>
 #include <functions.h>
+#include "HyruleSave.h"
+#include "HyruleScenes.h"
 }
 
 #define CVAR_REMEMBER_SAVE_LOCATION_NAME "gEnhancements.Saving.RememberSaveLocation"
@@ -51,6 +53,9 @@ extern "C" void SavingEnhancements_PersistSaveEntranceInfo() {
         // must be at this entrance in that scenario, just use it as a fallback.
         gSaveContext.save.shipSaveInfo.pauseSaveEntrance =
             entranceToSave < 0 ? ENTRANCE(SOUTH_CLOCK_TOWN, 0) : entranceToSave;
+    } else if (Hyrule_GetOwlSaveEntranceOot(gPlayState) != HYRULE_ENTRANCE_NONE) {
+        // 3Ship [Hyrule] In OoT's scenes, OoT's reload spot (Link's house, a dungeon's entrance...).
+        gSaveContext.save.shipSaveInfo.pauseSaveEntrance = Hyrule_GetOwlSaveEntranceOot(gPlayState);
     } else {
         switch (gPlayState->sceneId) {
             // Woodfall Temple + Odolwa

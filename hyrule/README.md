@@ -757,6 +757,13 @@ The way between OoT's opening and Termina (docs/TERMINA.md). Notes:
   elsewhere South Clock Town, at the day and time of the save. Checked under gdb: saved in South Clock Town on day 2
   at noon, reloaded there then. As in OoT, B or "No" at the save prompt closes the menu without saving (MM's went
   back to the pages).
+- 2Ship's owl-style saves (its autosave, and its pause save where Hyrule's is not permanent) reload at their
+  `pauseSaveEntrance`, which fell back to South Clock Town in every scene 2Ship does not know; in OoT's scenes it is
+  now OoT's reload spot (`Hyrule_GetOwlSaveEntranceOot`). 2Ship never deletes those owl saves when a file is opened,
+  and an owl save loads in place of the file's permanent save, so an older autosave made a Kokiri Forest pause save
+  reload in Clock Town: Hyrule's permanent pause save now deletes the file's owl save (`Hyrule_DeleteOwlSaveOot`).
+  Checked under gdb with a new file in file slot 1 (the saves restored after): an old-style owl save in Kokiri Forest
+  reloaded in South Clock Town; after a pause save it is gone and the file reloads in Link's house.
 - Until Link first reaches Clock Town, MM's day stays 0: `En_Test4`, which counts MM's days and brings the moon, is
   not spawned, and the three-day clock is hidden as OoT has none. MM's `isFirstCycle` ("finished intro sequence") is
   the permanent first-entry flag.

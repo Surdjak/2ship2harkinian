@@ -163,3 +163,26 @@ void Hyrule_ForgetSavedSceneOot(void) {
     }
     CLEAR_EVENTCHKINF_OOT(EVENTCHKINF_TERMINA_SAVE_3SHIP);
 }
+
+u32 Hyrule_GetOwlSaveEntranceOot(PlayState* play) {
+    s32 ootSceneId = Hyrule_GetOotSceneId(play->sceneId);
+    u32 entrance;
+
+    if (ootSceneId < 0) {
+        return HYRULE_ENTRANCE_NONE;
+    }
+    entrance = Hyrule_EntranceFromOot(Hyrule_GetLoadEntranceOot(ootSceneId));
+    return (entrance != HYRULE_ENTRANCE_NONE) ? entrance : Hyrule_EntranceFromOot(ENTR_LINKS_HOUSE_CHILD_SPAWN_Oot);
+}
+
+void Hyrule_DeleteOwlSaveOot(PlayState* play) {
+    // func_80147314 writes the owl slot with an emptied file mark, which drops the owl save, and leaves the playing
+    // file's mark and owl state cleared too: restore them, or the next save would empty the file.
+    u8 newf[sizeof(gSaveContext.save.saveInfo.playerData.newf)];
+    u8 isOwlSave = gSaveContext.save.isOwlSave;
+
+    memcpy(newf, gSaveContext.save.saveInfo.playerData.newf, sizeof(newf));
+    func_80147314(&play->sramCtx, gSaveContext.fileNum);
+    memcpy(gSaveContext.save.saveInfo.playerData.newf, newf, sizeof(newf));
+    gSaveContext.save.isOwlSave = isOwlSave;
+}

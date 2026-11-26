@@ -30,6 +30,14 @@ void Hyrule_OnPermanentPauseSaveOot(struct PlayState* play);
 // For MM's own permanent saves (the Song of Time, the first entry to Clock Town...), which reload in Termina.
 void Hyrule_ForgetSavedSceneOot(void);
 
+// Where a 2Ship owl-style save (the autosave, or 2Ship's pause save) made in an OoT scene reloads: OoT's rule, as for
+// a permanent save there. HYRULE_ENTRANCE_NONE outside OoT's scenes.
+u32 Hyrule_GetOwlSaveEntranceOot(struct PlayState* play);
+
+// After a permanent pause save: deletes the file's owl save, which would load in its place (2Ship keeps the autosave's
+// and its pause save's owl saves when the file is opened).
+void Hyrule_DeleteOwlSaveOot(struct PlayState* play);
+
 #ifdef __cplusplus
 }
 #endif
