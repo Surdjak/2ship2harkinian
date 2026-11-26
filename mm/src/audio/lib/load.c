@@ -44,6 +44,9 @@ typedef struct {
 void AudioLoad_DiscardFont(s32 fontId);
 s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIndex, s32 seqId, s32 arg2);
 u8* AudioLoad_SyncLoadSeq(s32 seqId);
+
+// 3Ship [Hyrule] The id of OoT's soundfont 0, after MM's (AudioLoad_Init).
+static s32 sOotFontStart = 0;
 u32 AudioLoad_TrySyncLoadSampleBank(u32 sampleBankId, u32* outMedium, s32 noLoad);
 SoundFontData* AudioLoad_SyncLoadFont(u32 fontId);
 void* AudioLoad_SyncLoad(s32 tableType, u32 id, s32* didAllocate);
@@ -645,6 +648,16 @@ s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIndex, s32 seqId, s32 arg2) {
 
     AudioScript_ResetSequencePlayer(seqPlayer);
     seqPlayer->seqId = seqId;
+
+    // 3Ship [Hyrule] OoT's sequences leave some channels out of their setup (its sfx sequence's voice channels), which
+    // then play from soundfont 0: OoT's sfx font in OoT, MM's here. Give them OoT's.
+    if ((seqId >= SEQ_OOT_BASE) && (seqId < SEQ_OOT_BASE + 0x100)) {
+        for (index = 0; index < SEQ_NUM_CHANNELS; index++) {
+            if (IS_SEQUENCE_CHANNEL_VALID(seqPlayer->channels[index])) {
+                seqPlayer->channels[index]->fontId = sOotFontStart;
+            }
+        }
+    }
 
     if (fontId != 0xFFFF) {
         seqPlayer->defaultFont = AudioLoad_GetRealTableIndex(FONT_TABLE, fontId);
@@ -1295,6 +1308,7 @@ void AudioLoad_Init(void* heap, size_t heapSize) {
     int ootFntListSize = 0;
     char** ootFntList = ResourceMgr_ListFiles("oot/audio/fonts*", &ootFntListSize);
     int ootFontStart = fntListSize;
+    sOotFontStart = ootFontStart;
     gFontMap = realloc(gFontMap, (fntListSize + ootFntListSize + customFntListSize) * sizeof(char*));
     gAudioCtx.fontLoadStatus = realloc(gAudioCtx.fontLoadStatus, fntListSize + ootFntListSize + customFntListSize);
     memset(&gAudioCtx.fontLoadStatus[fntListSize], 0, ootFntListSize + customFntListSize);

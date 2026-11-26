@@ -1013,6 +1013,11 @@ OoT's force-reset bit moved to MM's flags) and OoT's channel layout, the same as
 from 0. OoT's sequence reads ioPort 5 for the upper index bit of its large (enemy) bank only, and takes the volume,
 pan, frequency, reverb, filter and comb filter as OoT's code sends them (`AudioSfx_SetPropertiesOot`), not from MM's
 `SfxChannelState`. Muting, the BGM lowering, the sfx volume slider and the reverb and volume helpers apply to both.
+OoT's sequences set up only some of their channels' soundfonts (its sfx sequence leaves out channels 14 and 15, which
+play the voices), and the others play from soundfont 0, OoT's sfx font in OoT but MM's here: an OoT sequence's
+channels now start on OoT's font 0 (`AudioLoad_SyncInitSeqPlayerInternal`). Navi's voice in the opening (her "hello",
+"hey" and crash in Kokiri Forest, her "hello" in Link's house) played MM's samples as noise; captured from both games
+under gdb, the three lines now match SoH's (spectra above 1 kHz correlate 1.00, 0.99 and 0.89).
 
 The ported actors (`hyrule/overlays`, where `port_actor.py` adds the include) and the OoT ports `HyruleActor.c`,
 `HyruleCutscene.c`, `HyruleMagic.c` and `HyruleOnePoint.c` include `HyruleSfx.h` after MM's names. It redefines each name as OoT's sound of that name, or for a name OoT lacks (the port
