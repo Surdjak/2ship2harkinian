@@ -55,6 +55,8 @@ s16 Item00_FromOot(s16 ootType);
 // arrows, which En_Item00 then drops as nothing.
 s16 Item00_ArrowsOrSeeds(s16 dropId);
 // OoT's Item_DropCollectibleRandom: OoT's drop tables, whose rows differ from MM's (z_en_item00.c).
+// Navi's C-up call, in her own voice (MM's Interface_SetTatlCall plays Tatl's).
+void Hyrule_PlayNaviCallOot(s32 hasTarget);
 void Item_DropCollectibleRandomOot(struct PlayState* play, struct Actor* fromActor, Vec3f* spawnPos, s16 params);
 // OoT's Deku Seeds drop sprite.
 TexturePtr Item00_GetDekuSeedsTex(void);

@@ -6,6 +6,7 @@
 #include "HyruleKaleido.h"
 #include "HyrulePort.h"
 #include "HyruleTermina.h"
+#include "HyruleActor.h"
 #include "PR/gs2dex.h"
 #include "sys_cfb.h"
 #include "z64malloc.h"
@@ -5184,7 +5185,12 @@ void Interface_SetTatlCall(PlayState* play, u16 tatlCallState) {
     if (((tatlCallState == TATL_STATE_2A) || (tatlCallState == TATL_STATE_2B)) && !interfaceCtx->tatlCalling &&
         (play->csCtx.state == CS_STATE_IDLE)) {
         if (GameInteractor_Should(VB_PLAY_TATL_CALL_AUDIO, true)) {
-            if (tatlCallState == TATL_STATE_2B) {
+            Player* player = GET_PLAYER(play);
+
+            // 3Ship [Hyrule] Navi calls with her own voice (OoT's Interface_SetNaviCall).
+            if ((player->tatlActor != NULL) && (player->tatlActor->id == ACTOR_EN_ELF_Oot)) {
+                Hyrule_PlayNaviCallOot(tatlCallState == TATL_STATE_2B);
+            } else if (tatlCallState == TATL_STATE_2B) {
                 Audio_PlaySfx(NA_SE_VO_NAVY_CALL);
             }
             if (tatlCallState == TATL_STATE_2A) {

@@ -864,3 +864,12 @@ s32 func_800C0808(PlayState* play, s16 camId, Player* player, s16 setting) {
     Camera_InitFocalActorSettings(camera, &player->actor);
     return Camera_ChangeSetting(camera, setting);
 }
+
+void Hyrule_PlayNaviCallOot(s32 hasTarget) {
+    // OoT's Interface_SetNaviCall: her call with a target, else her "Hey!".
+    if (hasTarget) {
+        Audio_PlaySfx(NA_SE_VO_NAVY_CALL);
+    } else {
+        Audio_PlaySfx_AtPosWithReverb(&gSfxDefaultPos, NA_SE_VO_NA_HELLO_2, 0x20);
+    }
+}

@@ -343,9 +343,7 @@ void Scene_CommandExitList(PlayState* play, SOH::ISceneCommand* cmd) {
     sExitList.assign(exitList->exits.begin(), exitList->exits.end());
     // 3Ship [Hyrule] OoT scenes' exits are OoT entrance indices.
     if (Hyrule_GetScenePath(play->sceneId) != nullptr) {
-        for (u32& exit : sExitList) {
-            exit = Hyrule_ExitFromOot(exit);
-        }
+        Hyrule_ExitListFromOot(sExitList.data(), sExitList.size());
     }
     play->setupExitList = sExitList.data();
 }

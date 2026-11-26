@@ -185,10 +185,34 @@ extern "C" u32 Hyrule_ExitFromOot(u16 ootEntrance) {
         sExitFellBackOot = false;
         return 0xFFFF;
     }
+    // OoT's other return exits (ENTR_RETURN_YOUSEI_IZUMI_YOKO and up), out of the bazaar, shooting gallery and other
+    // shops and fountains found in two places, lead back by the spawn Link came in at (Player_HandleExitsAndVoids).
+    static constexpr u16 kOotReturnFirst = 0x7FF9;
+    if ((ootEntrance >= kOotReturnFirst) && (ootEntrance < kOotReturnGrotto)) {
+        static constexpr u16 kReturnEntrances[] = {
+            0x45B, 0x482, 0x340, // Great Fairy Fountains (magic): Death Mountain Trail, Crater, Castle Grounds
+            0x44B, 0x2A2,        // Potion Shop: Kakariko, Market
+            0x201, 0x3B8,        // Bazaar: Kakariko, Market
+            0x4EE, 0x3C0,        // House of Skulltula, Bombchu Shop
+            0x463, 0x1CD,        // Shooting Gallery: Kakariko, Market
+            0x394, 0x340, 0x57C, // Great Fairy Fountains (spells): Zora's Fountain, Castle Grounds, Desert Colossus
+        };
+        static constexpr u8 kReturnGroups[] = { 11, 9, 3, 5, 7, 0 };
+        u32 index = kReturnGroups[ootEntrance - kOotReturnFirst] + ((gSaveContext.save.entrance >> 4) & 0x1F);
+        ootEntrance = (index < ARRAY_COUNT(kReturnEntrances)) ? kReturnEntrances[index] : 0xFFFF;
+    }
     u32 entrance = Hyrule_EntranceFromOot(ootEntrance);
     // An exit into a scene that is not loaded yet leads back to the spawn Link came in at.
     sExitFellBackOot = (entrance == HYRULE_ENTRANCE_NONE);
     return !sExitFellBackOot ? entrance : (gSaveContext.save.entrance & ~0xF);
+}
+
+extern "C" void Hyrule_ExitListFromOot(u32* exits, u32 count) {
+    for (u32 i = 0; i < count; i++) {
+        exits[i] = Hyrule_ExitFromOot(exits[i]);
+    }
+    // No exit was taken, so there is no fallback to settle at the next scene's start.
+    sExitFellBackOot = false;
 }
 
 extern "C" void Hyrule_SettleExitFallbackOot(void) {

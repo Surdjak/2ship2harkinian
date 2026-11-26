@@ -11468,9 +11468,10 @@ s32 func_80840A30(PlayState* play, Player* this, f32* arg2, f32 arg3) {
                 } else if (this->actor.wallBgId != BGCHECK_SCENE) { // i.e. was an actor
                     DynaPolyActor* wallPolyActor = DynaPoly_GetActor(&play->colCtx, this->actor.wallBgId);
 
-                    // Large crates, barrels and palm trees
+                    // Large crates, barrels and palm trees (3Ship [Hyrule] and OoT's large crates)
                     if ((wallPolyActor != NULL) &&
                         ((wallPolyActor->actor.id == ACTOR_OBJ_KIBAKO2) ||
+                         (wallPolyActor->actor.id == ACTOR_OBJ_KIBAKO2_Oot) ||
                          (wallPolyActor->actor.id == ACTOR_OBJ_TARU) || (wallPolyActor->actor.id == ACTOR_OBJ_YASI))) {
                         wallPolyActor->actor.home.rot.z = 1;
                     }

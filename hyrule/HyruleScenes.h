@@ -36,6 +36,9 @@ u32 Hyrule_EntranceFromOot(u16 ootEntrance);
 // Link came in at.
 u32 Hyrule_ExitFromOot(u16 ootEntrance);
 
+// Converts a scene's exit list on load (Hyrule_ExitFromOot), which takes none of its exits.
+void Hyrule_ExitListFromOot(u32* exits, u32 count);
+
 // On scene load, after an exit into a scene that is not loaded yet (Hyrule_ExitFromOot): Link arrives as on a plain
 // return, without the cutscene layer or age that a cutscene's terminator set for the missing scene.
 void Hyrule_SettleExitFallbackOot(void);

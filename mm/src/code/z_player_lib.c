@@ -2846,9 +2846,11 @@ s32 Player_OverrideLimbDrawGameplayDefault(PlayState* play, s32 limbIndex, Gfx**
                 if ((sPlayerRightHandType == PLAYER_MODELTYPE_RH_BOW) && Hyrule_HoldsSlingshot(player)) {
                     // 3Ship [Hyrule] OoT's Slingshot shares the Bow's models, but not its hand.
                     rightHandDLists = Hyrule_GetHandHoldingSlingshotDLs();
-                } else if ((sPlayerRightHandType == PLAYER_MODELTYPE_RH_INSTRUMENT) &&
+                } else if (((sPlayerRightHandType == PLAYER_MODELTYPE_RH_INSTRUMENT) ||
+                            ((sPlayerRightHandType == PLAYER_MODELTYPE_RH_FF) &&
+                             (rightHandDLists[0] == gLinkHumanRightHandHoldingOcarinaDL))) &&
                            Hyrule_HoldsFairyOcarina(play, player)) {
-                    // 3Ship [Hyrule]
+                    // 3Ship [Hyrule] Also when a cutscene keeps the hand (RH_FF), as Link holding it up for Saria.
                     rightHandDLists = Hyrule_GetHandHoldingFairyOcarinaDLs();
                 } else if (sPlayerRightHandType == PLAYER_MODELTYPE_RH_SHIELD) {
                     if (player->transformation == PLAYER_FORM_HUMAN) {

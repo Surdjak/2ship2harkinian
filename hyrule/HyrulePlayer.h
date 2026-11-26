@@ -37,6 +37,7 @@ s32 Hyrule_HoldsSlingshot(struct Player* player);
 Gfx** Hyrule_GetHandHoldingSlingshotDLs(void);
 // OoT's Fairy Ocarina in Link's hand, which MM's Player has no model for (its instrument hand holds the Ocarina of
 // Time).
+// Also the hand a cutscene keeps holding it up (RH_FF), as for Saria.
 s32 Hyrule_HoldsFairyOcarina(struct PlayState* play, struct Player* player);
 Gfx** Hyrule_GetHandHoldingFairyOcarinaDLs(void);
 // His right arm holding the Slingshot out, in first person.
